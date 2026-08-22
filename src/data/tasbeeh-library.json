@@ -1,0 +1,163 @@
+{
+  "name": "DITHAR Tasbeeh Dhikr Library",
+  "version": "1.1",
+  "languages": [
+    "ar",
+    "en"
+  ],
+  "target": "user-defined",
+  "notes": [
+    "This library is independent from Written Adhkar and Audio Adhkar.",
+    "The user-defined target is not stored per dhikr.",
+    "Dhikr wording (dhikr_ar/dhikr_en) is preserved unedited from the user's supplied list.",
+    "Virtue and source fields have been audited against identifiable authentic sources; a virtue with no confidently supported citation for its exact dhikr is left as an empty string rather than displaying an invented, weak, or mismatched claim.",
+    "English text is based on established online English renderings where a matching source was found, and otherwise is a faithful translation of the supplied Arabic."
+  ],
+  "items": [
+    {
+      "id": 1,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ",
+      "dhikr_en": "Glory be to Allah.",
+      "virtue_ar": "من قال: سُبْحَانَ اللَّهِ، مائة مرة، كُتبت له ألف حسنة، أو حُطّت عنه ألف خطيئة.",
+      "virtue_en": "Whoever says it one hundred times, one thousand good deeds will be recorded for him, or one thousand sins will be blotted out.",
+      "source": "Sahih Muslim; Riyad as-Salihin 1431",
+      "transliteration_en": "Subḥāna Allāh"
+    },
+    {
+      "id": 2,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+      "dhikr_en": "Glory be to Allah and praise be to Him.",
+      "virtue_ar": "مَنْ قَالَهَا فِي يَوْمٍ مِائَةَ مَرَّةٍ، حُطَّتْ خَطَايَاهُ وَإِنْ كَانَتْ مِثْلَ زَبَدِ الْبَحْرِ. لَمْ يَأْتِ أَحَدٌ يَوْمَ الْقِيَامَةِ بِأَفْضَلَ مِمَّا جَاءَ بِهِ إِلَّا أَحَدٌ قَالَ مِثْلَ مَا قَالَ أَوْ زَادَ عَلَيْهِ.",
+      "virtue_en": "Whoever says it one hundred times in a day, his sins will be forgiven even if they are as much as the foam of the sea. No one will come on the Day of Resurrection with anything better than what he has brought, except one who says the same or adds to it.",
+      "source": "Sahih al-Bukhari 6405; related wording also appears in other narrations",
+      "transliteration_en": "Subḥāna Allāhi wa biḥamdih"
+    },
+    {
+      "id": 3,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ",
+      "dhikr_en": "Glory be to Allah, and praise be to Allah.",
+      "virtue_ar": "تَمْلَآَنِ مَا بَيْنَ السَّمَاوَاتِ وَالْأَرْضِ.",
+      "virtue_en": "They fill what is between the heavens and the earth.",
+      "source": "Sahih Muslim; Riyad as-Salihin 1413",
+      "transliteration_en": "Subḥāna Allāhi wal-ḥamdu lillāh"
+    },
+    {
+      "id": 4,
+      "dhikr_ar": "سُبْحَانَ اللهِ العَظِيمِ وَبِحَمْدِهِ",
+      "dhikr_en": "Glory be to Allah, the Magnificent, and praise be to Him.",
+      "virtue_ar": "",
+      "virtue_en": "",
+      "source": "",
+      "transliteration_en": "Subḥāna Allāhil-ʿAẓīmi wa biḥamdih"
+    },
+    {
+      "id": 5,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
+      "dhikr_en": "Glory be to Allah and praise be to Him; glory be to Allah, the Magnificent.",
+      "virtue_ar": "كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ، حَبِيبَتَانِ إِلَى الرَّحْمَنِ.",
+      "virtue_en": "Two phrases that are light on the tongue, heavy in the scale, and beloved to the Most Merciful.",
+      "source": "Sahih al-Bukhari and Sahih Muslim",
+      "transliteration_en": "Subḥāna Allāhi wa biḥamdih, Subḥāna Allāhil-ʿAẓīm"
+    },
+    {
+      "id": 6,
+      "dhikr_ar": "لَا إلَه إلّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلُّ شَيْءِ قَدِيرِ.",
+      "dhikr_en": "There is no deity except Allah alone, with no partner. To Him belongs the dominion and to Him belongs all praise, and He is over all things capable.",
+      "virtue_ar": "مَنْ قَالَهَا فِي يَوْمٍ مِائَةَ مَرَّةٍ، كانت له عدل عشر رقاب، وكتبت له مئة حسنة، ومحيت عنه مئة سيئة، وكانت له حرزا من الشيطان.",
+      "virtue_en": "Whoever says it one hundred times in a day, he will have a reward equivalent to freeing ten slaves, one hundred good deeds will be recorded for him, one hundred sins will be erased, and he will be protected from Satan that day.",
+      "source": "Sahih al-Bukhari and Sahih Muslim; Riyad as-Salihin 1410",
+      "transliteration_en": "Lā ilāha illā Allāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr"
+    },
+    {
+      "id": 7,
+      "dhikr_ar": "لا حَوْلَ وَلا قُوَّةَ إِلا بِاللَّهِ",
+      "dhikr_en": "There is no might or power except through Allah.",
+      "virtue_ar": "كنز من كنوز الجنة.",
+      "virtue_en": "It is a treasure from the treasures of Paradise.",
+      "source": "Sahih al-Bukhari and Sahih Muslim; Riyad as-Salihin 1443",
+      "transliteration_en": "Lā ḥawla wa lā quwwata illā billāh"
+    },
+    {
+      "id": 8,
+      "dhikr_ar": "الْحَمْدُ لِلَّهِ",
+      "dhikr_en": "Praise be to Allah.",
+      "virtue_ar": "تملأ الميزان.",
+      "virtue_en": "Fills the Scale.",
+      "source": "Sahih Muslim",
+      "transliteration_en": "Al-ḥamdu lillāh"
+    },
+    {
+      "id": 9,
+      "dhikr_ar": "الْلَّهُم صَلِّ وَسَلِم وَبَارِك عَلَى سَيِّدِنَا مُحَمَّد",
+      "dhikr_en": "O Allah, send blessings, peace, and grace upon our master Muhammad.",
+      "virtue_ar": "من صلى عليَّ واحدةً، صلى الله عليه بها عشرًا.",
+      "virtue_en": "Whoever sends one blessing upon me, Allah sends ten blessings upon him.",
+      "source": "Sahih Muslim 408",
+      "transliteration_en": "Allāhumma ṣalli wa sallim wa bārik ʿalā Sayyidinā Muḥammad"
+    },
+    {
+      "id": 10,
+      "dhikr_ar": "أستغفر الله",
+      "dhikr_en": "I seek forgiveness from Allah.",
+      "virtue_ar": "كان النبي ﷺ يستغفر الله ويتوب إليه في اليوم أكثر من سبعين مرة، وثبت عنه أيضًا أنه كان يستغفر الله في اليوم مائة مرة.",
+      "virtue_en": "The Prophet ﷺ would seek Allah's forgiveness and repent to Him more than seventy times a day, and it is also authentically reported that he would seek Allah's forgiveness one hundred times a day.",
+      "source": "Sahih al-Bukhari 6307; Sahih Muslim 2702",
+      "transliteration_en": "Astaghfiru Allāh"
+    },
+    {
+      "id": 11,
+      "dhikr_ar": "سُبْحَانَ الْلَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا الْلَّهُ، وَالْلَّهُ أَكْبَرُ",
+      "dhikr_en": "Glory be to Allah, praise be to Allah, there is no deity except Allah, and Allah is the Greatest.",
+      "virtue_ar": "هذا الذكر من أحبّ الكلام إلى الله تعالى، ولا يضرّ قائله بأيّهنّ بدأ.",
+      "virtue_en": "This remembrance is among the speech most beloved to Allah, and it does not matter which of them one begins with.",
+      "source": "Sahih Muslim 2137",
+      "transliteration_en": "Subḥāna Allāh, wal-ḥamdu lillāh, wa lā ilāha illā Allāh, wallāhu akbar"
+    },
+    {
+      "id": 12,
+      "dhikr_ar": "لَا إِلَهَ إِلَّا اللَّهُ",
+      "dhikr_en": "There is no deity except Allah.",
+      "virtue_ar": "أفضل الذكر لا إله إلاّ الله.",
+      "virtue_en": "The best remembrance is: There is no deity except Allah.",
+      "source": "Jami` at-Tirmidhi 3383 (graded hasan by al-Albani)",
+      "transliteration_en": "Lā ilāha illā Allāh"
+    },
+    {
+      "id": 13,
+      "dhikr_ar": "الْلَّهُ أَكْبَرُ",
+      "dhikr_en": "Allah is the Greatest.",
+      "virtue_ar": "",
+      "virtue_en": "",
+      "source": "",
+      "transliteration_en": "Allāhu akbar"
+    },
+    {
+      "id": 14,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ ، وَالْحَمْدُ لِلَّهِ ، وَلا إِلَهَ إِلا اللَّهُ ، وَاللَّهُ أَكْبَرُ ، اللَّهُمَّ اغْفِرْ لِي ، اللَّهُمَّ ارْحَمْنِي ، اللَّهُمَّ ارْزُقْنِي.",
+      "dhikr_en": "Glory be to Allah, praise be to Allah, there is no deity except Allah, Allah is the Greatest; O Allah, forgive me, have mercy on me, and provide for me.",
+      "virtue_ar": "",
+      "virtue_en": "",
+      "source": "",
+      "transliteration_en": "Subḥāna Allāh, wal-ḥamdu lillāh, wa lā ilāha illā Allāh, wallāhu akbar, Allāhumma ighfir lī, Allāhumma irḥamnī, Allāhumma urzuqnī"
+    },
+    {
+      "id": 15,
+      "dhikr_ar": "الْحَمْدُ لِلَّهِ حَمْدًا كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ.",
+      "dhikr_en": "Praise be to Allah, abundant, good, and blessed praise.",
+      "virtue_ar": "قَالَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ: \"رَأَيْتُ بِضْعَةً وَثَلَاثِينَ مَلَكًا يَبْتَدِرُونَهَا، أَيُّهُمْ يَكْتُبُهَا أَوَّلُ\".",
+      "virtue_en": "The Prophet ﷺ said: “I saw over thirty angels competing to be the first to write it.”",
+      "source": "Sahih al-Bukhari 799",
+      "transliteration_en": "Al-ḥamdu lillāhi ḥamdan kathīran ṭayyiban mubārakan fīh"
+    },
+    {
+      "id": 16,
+      "dhikr_ar": "اللَّهُ أَكْبَرُ كَبِيرًا ، وَالْحَمْدُ لِلَّهِ كَثِيرًا ، وَسُبْحَانَ اللَّهِ بُكْرَةً وَأَصِيلاً.",
+      "dhikr_en": "Allah is the Greatest, immensely; praise be to Allah abundantly; and glory be to Allah morning and evening.",
+      "virtue_ar": "قَالَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ: \"عَجِبْتُ لَهَا، فُتِحَتْ لَهَا أَبْوَابُ السَّمَاءِ\".",
+      "virtue_en": "The Prophet ﷺ said: “I was amazed by it; the gates of heaven were opened for it.”",
+      "source": "Sahih Muslim 601",
+      "transliteration_en": "Allāhu akbaru kabīran, wal-ḥamdu lillāhi kathīran, wa subḥāna Allāhi bukratan wa aṣīlā"
+    }
+  ],
+  "description": "Final bilingual Tasbeeh library for DITHAR. Arabic and English meanings/virtues are retained from the existing asset; English transliterations are provided for pronunciation in English mode. No audio fields are included."
+}

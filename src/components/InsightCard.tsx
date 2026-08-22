@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Share2, Check } from "lucide-react";
 import { CardMotif } from "./CardMotif";
 
 interface InsightCardProps {
@@ -10,9 +9,25 @@ interface InsightCardProps {
   attribution?: string;
   body: string;
   citation: string;
-  shareLabel: string;
+  readMoreLabel: string;
+  onReadMore: () => void;
+  className?: string;
 }
 
+// Share buttons were intentionally removed from this card to save vertical
+// height on the Home Screen — the underlying share behavior itself isn't
+// gone, it's preserved as an exported helper (see src/lib/share.ts) ready
+// to be reattached to a future control.
+//
+// The body text is clamped to 2 lines (`line-clamp-2`) so the card's
+// height is predictable regardless of content length — a longer English
+// translation never grows the card, it just clips further, same as a
+// short Arabic sentence would. Whether the "Read more" button appears is
+// determined by actually measuring overflow (scrollHeight > clientHeight)
+// after render, not by guessing from character count, so it only shows up
+// when the clamp genuinely cut something off. It sits inline with the
+// citation (not on its own line) specifically so showing it never adds
+// any height to the card — no spacing changes were needed anywhere.
 export function InsightCard({
   variant,
   icon,
@@ -20,28 +35,22 @@ export function InsightCard({
   attribution,
   body,
   citation,
-  shareLabel,
+  readMoreLabel,
+  onReadMore,
+  className = "",
 }: InsightCardProps) {
-  const [justShared, setJustShared] = useState(false);
+  const bodyRef = useRef<HTMLParagraphElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
 
-  async function handleShare() {
-    const shareText = `${body} ${citation}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, text: shareText });
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(shareText);
-        setJustShared(true);
-        setTimeout(() => setJustShared(false), 1800);
-      }
-    } catch {
-      // user cancelled the native share sheet — nothing to do
-    }
-  }
+  useLayoutEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    setIsTruncated(el.scrollHeight > el.clientHeight + 1);
+  }, [body]);
 
   return (
     <div
-      className="rounded-2xl border p-3 sm:p-4"
+      className={`rounded-2xl border p-1.5 sm:p-2 ${className}`}
       style={{
         background: "var(--color-surface)",
         borderColor: "var(--color-gold-soft)",
@@ -63,42 +72,39 @@ export function InsightCard({
           </h3>
 
           {attribution && (
-            <p className="mt-1 text-[13px]" style={{ color: "var(--color-text-muted)" }}>
+            <p className="mt-px text-[13px]" style={{ color: "var(--color-text-muted)" }}>
               {attribution}
             </p>
           )}
 
           <p
-            className="mt-1.5 text-[15px] leading-[1.45]"
+            ref={bodyRef}
+            className="mt-px line-clamp-2 text-[15px] leading-[1.25]"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
           >
             {body}
           </p>
 
-          <p className="mt-1 text-[12.5px]" style={{ color: "var(--color-text-muted)" }}>
-            {citation}
-          </p>
+          <div className="mt-px flex items-center justify-between gap-2">
+            <p className="min-w-0 truncate text-[12.5px]" style={{ color: "var(--color-text-muted)" }}>
+              {citation}
+            </p>
+
+            {isTruncated && (
+              <button
+                type="button"
+                onClick={onReadMore}
+                className="shrink-0 text-[12.5px] font-medium underline underline-offset-2"
+                style={{ color: "var(--color-gold)" }}
+              >
+                {readMoreLabel}
+              </button>
+            )}
+          </div>
         </div>
 
         <CardMotif variant={variant} />
       </div>
-
-      <button
-        type="button"
-        onClick={handleShare}
-        className="mt-2.5 flex items-center gap-2 rounded-full border px-4 py-2 text-[13.5px] font-medium transition-colors"
-        style={{
-          borderColor: "var(--color-gold-soft)",
-          color: "var(--color-text-primary)",
-        }}
-      >
-        {justShared ? (
-          <Check size={16} style={{ color: "var(--color-primary)" }} />
-        ) : (
-          <Share2 size={16} style={{ color: "var(--color-gold)" }} />
-        )}
-        <span>{justShared ? "تم النسخ" : shareLabel}</span>
-      </button>
     </div>
   );
 }

@@ -1,26 +1,26 @@
-import { Globe, ChevronDown } from "lucide-react";
-import { labels } from "../data/content";
+import { Globe } from "lucide-react";
+import { useLanguage } from "../theme/LanguageContext";
 
-// Structural placeholder for a future language switcher.
-// Non-functional in this phase per spec (no real i18n yet).
-// Same visual affordance (globe icon + chevron) in both themes.
+// Icon-only globe control — now functionally switches the app language
+// (theme/visual identity is untouched; language and theme are independent
+// state). aria-label announces which language pressing it will switch TO,
+// following the common toggle-button convention.
 export function LanguageControl() {
+  const { language, toggleLanguage } = useLanguage();
+
   return (
     <button
       type="button"
-      onClick={() => {
-        /* language switching deferred to a later phase */
-      }}
-      className="flex h-12 items-center gap-2 rounded-full border px-4 text-[14px] font-medium"
+      onClick={toggleLanguage}
+      aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"}
+      className="flex h-11 w-11 items-center justify-center rounded-full border-2"
       style={{
         borderColor: "var(--color-gold-soft)",
         background: "var(--color-surface)",
         color: "var(--color-text-primary)",
       }}
     >
-      <Globe size={17} strokeWidth={1.7} style={{ color: "var(--color-gold)" }} />
-      <span>{labels.language}</span>
-      <ChevronDown size={15} strokeWidth={2} style={{ color: "var(--color-text-muted)" }} />
+      <Globe size={18} strokeWidth={1.7} style={{ color: "var(--color-gold)" }} />
     </button>
   );
 }

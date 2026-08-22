@@ -12,15 +12,38 @@
   --color-text-muted: #6b6558;
   --card-radius: 16px;
 
-  /* Outer device-frame treatment (see .device-frame / .device-screen below) */
+  /* Outer device-frame treatment (see .device-frame / .device-screen below).
+     Thickness/radius are width-based clamp()s so the frame itself is
+     responsive — thinner on a narrow phone, fuller on a wide one — and is
+     visible at EVERY width, not just a desktop-only affordance. */
   --color-frame-bezel: #0b1526;
   --color-frame-backdrop: #e7e0cd;
-  --frame-bezel-thickness: 14px;
-  --frame-radius: 42px;
-  --screen-radius: 30px;
+  --frame-bezel-thickness: clamp(7px, 2.4vw, 14px);
+  --frame-radius: clamp(22px, 7vw, 42px);
+  --screen-radius: clamp(16px, 5.5vw, 30px);
 
   --font-display: "Amiri", "Traditional Arabic", serif;
   --font-body: "Tajawal", "Segoe UI", sans-serif;
+
+  /* Tasbeeh screen glass effect — crystal-bubble direction: a light,
+     translucent ivory fill (not a colored fill), a warm champagne/gold
+     rim, soft white highlights, and a whisper of the theme's own primary
+     color as a low-alpha accent stop so Men/Women keep some identity.
+     Text inside the main circle is dark-on-light accordingly (see
+     TasbeehScreen.tsx). Two tint strengths: the main circle a touch
+     richer for definition; the small floating bubbles lighter/airier. */
+  --color-glass-tint: rgba(255, 250, 238, 0.42);
+  --color-glass-tint-soft: rgba(255, 250, 238, 0.24);
+  --color-glass-highlight: rgba(255, 255, 255, 0.75);
+  --color-glass-edge: rgba(198, 161, 91, 0.55);
+  --color-glass-accent: rgba(18, 33, 63, 0.08);
+
+  /* Exactly half of the main circle's own responsive size
+     (clamp(152px, 42vw, 180px) in TasbeehScreen.tsx — not duplicated
+     there, only mirrored here) so the celebration below can start its
+     particles precisely at the glass circle's outer edge at any viewport
+     width, without JS measuring the DOM. */
+  --tasbeeh-circle-radius: clamp(76px, 21vw, 90px);
 
   color-scheme: light;
 }
@@ -41,7 +64,13 @@
      softly matted surface, close in tone to the page itself. */
   --color-frame-bezel: #fdfbf6;
   --color-frame-backdrop: #eef0e5;
-  --frame-bezel-thickness: 6px;
+  --frame-bezel-thickness: clamp(3px, 1.2vw, 6px);
+
+  --color-glass-tint: rgba(255, 253, 245, 0.44);
+  --color-glass-tint-soft: rgba(255, 253, 245, 0.26);
+  --color-glass-highlight: rgba(255, 255, 255, 0.78);
+  --color-glass-edge: rgba(198, 161, 91, 0.5);
+  --color-glass-accent: rgba(91, 110, 78, 0.07);
 }
 
 *,
@@ -70,62 +99,162 @@ button {
 }
 
 /* ------------------------------------------------------------------ */
-/* Device frame: on a real phone this is edge-to-edge — width follows  */
-/* the actual viewport, never a fixed desktop-sized box. On a wider    */
-/* viewport (desktop preview) it additionally gets a bounded,          */
-/* phone-proportioned card so the app never reads as a shrunken        */
-/* desktop page. The breakpoint only ADDS the bezel/card treatment; it */
-/* never sets the real mobile width.                                  */
+/* Device frame — an "app shell": the navy/gold frame is pinned to the */
+/* real viewport (a `height`, not just `min-height`) so it is ALWAYS   */
+/* fully visible at every width, on every device — real phone or      */
+/* desktop preview alike. It's no longer a desktop-only affordance.    */
+/*                                                                     */
+/* Home content scrolls INTERNALLY (.device-screen's own overflow-y)   */
+/* if it's ever taller than the available space, instead of the whole */
+/* page scrolling — so the frame's border and BottomNav never move     */
+/* off-screen or get clipped on a short viewport.                      */
 /* ------------------------------------------------------------------ */
 
 .device-backdrop {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   width: 100%;
-  max-width: 100%;
   display: flex;
   justify-content: center;
+  align-items: stretch;
   background: var(--color-frame-backdrop);
-  overflow-x: hidden;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right))
+    max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
 }
 
 .device-frame {
   width: 100%;
-  max-width: 100%;
-  background: transparent;
+  max-width: 480px;
+  height: 100%;
+  background: var(--color-frame-bezel);
+  padding: var(--frame-bezel-thickness);
+  border-radius: var(--frame-radius);
+  box-shadow: 0 30px 60px -30px rgba(15, 15, 15, 0.4);
+  box-sizing: border-box;
+  display: flex;
 }
 
 .device-screen {
+  position: relative;
   width: 100%;
-  max-width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100%;
   background: var(--color-bg);
+  border: 2px solid var(--color-gold);
+  border-radius: var(--screen-radius);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
   transition: background-color 0.3s ease;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  -webkit-overflow-scrolling: touch;
 }
 
-@media (min-width: 640px) {
-  .device-backdrop {
-    padding: 40px 16px;
-    align-items: flex-start;
-  }
+/* ------------------------------------------------------------------ */
+/* Tasbeeh screen — glass-bubble visual system. New, additive rules     */
+/* only; nothing above this point was changed for it.                  */
+/*                                                                      */
+/* Floating Dhikr bubbles live inside a `position:relative;             */
+/* overflow:hidden` stage (the flex-1 open space above the main         */
+/* circle, in TasbeehScreen.tsx). Each bubble is `position:absolute`    */
+/* and animates its `bottom` as a PERCENTAGE of that stage's own        */
+/* rendered height (not a fixed px distance) — so on every viewport,    */
+/* short or tall, a bubble is guaranteed to still be inside (and thus   */
+/* clipped by `overflow:hidden` if it somehow weren't) the stage before */
+/* it can ever reach the content above. This is what keeps bubbles from */
+/* overlapping the Dhikr selector / virtue card without any JS          */
+/* measurement, and without affecting document height.                 */
+/* ------------------------------------------------------------------ */
 
-  .device-frame {
-    width: 100%;
-    max-width: 430px;
-    margin: 0 auto;
-    background: var(--color-frame-bezel);
-    padding: var(--frame-bezel-thickness);
-    border-radius: var(--frame-radius);
-    box-shadow: 0 40px 70px -30px rgba(15, 15, 15, 0.45);
-  }
+.dithar-bubble-glass {
+  position: absolute;
+  left: 50%;
+  background:
+    radial-gradient(circle at 34% 26%, var(--color-glass-highlight), transparent 55%),
+    var(--color-glass-tint-soft);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow:
+    0 8px 18px -10px rgba(18, 33, 63, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: dithar-bubble-float 4.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
 
-  .device-screen {
-    min-height: 0;
-    border-radius: var(--screen-radius);
-    border: 2px solid var(--color-gold);
-    overflow: hidden;
+@keyframes dithar-bubble-float {
+  0% {
+    bottom: -10%;
+    opacity: 0;
+    transform: translateX(-50%) translateX(0) rotate(0deg);
   }
+  10% {
+    opacity: 0.92;
+  }
+  68% {
+    opacity: 0.7;
+  }
+  100% {
+    bottom: 94%;
+    opacity: 0;
+    transform: translateX(-50%) translateX(var(--drift, 0px)) rotate(var(--bubble-rotate, 0deg));
+  }
+}
+
+/* Target-reached celebration — small gold/ivory particles that frame the
+   main glass circle from OUTSIDE it, fully independent of the Dhikr
+   bubbles above. Each piece starts already at the circle's own edge
+   (var(--ux)/var(--uy) is a per-particle unit vector, multiplied here by
+   --tasbeeh-circle-radius so the start point tracks the circle's actual
+   responsive size at any viewport) and bursts/drifts on out to its own
+   (--cx, --cy) offset — comfortably beyond that edge — before fading.
+   Because it never starts from the center, it never reads as hidden
+   behind the circle. Pure transform, so it cannot cause document scroll.
+   Three stages: BURST (0%–22%, quick outward motion), DRIFT (22%–65%,
+   gentle continued float), FADE (65%–100%, fully transparent). */
+@keyframes dithar-confetti-piece {
+  0% {
+    transform: translate(-50%, -50%)
+      translate(calc(var(--ux, 0) * var(--tasbeeh-circle-radius, 90px)), calc(var(--uy, 0) * var(--tasbeeh-circle-radius, 90px)))
+      rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  22% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--ux, 0) * var(--tasbeeh-circle-radius, 90px) + var(--cx, 0px) * 0.78),
+        calc(var(--uy, 0) * var(--tasbeeh-circle-radius, 90px) + var(--cy, -80px) * 0.78)
+      )
+      rotate(calc(var(--crot, 90deg) * 0.5));
+  }
+  65% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--ux, 0) * var(--tasbeeh-circle-radius, 90px) + var(--cx, 0px)),
+        calc(var(--uy, 0) * var(--tasbeeh-circle-radius, 90px) + var(--cy, -80px))
+      )
+      rotate(var(--crot, 90deg));
+    opacity: 0;
+  }
+}
+
+.dithar-confetti {
+  top: 50%;
+  left: 50%;
+  animation: dithar-confetti-piece 2.3s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.dithar-confetti--spark {
+  box-shadow: 0 0 7px 1.5px var(--color-gold);
+}
+
+.dithar-confetti--petal {
+  border-radius: 60% 40% 65% 35% / 55% 35% 65% 45%;
 }
