@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #f2e9da;
+  --color-surface: #f8f1e4;
+  --color-primary: #12213f;
+  --color-primary-contrast: #f6ead0;
+  --color-gold: #c6a15b;
+  --color-gold-soft: rgba(198, 161, 91, 0.35);
+  --color-panel-divider: rgba(198, 161, 91, 0.45);
+  --color-text-primary: #12213f;
+  --color-text-muted: #6b6558;
+  --card-radius: 16px;
+
+  /* Outer device-frame treatment (see .device-frame / .device-screen below) */
+  --color-frame-bezel: #0b1526;
+  --color-frame-backdrop: #e7e0cd;
+  --frame-bezel-thickness: 14px;
+  --frame-radius: 42px;
+  --screen-radius: 30px;
+
+  --font-display: "Amiri", "Traditional Arabic", serif;
+  --font-body: "Tajawal", "Segoe UI", sans-serif;
+
+  color-scheme: light;
+}
+
+[data-theme="women"] {
+  --color-bg: #f6f2e9;
+  --color-surface: #fcfaf3;
+  --color-primary: #5b6e4e;
+  --color-primary-contrast: #f3f6ec;
+  --color-gold: #c6a15b;
+  --color-gold-soft: rgba(198, 161, 91, 0.35);
+  --color-panel-divider: rgba(214, 184, 128, 0.55);
+  --color-text-primary: #3e4a34;
+  --color-text-muted: #7a8069;
+  --card-radius: 20px;
+
+  /* Women's reference has no dark bezel — just a thin gold line on a
+     softly matted surface, close in tone to the page itself. */
+  --color-frame-bezel: #fdfbf6;
+  --color-frame-backdrop: #eef0e5;
+  --frame-bezel-thickness: 6px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  margin: 0;
+  background: var(--color-frame-backdrop);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------ */
+/* Device frame: on a real phone this is edge-to-edge — width follows  */
+/* the actual viewport, never a fixed desktop-sized box. On a wider    */
+/* viewport (desktop preview) it additionally gets a bounded,          */
+/* phone-proportioned card so the app never reads as a shrunken        */
+/* desktop page. The breakpoint only ADDS the bezel/card treatment; it */
+/* never sets the real mobile width.                                  */
+/* ------------------------------------------------------------------ */
+
+.device-backdrop {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  background: var(--color-frame-backdrop);
+  overflow-x: hidden;
+}
+
+.device-frame {
+  width: 100%;
+  max-width: 100%;
+  background: transparent;
+}
+
+.device-screen {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  transition: background-color 0.3s ease;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+@media (min-width: 640px) {
+  .device-backdrop {
+    padding: 40px 16px;
+    align-items: flex-start;
+  }
+
+  .device-frame {
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+    background: var(--color-frame-bezel);
+    padding: var(--frame-bezel-thickness);
+    border-radius: var(--frame-radius);
+    box-shadow: 0 40px 70px -30px rgba(15, 15, 15, 0.45);
+  }
+
+  .device-screen {
+    min-height: 0;
+    border-radius: var(--screen-radius);
+    border: 2px solid var(--color-gold);
+    overflow: hidden;
+  }
+}
