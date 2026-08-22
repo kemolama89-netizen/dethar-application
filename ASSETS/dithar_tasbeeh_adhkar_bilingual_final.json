@@ -1,0 +1,163 @@
+{
+  "name": "DITHAR Tasbeeh Dhikr Library",
+  "version": "1.1",
+  "languages": [
+    "ar",
+    "en"
+  ],
+  "target": "user-defined",
+  "notes": [
+    "This library is independent from Written Adhkar and Audio Adhkar.",
+    "The user-defined target is not stored per dhikr.",
+    "Arabic dhikr and virtue text are preserved from the user's supplied list.",
+    "English text is based on established online English renderings where a matching source was found, and otherwise is a faithful translation of the supplied Arabic.",
+    "Several supplied virtue statements need source/grade verification before final religious publication; those are explicitly marked in the source field."
+  ],
+  "items": [
+    {
+      "id": 1,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ",
+      "dhikr_en": "Glory be to Allah.",
+      "virtue_ar": "يكتب له ألف حسنة أو يحط عنه ألف خطيئة.",
+      "virtue_en": "One thousand good deeds will be recorded for him, or one thousand sins will be blotted out.",
+      "source": "Sahih Muslim; Riyad as-Salihin 1431",
+      "transliteration_en": "Subḥāna Allāh"
+    },
+    {
+      "id": 2,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+      "dhikr_en": "Glory be to Allah and praise be to Him.",
+      "virtue_ar": "حُطَّتْ خَطَايَاهُ وَإِنْ كَانَتْ مِثْلَ زَبَدِ الْبَحْرِ. لَمْ يَأْتِ أَحَدٌ يَوْمَ الْقِيَامَةِ بِأَفْضَلَ مِمَّا جَاءَ بِهِ إِلَّا أَحَدٌ قَالَ مِثْلَ مَا قَالَ أَوْ زَادَ عَلَيْهِ.",
+      "virtue_en": "His sins will be forgiven even if they are as much as the foam of the sea. No one will come on the Day of Resurrection with anything better than what he has brought, except one who says the same or adds to it.",
+      "source": "Sahih al-Bukhari 6405; related wording also appears in other narrations",
+      "transliteration_en": "Subḥāna Allāhi wa biḥamdih"
+    },
+    {
+      "id": 3,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ",
+      "dhikr_en": "Glory be to Allah, and praise be to Allah.",
+      "virtue_ar": "تَمْلَآَنِ مَا بَيْنَ السَّمَاوَاتِ وَالْأَرْضِ.",
+      "virtue_en": "They fill what is between the heavens and the earth.",
+      "source": "Sahih Muslim; Riyad as-Salihin 1413",
+      "transliteration_en": "Subḥāna Allāhi wal-ḥamdu lillāh"
+    },
+    {
+      "id": 4,
+      "dhikr_ar": "سُبْحَانَ اللهِ العَظِيمِ وَبِحَمْدِهِ",
+      "dhikr_en": "Glory be to Allah, the Magnificent, and praise be to Him.",
+      "virtue_ar": "غرست له نخلة في الجنة (أى عدد).",
+      "virtue_en": "A date-palm tree is planted for him in Paradise.",
+      "source": "Jami` at-Tirmidhi 3464/3465 (source page notes a grading discrepancy; verify before final publication)",
+      "transliteration_en": "Subḥāna Allāhil-ʿAẓīmi wa biḥamdih"
+    },
+    {
+      "id": 5,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
+      "dhikr_en": "Glory be to Allah and praise be to Him; glory be to Allah, the Magnificent.",
+      "virtue_ar": "ثقيلتان في الميزان حبيبتان إلى الرحمن (أى عدد).",
+      "virtue_en": "Two phrases that are light on the tongue, heavy in the scale, and beloved to the Most Merciful.",
+      "source": "Sahih al-Bukhari and Sahih Muslim",
+      "transliteration_en": "Subḥāna Allāhi wa biḥamdih, Subḥāna Allāhil-ʿAẓīm"
+    },
+    {
+      "id": 6,
+      "dhikr_ar": "لَا إلَه إلّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلُّ شَيْءِ قَدِيرِ.",
+      "dhikr_en": "There is no deity except Allah alone, with no partner. To Him belongs the dominion and to Him belongs all praise, and He is over all things capable.",
+      "virtue_ar": "كانت له عدل عشر رقاب، وكتبت له مئة حسنة، ومحيت عنه مئة سيئة، وكانت له حرزا من الشيطان.",
+      "virtue_en": "He will have a reward equivalent to freeing ten slaves, one hundred good deeds will be recorded for him, one hundred sins will be erased, and he will be protected from Satan that day.",
+      "source": "Sahih al-Bukhari and Sahih Muslim; Riyad as-Salihin 1410",
+      "transliteration_en": "Lā ilāha illā Allāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr"
+    },
+    {
+      "id": 7,
+      "dhikr_ar": "لا حَوْلَ وَلا قُوَّةَ إِلا بِاللَّهِ",
+      "dhikr_en": "There is no might or power except through Allah.",
+      "virtue_ar": "كنز من كنوز الجنة (أى عدد).",
+      "virtue_en": "It is a treasure from the treasures of Paradise.",
+      "source": "Sahih al-Bukhari and Sahih Muslim; Riyad as-Salihin 1443",
+      "transliteration_en": "Lā ḥawla wa lā quwwata illā billāh"
+    },
+    {
+      "id": 8,
+      "dhikr_ar": "الْحَمْدُ للّهِ رَبِّ الْعَالَمِينَ",
+      "dhikr_en": "Praise be to Allah, Lord of the worlds.",
+      "virtue_ar": "تملأ ميزان العبد بالحسنات.",
+      "virtue_en": "It fills the believer's scale with good deeds.",
+      "source": "Related wording: Sahih Muslim; Riyad as-Salihin 1413",
+      "transliteration_en": "Al-ḥamdu lillāhi Rabbil-ʿālamīn"
+    },
+    {
+      "id": 9,
+      "dhikr_ar": "الْلَّهُم صَلِّ وَسَلِم وَبَارِك عَلَى سَيِّدِنَا مُحَمَّد",
+      "dhikr_en": "O Allah, send blessings, peace, and grace upon our master Muhammad.",
+      "virtue_ar": "من صلى على حين يصبح وحين يمسى ادركته شفاعتى يوم القيامة.",
+      "virtue_en": "Whoever sends blessings upon me in the morning and evening will attain my intercession on the Day of Resurrection.",
+      "source": "Source wording should be verified before final publication; retained from the user's supplied text",
+      "transliteration_en": "Allāhumma ṣalli wa sallim wa bārik ʿalā Sayyidinā Muḥammad"
+    },
+    {
+      "id": 10,
+      "dhikr_ar": "أستغفر الله",
+      "dhikr_en": "I seek forgiveness from Allah.",
+      "virtue_ar": "لفعل الرسول صلى الله عليه وسلم.",
+      "virtue_en": "The Messenger of Allah ﷺ used to seek Allah's forgiveness frequently.",
+      "source": "Sahih al-Bukhari 6307; Sahih Muslim 2702a",
+      "transliteration_en": "Astaghfiru Allāh"
+    },
+    {
+      "id": 11,
+      "dhikr_ar": "سُبْحَانَ الْلَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا الْلَّهُ، وَالْلَّهُ أَكْبَرُ",
+      "dhikr_en": "Glory be to Allah, praise be to Allah, there is no deity except Allah, and Allah is the Greatest.",
+      "virtue_ar": "أنهن أحب الكلام الى الله، ومكفرات للذنوب، وغرس الجنة، وجنة لقائلهن من النار، وأحب الى النبي عليه السلام مما طلعت عليه الشمس، والْبَاقِيَاتُ الْصَّالِحَات.",
+      "virtue_en": "They are among the words most beloved to Allah, a means of expiation for sins, a planting for Paradise, and a protection from the Fire for the one who says them; they are beloved to the Prophet ﷺ more than what the sun has risen upon, and they are among the enduring righteous deeds.",
+      "source": "Composite wording from multiple narrations; verify exact attribution before final publication",
+      "transliteration_en": "Subḥāna Allāh, wal-ḥamdu lillāh, wa lā ilāha illā Allāh, wallāhu akbar"
+    },
+    {
+      "id": 12,
+      "dhikr_ar": "لَا إِلَهَ إِلَّا اللَّهُ",
+      "dhikr_en": "There is no deity except Allah.",
+      "virtue_ar": "أفضل الذكر لا إله إلاّ الله.",
+      "virtue_en": "The best remembrance is: There is no deity except Allah.",
+      "source": "Jami` at-Tirmidhi; wording commonly cited, exact grading/source should be verified before final publication",
+      "transliteration_en": "Lā ilāha illā Allāh"
+    },
+    {
+      "id": 13,
+      "dhikr_ar": "الْلَّهُ أَكْبَرُ",
+      "dhikr_en": "Allah is the Greatest.",
+      "virtue_ar": "من قال الله أكبر كتبت له عشرون حسنة وحطت عنه عشرون سيئة. الله أكبر من كل شيء.",
+      "virtue_en": "Whoever says “Allah is the Greatest” will have twenty good deeds recorded for him and twenty sins erased. Allah is greater than everything.",
+      "source": "Source wording should be verified before final publication; retained from the user's supplied text",
+      "transliteration_en": "Allāhu akbar"
+    },
+    {
+      "id": 14,
+      "dhikr_ar": "سُبْحَانَ اللَّهِ ، وَالْحَمْدُ لِلَّهِ ، وَلا إِلَهَ إِلا اللَّهُ ، وَاللَّهُ أَكْبَرُ ، اللَّهُمَّ اغْفِرْ لِي ، اللَّهُمَّ ارْحَمْنِي ، اللَّهُمَّ ارْزُقْنِي.",
+      "dhikr_en": "Glory be to Allah, praise be to Allah, there is no deity except Allah, Allah is the Greatest; O Allah, forgive me, have mercy on me, and provide for me.",
+      "virtue_ar": "خير الدنيا والآخرة",
+      "virtue_en": "The best of this world and the Hereafter.",
+      "source": "Source wording should be verified before final publication; retained from the user's supplied text",
+      "transliteration_en": "Subḥāna Allāh, wal-ḥamdu lillāh, wa lā ilāha illā Allāh, wallāhu akbar, Allāhumma ighfir lī, Allāhumma irḥamnī, Allāhumma urzuqnī"
+    },
+    {
+      "id": 15,
+      "dhikr_ar": "الْحَمْدُ لِلَّهِ حَمْدًا كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ.",
+      "dhikr_en": "Praise be to Allah, abundant, good, and blessed praise.",
+      "virtue_ar": "قَالَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ ‏\"‏لَقَدْ رَأَيْتُ اثْنَيْ عَشَرَ مَلَكًا يَبْتَدِرُونَهَا، أَيُّهُمْ يَرْفَعُهَا\"‏.",
+      "virtue_en": "The Prophet ﷺ said: “I saw twelve angels hastening to see which of them would raise it.”",
+      "source": "Sahih al-Bukhari; exact reference should be attached before final publication",
+      "transliteration_en": "Al-ḥamdu lillāhi ḥamdan kathīran ṭayyiban mubārakan fīh"
+    },
+    {
+      "id": 16,
+      "dhikr_ar": "اللَّهُ أَكْبَرُ كَبِيرًا ، وَالْحَمْدُ لِلَّهِ كَثِيرًا ، وَسُبْحَانَ اللَّهِ بُكْرَةً وَأَصِيلاً.",
+      "dhikr_en": "Allah is the Greatest, immensely; praise be to Allah abundantly; and glory be to Allah morning and evening.",
+      "virtue_ar": "قَالَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ \"عَجِبْتُ لَهَا ، فُتِحَتْ لَهَا أَبْوَابُ السَّمَاءِ",
+      "virtue_en": "The Prophet ﷺ said: “I was amazed by it; the gates of heaven were opened for it.”",
+      "source": "Source wording should be verified before final publication; supplied text ends here",
+      "transliteration_en": "Allāhu akbaru kabīran, wal-ḥamdu lillāhi kathīran, wa subḥāna Allāhi bukratan wa aṣīlā"
+    }
+  ],
+  "description": "Final bilingual Tasbeeh library for DITHAR. Arabic and English meanings/virtues are retained from the existing asset; English transliterations are provided for pronunciation in English mode. No audio fields are included."
+}
