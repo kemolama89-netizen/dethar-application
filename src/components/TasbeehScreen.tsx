@@ -10,6 +10,7 @@ import { dhikrItems, sourceAr, tasbeehLabels } from "../data/tasbeeh";
 
 interface TasbeehScreenProps {
   onNavigateHome: () => void;
+  onNavigateToWritten: () => void;
 }
 
 interface Bubble {
@@ -157,7 +158,7 @@ function bubbleTextClass(length: number) {
 // the selected dhikr never touches another item's count or target, and
 // Reset only zeroes the currently selected one. Deliberately local
 // component state (a couple of Records), not a new global store.
-export function TasbeehScreen({ onNavigateHome }: TasbeehScreenProps) {
+export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehScreenProps) {
   const { language } = useLanguage();
   const t = tasbeehLabels[language];
   const nav = navLabels[language];
@@ -519,6 +520,7 @@ export function TasbeehScreen({ onNavigateHome }: TasbeehScreenProps) {
           activeKey="tasbih"
           onSelect={(key) => {
             if (key === "home") onNavigateHome();
+            if (key === "written") onNavigateToWritten();
           }}
         />
       </AppShell>
