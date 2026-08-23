@@ -11,9 +11,14 @@ export type IdentityTheme = "men" | "women";
 // the fetch starts from the initial HTML response instead of waiting on
 // the JS bundle to load and execute. The ASSETS/ source files are never
 // read by the app and are never modified.
+// Prefixed with Vite's `import.meta.env.BASE_URL` (the configured `base`,
+// e.g. "/dethar-application/" in production, "/" in dev) rather than a
+// bare root-absolute path — GitHub Pages serves this project from a repo
+// subpath, and a literal "/logos/..." string resolves against the domain
+// root instead, 404ing in production. BASE_URL always ends in "/".
 const LOGO_BY_THEME: Record<IdentityTheme, string> = {
-  men: "/logos/dithar-logo-men.png",
-  women: "/logos/dithar-logo-women.png",
+  men: `${import.meta.env.BASE_URL}logos/dithar-logo-men.png`,
+  women: `${import.meta.env.BASE_URL}logos/dithar-logo-women.png`,
 };
 
 interface ThemeContextValue {
