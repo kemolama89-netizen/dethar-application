@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
-import { ArrowLeftRight, Check, ChevronLeft, ChevronRight, Heart, Info, X } from "lucide-react";
+import type { PointerEvent as ReactPointerEvent } from "react";
+import { ArrowUp, Check, ChevronDown, ChevronUp, Heart, Info, X } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
@@ -19,71 +19,37 @@ interface WrittenAdhkarReaderProps {
   onBackToCategories: () => void;
 }
 
-// How many tiles are visible in the stack at once (the active one plus
-// this many "waiting behind" it) — kept small on purpose, both for the
-// calm "deck" feeling and per the performance budget (spec: render only a
-// bounded number of cards, never the whole deck at once).
-const STACK_VISIBLE = 4;
-const LAYER_OFFSET_Y = 16;
-const LAYER_SCALE_STEP = 0.035;
-// Anchor opacities per stack depth (active, next, next+1, next+2, ...),
-// matching the spec's example hierarchy (1 / ~0.90 / ~0.65 / ~0.40).
-// opacityAtLayer() linearly interpolates BETWEEN these for any fractional
-// depth, which is what makes the background stack promote continuously
-// as the user drags, instead of snapping between fixed states.
-const LAYER_OPACITY_ANCHORS = [1, 0.9, 0.65, 0.4, 0.15];
+// Deliberately restrained: the active card is the whole point, and the
+// spec explicitly asks for "a subtle indication that more adhkar follow"
+// rather than a multi-card deck — so there is exactly ONE faint tile
+// behind the active one, not a stack.
+const BEHIND_OFFSET_Y = 14;
+const BEHIND_SCALE = 0.96;
+const BEHIND_OPACITY = 0.45;
 
-const LEAVE_MS = 260;
-const SWIPE_THRESHOLD = 90;
-// Exit distance is a fixed, generous px value (not tied to the drag
-// distance) — the card just needs to clear the phone-frame's own
-// max-width (480px, see DeviceFrame/index.css), so this comfortably
-// clears it at any supported viewport.
-const EXIT_DISTANCE = 560;
-
-// Small physical tilt while dragging — proportional to how far the
-// pointer has moved, clamped to a "slight" range (spec: max ~5-7deg) so
-// it reads as a real card's inertia, not a spinning gimmick. Follows the
-// raw screen-space drag direction (not the RTL-aware forward/backward
-// meaning) — a physical tilt is about screen geometry, not text direction.
-function tiltForDragX(x: number) {
-  return Math.max(-6, Math.min(6, x * 0.045));
-}
-
-function opacityAtLayer(layer: number) {
-  const clamped = Math.max(0, Math.min(LAYER_OPACITY_ANCHORS.length - 1, layer));
-  const lo = Math.floor(clamped);
-  const hi = Math.min(LAYER_OPACITY_ANCHORS.length - 1, lo + 1);
-  const frac = clamped - lo;
-  return LAYER_OPACITY_ANCHORS[lo] + (LAYER_OPACITY_ANCHORS[hi] - LAYER_OPACITY_ANCHORS[lo]) * frac;
-}
-
-// Every tile — active or stacked — shares this one transform function
-// list (translate, translate, rotate, scale) so the browser can
-// interpolate each component individually across any state change (drag
-// -> settled stack position, settled -> dragging, one stack depth -> a
-// fractional depth mid-drag, etc.) instead of snapping.
-function stackTransform(layer: number, offsetX = 0, offsetY = 0, rotateDeg = 0) {
-  const y = -layer * LAYER_OFFSET_Y + offsetY;
-  const scale = 1 - layer * LAYER_SCALE_STEP;
-  return `translate(-50%, -50%) translate(${offsetX}px, ${y}px) rotate(${rotateDeg}deg) scale(${scale})`;
-}
+// Vertical swipe up = next, down = previous — deterministic and
+// direction-agnostic w.r.t. RTL/LTR (unlike a horizontal gesture, "up"
+// and "down" mean the same thing regardless of reading direction, so no
+// mirroring logic is needed here).
+const LEAVE_MS = 300;
+// Deliberately forgiving — the user should never have to perform a
+// precise gesture; a fairly small, decisive movement in either direction
+// is enough to commit.
+const SWIPE_THRESHOLD = 70;
 
 function DominoTile({
   item,
   language,
   dir,
   labels,
-  layer,
+  isActive,
+  isBehind,
   transform,
   opacity,
-  isActive,
   isDragging,
   isEntering,
   isSnapping,
-  enterFromX,
   OrnamentIcon,
-  isMen,
   onPointerDown,
   onPointerMove,
   onPointerUp,
@@ -94,16 +60,14 @@ function DominoTile({
   language: "ar" | "en";
   dir: "rtl" | "ltr";
   labels: (typeof writtenAdhkarLabels)["ar"];
-  layer: number;
+  isActive: boolean;
+  isBehind: boolean;
   transform: string;
   opacity: number;
-  isActive: boolean;
   isDragging: boolean;
   isEntering?: boolean;
   isSnapping?: boolean;
-  enterFromX?: number;
   OrnamentIcon: typeof MedallionIcon;
-  isMen: boolean;
   onPointerDown?: (e: ReactPointerEvent<HTMLDivElement>) => void;
   onPointerMove?: (e: ReactPointerEvent<HTMLDivElement>) => void;
   onPointerUp?: (e: ReactPointerEvent<HTMLDivElement>) => void;
@@ -127,29 +91,26 @@ function DominoTile({
   return (
     <div
       className={className}
-      style={
-        {
-          height: "clamp(230px, 46vh, 340px)",
-          transform,
-          opacity,
-          zIndex: STACK_VISIBLE - layer,
-          background: "var(--wa-surface)",
-          borderRadius: "var(--wa-card-radius)",
-          // ONE box-shadow value carries the outer ambient shadow (large,
-          // soft, very low opacity — never a hard/dark shadow) AND the
-          // thin inset gold hairline "border". Deliberately not a real
-          // CSS `border` as well: a border + an inset shadow on the same
-          // edge can drift a hair out of alignment while `scale` is
-          // animating, which is what was reading as a stray line across
-          // the card during swipe.
-          boxShadow: isActive
-            ? "0 26px 50px -22px rgba(23, 38, 58, 0.24), inset 0 0 0 1px var(--wa-gold-hairline)"
-            : "0 14px 30px -20px rgba(23, 38, 58, 0.16), inset 0 0 0 1px var(--wa-gold-hairline)",
-          touchAction: isActive ? "pan-y" : undefined,
-          pointerEvents: isActive ? "auto" : "none",
-          ["--wa-enter-offset" as string]: `${enterFromX ?? 0}px`,
-        } as CSSProperties
-      }
+      style={{
+        height: "clamp(230px, 46vh, 340px)",
+        transform,
+        opacity,
+        zIndex: isBehind ? 1 : 2,
+        background: "var(--wa-surface)",
+        borderRadius: "var(--wa-card-radius)",
+        // ONE box-shadow value carries the outer ambient shadow (large,
+        // soft, very low opacity — never a hard/dark shadow) AND the
+        // thin inset gold hairline "border". Deliberately not a real CSS
+        // `border` as well: a border + an inset shadow on the same edge
+        // can drift a hair out of alignment while `scale` is animating,
+        // which is what was reading as a stray line across the card
+        // during a transition.
+        boxShadow: isActive
+          ? "0 26px 50px -22px rgba(23, 38, 58, 0.2), inset 0 0 0 1px var(--wa-gold-hairline)"
+          : "0 14px 30px -20px rgba(23, 38, 58, 0.14), inset 0 0 0 1px var(--wa-gold-hairline)",
+        touchAction: isActive ? "none" : undefined,
+        pointerEvents: isActive ? "auto" : "none",
+      }}
       onPointerDown={isActive ? onPointerDown : undefined}
       onPointerMove={isActive ? onPointerMove : undefined}
       onPointerUp={isActive ? onPointerUp : undefined}
@@ -185,16 +146,7 @@ function DominoTile({
           {typeof item.repeat === "number" && (
             <span
               className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
-              style={
-                // The one deliberate touch of the men's secondary forest-
-                // green accent (spec: "muted forest/deep green accents,
-                // restrained") — women's identity is already green-toned
-                // throughout (--wa-ink itself is sage/olive), so this stays
-                // gold there instead of introducing a second green.
-                isMen
-                  ? { background: "var(--wa-accent-2-soft)", color: "var(--wa-accent-2)" }
-                  : { background: "var(--wa-badge-bg)", color: "var(--wa-ink)" }
-              }
+              style={{ background: "var(--wa-badge-bg)", color: "var(--wa-ink)" }}
             >
               {labels.repeatTimes(item.repeat)}
             </span>
@@ -227,48 +179,41 @@ export function WrittenAdhkarReader({
   const t = writtenAdhkarLabels[language];
   const categoryLabel = writtenAdhkarCategoryLabels[category][language];
   const items = useMemo(() => writtenAdhkarItems[category], [category]);
-  const isMen = theme !== "women";
-  const OrnamentIcon = isMen ? MedallionIcon : SprigIcon;
-
-  // The screen-space dx sign that means "forward/next" — mirrored for
-  // RTL so the gesture feels native either way (matches how RTL-aware
-  // story/carousel UIs mirror their advance direction): in Arabic,
-  // dragging right advances; in English, dragging left advances.
-  const FORWARD_SIGN = dir === "rtl" ? 1 : -1;
-  const NextIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
-  const PrevIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
+  const OrnamentIcon = theme === "women" ? SprigIcon : MedallionIcon;
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [dragX, setDragX] = useState(0);
+  const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
-  const [leaving, setLeaving] = useState<{ item: WrittenAdhkarItem; fromX: number; rotate: number; exitSign: number } | null>(
-    null,
-  );
+  // Only ever populated by advance() — retreat() has no leaving overlay of
+  // its own (see its comment below), so this always exits upward.
+  const [leaving, setLeaving] = useState<{ item: WrittenAdhkarItem; fromY: number } | null>(null);
   const [leavingAnimateOut, setLeavingAnimateOut] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
-  // First-run "swipe" hint — shown once, hidden for good the moment the
-  // user makes any move (drag, button, or keyboard) and never brought back.
+  // First-run "swipe up" hint — shown once, hidden for good the moment
+  // the user makes any move (drag, button, or keyboard) and never
+  // brought back.
   const [hasInteracted, setHasInteracted] = useState(false);
-  // Which tile (by id) just became active via "previous", so it alone gets
-  // the drop-and-fade entrance class for one animation cycle — see
-  // .dithar-domino-tile--entering in index.css.
+  // Which tile (by id) just became active via "previous", so it alone
+  // gets a one-shot entrance animation — see .dithar-domino-tile--entering
+  // in index.css.
   const [enteringId, setEnteringId] = useState<string | null>(null);
 
-  const dragStartXRef = useRef(0);
+  const dragStartYRef = useRef(0);
   const leaveTimeoutRef = useRef<number | null>(null);
   const snapTimeoutRef = useRef<number | null>(null);
 
   const isFirst = currentIndex === 0;
+  const nextItem = items[currentIndex + 1];
 
   // Reset the reader whenever a different category is opened (e.g. user
   // goes back and picks another one) — each category starts fresh.
   useEffect(() => {
     setCurrentIndex(0);
-    setDragX(0);
+    setDragY(0);
     setIsDragging(false);
     setIsSnapping(false);
     setLeaving(null);
@@ -308,14 +253,9 @@ export function WrittenAdhkarReader({
     if (!current) return;
     markInteracted();
 
-    // If this was a live drag release, the card keeps flying off in the
-    // exact direction it was already moving. If it was triggered by the
-    // Next button/keyboard (dragX === 0), it exits toward whichever
-    // screen direction "forward" means for the current language.
-    const exitSign = dragX !== 0 ? Math.sign(dragX) : FORWARD_SIGN;
-    setLeaving({ item: current, fromX: dragX, rotate: tiltForDragX(dragX), exitSign });
+    setLeaving({ item: current, fromY: dragY });
     setLeavingAnimateOut(false);
-    setDragX(0);
+    setDragY(0);
     setIsDragging(false);
     setIsSnapping(false);
 
@@ -329,25 +269,25 @@ export function WrittenAdhkarReader({
     }, LEAVE_MS);
   }
 
-  // Previous — reversed, not a sudden index jump: the outgoing active
-  // tile keeps its DOM identity (same key) and glides back into stack
-  // position 1 via the same shared transition every stacked tile already
-  // uses; the tile becoming active again was off-stack a moment ago, so
-  // it gets a one-shot entrance sliding in from the "backward" side.
+  // Previous — reversed, not a sudden index jump: the tile becoming
+  // active again was off-stack a moment ago (it isn't the single "behind"
+  // tile), so it gets a one-shot entrance dropping down into place from
+  // above, mirroring the direction it would have exited by by had the
+  // user been going forward.
   function retreat() {
     if (leaving || isFirst) return;
     markInteracted();
     const prevIndex = currentIndex - 1;
     setEnteringId(items[prevIndex]?.id ?? null);
     setCurrentIndex(prevIndex);
-    setDragX(0);
+    setDragY(0);
     setIsDragging(false);
     setIsSnapping(false);
   }
 
   function restart() {
     setCurrentIndex(0);
-    setDragX(0);
+    setDragY(0);
     setIsDragging(false);
     setIsSnapping(false);
     setLeaving(null);
@@ -414,240 +354,244 @@ export function WrittenAdhkarReader({
     if (snapTimeoutRef.current !== null) window.clearTimeout(snapTimeoutRef.current);
     setIsSnapping(false);
     setIsDragging(true);
-    dragStartXRef.current = e.clientX;
+    dragStartYRef.current = e.clientY;
     e.currentTarget.setPointerCapture(e.pointerId);
   }
 
   function handlePointerMove(e: ReactPointerEvent<HTMLDivElement>) {
     if (!isDragging) return;
-    // Translation directly follows the pointer — no damping, no clamp.
-    setDragX(e.clientX - dragStartXRef.current);
+    // Translation directly follows the pointer — no damping, no clamp —
+    // in either direction (up toward next, down toward previous).
+    setDragY(e.clientY - dragStartYRef.current);
   }
 
   function handlePointerUp() {
     if (!isDragging) return;
     setIsDragging(false);
-    const forwardDx = dragX * FORWARD_SIGN;
-    if (forwardDx > SWIPE_THRESHOLD) {
+    if (dragY < -SWIPE_THRESHOLD) {
       advance();
-    } else if (forwardDx < -SWIPE_THRESHOLD && !isFirst) {
+    } else if (dragY > SWIPE_THRESHOLD && !isFirst) {
       retreat();
     } else {
       // Released short of the threshold — spring back to center.
       setIsSnapping(true);
-      setDragX(0);
+      setDragY(0);
       snapTimeoutRef.current = window.setTimeout(() => setIsSnapping(false), 340);
     }
   }
 
   // How far "into" the next card's promotion the live drag has gotten —
-  // only meaningful while actively dragging FORWARD (toward the next
-  // card). A backward drag (previewing "previous") doesn't touch the
-  // background stack at all, since the previous item isn't part of it.
-  const forwardDx = dragX * FORWARD_SIGN;
-  const dragProgress = isDragging && forwardDx > 0 ? Math.min(1, forwardDx / SWIPE_THRESHOLD) : 0;
+  // only while actively dragging upward (toward next). A downward drag
+  // (previewing "previous") doesn't touch the behind tile at all, since
+  // the previous item isn't it.
+  const dragProgress = isDragging && dragY < 0 ? Math.min(1, -dragY / SWIPE_THRESHOLD) : 0;
 
-  const visibleStack = items.slice(currentIndex, currentIndex + STACK_VISIBLE);
   const current = items[currentIndex];
   const isCurrentFavorite = current ? favorites.has(current.id) : false;
 
   return (
-    <DeviceFrame background="var(--wa-page-bg)">
+    <DeviceFrame>
       <AppShell>
         <TopBar />
         <div className="dithar-wa-screen-in flex flex-1 flex-col">
-        <BackHeader title={categoryLabel} onBack={onBackToCategories} backLabel={t.back} />
+          <BackHeader title={categoryLabel} onBack={onBackToCategories} backLabel={t.back} />
 
-        {!isComplete && (
-          <>
-            <div className="mt-2 flex flex-col items-center gap-1.5">
-              <p
-                aria-hidden="true"
-                className="text-center text-[15px] font-semibold"
-                style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)", letterSpacing: "0.04em" }}
-              >
-                {t.progressOf(Math.min(currentIndex + 1, items.length), items.length)}
-              </p>
-              <span className="sr-only" aria-live="polite">
-                {t.progressAria(Math.min(currentIndex + 1, items.length), items.length)}
-              </span>
-              <div className="dithar-wa-progress-track w-full max-w-[200px]" aria-hidden="true">
-                <div className="dithar-wa-progress-fill" style={{ width: `${(currentIndex / items.length) * 100}%` }} />
+          {!isComplete && (
+            <>
+              <div className="mt-2 flex flex-col items-center gap-1.5">
+                <p
+                  aria-hidden="true"
+                  className="text-center text-[15px] font-semibold"
+                  style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)", letterSpacing: "0.04em" }}
+                >
+                  {t.progressOf(Math.min(currentIndex + 1, items.length), items.length)}
+                </p>
+                <span className="sr-only" aria-live="polite">
+                  {t.progressAria(Math.min(currentIndex + 1, items.length), items.length)}
+                </span>
+                <div className="dithar-wa-progress-track w-full max-w-[200px]" aria-hidden="true">
+                  <div className="dithar-wa-progress-fill" style={{ width: `${(currentIndex / items.length) * 100}%` }} />
+                </div>
               </div>
-            </div>
 
-            <div className="relative mt-2 flex-1">
-              {visibleStack.map((item, layer) => {
-                const isActive = layer === 0;
-                const eff = isActive ? 0 : Math.max(0, layer - dragProgress);
-                const offsetX = isActive ? dragX : 0;
-                const rotateDeg = isActive ? tiltForDragX(dragX) : 0;
-                const enterFromX = FORWARD_SIGN * -26;
-                return (
+              <div className="relative mt-2 flex-1">
+                {current && (
                   <DominoTile
-                    key={item.id}
-                    item={item}
+                    key={current.id}
+                    item={current}
                     language={language}
                     dir={dir}
                     labels={t}
-                    layer={layer}
-                    transform={stackTransform(eff, offsetX, 0, rotateDeg)}
-                    opacity={isActive ? 1 : opacityAtLayer(eff)}
-                    isActive={isActive}
-                    isDragging={isActive && isDragging}
-                    isSnapping={isActive && isSnapping}
-                    isEntering={isActive && item.id === enteringId}
-                    enterFromX={enterFromX}
+                    isActive
+                    isBehind={false}
+                    transform={`translate(-50%, -50%) translate(0px, ${dragY}px)`}
+                    opacity={1}
+                    isDragging={isDragging}
+                    isSnapping={isSnapping}
+                    isEntering={current.id === enteringId}
                     OrnamentIcon={OrnamentIcon}
-                    isMen={isMen}
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
                     onAnimationEnd={() => setEnteringId(null)}
-                    onOpenDetail={isActive ? () => setShowDetail(true) : undefined}
+                    onOpenDetail={() => setShowDetail(true)}
                   />
-                );
-              })}
+                )}
 
-              {leaving && (
-                <div
-                  className="dithar-domino-tile-leaving pointer-events-none absolute left-1/2 top-1/2"
-                  style={{
-                    zIndex: STACK_VISIBLE + 1,
-                    transform: leavingAnimateOut
-                      ? `translate(-50%, -50%) translate(${leaving.exitSign * EXIT_DISTANCE}px, 0px) rotate(${leaving.rotate * 1.3 + leaving.exitSign * 4}deg) scale(0.96)`
-                      : `translate(-50%, -50%) translate(${leaving.fromX}px, 0px) rotate(${leaving.rotate}deg) scale(1)`,
-                    opacity: leavingAnimateOut ? 0 : 1,
-                    transition: `transform ${LEAVE_MS}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${LEAVE_MS}ms ease`,
-                  }}
-                >
+                {nextItem && (
                   <DominoTile
-                    item={leaving.item}
+                    key={nextItem.id}
+                    item={nextItem}
                     language={language}
                     dir={dir}
                     labels={t}
-                    layer={0}
-                    transform="translate(0, 0)"
-                    opacity={1}
                     isActive={false}
+                    isBehind
+                    transform={`translate(-50%, -50%) translate(0px, ${-BEHIND_OFFSET_Y * (1 - dragProgress)}px) scale(${BEHIND_SCALE + (1 - BEHIND_SCALE) * dragProgress})`}
+                    opacity={BEHIND_OPACITY + (1 - BEHIND_OPACITY) * dragProgress}
                     isDragging={false}
                     OrnamentIcon={OrnamentIcon}
-                    isMen={isMen}
                   />
-                </div>
-              )}
+                )}
 
-              {!hasInteracted && (
-                <div
-                  className="dithar-wa-hint pointer-events-none absolute inset-x-0 bottom-2 flex justify-center"
-                  style={{ zIndex: STACK_VISIBLE + 2 }}
-                  aria-hidden="true"
-                >
-                  <span
-                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium"
-                    style={{ background: "var(--wa-badge-bg)", color: "var(--wa-on-page)" }}
+                {leaving && (
+                  <div
+                    className="dithar-domino-tile-leaving pointer-events-none absolute left-1/2 top-1/2"
+                    style={{
+                      zIndex: 3,
+                      transform: leavingAnimateOut
+                        ? "translate(-50%, -50%) translate(0px, -520px) scale(0.96)"
+                        : `translate(-50%, -50%) translate(0px, ${leaving.fromY}px)`,
+                      opacity: leavingAnimateOut ? 0 : 1,
+                      transition: `transform ${LEAVE_MS}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${LEAVE_MS}ms ease`,
+                    }}
                   >
-                    <ArrowLeftRight size={13} strokeWidth={2} />
-                    {t.swipeHint}
-                  </span>
-                </div>
-              )}
+                    <DominoTile
+                      item={leaving.item}
+                      language={language}
+                      dir={dir}
+                      labels={t}
+                      isActive={false}
+                      isBehind={false}
+                      transform="translate(0, 0)"
+                      opacity={1}
+                      isDragging={false}
+                      OrnamentIcon={OrnamentIcon}
+                    />
+                  </div>
+                )}
+
+                {!hasInteracted && (
+                  <div
+                    className="dithar-wa-hint pointer-events-none absolute inset-x-0 bottom-2 flex justify-center"
+                    style={{ zIndex: 4 }}
+                    aria-hidden="true"
+                  >
+                    <span
+                      className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium"
+                      style={{ background: "var(--wa-badge-bg)", color: "var(--wa-ink)" }}
+                    >
+                      <ArrowUp size={13} strokeWidth={2} />
+                      {t.swipeHint}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-2 flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={retreat}
+                  disabled={isFirst}
+                  aria-label={t.previous}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-[transform,opacity] active:scale-90"
+                  style={{
+                    boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)",
+                    color: "var(--wa-ink-muted)",
+                    opacity: isFirst ? 0.35 : 1,
+                  }}
+                >
+                  <ChevronDown size={18} strokeWidth={1.8} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => current && toggleFavorite(current.id)}
+                  aria-label={isCurrentFavorite ? t.removeFavorite : t.addFavorite}
+                  aria-pressed={isCurrentFavorite}
+                  className="dithar-wa-favorite-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    boxShadow: `inset 0 0 0 1px ${isCurrentFavorite ? "var(--wa-gold)" : "var(--wa-gold-hairline)"}`,
+                    color: isCurrentFavorite ? "var(--wa-gold)" : "var(--wa-ink-muted)",
+                    background: isCurrentFavorite ? "var(--wa-badge-bg)" : "transparent",
+                  }}
+                >
+                  <Heart size={18} strokeWidth={1.8} fill={isCurrentFavorite ? "currentColor" : "none"} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={advance}
+                  aria-label={t.next}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-transform active:scale-90"
+                  style={{ boxShadow: "inset 0 0 0 1.5px var(--wa-gold)", background: "var(--wa-badge-bg)", color: "var(--wa-ink)" }}
+                >
+                  <ChevronUp size={20} strokeWidth={1.8} />
+                </button>
+              </div>
+            </>
+          )}
+
+          {isComplete && (
+            <div className="dithar-wa-complete-in flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center">
+              <span
+                className="dithar-wa-complete-glow flex h-16 w-16 items-center justify-center rounded-full"
+                style={{ background: "var(--wa-badge-bg)", color: "var(--wa-ink)" }}
+              >
+                <Check size={30} strokeWidth={2} />
+              </span>
+              <h2 className="text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
+                {t.completeTitle}
+              </h2>
+              <p className="text-[14px]" style={{ color: "var(--wa-ink-muted)" }}>
+                {t.completeSubtitle(categoryLabel)}
+              </p>
+              <p
+                aria-hidden="true"
+                className="text-[13px] font-semibold"
+                style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)", letterSpacing: "0.04em" }}
+              >
+                {t.progressOf(items.length, items.length)}
+              </p>
+
+              <div className="mt-2 flex w-full max-w-[280px] flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={onBackToCategories}
+                  className="w-full rounded-full py-2.5 text-[14px] font-bold"
+                  style={{ boxShadow: "inset 0 0 0 1.5px var(--wa-gold)", background: "var(--wa-badge-bg)", color: "var(--wa-ink)" }}
+                >
+                  {t.backToWrittenAdhkar}
+                </button>
+                <button
+                  type="button"
+                  onClick={restart}
+                  className="w-full rounded-full py-2.5 text-[14px] font-medium"
+                  style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink)" }}
+                >
+                  {t.restartCategory}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSummary(true)}
+                  className="mt-1 text-[12px] font-medium underline underline-offset-2"
+                  style={{ color: "var(--wa-ink-muted)" }}
+                >
+                  {t.viewSummary}
+                </button>
+              </div>
             </div>
-
-            <div className="mt-2 flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={retreat}
-                disabled={isFirst}
-                aria-label={t.previous}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-[transform,opacity] active:scale-90"
-                style={{
-                  boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)",
-                  color: "var(--wa-on-page-muted)",
-                  opacity: isFirst ? 0.35 : 1,
-                }}
-              >
-                <PrevIcon size={18} strokeWidth={1.8} />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => current && toggleFavorite(current.id)}
-                aria-label={isCurrentFavorite ? t.removeFavorite : t.addFavorite}
-                aria-pressed={isCurrentFavorite}
-                className="dithar-wa-favorite-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-                style={{
-                  boxShadow: `inset 0 0 0 1px ${isCurrentFavorite ? "var(--wa-gold)" : "var(--wa-gold-hairline)"}`,
-                  color: isCurrentFavorite ? "var(--wa-gold)" : "var(--wa-on-page-muted)",
-                  background: isCurrentFavorite ? "var(--wa-badge-bg)" : "transparent",
-                }}
-              >
-                <Heart size={18} strokeWidth={1.8} fill={isCurrentFavorite ? "currentColor" : "none"} />
-              </button>
-
-              <button
-                type="button"
-                onClick={advance}
-                aria-label={t.next}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-transform active:scale-90"
-                style={{ boxShadow: "inset 0 0 0 1.5px var(--wa-gold)", background: "var(--wa-badge-bg)", color: "var(--wa-on-page)" }}
-              >
-                <NextIcon size={20} strokeWidth={1.8} />
-              </button>
-            </div>
-          </>
-        )}
-
-        {isComplete && (
-          <div className="dithar-wa-complete-in flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center">
-            <span
-              className="dithar-wa-complete-glow flex h-16 w-16 items-center justify-center rounded-full"
-              style={{ background: "var(--wa-badge-bg)", color: "var(--wa-on-page)" }}
-            >
-              <Check size={30} strokeWidth={2} />
-            </span>
-            <h2 className="text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--wa-on-page)" }}>
-              {t.completeTitle}
-            </h2>
-            <p className="text-[14px]" style={{ color: "var(--wa-on-page-muted)" }}>
-              {t.completeSubtitle(categoryLabel)}
-            </p>
-            <p
-              aria-hidden="true"
-              className="text-[13px] font-semibold"
-              style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)", letterSpacing: "0.04em" }}
-            >
-              {t.progressOf(items.length, items.length)}
-            </p>
-
-            <div className="mt-2 flex w-full max-w-[280px] flex-col gap-2">
-              <button
-                type="button"
-                onClick={onBackToCategories}
-                className="w-full rounded-full py-2.5 text-[14px] font-bold"
-                style={{ boxShadow: "inset 0 0 0 1.5px var(--wa-gold)", background: "var(--wa-badge-bg)", color: "var(--wa-on-page)" }}
-              >
-                {t.backToWrittenAdhkar}
-              </button>
-              <button
-                type="button"
-                onClick={restart}
-                className="w-full rounded-full py-2.5 text-[14px] font-medium"
-                style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-on-page)" }}
-              >
-                {t.restartCategory}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowSummary(true)}
-                className="mt-1 text-[12px] font-medium underline underline-offset-2"
-                style={{ color: "var(--wa-on-page-muted)" }}
-              >
-                {t.viewSummary}
-              </button>
-            </div>
-          </div>
-        )}
+          )}
         </div>
 
         <BottomNav
