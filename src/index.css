@@ -50,31 +50,20 @@
   /* Written Adhkar — dedicated premium reading identity (men). Deliberately
      separate token namespace (--wa-*) from the Home/Tasbeeh --color-* tokens
      above: this page is allowed its own visual language per spec while
-     staying on the same men/women [data-theme] switch everything else uses.
-     --wa-page-bg is the FULL screen background (edge to edge, applied via
-     DeviceFrame's `background` override — not an inset "box" behind just
-     the cards) — a deep midnight navy for men, giving the ivory --wa-surface
-     card real, deliberate elevation/contrast. The gradient is two very
-     close navy stops (barely perceptible) for "subtle tonal depth", not a
-     decorative pattern. Text/icons sitting directly on that dark page (the
-     header title, progress line, hint pill, control buttons) use
-     --wa-on-page — a warm ivory — since --wa-ink itself stays dark navy for
-     dark-on-the-card text and would be invisible on this dark page.
-     Gold is deliberately muted/"antique", used only as a thin accent; the
-     small forest-green is ONE additional restrained accent (e.g. the
-     repeat-count chip) unique to the men's identity. */
-  --wa-page-bg: linear-gradient(180deg, #0d1f31 0%, #0a1928 100%);
+     staying on the same men/women [data-theme] switch everything else uses,
+     and on the SAME warm-ivory backdrop the rest of the app already uses
+     (no dedicated page background of its own — the reader/category screen
+     just sit on the existing --color-bg, already warm ivory in both
+     themes). --wa-surface is a touch brighter than that for the card's own
+     elevation. Gold is deliberately muted/"antique", used only as a thin
+     accent — never the dominant color. */
   --wa-surface: #fffcf3;
   --wa-ink: #17263a;
   --wa-ink-muted: #6b6558;
-  --wa-on-page: #f2e6cd;
-  --wa-on-page-muted: rgba(242, 230, 205, 0.64);
   --wa-gold: #c49a57;
   --wa-gold-soft: rgba(196, 154, 87, 0.32);
   --wa-gold-hairline: rgba(196, 154, 87, 0.26);
-  --wa-badge-bg: rgba(196, 154, 87, 0.22);
-  --wa-accent-2: #3f5c46;
-  --wa-accent-2-soft: rgba(63, 92, 70, 0.28);
+  --wa-badge-bg: rgba(196, 154, 87, 0.14);
   --wa-card-radius: 24px;
 }
 
@@ -105,24 +94,16 @@
   /* Written Adhkar — dedicated premium reading identity (women). A
      sophisticated sage/muted-olive identity — deliberately NOT a
      pink/mauve palette (avoids the stereotypical-feminine cliché) — paired
-     with soft champagne gold, on a lighter/softer warm-ivory page (unlike
-     the men's dark-navy page) but the SAME card geometry as the men's
-     version so the two read as siblings sharing one product. --wa-on-page
-     equals --wa-ink here (dark-on-light, same page and card brightness) —
-     unlike the men's theme there's no separate dark-page/light-card split
-     to bridge. */
-  --wa-page-bg: #faf5ea;
+     with soft champagne gold, on the same warm-ivory backdrop and card
+     geometry as the men's version so the two read as siblings sharing one
+     product. */
   --wa-surface: #fffefa;
   --wa-ink: #3f4a34;
   --wa-ink-muted: #82806c;
-  --wa-on-page: #3f4a34;
-  --wa-on-page-muted: #82806c;
   --wa-gold: #c9a768;
   --wa-gold-soft: rgba(201, 167, 104, 0.3);
   --wa-gold-hairline: rgba(201, 167, 104, 0.26);
   --wa-badge-bg: rgba(201, 167, 104, 0.16);
-  --wa-accent-2: #6f8a5e;
-  --wa-accent-2-soft: rgba(111, 138, 94, 0.22);
 }
 
 *,
@@ -312,21 +293,20 @@ button {
 }
 
 /* ------------------------------------------------------------------ */
-/* Written Adhkar reading deck — premium card-stack physics.
-   `.dithar-domino-tile` is the transition every stacked tile (not the one
-   currently being dragged) shares: when the active index changes, each
-   background tile simply receives new inline transform/opacity values,
-   and this transition is what turns that instantaneous style change into
-   the tiles visibly gliding forward — no separate JS animation needed.
-   `cubic-bezier(0.22, 1, 0.36, 1)` is a fast, no-overshoot "ease-out"
-   feel (not a spring/bounce) appropriate for state changes the user
-   didn't just physically let go of. While the active tile is being
-   dragged, `--dragging` removes the transition entirely so it tracks the
-   pointer 1:1 with zero lag. */
+/* Written Adhkar reader — deterministic vertical-swipe physics.
+   `.dithar-domino-tile` is the transition the "behind" tile (see
+   WrittenAdhkarReader.tsx) and the active tile settling after a
+   drag/keyboard/button move both share — when currentIndex changes, the
+   tiles simply receive new inline transform/opacity values, and this
+   transition is what turns that instantaneous style change into a smooth
+   glide instead of a jump. `cubic-bezier(0.22, 1, 0.36, 1)` is a fast,
+   no-overshoot "ease-out" (not a spring/bounce). While the active tile is
+   being dragged, `--dragging` removes the transition entirely so it
+   tracks the pointer 1:1 with zero lag. */
 .dithar-domino-tile {
   transition:
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 260ms ease;
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 300ms ease;
 }
 
 .dithar-domino-tile--dragging {
@@ -335,8 +315,8 @@ button {
 
 /* The card the user just released WITHOUT crossing the swipe threshold —
    it should spring back to center, which reads differently from every
-   other transition here (those are settling into a new stacked position;
-   this is un-doing a gesture), hence its own slightly springier curve. */
+   other transition here (those are settling into a new position; this is
+   un-doing a gesture), hence its own slightly springier curve. */
 .dithar-domino-tile--snapping {
   transition:
     transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -344,19 +324,21 @@ button {
 }
 
 /* Tile becoming active again via "previous" (see WrittenAdhkarReader's
-   retreat()) has no prior on-stack position to transition FROM — it just
-   mounted at the active slot. This keyframe substitutes a soft
-   drop-and-fade entrance; only `from` is given, so the browser interpolates
-   to whatever transform/opacity the element already carries inline. */
+   retreat()) has no prior on-screen position to transition FROM — it just
+   mounted at the active slot. This keyframe substitutes a soft drop-in
+   entrance from directly above (mirroring the direction it would leave by
+   were the user going forward); only `from` is given, so the browser
+   interpolates to whatever transform/opacity the element already carries
+   inline. Pure translate/opacity/scale — no rotation, per spec. */
 @keyframes dithar-domino-tile-enter {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) translate(var(--wa-enter-offset, 0px), 0px) rotate(0deg) scale(0.97);
+    transform: translate(-50%, -50%) translate(0px, -22px) scale(0.97);
   }
 }
 
 .dithar-domino-tile--entering {
-  animation: dithar-domino-tile-enter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: dithar-domino-tile-enter 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Thin, subtle progress line for the reader (spec: "avoid excessive UI" —
