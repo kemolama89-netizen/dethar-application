@@ -46,6 +46,36 @@
   --tasbeeh-circle-radius: clamp(76px, 21vw, 90px);
 
   color-scheme: light;
+
+  /* Written Adhkar — dedicated premium reading identity (men). Deliberately
+     separate token namespace (--wa-*) from the Home/Tasbeeh --color-* tokens
+     above: this page is allowed its own visual language per spec while
+     staying on the same men/women [data-theme] switch everything else uses.
+     --wa-page-bg is the FULL screen background (edge to edge, applied via
+     DeviceFrame's `background` override — not an inset "box" behind just
+     the cards) — a deep midnight navy for men, giving the ivory --wa-surface
+     card real, deliberate elevation/contrast. The gradient is two very
+     close navy stops (barely perceptible) for "subtle tonal depth", not a
+     decorative pattern. Text/icons sitting directly on that dark page (the
+     header title, progress line, hint pill, control buttons) use
+     --wa-on-page — a warm ivory — since --wa-ink itself stays dark navy for
+     dark-on-the-card text and would be invisible on this dark page.
+     Gold is deliberately muted/"antique", used only as a thin accent; the
+     small forest-green is ONE additional restrained accent (e.g. the
+     repeat-count chip) unique to the men's identity. */
+  --wa-page-bg: linear-gradient(180deg, #0d1f31 0%, #0a1928 100%);
+  --wa-surface: #fffcf3;
+  --wa-ink: #17263a;
+  --wa-ink-muted: #6b6558;
+  --wa-on-page: #f2e6cd;
+  --wa-on-page-muted: rgba(242, 230, 205, 0.64);
+  --wa-gold: #c49a57;
+  --wa-gold-soft: rgba(196, 154, 87, 0.32);
+  --wa-gold-hairline: rgba(196, 154, 87, 0.26);
+  --wa-badge-bg: rgba(196, 154, 87, 0.22);
+  --wa-accent-2: #3f5c46;
+  --wa-accent-2-soft: rgba(63, 92, 70, 0.28);
+  --wa-card-radius: 24px;
 }
 
 [data-theme="women"] {
@@ -71,6 +101,28 @@
   --color-glass-highlight: rgba(255, 255, 255, 0.78);
   --color-glass-edge: rgba(198, 161, 91, 0.5);
   --color-glass-accent: rgba(91, 110, 78, 0.07);
+
+  /* Written Adhkar — dedicated premium reading identity (women). A
+     sophisticated sage/muted-olive identity — deliberately NOT a
+     pink/mauve palette (avoids the stereotypical-feminine cliché) — paired
+     with soft champagne gold, on a lighter/softer warm-ivory page (unlike
+     the men's dark-navy page) but the SAME card geometry as the men's
+     version so the two read as siblings sharing one product. --wa-on-page
+     equals --wa-ink here (dark-on-light, same page and card brightness) —
+     unlike the men's theme there's no separate dark-page/light-card split
+     to bridge. */
+  --wa-page-bg: #faf5ea;
+  --wa-surface: #fffefa;
+  --wa-ink: #3f4a34;
+  --wa-ink-muted: #82806c;
+  --wa-on-page: #3f4a34;
+  --wa-on-page-muted: #82806c;
+  --wa-gold: #c9a768;
+  --wa-gold-soft: rgba(201, 167, 104, 0.3);
+  --wa-gold-hairline: rgba(201, 167, 104, 0.26);
+  --wa-badge-bg: rgba(201, 167, 104, 0.16);
+  --wa-accent-2: #6f8a5e;
+  --wa-accent-2-soft: rgba(111, 138, 94, 0.22);
 }
 
 *,
@@ -257,4 +309,189 @@ button {
 
 .dithar-confetti--petal {
   border-radius: 60% 40% 65% 35% / 55% 35% 65% 45%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Written Adhkar reading deck — premium card-stack physics.
+   `.dithar-domino-tile` is the transition every stacked tile (not the one
+   currently being dragged) shares: when the active index changes, each
+   background tile simply receives new inline transform/opacity values,
+   and this transition is what turns that instantaneous style change into
+   the tiles visibly gliding forward — no separate JS animation needed.
+   `cubic-bezier(0.22, 1, 0.36, 1)` is a fast, no-overshoot "ease-out"
+   feel (not a spring/bounce) appropriate for state changes the user
+   didn't just physically let go of. While the active tile is being
+   dragged, `--dragging` removes the transition entirely so it tracks the
+   pointer 1:1 with zero lag. */
+.dithar-domino-tile {
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 260ms ease;
+}
+
+.dithar-domino-tile--dragging {
+  transition: none;
+}
+
+/* The card the user just released WITHOUT crossing the swipe threshold —
+   it should spring back to center, which reads differently from every
+   other transition here (those are settling into a new stacked position;
+   this is un-doing a gesture), hence its own slightly springier curve. */
+.dithar-domino-tile--snapping {
+  transition:
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 320ms ease;
+}
+
+/* Tile becoming active again via "previous" (see WrittenAdhkarReader's
+   retreat()) has no prior on-stack position to transition FROM — it just
+   mounted at the active slot. This keyframe substitutes a soft
+   drop-and-fade entrance; only `from` is given, so the browser interpolates
+   to whatever transform/opacity the element already carries inline. */
+@keyframes dithar-domino-tile-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--wa-enter-offset, 0px), 0px) rotate(0deg) scale(0.97);
+  }
+}
+
+.dithar-domino-tile--entering {
+  animation: dithar-domino-tile-enter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Thin, subtle progress line for the reader (spec: "avoid excessive UI" —
+   this plus the small "n / total" text is deliberately the entire progress
+   affordance, no stepped dots or chunky bar). Width is driven inline by
+   currentIndex; the transition here is what makes that change glide rather
+   than jump. */
+.dithar-wa-progress-track {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--wa-gold-hairline);
+  overflow: hidden;
+}
+
+.dithar-wa-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--wa-gold);
+  transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* First-run "swipe" hint pill — appears once, a beat after the deck
+   mounts, and is unmounted for good (not just hidden) the moment the user
+   makes any move. pointer-events:none on the wrapper (see the reader) so
+   it can never intercept the drag gesture it's advertising. */
+@keyframes dithar-wa-hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.dithar-wa-hint > span {
+  animation: dithar-wa-hint-in 500ms ease 350ms both;
+}
+
+/* Bottom-sheet entrance (Detail sheet + Summary sheet) — a short
+   slide-up/fade so the sheet doesn't just snap into existence. */
+@keyframes dithar-wa-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.dithar-wa-sheet-in {
+  animation: dithar-wa-sheet-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Completion state — a calm, non-celebratory entrance (fade + tiny rise)
+   plus a soft static gold ring behind the checkmark badge. No confetti,
+   no bounce, per spec. */
+@keyframes dithar-wa-complete-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.dithar-wa-complete-in {
+  animation: dithar-wa-complete-in 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dithar-wa-complete-glow {
+  box-shadow: 0 0 0 8px var(--wa-gold-soft);
+}
+
+.dithar-wa-favorite-btn,
+.dithar-wa-favorite-btn svg {
+  transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dithar-wa-favorite-btn:active svg {
+  transform: scale(0.82);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dithar-domino-tile,
+  .dithar-domino-tile--snapping,
+  .dithar-domino-tile-leaving,
+  .dithar-wa-progress-fill {
+    transition-duration: 120ms !important;
+  }
+
+  .dithar-domino-tile--entering,
+  .dithar-wa-hint > span,
+  .dithar-wa-sheet-in,
+  .dithar-wa-complete-in {
+    animation-duration: 120ms !important;
+  }
+}
+
+/* Category grid -> reading deck transition. WrittenAdhkarScreen briefly
+   holds the tapped card in a "selecting" state before actually navigating
+   (see its onSelectCategory handler): the tapped card grows slightly and
+   brightens toward the user, the other three recede/fade, then navigation
+   happens once this finishes — giving the "selected card expands into the
+   reading experience" continuity the spec asks for without a fragile
+   cross-route shared-element morph. */
+.dithar-wa-category-card {
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dithar-wa-category-card--selected {
+  transform: scale(1.045);
+}
+
+.dithar-wa-category-card--receding {
+  transform: scale(0.94);
+  opacity: 0.35;
+}
+
+/* Mount-in entrance for a freshly-opened Written Adhkar screen — a subtle
+   fade + slight rise, standing in for the "app-level transition between
+   sections" the spec asks for (Home/Tasbeeh are explicitly out of scope
+   for this session, so only Written Adhkar's own screens carry it). */
+@keyframes dithar-wa-screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.dithar-wa-screen-in {
+  animation: dithar-wa-screen-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dithar-wa-category-card {
+    transition-duration: 120ms;
+  }
+
+  .dithar-wa-screen-in {
+    animation-duration: 120ms;
+  }
 }

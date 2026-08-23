@@ -96,6 +96,82 @@ export function LanternOutlineIcon({ size = 22, className, style }: IconProps) {
   );
 }
 
+// Written Adhkar category icons — same bespoke line-art style as the
+// icons above (24x24 viewBox, currentColor stroke, matching weight/caps),
+// added for the four Written Adhkar category cards. Morning/Evening have
+// no existing icon in this file to reuse; Prayer and Miscellaneous reuse
+// MosqueDomeIcon and SprigIcon above unmodified.
+export function SunriseIcon({ size = 22, className, style }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      style={style}
+    >
+      <path d="M12 3v3.5" />
+      <path d="M4.5 11h-2" />
+      <path d="M21.5 11h-2" />
+      <path d="M6.3 6.3l1.4 1.4" />
+      <path d="M17.7 6.3l-1.4 1.4" />
+      <path d="M7 15a5 5 0 0 1 10 0" />
+      <path d="M2.5 15h19" />
+      <path d="M2.5 18.5h19" />
+    </svg>
+  );
+}
+
+export function CrescentStarIcon({ size = 22, className, style }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      style={style}
+    >
+      <path d="M14.5 3.5a8 8 0 1 0 6 8.4c-.4.1-.8.1-1.3.1a7 7 0 0 1-7-7c0-.5.1-1 .2-1.5Z" />
+      <path d="M18.5 4.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6Z" />
+    </svg>
+  );
+}
+
+// Small top-of-card ornament for the Written Adhkar reading card (men's
+// theme) — a restrained 8-point geometric star/medallion, the same
+// line-art style as the icons above. Women's theme reuses SprigIcon
+// instead (see WrittenAdhkarReader), giving each identity its own
+// ornament rather than sharing one symbol recolored.
+export function MedallionIcon({ size = 18, className, style }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.3}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      style={style}
+    >
+      <path d="M12 2.5 14 8l5.5-2-2 5.5L23 12l-5.5 1.5 2 5.5-5.5-2L12 21.5 10 17l-5.5 2 2-5.5L1 12l5.5-1.5-2-5.5L10 8Z" />
+      <circle cx="12" cy="12" r="2.4" />
+    </svg>
+  );
+}
+
 export function TasbihBeadsIcon({ size = 20, className }: IconProps) {
   return (
     <svg

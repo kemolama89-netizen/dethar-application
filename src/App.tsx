@@ -10,9 +10,12 @@ import { PrayerTimesPanel } from "./components/PrayerTimesPanel";
 import { BottomNav } from "./components/BottomNav";
 import { ContentModal } from "./components/ContentModal";
 import { TasbeehScreen } from "./components/TasbeehScreen";
+import { WrittenAdhkarScreen } from "./components/WrittenAdhkarScreen";
+import { WrittenAdhkarReader } from "./components/WrittenAdhkarReader";
 import { BookOpen } from "lucide-react";
 import { MosqueDomeIcon } from "./icons/CustomIcons";
 import { labels, insightCardContent, hadithCardContent } from "./data/content";
+import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 
 // The Featured Hadith under the logo is never previewed/clamped — it has
 // no modal state here. "Read more" remains only for the two content cards.
@@ -22,10 +25,17 @@ type OpenCard = "quran" | "hadith" | null;
 // InsightCard/PrayerTimesPanel/BottomNav stay simple/localization-agnostic,
 // they just render whatever strings they're given.
 //
-// `onNavigateToTasbeeh` is the one addition needed to make BottomNav's
-// السبحة/Tasbeeh item actually navigate — everything else in this
-// function is unchanged from the approved Home Screen.
-function HomeScreen({ onNavigateToTasbeeh }: { onNavigateToTasbeeh: () => void }) {
+// `onNavigateToTasbeeh`/`onNavigateToWritten` are the only additions
+// needed to make BottomNav's السبحة/Tasbeeh and الأذكار المكتوبة/Written
+// Adhkar items actually navigate — everything else in this function is
+// unchanged from the approved Home Screen.
+function HomeScreen({
+  onNavigateToTasbeeh,
+  onNavigateToWritten,
+}: {
+  onNavigateToTasbeeh: () => void;
+  onNavigateToWritten: () => void;
+}) {
   const { language } = useLanguage();
   const t = labels[language];
   const insight = insightCardContent[language];
@@ -70,6 +80,7 @@ function HomeScreen({ onNavigateToTasbeeh }: { onNavigateToTasbeeh: () => void }
           className="mt-1"
           onSelect={(key) => {
             if (key === "tasbih") onNavigateToTasbeeh();
+            if (key === "written") onNavigateToWritten();
           }}
         />
       </AppShell>
@@ -98,19 +109,51 @@ function HomeScreen({ onNavigateToTasbeeh }: { onNavigateToTasbeeh: () => void }
   );
 }
 
-type Screen = "home" | "tasbeeh";
+type Screen = "home" | "tasbeeh" | "written" | "written-reader";
 
-// Minimal in-memory screen switcher — no router dependency added. Neither
+// Minimal in-memory screen switcher — no router dependency added. No
 // screen persists its state across a switch (matching how theme/language
-// already don't persist across a reload): navigating to Tasbeeh and back
-// unmounts/remounts, so the counter resets to 0 each visit.
+// already don't persist across a reload): navigating away and back
+// unmounts/remounts, so e.g. the Tasbeeh counter or the domino reader's
+// progress resets each visit.
+//
+// `writtenCategory` is the one extra piece of navigation state the
+// Written Adhkar flow needs (Home -> Written Adhkar -> Category ->
+// Reader) — which category the reader should open. It's set right before
+// switching to "written-reader" and simply left as-is when navigating
+// back to "written" (the category list doesn't read it).
 function AppRouter() {
   const [screen, setScreen] = useState<Screen>("home");
+  const [writtenCategory, setWrittenCategory] = useState<WrittenAdhkarCategoryKey>("morning");
 
   if (screen === "tasbeeh") {
-    return <TasbeehScreen onNavigateHome={() => setScreen("home")} />;
+    return <TasbeehScreen onNavigateHome={() => setScreen("home")} onNavigateToWritten={() => setScreen("written")} />;
   }
-  return <HomeScreen onNavigateToTasbeeh={() => setScreen("tasbeeh")} />;
+  if (screen === "written") {
+    return (
+      <WrittenAdhkarScreen
+        onNavigateHome={() => setScreen("home")}
+        onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+        onSelectCategory={(key) => {
+          setWrittenCategory(key);
+          setScreen("written-reader");
+        }}
+      />
+    );
+  }
+  if (screen === "written-reader") {
+    return (
+      <WrittenAdhkarReader
+        category={writtenCategory}
+        onNavigateHome={() => setScreen("home")}
+        onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+        onBackToCategories={() => setScreen("written")}
+      />
+    );
+  }
+  return (
+    <HomeScreen onNavigateToTasbeeh={() => setScreen("tasbeeh")} onNavigateToWritten={() => setScreen("written")} />
+  );
 }
 
 export default function App() {
