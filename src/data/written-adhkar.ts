@@ -49,7 +49,7 @@ export const writtenAdhkarCategoryLabels: Record<WrittenAdhkarCategoryKey, { ar:
   morning: { ar: "أذكار الصباح", en: "Morning Adhkar" },
   evening: { ar: "أذكار المساء", en: "Evening Adhkar" },
   prayer: { ar: "أذكار الصلاة", en: "Prayer Adhkar" },
-  misc: { ar: "أذكار متنوعة", en: "Miscellaneous Adhkar" },
+  misc: { ar: "أذكار وأدعية متفرقة", en: "Various Adhkar & Duas" },
 };
 
 // UI strings for the Written Adhkar screens — ordinary interface
@@ -61,52 +61,45 @@ export const writtenAdhkarLabels = {
     back: "رجوع",
     chooseCategory: "اختر وردك",
     source: "المصدر",
-    next: "التالي",
-    previous: "السابق",
     itemsCount: (n: number) => `${n} أذكار`,
-    // Zero-padded ("03 / 24") — the visual/decorative progress numeral.
-    progressOf: (current: number, total: number) => `${String(current).padStart(2, "0")} / ${String(total).padStart(2, "0")}`,
-    // Plain sentence for aria-live/screen readers, kept separate from the
-    // zero-padded display string above so assistive tech hears "3", not "zero three".
+    // Header subtitle above the journey progress line.
+    dailyWird: "وردك اليومي",
+    // Zero-padded ("٠٣ من ٠٨") — which dhikr the user is currently on.
+    journeyProgress: (current: number, total: number) => `${String(current).padStart(2, "0")} من ${String(total).padStart(2, "0")}`,
+    // Plain sentence for aria-live/screen readers.
     progressAria: (current: number, total: number) => `الذكر ${current} من ${total}`,
     repeatTimes: (n: number) => (n === 1 ? "مرة واحدة" : `${n} مرات`),
-    swipeHint: "اسحب للأعلى للمتابعة",
-    details: "التفاصيل",
-    closeDetails: "إغلاق التفاصيل",
-    addFavorite: "إضافة إلى المفضلة",
-    removeFavorite: "إزالة من المفضلة",
-    completeTitle: "تم إتمام الورد",
-    completeSubtitle: (categoryAr: string) => `لقد أتممت ${categoryAr}`,
-    viewSummary: "عرض الملخص",
-    restartCategory: "إعادة المجموعة",
+    // Small "of N" caption inside the repetition ring (e.g. "٢" over "من ٣").
+    ofTarget: (n: number) => `من ${n}`,
+    tapToIncrement: "اضغط لزيادة العدد",
+    tapToConfirm: "اضغط للتأكيد",
+    dhikrDone: "تم",
+    journeyCompleteTitle: "أتممت وردك",
+    // A short, standalone dua shown beneath the completion title — exact
+    // wording as specified, not a virtue/merit claim.
+    journeyCompleteDua: "تقبّل الله ذكرك",
+    journeyCompleteSubtitle: (categoryAr: string) => `أتممت ${categoryAr} بحمد الله`,
+    restartCategory: "إعادة الأذكار",
     backToWrittenAdhkar: "العودة إلى المجموعات",
-    summaryTitle: "الملخص",
-    summaryCount: (n: number) => `أتممت ${n} من الأذكار`,
-    closeSummary: "إغلاق",
   },
   en: {
     back: "Back",
     chooseCategory: "Choose your wird",
     source: "Source",
-    next: "Next",
-    previous: "Previous",
     itemsCount: (n: number) => `${n} adhkar`,
-    progressOf: (current: number, total: number) => `${String(current).padStart(2, "0")} / ${String(total).padStart(2, "0")}`,
+    dailyWird: "Your daily wird",
+    journeyProgress: (current: number, total: number) => `${String(current).padStart(2, "0")} of ${String(total).padStart(2, "0")}`,
     progressAria: (current: number, total: number) => `Dhikr ${current} of ${total}`,
     repeatTimes: (n: number) => `${n} time${n === 1 ? "" : "s"}`,
-    swipeHint: "Swipe up to continue",
-    details: "Details",
-    closeDetails: "Close details",
-    addFavorite: "Add to favorites",
-    removeFavorite: "Remove from favorites",
-    completeTitle: "Your Wird is Complete",
-    completeSubtitle: (categoryEn: string) => `You have completed ${categoryEn}`,
-    viewSummary: "View Summary",
-    restartCategory: "Restart category",
+    ofTarget: (n: number) => `of ${n}`,
+    tapToIncrement: "Tap to count",
+    tapToConfirm: "Tap to confirm",
+    dhikrDone: "Done",
+    journeyCompleteTitle: "You have completed your wird",
+    journeyCompleteDua: "May Allah accept your remembrance",
+    journeyCompleteSubtitle: (categoryEn: string) => `You have completed ${categoryEn}, alhamdulillah`,
+    restartCategory: "Repeat these Adhkar",
     backToWrittenAdhkar: "Back to Categories",
-    summaryTitle: "Summary",
-    summaryCount: (n: number) => `Completed ${n} adhkar`,
-    closeSummary: "Close",
   },
 };
 

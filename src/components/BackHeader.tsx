@@ -6,7 +6,9 @@ import { useLanguage } from "../theme/LanguageContext";
 // tap away via Bottom Navigation, so a second one there would just be
 // redundant chrome). Its own dedicated --wa-* tokens throughout, not the
 // global --color-* ones, since this component isn't shared with
-// Home/Tasbeeh.
+// Home/Tasbeeh. The title sits directly on the reader's page background
+// (--wa-page-bg, dark for men) so it uses --wa-on-page rather than
+// --wa-ink, which stays dark for text drawn on the light page surface.
 export function BackHeader({ title, onBack, backLabel }: { title: string; onBack: () => void; backLabel: string }) {
   const { dir } = useLanguage();
   const Icon = dir === "rtl" ? ChevronRight : ChevronLeft;
@@ -26,7 +28,7 @@ export function BackHeader({ title, onBack, backLabel }: { title: string; onBack
       >
         <Icon size={18} strokeWidth={1.8} />
       </button>
-      <h1 className="min-w-0 flex-1 truncate text-center text-[17px] font-bold" style={{ color: "var(--wa-ink)" }}>
+      <h1 className="min-w-0 flex-1 truncate text-center text-[17px] font-bold" style={{ color: "var(--wa-on-page)" }}>
         {title}
       </h1>
       <div className="h-9 w-9 shrink-0" aria-hidden="true" />

@@ -18,14 +18,16 @@ import { useTheme } from "../theme/ThemeContext";
 //   below it (featured hadith, both cards, prayer panel, bottom nav) —
 //   never moves.
 //
-// DISPLAY uses the SAME `21vw` coefficient as BUDGET, offset by a constant
-// `calc(... + 15px)`: because both share breakpoints and slope, the gap
-// between them is EXACTLY 15px at every width, not just at a few sampled
-// widths — leaving exactly 3px of LogoHeader's 18px top margin as a
-// consistent breathing gap below the frame's inner border, at every phone
-// size, never touching or crossing it.
+// DISPLAY is exactly 1.2x the prior DISPLAY clamp at every width (93->111.6,
+// 115->138, and the shared 21vw coefficient scaled to 25.2vw + 18px) — a
+// uniform ~20% size increase. Because the marginTop formula below always
+// nets out to exactly BUDGET regardless of DISPLAY's value (DISPLAY +
+// marginTop = BUDGET, algebraically), growing DISPLAY only ever extends the
+// image upward from its already-anchored bottom edge — it can never add
+// flow height. That's also what supplies the requested "move it up" as a
+// pure side effect of the size increase, with no separate offset needed.
 const BUDGET = "clamp(78px,21vw,100px)";
-const DISPLAY = "clamp(93px,calc(21vw + 15px),115px)";
+const DISPLAY = "clamp(111.6px,calc(25.2vw + 18px),138px)";
 
 export function BrandLogo() {
   const { logoSrc, theme } = useTheme();

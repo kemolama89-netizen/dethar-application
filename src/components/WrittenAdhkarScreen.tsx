@@ -4,7 +4,6 @@ import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { WrittenAdhkarCategoryCard } from "./WrittenAdhkarCategoryCard";
-import { SunriseIllustration, EveningIllustration, MihrabIllustration, BranchIllustration } from "../icons/WrittenAdhkarIllustrations";
 import { useLanguage } from "../theme/LanguageContext";
 import { navLabels } from "../data/content";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels, writtenAdhkarItems } from "../data/written-adhkar";
@@ -21,13 +20,6 @@ interface WrittenAdhkarScreenProps {
 // grows, the rest recede" animation actually gets to play before the
 // screen switches, instead of being cut off mid-motion.
 const SELECT_TRANSITION_MS = 320;
-
-const CATEGORY_ILLUSTRATIONS: Record<WrittenAdhkarCategoryKey, typeof SunriseIllustration> = {
-  morning: SunriseIllustration,
-  evening: EveningIllustration,
-  prayer: MihrabIllustration,
-  misc: BranchIllustration,
-};
 
 const CATEGORY_ORDER: WrittenAdhkarCategoryKey[] = ["morning", "evening", "prayer", "misc"];
 
@@ -56,10 +48,10 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onSel
   }
 
   return (
-    <DeviceFrame>
+    <DeviceFrame background="var(--wa-category-bg)">
       <AppShell>
         <TopBar />
-        <div className="dithar-wa-screen-in flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col">
           <h1
             className="mt-2 text-center text-[20px] font-bold"
             style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
@@ -70,9 +62,13 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onSel
             {t.chooseCategory}
           </p>
 
-          <div className="mt-3 grid flex-1 grid-cols-2 content-start gap-3">
+          {/* grid-rows-2 (not content-start) so the two rows stretch to
+              fill this flex-1 container's full height — matches "eliminate
+              the empty space below the four cards": with content-start,
+              each row only took its natural content height, leaving the
+              rest of the available screen area blank beneath the grid. */}
+          <div className="mt-3 grid flex-1 grid-cols-2 grid-rows-2 gap-3">
             {CATEGORY_ORDER.map((key) => {
-              const Illustration = CATEGORY_ILLUSTRATIONS[key];
               const label = writtenAdhkarCategoryLabels[key][language];
               const count = writtenAdhkarItems[key].length;
               const cardStateClass = !selectingKey
@@ -84,7 +80,7 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onSel
               return (
                 <WrittenAdhkarCategoryCard
                   key={key}
-                  Illustration={Illustration}
+                  category={key}
                   label={label}
                   itemsCountLabel={t.itemsCount(count)}
                   cardStateClass={cardStateClass}
