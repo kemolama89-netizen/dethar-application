@@ -50,21 +50,38 @@
   /* Written Adhkar — dedicated premium reading identity (men). Deliberately
      separate token namespace (--wa-*) from the Home/Tasbeeh --color-* tokens
      above: this page is allowed its own visual language per spec while
-     staying on the same men/women [data-theme] switch everything else uses,
-     and on the SAME warm-ivory backdrop the rest of the app already uses
-     (no dedicated page background of its own — the reader/category screen
-     just sit on the existing --color-bg, already warm ivory in both
-     themes). --wa-surface is a touch brighter than that for the card's own
-     elevation. Gold is deliberately muted/"antique", used only as a thin
-     accent — never the dominant color. */
+     staying on the same men/women [data-theme] switch everything else uses.
+     --wa-page-bg is the FULL screen background (edge to edge, via
+     DeviceFrame's `background` override — never an inset "box" behind just
+     the cards/pages) — a deep midnight navy for men, giving the ivory
+     --wa-surface page real, deliberate elevation. The gradient is two very
+     close navy stops (barely perceptible) for "subtle tonal depth", not a
+     decorative pattern. Text/icons sitting directly on that dark page (the
+     header title, progress line, hint pill, control buttons) use
+     --wa-on-page — a warm ivory — since --wa-ink itself stays dark navy for
+     text drawn on the light page surface and would be invisible here.
+     Gold is deliberately muted/"antique", used only as a thin accent. */
+  --wa-page-bg: linear-gradient(180deg, #0d1f31 0%, #0a1928 100%);
   --wa-surface: #fffcf3;
   --wa-ink: #17263a;
   --wa-ink-muted: #6b6558;
+  --wa-on-page: #f2e6cd;
+  --wa-on-page-muted: rgba(242, 230, 205, 0.64);
   --wa-gold: #c49a57;
   --wa-gold-soft: rgba(196, 154, 87, 0.32);
   --wa-gold-hairline: rgba(196, 154, 87, 0.26);
-  --wa-badge-bg: rgba(196, 154, 87, 0.14);
+  --wa-badge-bg: rgba(196, 154, 87, 0.22);
   --wa-card-radius: 24px;
+
+  /* Written Adhkar CATEGORY GRID screen only — deliberately its own
+     token, not --wa-page-bg: the reader keeps the deep-navy men's
+     identity, but the category grid's own background must be a light
+     warm ivory in BOTH themes ("do NOT return to the old heavy blue
+     background" — this screen specifically). Title/subtitle text on this
+     screen therefore reuses --wa-ink/--wa-ink-muted (already the
+     correct dark-on-light pairing) instead of --wa-on-page/-muted, which
+     stay reserved for text drawn on the reader's dark page. */
+  --wa-category-bg: linear-gradient(180deg, #faf8f2 0%, #f5f2ea 100%);
 }
 
 [data-theme="women"] {
@@ -94,16 +111,26 @@
   /* Written Adhkar — dedicated premium reading identity (women). A
      sophisticated sage/muted-olive identity — deliberately NOT a
      pink/mauve palette (avoids the stereotypical-feminine cliché) — paired
-     with soft champagne gold, on the same warm-ivory backdrop and card
-     geometry as the men's version so the two read as siblings sharing one
-     product. */
+     with soft champagne gold, on the same card geometry as the men's
+     version so the two read as siblings. --wa-page-bg is a warm-ivory
+     page with the faintest sage cast (two very close stops, same "barely
+     perceptible tonal depth" treatment as the men's navy) rather than the
+     flat neutral ivory Home/Tasbeeh use elsewhere — an "atmosphere", not
+     a saturated background. --wa-on-page equals --wa-ink here (dark text
+     on a light page) — unlike the men's theme there's no dark-page/
+     light-surface gap to bridge. */
+  --wa-page-bg: linear-gradient(180deg, #f7f3e7 0%, #f1ece0 100%);
   --wa-surface: #fffefa;
   --wa-ink: #3f4a34;
   --wa-ink-muted: #82806c;
+  --wa-on-page: #3f4a34;
+  --wa-on-page-muted: #82806c;
   --wa-gold: #c9a768;
   --wa-gold-soft: rgba(201, 167, 104, 0.3);
   --wa-gold-hairline: rgba(201, 167, 104, 0.26);
   --wa-badge-bg: rgba(201, 167, 104, 0.16);
+
+  --wa-category-bg: linear-gradient(180deg, #faf8f2 0%, #f5f2ea 100%);
 }
 
 *,
@@ -293,104 +320,17 @@ button {
 }
 
 /* ------------------------------------------------------------------ */
-/* Written Adhkar reader — deterministic vertical-swipe physics.
-   `.dithar-domino-tile` is the transition the "behind" tile (see
-   WrittenAdhkarReader.tsx) and the active tile settling after a
-   drag/keyboard/button move both share — when currentIndex changes, the
-   tiles simply receive new inline transform/opacity values, and this
-   transition is what turns that instantaneous style change into a smooth
-   glide instead of a jump. `cubic-bezier(0.22, 1, 0.36, 1)` is a fast,
-   no-overshoot "ease-out" (not a spring/bounce). While the active tile is
-   being dragged, `--dragging` removes the transition entirely so it
-   tracks the pointer 1:1 with zero lag. */
-.dithar-domino-tile {
-  transition:
-    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 300ms ease;
-}
-
-.dithar-domino-tile--dragging {
-  transition: none;
-}
-
-/* The card the user just released WITHOUT crossing the swipe threshold —
-   it should spring back to center, which reads differently from every
-   other transition here (those are settling into a new position; this is
-   un-doing a gesture), hence its own slightly springier curve. */
-.dithar-domino-tile--snapping {
-  transition:
-    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity 320ms ease;
-}
-
-/* Tile becoming active again via "previous" (see WrittenAdhkarReader's
-   retreat()) has no prior on-screen position to transition FROM — it just
-   mounted at the active slot. This keyframe substitutes a soft drop-in
-   entrance from directly above (mirroring the direction it would leave by
-   were the user going forward); only `from` is given, so the browser
-   interpolates to whatever transform/opacity the element already carries
-   inline. Pure translate/opacity/scale — no rotation, per spec. */
-@keyframes dithar-domino-tile-enter {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) translate(0px, -22px) scale(0.97);
-  }
-}
-
-.dithar-domino-tile--entering {
-  animation: dithar-domino-tile-enter 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* Thin, subtle progress line for the reader (spec: "avoid excessive UI" —
-   this plus the small "n / total" text is deliberately the entire progress
-   affordance, no stepped dots or chunky bar). Width is driven inline by
-   currentIndex; the transition here is what makes that change glide rather
-   than jump. */
-.dithar-wa-progress-track {
-  height: 3px;
-  border-radius: 999px;
-  background: var(--wa-gold-hairline);
-  overflow: hidden;
-}
-
-.dithar-wa-progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--wa-gold);
-  transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* First-run "swipe" hint pill — appears once, a beat after the deck
-   mounts, and is unmounted for good (not just hidden) the moment the user
-   makes any move. pointer-events:none on the wrapper (see the reader) so
-   it can never intercept the drag gesture it's advertising. */
-@keyframes dithar-wa-hint-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-}
-
-.dithar-wa-hint > span {
-  animation: dithar-wa-hint-in 500ms ease 350ms both;
-}
-
-/* Bottom-sheet entrance (Detail sheet + Summary sheet) — a short
-   slide-up/fade so the sheet doesn't just snap into existence. */
-@keyframes dithar-wa-sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-}
-
-.dithar-wa-sheet-in {
-  animation: dithar-wa-sheet-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
-}
+/* Written Adhkar reader — vertical "journey" reading experience.       */
+/* Most transitions live as Tailwind utility classes directly in        */
+/* WrittenAdhkarReader.tsx (transition-*, duration-*, motion-reduce:*); */
+/* only what Tailwind can't express as a utility lives here.            */
+/* ------------------------------------------------------------------ */
 
 /* Completion state — a calm, non-celebratory entrance (fade + tiny rise)
    plus a soft static gold ring behind the checkmark badge. No confetti,
-   no bounce, per spec. */
+   no bounce, per spec. Reused for both the end-of-reader completion panel
+   and (elsewhere) any other "calmly arrived" state that wants the same
+   entrance. */
 @keyframes dithar-wa-complete-in {
   from {
     opacity: 0;
@@ -406,28 +346,177 @@ button {
   box-shadow: 0 0 0 8px var(--wa-gold-soft);
 }
 
-.dithar-wa-favorite-btn,
-.dithar-wa-favorite-btn svg {
-  transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Journey node (the small numbered circle beside each Dhikr card) —
+   background/color/box-shadow all change together between upcoming ->
+   active -> completed; Tailwind's transition-colors utility alone doesn't
+   cover box-shadow, so this is a plain CSS rule instead of a utility. */
+.dithar-wa-node {
+  transition:
+    background-color 320ms ease,
+    color 320ms ease,
+    box-shadow 320ms ease;
 }
 
-.dithar-wa-favorite-btn:active svg {
-  transform: scale(0.82);
+/* Dhikr card — box-shadow (elevation) change between the active card and
+   the rest; same "Tailwind utilities don't cover box-shadow" reason. */
+.dithar-wa-dhikr-card {
+  transition: box-shadow 320ms ease;
+}
+
+/* Repetition ring progress arc — smooth fill on every tap. */
+.dithar-wa-ring-progress {
+  transition: stroke-dashoffset 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Ring tap target — restrained press feedback only, no bounce. */
+.dithar-wa-ring-btn {
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dithar-wa-ring-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+/* Per-card watermark (approved category artwork, clipped to the card,
+   opacity only — see AdhkarWatermark in WrittenAdhkarReader.tsx). Static
+   during ordinary reading; only the completion celebration animates it. */
+.dithar-wa-watermark {
+  transition: opacity 900ms ease;
+}
+
+/* ---- Completion celebration — plays ONCE when the journey finishes ---- */
+
+/* Watermark rising from its resting ~6% to a still-subtle ~20-22% peak,
+   then settling back down afterward (that settle is the plain `opacity`
+   transition above, triggered by a class change once the timer in
+   AdhkarCompletionCelebration flips phase -> "settled"). */
+@keyframes dithar-adhkar-watermark-rise {
+  from {
+    opacity: var(--wm-start, 0.06);
+  }
+  to {
+    opacity: var(--wm-peak, 0.22);
+  }
+}
+
+.dithar-adhkar-watermark--rising {
+  animation: dithar-adhkar-watermark-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Soft warm glow behind the artwork — appears once, holds briefly, fades
+   away entirely (never loops, never stays lit). */
+@keyframes dithar-adhkar-glow {
+  0% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.4;
+  }
+  70% {
+    opacity: 0.24;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.dithar-adhkar-glow {
+  animation: dithar-adhkar-glow 1700ms ease-in-out both;
+}
+
+/* The ONE breathing pulse — brighter, gently expands, returns to rest.
+   `animation-delay` starts it a beat after the glow begins appearing, so
+   the breath reads as caused by the light rather than simultaneous with it. */
+@keyframes dithar-adhkar-breathe {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.015);
+    filter: brightness(1.08);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.dithar-adhkar-breathe {
+  animation: dithar-adhkar-breathe 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 250ms;
+}
+
+/* A handful (6-12) of tiny warm-light points drifting a short, soft
+   distance outward from the artwork and fading — deliberately NOT the
+   Tasbeeh screen's confetti-burst system (that's a louder, more numerous
+   effect appropriate to a counter "target reached" moment); this is
+   fewer, smaller, and quieter, per spec ("few subtle light particles",
+   never confetti/fireworks). Position/reach is set per-particle via
+   --px/--py custom properties in WrittenAdhkarReader.tsx. */
+@keyframes dithar-adhkar-particle {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(0, 0) scale(0.5);
+  }
+  25% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--px), var(--py)) scale(1);
+  }
+}
+
+.dithar-adhkar-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--wa-gold);
+  box-shadow: 0 0 5px 1px var(--wa-gold-soft);
+  animation: dithar-adhkar-particle 1300ms ease-out both;
+}
+
+/* Completion message lines — same quiet fade+rise language as
+   .dithar-wa-complete-in, staggered per-line via animation-delay set
+   inline so each phrase arrives a beat after the last. */
+@keyframes dithar-adhkar-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.dithar-adhkar-text-in {
+  animation: dithar-adhkar-text-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dithar-domino-tile,
-  .dithar-domino-tile--snapping,
-  .dithar-domino-tile-leaving,
-  .dithar-wa-progress-fill {
+  .dithar-wa-node,
+  .dithar-wa-dhikr-card,
+  .dithar-wa-ring-progress,
+  .dithar-wa-watermark {
     transition-duration: 120ms !important;
   }
 
-  .dithar-domino-tile--entering,
-  .dithar-wa-hint > span,
-  .dithar-wa-sheet-in,
-  .dithar-wa-complete-in {
+  .dithar-wa-complete-in,
+  .dithar-adhkar-watermark--rising,
+  .dithar-adhkar-text-in {
     animation-duration: 120ms !important;
+  }
+
+  /* Reduced motion drops the glow/breathe/particles entirely (spec:
+     "replace the celebration with a subtle opacity transition") — the
+     watermark still rises to its peak, just without visible motion. */
+  .dithar-adhkar-glow,
+  .dithar-adhkar-breathe,
+  .dithar-adhkar-particle {
+    animation: none !important;
+    opacity: 0 !important;
+    transform: none !important;
   }
 }
 
@@ -440,8 +529,10 @@ button {
    cross-route shared-element morph. */
 .dithar-wa-category-card {
   transition:
-    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 14px 28px -18px rgba(23, 38, 58, 0.22), inset 0 0 0 1px var(--wa-gold-hairline);
 }
 
 .dithar-wa-category-card--selected {
@@ -453,19 +544,46 @@ button {
   opacity: 0.35;
 }
 
-/* Mount-in entrance for a freshly-opened Written Adhkar screen — a subtle
-   fade + slight rise, standing in for the "app-level transition between
-   sections" the spec asks for (Home/Tasbeeh are explicitly out of scope
-   for this session, so only Written Adhkar's own screens carry it). */
-@keyframes dithar-wa-screen-in {
+/* Press feedback — deliberately quick (140ms) and barely-there (spec:
+   "1-2px, scale ~0.985-0.99, no bounce"), overriding the slower 360ms
+   base transition only while the finger/pointer is actually down. On
+   release the element falls back to the base 360ms rule, which is what
+   lets a tap smoothly hand off into the --selected grow instead of
+   snapping back to rest first. */
+.dithar-wa-category-card:active:not(:disabled) {
+  transition-duration: 140ms;
+  transform: scale(0.987) translateY(1px);
+  box-shadow: 0 6px 14px -12px rgba(23, 38, 58, 0.22), inset 0 0 0 1px var(--wa-gold-hairline);
+}
+
+.dithar-wa-emblem {
+  transition:
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dithar-wa-category-card:active:not(:disabled) .dithar-wa-emblem {
+  transform: scale(0.985);
+  opacity: 0.92;
+}
+
+/* Unified app-level section transition (Home / Written Adhkar / Tasbeeh /
+   ...) — a light crossfade + slight rise, applied ONCE around whichever
+   screen AppRouter currently renders (see App.tsx), keyed by the screen
+   name so React remounts this wrapper (and replays the animation) on
+   every navigation. This does not touch Home's or Tasbeeh's own markup —
+   it wraps their already-existing output at the router boundary, which is
+   how the same motion reaches every section without four different
+   per-screen implementations. */
+@keyframes dithar-app-transition-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
 }
 
-.dithar-wa-screen-in {
-  animation: dithar-wa-screen-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
+.dithar-app-transition {
+  animation: dithar-app-transition-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -473,7 +591,7 @@ button {
     transition-duration: 120ms;
   }
 
-  .dithar-wa-screen-in {
+  .dithar-app-transition {
     animation-duration: 120ms;
   }
 }

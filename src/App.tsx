@@ -122,37 +122,54 @@ type Screen = "home" | "tasbeeh" | "written" | "written-reader";
 // Reader) — which category the reader should open. It's set right before
 // switching to "written-reader" and simply left as-is when navigating
 // back to "written" (the category list doesn't read it).
+//
+// Every branch's returned screen is wrapped in the SAME
+// `dithar-app-transition` element, keyed by `screen` — that key is what
+// makes React remount (and so replay the fade-in) on every navigation,
+// giving one unified transition language across all sections without
+// touching HomeScreen's or TasbeehScreen's own markup at all: this only
+// wraps their already-existing output at the router boundary.
 function AppRouter() {
   const [screen, setScreen] = useState<Screen>("home");
   const [writtenCategory, setWrittenCategory] = useState<WrittenAdhkarCategoryKey>("morning");
 
   if (screen === "tasbeeh") {
-    return <TasbeehScreen onNavigateHome={() => setScreen("home")} onNavigateToWritten={() => setScreen("written")} />;
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <TasbeehScreen onNavigateHome={() => setScreen("home")} onNavigateToWritten={() => setScreen("written")} />
+      </div>
+    );
   }
   if (screen === "written") {
     return (
-      <WrittenAdhkarScreen
-        onNavigateHome={() => setScreen("home")}
-        onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-        onSelectCategory={(key) => {
-          setWrittenCategory(key);
-          setScreen("written-reader");
-        }}
-      />
+      <div key={screen} className="dithar-app-transition">
+        <WrittenAdhkarScreen
+          onNavigateHome={() => setScreen("home")}
+          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onSelectCategory={(key) => {
+            setWrittenCategory(key);
+            setScreen("written-reader");
+          }}
+        />
+      </div>
     );
   }
   if (screen === "written-reader") {
     return (
-      <WrittenAdhkarReader
-        category={writtenCategory}
-        onNavigateHome={() => setScreen("home")}
-        onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-        onBackToCategories={() => setScreen("written")}
-      />
+      <div key={screen} className="dithar-app-transition">
+        <WrittenAdhkarReader
+          category={writtenCategory}
+          onNavigateHome={() => setScreen("home")}
+          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onBackToCategories={() => setScreen("written")}
+        />
+      </div>
     );
   }
   return (
-    <HomeScreen onNavigateToTasbeeh={() => setScreen("tasbeeh")} onNavigateToWritten={() => setScreen("written")} />
+    <div key={screen} className="dithar-app-transition">
+      <HomeScreen onNavigateToTasbeeh={() => setScreen("tasbeeh")} onNavigateToWritten={() => setScreen("written")} />
+    </div>
   );
 }
 
