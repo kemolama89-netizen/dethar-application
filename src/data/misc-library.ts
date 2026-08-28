@@ -319,11 +319,14 @@ export const MISC_DUAS: MiscDuaItem[] = [
     count_ar: "بدون عدد محدد",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 201",
     isQuranic: true,
-    // Also listed at Master file 20.3.3 — ثبت وروده بين الركن اليماني
-    // والحجر الأسود في الطواف (أحمد والنسائي وابن خزيمة، عن عبد الله بن
-    // السائب) — linked to "العبادة الموسمية" by category rather than
-    // duplicated (20.3.3: "النص موجود أصلًا في 1.1").
-    categories: ["comprehensive", "quran", "seasonal"],
+    // 2026-08 classification audit: Master 20.3.3 documents a real,
+    // hadith-sourced occasion (recited during tawaf, between the Yemeni
+    // Corner and the Black Stone — Ahmad/Nasa'i/Ibn Khuzaimah, Abdullah
+    // ibn al-Sa'ib), but this verse's identity and overwhelming everyday
+    // use is as a general Quranic dua, not a seasonal/Hajj one — a single
+    // documented ritual mention doesn't make it primarily occasion-bound.
+    // "seasonal" removed accordingly; see the Master's audit log.
+    categories: ["comprehensive", "quran"],
   },
   {
     id: "allahumma-inni-asaluka-alhuda",
@@ -349,7 +352,10 @@ export const MISC_DUAS: MiscDuaItem[] = [
     source_ar: "صحيح مسلم",
     // Also listed at Master file 19.4 under "الهداية والثبات" — linked by
     // category, not duplicated (19.4: "النص موجود أصلًا في 1.4").
-    categories: ["comprehensive", "guidance"],
+    // 2026-08 classification audit: single-theme guidance dua (no other
+    // dimension); Master's own 1.4 tags never included "أدعية جامعة"
+    // either — "comprehensive" dropped.
+    categories: ["guidance"],
   },
   {
     id: "allahumma-aslih-li-dini",
@@ -378,7 +384,11 @@ export const MISC_DUAS: MiscDuaItem[] = [
       "سنن أبي داود (5074)، وسنن ابن ماجه (3871)، ومسند أحمد (4785) — عن عبد الله بن عمر رضي الله عنهما، إسناده صحيح",
     note_ar:
       "الصيغة الشائعة «اللهم إني أسألك العفو والعافية في الدنيا والآخرة» دمج تقريبي غير حرفي لجملتين من هذا الحديث؛ اعتُمد هنا اللفظ الكامل كما ثبت.",
-    categories: ["comprehensive"],
+    // 2026-08 classification audit: the dua's second half is a full
+    // directional refuge/protection formula ("احفظني من بين يدي... وأعوذ
+    // بعظمتك أن أُغتال من تحتي"), matching the shape of other
+    // "protection" entries — tagged accordingly in addition to comprehensive.
+    categories: ["comprehensive", "protection"],
   },
   {
     id: "allahumma-iqsim-lana-min-khashyatik",
@@ -386,7 +396,11 @@ export const MISC_DUAS: MiscDuaItem[] = [
       "اللهم اقسم لنا من خشيتك ما يحول بيننا وبين معاصيك، ومن طاعتك ما تبلغنا به جنتك، ومن اليقين ما تهون به علينا مصيبات الدنيا، ومتعنا بأسماعنا، وأبصارنا، وقوتنا ما أحييتنا، واجعله الوارث منا، واجعل ثأرنا على من ظلمنا، وانصرنا على من عادانا، ولا تجعل مصيبتنا في ديننا، ولا تجعل الدنيا أكبر همنا، ولا مبلغ علمنا، ولا تسلط علينا من لا يرحمنا.",
     count_ar: "بدون عدد محدد",
     source_ar: "جامع الترمذي (3502)، حسن عند الترمذي",
-    categories: ["comprehensive", "distress"],
+    // 2026-08 classification audit: "مصيبات الدنيا" is one clause among
+    // many (خشية/طاعة/يقين/رزق/نصر...) in a genuinely multi-theme
+    // comprehensive dua — not a distress-specific supplication.
+    // "distress" dropped.
+    categories: ["comprehensive"],
   },
   {
     id: "allahumma-bi-ilmika-al-ghayb",
@@ -497,14 +511,19 @@ export const MISC_DUAS: MiscDuaItem[] = [
     text_ar: "اللهم إني أعوذ بك من شر ما عملت، ومن شر ما لم أعمل.",
     count_ar: "بدون عدد محدد",
     source_ar: "صحيح مسلم (2716)",
-    categories: ["protection", "istighfar", "comprehensive"],
+    // 2026-08 classification audit: single-theme refuge phrase (evil of
+    // deeds), matching the pattern of its section-3 neighbors — "istighfar"
+    // and "comprehensive" dropped as overreach for a 2-clause isti'adhah.
+    categories: ["protection"],
   },
   {
     id: "allahumma-inni-audhu-bika-min-zawal-nimatik",
     text_ar: "اللهم إني أعوذ بك من زوال نعمتك، وتحول عافيتك، وفجاءة نقمتك، وجميع سخطك.",
     count_ar: "بدون عدد محدد",
     source_ar: "صحيح مسلم (2739)",
-    categories: ["protection", "comprehensive"],
+    // 2026-08 classification audit: single-theme refuge phrase (loss of
+    // blessing/wrath) — "comprehensive" dropped, same reasoning as above.
+    categories: ["protection"],
   },
   {
     id: "allahumma-inni-audhu-bika-min-al-bukhl-wal-jubn",
@@ -553,7 +572,11 @@ export const MISC_DUAS: MiscDuaItem[] = [
     text_ar: "أعوذ بالله من الشيطان الرجيم.",
     count_ar: "بحسب الحال، وليس عددًا عامًا",
     source_ar: "ثابت في السنة",
-    categories: ["distress"],
+    occasion_ar: "عند الغضب ووسوسة الشيطان",
+    // 2026-08 classification audit: a general isti'adhah from Shaytan, not
+    // a distress/hardship-specific dua — moved from "distress" to
+    // "protection", the seeking-refuge category it actually belongs to.
+    categories: ["protection"],
   },
 
   // ---- 5. المرض والشفاء والرقية ----
@@ -939,7 +962,9 @@ export const MISC_DUAS: MiscDuaItem[] = [
     count_ar: "بدون عدد محدد",
     source_ar: "صحيح مسلم (486)",
     occasion_ar: "في السجود (ضمن سياق قيام الليل)",
-    categories: ["prayer", "protection", "comprehensive"],
+    // 2026-08 classification audit: single-theme dua (Allah's pleasure vs.
+    // wrath) despite its several clauses — "comprehensive" dropped.
+    categories: ["prayer", "protection"],
   },
   {
     id: "allahumma-inni-asaluka-fil-al-khayrat",
@@ -981,7 +1006,9 @@ export const MISC_DUAS: MiscDuaItem[] = [
     count_ar: "بدون عدد محدد",
     narrator_ar: "عائشة رضي الله عنها",
     source_ar: "صحيح البخاري (2397) وصحيح مسلم (589) — عن عائشة رضي الله عنها",
-    categories: ["debtRizq", "protection", "comprehensive"],
+    // 2026-08 classification audit: a short, single-purpose refuge phrase
+    // (sin and debt only) — "comprehensive" dropped as overreach.
+    categories: ["debtRizq", "protection"],
   },
   {
     id: "allahumma-ikfini-bihalalika-an-haramik",
@@ -1000,7 +1027,9 @@ export const MISC_DUAS: MiscDuaItem[] = [
     narrator_ar: "عبد الله بن مسعود رضي الله عنه",
     source_ar:
       "المعجم الكبير للطبراني (10379)، وحلية الأولياء لأبي نعيم — عن عبد الله بن مسعود رضي الله عنه، صححه الألباني في السلسلة الصحيحة (1543)",
-    categories: ["debtRizq", "comprehensive"],
+    // 2026-08 classification audit: single-theme provision/bounty request
+    // (occasion: no food for a guest) — "comprehensive" dropped.
+    categories: ["debtRizq"],
   },
 
   // ---- 19. الهداية والثبات (newly added) ----
