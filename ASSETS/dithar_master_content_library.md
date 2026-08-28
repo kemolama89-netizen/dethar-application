@@ -982,3 +982,522 @@
 
 **لم يُحذف أو يُعدَّل أي نص، مصدر، درجة، أو ID — هذا تدقيق تصنيفي بحت.**
 
+
+
+---
+
+# ENGLISH INTEGRATION LAYER
+
+This layer is attached to the existing Arabic Master records. It does not create
+duplicate records and does not modify the Arabic source content.
+
+## Required fields per existing ID
+
+```text
+id
+arabicText
+englishMeaning
+englishTransliteration
+```
+
+## Rules
+
+- Keep the existing Arabic `id` exactly as-is.
+- `englishMeaning` must be an accurate meaning of the Arabic text, not tafsir,
+  commentary, or an invented virtue.
+- `englishTransliteration` is the pronunciation in Latin letters for the
+  English-language interface when needed.
+- Source, reference, narrator, grade, count, occasion, and categories remain
+  inherited from the Arabic record.
+- Do not create a second record for a dhikr that belongs to multiple categories.
+- Do not add a translation that makes a pending/unverified Arabic record appear
+  verified.
+- Qur'anic text must receive an English meaning only; do not turn the translation
+  into tafsir.
+- In the English UI, the card remains compact. Use separate actions:
+  `Listen` and `English Meaning`.
+
+## Linked English records
+
+### 1.1 — ربنا آتنا في الدنيا حسنة...
+**englishMeaning:** Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.
+**englishTransliteration:** Rabbana aatina fid-dunya hasanatan wa fil-aakhirati hasanatan wa qina ‘adhaaban-naar.
+
+### 1.2 — اللهم إني أسألك الهدى والتقى والعفاف والغنى
+**englishMeaning:** O Allah, I ask You for guidance, piety, chastity, and self-sufficiency (contentment of the heart).
+**englishTransliteration:** Allahumma inni as'aluka al-huda wat-tuqa wal-‘afaafa wal-ghina.
+
+### 1.3 — اللهم اغفر لي وارحمني واهدني وعافني وارزقني
+**englishMeaning:** O Allah, forgive me, have mercy on me, guide me, grant me well-being, and provide for me.
+**englishTransliteration:** Allahummaghfir li, warhamni, wahdini, wa ‘aafini, warzuqni.
+
+### 1.4 — اللهم اهدني وسددني
+**englishMeaning:** O Allah, guide me and make me steadfast/upright.
+**englishTransliteration:** Allahummahdini wa saddidni.
+
+### 1.5 — اللهم أصلح لي ديني...
+**englishMeaning:** O Allah, set right for me my religion, which is the safeguard of my affairs; set right for me my worldly life, in which is my livelihood; and set right for me my Hereafter, to which is my return. Make life a means of increase for me in every good, and make death a relief for me from every evil.
+**englishTransliteration:** Allahumma aslih li deeni alladhi huwa ‘ismatu amri, wa aslih li dunyaaya allati feeha ma‘aashi, wa aslih li aakhirati allati feeha ma‘aadi, waj‘alil-hayaata ziyaadatan li fi kulli khayr, waj‘alil-mawta raahatan li min kulli sharr.
+
+### 1.6 — اللهم إني أسألك من الخير كله
+**englishMeaning:** O Allah, I ask You for all good, its immediate and its delayed, what I know of it and what I do not know; and I seek refuge in You from all evil, its immediate and its delayed, what I know of it and what I do not know. O Allah, I ask You for the good that Your servant and Prophet asked You for, and I seek refuge in You from the evil that Your servant and Prophet sought refuge from. O Allah, I ask You for Paradise and whatever word or deed brings [one] closer to it, and I seek refuge in You from the Fire and whatever word or deed brings [one] closer to it, and I ask You to make every decree You ordain for me good.
+**englishTransliteration:** Allahumma inni as'aluka minal-khayri kullihi, ‘aajilihi wa aajilihi, ma ‘alimtu minhu wa ma lam a‘lam, wa a‘oothu bika minash-sharri kullihi, ‘aajilihi wa aajilihi, ma ‘alimtu minhu wa ma lam a‘lam. Allahumma inni as'aluka min khayri ma sa'alaka ‘abduka wa nabiyyuk, wa a‘oothu bika min sharri ma ‘aadha bihi ‘abduka wa nabiyyuk. Allahumma inni as'alukal-jannata wa ma qarraba ilayha min qawlin aw ‘amal, wa a‘oothu bika minan-naari wa ma qarraba ilayha min qawlin aw ‘amal, wa as'aluka an taj‘ala kulla qadaa'in qadaytahu li khayra.
+
+### 1.7 — اللهم إني أسألك العافية في الدنيا والآخرة
+**englishMeaning:** O Allah, I ask You for well-being in this world and the Hereafter. O Allah, I ask You for pardon and well-being in my religion, my worldly life, my family, and my wealth. O Allah, conceal my faults and calm my fears. O Allah, guard me from before me, from behind me, from my right, from my left, and from above me, and I seek refuge in Your greatness from being taken unaware from beneath me.
+**englishTransliteration:** Allahumma inni as'alukal-‘aafiyata fid-dunya wal-aakhirah, Allahumma inni as'alukal-‘afwa wal-‘aafiyata fi deeni wa dunyaaya wa ahli wa maali, Allahummastur ‘awraati wa aamin raw‘aati, Allahummahfadhni min bayni yadayya wa min khalfi wa ‘an yameeni wa ‘an shimaali wa min fawqi, wa a‘oothu bi‘adhamatika an ughtaala min tahti.
+
+### 1.8 — اللهم اقسم لنا من خشيتك
+**englishMeaning:** O Allah, apportion for us such fear of You as will come between us and disobedience to You, and such obedience to You as will bring us to Your Paradise, and such certainty as will make the calamities of this world easy for us to bear. Let us enjoy our hearing, our sight, and our strength for as long as You keep us alive, and make that a lasting legacy for us. Make our vengeance fall upon those who wrong us, and grant us victory over those who show enmity to us. Do not let our affliction be in our religion, do not make this world our greatest concern or the sum of our knowledge, and do not let anyone who has no mercy for us be given power over us.
+**englishTransliteration:** Allahummaqsim lana min khashyatika ma yahoolu baynana wa bayna ma‘aasik, wa min taa‘atika ma tuballighuna bihi jannatak, wa minal-yaqeeni ma tuhawwinu bihi ‘alayna musibaatid-dunya, wa matti‘na bi-asma‘ina wa absaarina wa quwwatina ma ahyaytana, waj‘alhul-waaritha minna, waj‘al tha'rana ‘ala man dhalamana, wansurna ‘ala man ‘aadaana, wa la taj‘al musibatana fi deenina, wa la taj‘alid-dunya akbara hammina wa la mablagha ‘ilmina, wa la tusallit ‘alayna man la yarhamuna.
+
+### 1.9 — اللهم بعلمك الغيب وقدرتك على الخلق
+**englishMeaning:** O Allah, by Your knowledge of the unseen and Your power over creation, keep me alive as long as You know life is good for me, and take me in death when You know death is good for me. O Allah, I ask You for the fear of You in secret and in public, and I ask You for the word of truth in contentment and in anger, and I ask You for moderation in poverty and in wealth. I ask You for a bliss that never ends, and for a joy of the eye that never ceases. I ask You for contentment after the decree, and for a pleasant life after death, and I ask You for the sweetness of looking upon Your Face, and the longing to meet You, without harmful adversity or misguiding trial. O Allah, adorn us with the adornment of faith and make us guides who are rightly guided.
+**englishTransliteration:** Allahumma bi‘ilmikal-ghayba wa qudratika ‘alal-khalq, ahyini ma ‘alimtal-hayaata khayran li, wa tawaffani idha ‘alimtal-wafaata khayran li. Allahumma inni as'aluka khashyataka fil-ghaybi wash-shahaadah, wa as'aluka kalimatal-haqqi fir-rida wal-ghadab, wa as'alukal-qasda fil-faqri wal-ghina, wa as'aluka na‘eeman la yanfad, wa as'aluka qurrata ‘aynin la tanqati‘, wa as'alukar-rida ba‘dal-qadaa', wa as'aluka barda-l‘aysh ba‘dal-mawt, wa as'aluka ladhdhatan-nadhari ila wajhika wash-shawqa ila liqaa'ika, fi ghayri darraa'a mudirratin wa la fitnatin mudillah. Allahumma zayyinna bizeenatil-eemaan waj‘alna hudaatan muhtadeen.
+
+### 1.10 — اللهم إني أسألك الثبات في الأمر
+**englishMeaning:** O Allah, I ask You for steadfastness in my affairs, and resolve upon right guidance. I ask You for what brings about Your mercy, and the resolve of Your forgiveness. I ask You for thankfulness for Your blessing, and for excellence in worshipping You. I ask You for a sound heart, and a truthful tongue. I ask You for the good that You know, and I seek refuge in You from the evil that You know, and I ask Your forgiveness for what You know, for indeed You are the Knower of unseen things.
+**englishTransliteration:** Allahumma inni as'alukath-thabaata fil-amr, wal-‘azeemata ‘alar-rushd, wa as'aluka moojibaati rahmatik, wa ‘azaa'ima maghfiratik, wa as'aluka shukra ni‘matik, wa husna ‘ibaadatik, wa as'aluka qalban saleema, wa lisaanan saadiqa, wa as'aluka min khayri ma ta‘lam, wa a‘oothu bika min sharri ma ta‘lam, wa astaghfiruka lima ta‘lam, innaka anta ‘allaamul-ghuyoob.
+
+### 1.11 — رب أعني ولا تعن علي
+**englishMeaning:** My Lord, help me and do not help [others] against me; grant me victory and do not let [others] triumph over me; plan for me and do not let anyone plan against me; guide me and make guidance easy for me; and grant me victory over whoever wrongs me. My Lord, make me one who thanks You greatly, remembers You greatly, fears You greatly, is greatly obedient to You, humbles himself before You, and turns to You in devotion and repentance. My Lord, accept my repentance, wash away my sin, answer my call, make firm my proof, guide my tongue rightly, guide my heart, and draw out the rancour of my chest.
+**englishTransliteration:** Rabbi a‘inni wa la tu‘in ‘alayya, wansurni wa la tansur ‘alayya, wamkur li wa la tamkur ‘alayya, wahdini wa yassiril-hudaa li, wansurni ‘ala man baghaa ‘alayya. Rabbij‘alni laka shakkaara, laka dhakkaara, laka rahhaaba, laka mutawaa‘a, laka mukhbita, ilayka awwaahan muneeba. Rabbi taqabbal tawbati, waghsil hawbati, wa ajib da‘wati, wa thabbit hujjati, wa saddid lisaani, wahdi qalbi, waslul sakheemata sadri.
+
+### 2.1 — سيد الاستغفار
+**englishMeaning:** O Allah, You are my Lord; there is no god but You. You created me and I am Your servant, and I abide by Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favour upon me, and I acknowledge my sin, so forgive me, for none forgives sins but You.
+**englishTransliteration:** Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana ‘abduka, wa ana ‘ala ‘ahdika wa wa‘dika mastata‘t, a‘oothu bika min sharri ma sana‘t, aboo'u laka bini‘matika ‘alayya, wa aboo'u bidhanbi, faghfir li fa'innahu la yaghfirudh-dhunooba illa anta.
+
+### 2.2 — اللهم اغفر لي خطيئتي وجهلي وإسرافي في أمري...
+**englishMeaning:** O Allah, forgive me my error, my ignorance, and my excess in my affairs, and what You know better than I do. O Allah, forgive me what I have done in seriousness and in jest, my mistakes and my intentional acts — all of that is within me. O Allah, forgive me what I have put forward and what I have left behind, what I have concealed and what I have made known. You are the One who brings forward and the One who puts back, and You are able to do all things.
+**englishTransliteration:** Allahummaghfir li khati'ati wa jahli, wa israafi fi amri, wa ma anta a‘lamu bihi minni, Allahummaghfir li jiddi wa hazli, wa khata'i wa ‘amdi, wa kullu dhaalika ‘indi, Allahummaghfir li ma qaddamtu wa ma akhkhartu, wa ma asrartu wa ma a‘lantu, antal-muqaddimu wa antal-mu'akhkhiru, wa anta ‘ala kulli shay'in qadeer.
+
+### 2.3 — رب اغفر لي وتب علي إنك أنت التواب الرحيم
+**englishMeaning:** My Lord, forgive me and accept my repentance; indeed, You are the Ever-Accepting of repentance, the Most Merciful.
+**englishTransliteration:** Rabbighfir li wa tub ‘alayya innaka antat-tawwaabur-raheem.
+
+### 3.1 — أعوذ بكلمات الله التامات من شر ما خلق
+**englishMeaning:** I seek refuge in the perfect words of Allah from the evil of what He has created.
+**englishTransliteration:** A‘oothu bikalimaatillahit-taammaati min sharri ma khalaq.
+
+### 3.2 — اللهم إني أعوذ بك من العجز والكسل والجبن والهرم...
+**englishMeaning:** O Allah, I seek refuge in You from helplessness and laziness, from cowardice and old age, and from miserliness, and I seek refuge in You from the punishment of the grave and from the trial of life and death.
+**englishTransliteration:** Allahumma inni a‘oothu bika minal-‘ajzi wal-kasal, wal-jubni wal-haram, wal-bukhl, wa a‘oothu bika min ‘adhaabil-qabr, wa min fitnatil-mahya wal-mamaat.
+
+### 3.3 — اللهم إني أعوذ بك من جهد البلاء...
+**englishMeaning:** O Allah, I seek refuge in You from the hardship of trial, the depths of misery, the evil of the decree, and the gloating of enemies.
+**englishTransliteration:** Allahumma inni a‘oothu bika min jahdil-balaa', wa darkish-shaqaa', wa soo'il-qadaa', wa shamaatatil-a‘daa'.
+
+### 3.4 — اللهم إني أعوذ بك من الفقر والقلة والذلة...
+**englishMeaning:** O Allah, I seek refuge in You from poverty, scarcity, and humiliation, and I seek refuge in You from wronging others or being wronged.
+**englishTransliteration:** Allahumma inni a‘oothu bika minal-faqri wal-qillati wadh-dhillah, wa a‘oothu bika min an adhlima aw udhlam.
+
+### 3.5 — اللهم إني أعوذ بك من شر سمعي وبصري ولساني وقلبي ومنيي
+**englishMeaning:** O Allah, I seek refuge in You from the evil of my hearing, from the evil of my sight, from the evil of my tongue, from the evil of my heart, and from the evil of my private desire.
+**englishTransliteration:** Allahumma inni a‘oothu bika min sharri sam‘i, wa min sharri basari, wa min sharri lisaani, wa min sharri qalbi, wa min sharri manii.
+
+### 3.6 — اللهم إني أعوذ بك من الفتن ما ظهر منها وما بطن
+**englishMeaning:** O Allah, I seek refuge in You from trials, what is apparent of them and what is hidden.
+**englishTransliteration:** Allahumma inni a‘oothu bika minal-fitani ma dhahara minha wa ma batan.
+
+### 3.7 — اللهم إني أعوذ بك من شر ما عملت ومن شر ما لم أعمل
+**englishMeaning:** O Allah, I seek refuge in You from the evil of what I have done, and from the evil of what I have not done.
+**englishTransliteration:** Allahumma inni a‘oothu bika min sharri ma ‘amiltu, wa min sharri ma lam a‘mal.
+
+### 3.8 — اللهم إني أعوذ بك من زوال نعمتك
+**englishMeaning:** O Allah, I seek refuge in You from the decline of Your blessing, the turning away of Your protection, the suddenness of Your punishment, and all that displeases You.
+**englishTransliteration:** Allahumma inni a‘oothu bika min zawaali ni‘matik, wa tahawwuli ‘aafiyatik, wa fajaa'ati niqmatik, wa jami‘i sakhatik.
+
+### 3.9 — اللهم إني أعوذ بك من البخل والجبن
+**englishMeaning:** O Allah, I seek refuge in You from miserliness, and I seek refuge in You from cowardice, and I seek refuge in You from being returned to the most decrepit old age, and I seek refuge in You from the trial of this world and the punishment of the grave.
+**englishTransliteration:** Allahumma inni a‘oothu bika minal-bukhl, wa a‘oothu bika minal-jubn, wa a‘oothu bika min an nuradda ila ardhalil-‘umur, wa a‘oothu bika min fitnatid-dunya wa ‘adhaabil-qabr.
+
+### 3.10 — اللهم احفظني بالإسلام قائمًا
+**englishMeaning:** O Allah, protect me through Islam while standing, protect me through Islam while sitting, protect me through Islam while lying down, and do not let an envious enemy gloat over me. O Allah, I ask You for every good whose treasuries are in Your hand, and I seek refuge in You from every evil whose treasuries are in Your hand.
+**englishTransliteration:** Allahummahfadhni bil-Islaami qaa'ima, wahfadhni bil-Islaami qaa‘ida, wahfadhni bil-Islaami raaqida, wa la tushmit bi ‘aduwwan haasida, Allahumma inni as'aluka min kulli khayrin khazaa'inuhu biyadika, wa a‘oothu bika min kulli sharrin khazaa'inuhu biyadika.
+**status note:** Record status remains exactly as in the Arabic Master (pending / not in production) — this English content does not change that status.
+
+### 4.1 — دعاء الكرب
+**englishMeaning:** There is no god but Allah, the Mighty, the Forbearing. There is no god but Allah, Lord of the Mighty Throne. There is no god but Allah, Lord of the heavens, Lord of the earth, and Lord of the Noble Throne.
+**englishTransliteration:** La ilaha illallahul-‘Adheemul-Haleem, la ilaha illallahu Rabbul-‘Arshil-‘Adheem, la ilaha illallahu Rabbus-samaawaati wa Rabbul-ardi wa Rabbul-‘Arshil-Kareem.
+
+### 4.2 — لا إله إلا أنت سبحانك إني كنت من الظالمين
+**englishMeaning:** There is no god but You, glory be to You; indeed, I was among the wrongdoers.
+**englishTransliteration:** La ilaha illa anta subhanaka inni kuntu minadh-dhalimeen.
+
+### 4.3 — اللهم إني أعوذ بك من الهم والحزن...
+**englishMeaning:** O Allah, I seek refuge in You from anxiety and grief, from helplessness and laziness, from cowardice and miserliness, from being overwhelmed by debt, and from being overpowered by [other] men.
+**englishTransliteration:** Allahumma inni a‘oothu bika minal-hammi wal-hazan, wal-‘ajzi wal-kasal, wal-jubni wal-bukhl, wa dala‘id-dayni wa ghalabatir-rijaal.
+
+### 4.4 — أعوذ بالله من الشيطان الرجيم
+**englishMeaning:** I seek refuge in Allah from Satan, the accursed.
+**englishTransliteration:** A‘oothu billahi minash-shaytaanir-rajeem.
+
+### 4.5 — اللهم إني أعوذ بك أن أشرك بك شيئًا أعلمه...
+**englishMeaning:** O Allah, I seek refuge in You from associating anything with You knowingly, and I ask Your forgiveness for that which I do not know.
+**englishTransliteration:** Allahumma inni a‘oothu bika an ushrika bika shay'an a‘lamuh, wa astaghfiruka lima la a‘lamuh.
+
+### 5.1 — اللهم رب الناس أذهب الباس...
+**englishMeaning:** O Allah, Lord of mankind, remove the affliction, and heal — You are the Healer; there is no healing but Your healing, a healing that leaves no illness behind.
+**englishTransliteration:** Allahumma Rabban-naas, adhhibil-ba's, ishfi antash-Shaafi, la shifaa'a illa shifaa'uk, shifaa'an la yughaadiru saqama.
+
+### 5.2 — باسم الله أرقيك...
+**englishMeaning:** In the name of Allah I recite a protective prayer over you, from everything that harms you, from the evil of every soul or envious eye — Allah heals you. In the name of Allah I recite a protective prayer over you.
+**englishTransliteration:** Bismillahi arqeek, min kulli shay'in yu'dheek, min sharri kulli nafsin aw ‘aynin haasid, Allahu yashfeek, bismillahi arqeek.
+
+### 5.3 — أسأل الله العظيم رب العرش العظيم أن يشفيك
+**englishMeaning:** I ask Allah, the Mighty, Lord of the Mighty Throne, to heal you.
+**englishTransliteration:** As'alullahal-‘Adheem, Rabbal-‘Arshil-‘Adheem, an yashfiyak.
+
+### 5.4 — لا بأس، طهور إن شاء الله
+**englishMeaning:** No harm [will come to you]; it is a purification, if Allah wills.
+**englishTransliteration:** La ba'sa, tahoorun in shaa' Allah.
+
+### 6.1 — دعاء الجنازة
+**englishMeaning:** O Allah, forgive him and have mercy on him, grant him well-being and pardon him, make honourable his reception, and widen his entrance. Wash him with water, snow, and hail, and cleanse him of sins as a white garment is cleansed of dirt. Give him in exchange a home better than his home, a family better than his family, and a spouse better than his spouse. Admit him into Paradise, and protect him from the punishment of the grave and the punishment of the Fire.
+**englishTransliteration:** Allahummaghfir lahu warhamh, wa ‘aafihi wa‘fu ‘anh, wa akrim nuzulah, wa wassi‘ madkhalah, waghsilhu bil-maa'i wath-thalji wal-barad, wa naqqihi minal-khataaya kama naqqaytath-thawbal-abyada minad-danas, wa abdilhu daaran khayran min daarih, wa ahlan khayran min ahlih, wa zawjan khayran min zawjih, wa adkhilhul-jannah, wa a‘idh-hu min ‘adhaabil-qabri wa min ‘adhaabin-naar.
+
+### 6.2 — اللهم اغفر لحينا وميتنا...
+**englishMeaning:** O Allah, forgive our living and our dead, those present among us and those absent, our young and our old, our males and our females... [Master Arabic text ends here — see note in Arabic record.]
+**englishTransliteration:** Allahummaghfir li hayyina wa mayyitina, wa shaahidina wa ghaa'ibina, wa sagheerina wa kabeerina, wa dhakarina wa unthaana...
+
+### 6.3 — استغفروا لأخيكم، وسلوا له التثبيت، فإنه الآن يسأل
+**englishMeaning:** Ask forgiveness for your brother, and ask that he be made firm, for he is being questioned right now.
+**englishTransliteration:** Istaghfiroo li-akheekum, wa saloo lahut-tathbeet, fa'innahul-aana yus'al.
+
+### 6.4 — اللهم اغفر لأبي سلمة...
+**englishMeaning:** O Allah, forgive Abu Salamah, raise his rank among those who are rightly guided, take his place among his descendants who remain, and forgive us and him, O Lord of the worlds. Make spacious for him his grave, and grant him light within it.
+**englishTransliteration:** Allahummaghfir li-Abi Salamah, warfa‘ darajatahu fil-mahdiyyeen, wakhlufhu fi ‘aqibihi fil-ghaabireen, waghfir lana wa lahu ya Rabbal-‘aalameen, wafsah lahu fi qabrih, wa nawwir lahu feeh.
+
+### 6.5 — إنا لله وإنا إليه راجعون، اللهم أجرني في مصيبتي واخلف لي خيرًا منها
+**englishMeaning:** Indeed, to Allah we belong and to Him we shall return. O Allah, reward me for my affliction and replace it for me with something better.
+**englishTransliteration:** Inna lillahi wa inna ilayhi raaji‘oon, Allahumma'jurni fi museebati wakhluf li khayran minha.
+
+### 6.6 — الدعاء العام للميت
+**Not applicable.** The Arabic Master record has no fixed text — it is a placeholder category note ("only authenticated texts will be added once each narration is confirmed"). No English content can be produced until Arabic wording is added to the Master.
+
+### 7.1 — الدعاء للعروسين
+**englishMeaning:** May Allah bless you, and bless [what He has given] you, and bring you both together in goodness.
+**englishTransliteration:** Baarakallahu laka, wa baaraka ‘alayka, wa jama‘a baynakuma fi khayr.
+
+### 7.2 — عند الجماع
+**englishMeaning:** In the name of Allah. O Allah, keep Satan away from us, and keep Satan away from what You provide us [with offspring].
+**englishTransliteration:** Bismillah, Allahumma jannibnash-shaytaana wa jannibish-shaytaana ma razaqtana.
+
+### 7.3 — رب هب لي من لدنك ذرية طيبة إنك سميع الدعاء
+**englishMeaning:** My Lord, grant me from Yourself good offspring; indeed, You are the Hearer of supplication.
+**englishTransliteration:** Rabbi hab li min ladunka dhurriyyatan tayyibah, innaka Samee‘ud-du‘aa'.
+
+### 7.4 — ربنا هب لنا من أزواجنا وذرياتنا قرة أعين...
+**englishMeaning:** Our Lord, grant us from among our spouses and offspring comfort to our eyes, and make us leaders for the righteous.
+**englishTransliteration:** Rabbana hab lana min azwaajina wa dhurriyyaatina qurrata a‘yunin waj‘alna lil-muttaqeena imaama.
+
+### 7.5 — رب اجعلني مقيم الصلاة ومن ذريتي ربنا وتقبل دعاء
+**englishMeaning:** My Lord, make me an establisher of prayer, and [also] from my offspring. Our Lord, and accept my supplication.
+**englishTransliteration:** Rabbij‘alni muqeemas-salaati wa min dhurriyyati, Rabbana wa taqabbal du‘aa'.
+
+### 8.1 — دعاء الركوب
+**englishMeaning:** Glory be to the One who has subjected this to us, and we could not have done it [by] ourselves. And indeed, to our Lord we will return.
+**englishTransliteration:** Subhaanal-ladhi sakhkhara lana haadha wa ma kunna lahu muqrineen, wa inna ila Rabbina lamunqaliboon.
+
+### 8.2 — دعاء السفر
+**englishMeaning:** O Allah, we ask You on this journey of ours for righteousness and piety, and for deeds that please You. O Allah, make this journey of ours easy for us and fold up for us its distance... [Master Arabic text ends here — see note in Arabic record.]
+**englishTransliteration:** Allahumma inna nas'aluka fi safarina haadhal-birra wat-taqwa, wa minal-‘amali ma tarda, Allahumma hawwin ‘alayna safarana haadha watwi ‘anna bu‘dah...
+
+### 8.3 — وداع المسافر
+**englishMeaning:** I entrust to Allah your religion, your trust, and the last of your deeds.
+**englishTransliteration:** Astawdi‘ullaha deenaka wa amaanataka wa khawaateema ‘amalik.
+
+### 8.4 — للمقيم عند توديع المسافر
+**englishMeaning:** May Allah provide you with piety, forgive your sin, and make good easy for you wherever you are.
+**englishTransliteration:** Zawwadakallahut-taqwa, wa ghafara dhanbak, wa yassara lakal-khayra haythu kunt.
+
+### 8.5 — عند النزول في مكان
+**englishMeaning:** I seek refuge in the perfect words of Allah from the evil of what He has created.
+**englishTransliteration:** A‘oothu bikalimaatillahit-taammaati min sharri ma khalaq.
+
+### 8.6 — عند الرجوع من السفر
+**englishMeaning:** Returning, repenting, worshipping, to our Lord we give praise.
+**englishTransliteration:** Aayiboona taa'iboona ‘aabidoona li-Rabbina haamidoon.
+
+### 9.1 — عند الخروج من المنزل
+**englishMeaning:** In the name of Allah, I place my trust in Allah, and there is no power and no strength except with Allah.
+**englishTransliteration:** Bismillah, tawakkaltu ‘alallah, wa la hawla wa la quwwata illa billah.
+
+### 9.2 — عند الخروج من المنزل (الدعاء الثاني)
+**englishMeaning:** O Allah, I seek refuge in You from misguiding or being misguided, from slipping [into error] or being made to slip, from wronging or being wronged, and from behaving ignorantly or being treated ignorantly.
+**englishTransliteration:** Allahumma inni a‘oothu bika an adilla aw udall, aw azilla aw uzall, aw adhlima aw udhlam, aw ajhala aw yujhala ‘alayya.
+
+### 9.3 — عند دخول المنزل
+**Not applicable.** The Arabic Master record has no fixed text yet — status is "final wording to be adopted from the chosen narration before production." No English content can be produced until Arabic wording is added to the Master.
+
+### 10.1 — بعد الوضوء
+**englishMeaning:** I bear witness that there is no god but Allah alone, with no partner, and I bear witness that Muhammad is His servant and Messenger.
+**englishTransliteration:** Ash-hadu an la ilaha illallahu wahdahu la shareeka lah, wa ash-hadu anna Muhammadan ‘abduhu wa rasooluh.
+
+### 10.2 — دخول المسجد
+**englishMeaning:** O Allah, open for me the doors of Your mercy.
+**englishTransliteration:** Allahummaftah li abwaaba rahmatik.
+
+### 10.3 — الخروج من المسجد
+**englishMeaning:** O Allah, I ask You from Your bounty.
+**englishTransliteration:** Allahumma inni as'aluka min fadlik.
+
+### 10.4 — بعد سماع الأذان
+**englishMeaning:** O Allah, Lord of this perfect call and of the established prayer, grant Muhammad the intercession (al-waseelah) and the excellence (al-fadeelah), and raise him to the praiseworthy station that You have promised him.
+**englishTransliteration:** Allahumma Rabba haadhihid-da‘watit-taammah, was-salaatil-qaa'imah, aati Muhammadanil-waseelata wal-fadeelah, wab‘athhu maqaaman mahmoodanil-ladhi wa‘adtah.
+
+### 10.5 — بين الأذان والإقامة
+**Not applicable.** The Arabic Master record is a general ruling ("supplication is legislated in this interval; it is not tied to one specific dua"), not a single fixed text. No English content can be produced.
+
+### 11.1 — قبل الطعام
+**englishMeaning:** In the name of Allah.
+**englishTransliteration:** Bismillah.
+
+### 11.2 — إذا نسي التسمية
+**englishMeaning:** In the name of Allah, at its beginning and its end.
+**englishTransliteration:** Bismillahi awwalahu wa aakhirah.
+
+### 11.3 — بعد الطعام
+**englishMeaning:** Praise be to Allah, who fed me this and provided it for me, without any power or strength on my part.
+**englishTransliteration:** Alhamdu lillahil-ladhi at‘amani haadha wa razaqaneehi min ghayri hawlin minni wa la quwwah.
+
+### 11.4 — الدعاء لمن أطعم
+**Not applicable.** The Arabic Master record has no fixed text yet — status is "final wording to be added after verifying wording and takhrij." No English content can be produced until Arabic wording is added to the Master.
+
+### 12.1 — كفارة المجلس
+**englishMeaning:** Glory be to You, O Allah, and praise be to You; I bear witness that there is no god but You; I seek Your forgiveness and I turn to You in repentance.
+**englishTransliteration:** Subhaanakallahumma wa bihamdik, la ilaha illa ant, astaghfiruka wa atoobu ilayk.
+
+### 12.2 — العاطس
+**englishMeaning:** All praise is due to Allah.
+**englishTransliteration:** Alhamdulillah.
+
+### 12.3 — تشميت العاطس
+**englishMeaning:** May Allah have mercy on you.
+**englishTransliteration:** Yarhamukallah.
+
+### 12.4 — رد العاطس
+**englishMeaning:** May Allah guide you and set right your affairs.
+**englishTransliteration:** Yahdeekumullahu wa yuslihu baalakum.
+
+### 12.5 — لمن صنع إليك معروفًا
+**englishMeaning:** May Allah reward you with good.
+**englishTransliteration:** Jazaakallahu khayra.
+
+### 13.1 — عند هبوب الريح
+**englishMeaning:** O Allah, I ask You for its good, the good within it, and the good it was sent with, and I seek refuge in You from its evil, the evil within it, and the evil it was sent with.
+**englishTransliteration:** Allahumma inni as'aluka khayraha, wa khayra ma feeha, wa khayra ma ursilat bih, wa a‘oothu bika min sharriha, wa sharri ma feeha, wa sharri ma ursilat bih.
+
+### 13.2 — عند نزول المطر
+**englishMeaning:** O Allah, [make it] a beneficial rain cloud.
+**englishTransliteration:** Allahumma sayyiban naafi‘a.
+
+### 13.3 — بعد نزول المطر
+**englishMeaning:** We have been given rain by the bounty and mercy of Allah.
+**englishTransliteration:** Mutirna bifadlillahi wa rahmatih.
+
+### 13.4 — عند الرعد
+**Not applicable.** The Arabic Master record adopts no dua text pending confirmation of the narration and its grade; well-known but unverified formulas are explicitly excluded. No English content can be produced.
+
+### 13.5 — الكسوف والخسوف
+**Not applicable.** The Arabic Master record is a general ruling (prayer, dhikr, dua, istighfar, and charity), not a single fixed dua text. No English content can be produced.
+
+### 13.6 — رؤية الهلال
+**Not applicable.** The Arabic Master record has no fixed text yet — status is "the authenticated formula to be confirmed after reviewing the hadith and its grade." No English content can be produced until Arabic wording is added to the Master.
+
+### 14.1 — ربنا آتنا في الدنيا حسنة...
+**englishMeaning:** Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire. (Same record as 1.1.)
+**englishTransliteration:** Rabbana aatina fid-dunya hasanatan wa fil-aakhirati hasanatan wa qina ‘adhaaban-naar.
+
+### 14.2 — ربنا لا تؤاخذنا إن نسينا أو أخطأنا
+**englishMeaning:** Our Lord, do not hold us accountable if we forget or make a mistake.
+**englishTransliteration:** Rabbana la tu'aakhidhna in naseena aw akhta'na.
+
+### 14.3 — ربنا ولا تحمل علينا إصرًا كما حملته على الذين من قبلنا
+**englishMeaning:** Our Lord, and lay not upon us a burden like that which You laid upon those before us.
+**englishTransliteration:** Rabbana wa la tahmil ‘alayna isran kama hamaltahu ‘alal-ladheena min qablina.
+
+### 14.4 — ربنا ولا تحملنا ما لا طاقة لنا به
+**englishMeaning:** Our Lord, and burden us not with that which we have no ability to bear.
+**englishTransliteration:** Rabbana wa la tuhammilna ma la taaqata lana bih.
+
+### 14.5 — ربنا ظلمنا أنفسنا وإن لم تغفر لنا وترحمنا لنكونن من الخاسرين
+**englishMeaning:** Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.
+**englishTransliteration:** Rabbana dhalamna anfusana wa in lam taghfir lana wa tarhamna lanakoonanna minal-khaasireen.
+
+### 14.6 — ربنا هب لنا من لدنك رحمة وهيئ لنا من أمرنا رشدًا
+**englishMeaning:** Our Lord, grant us mercy from Yourself, and prepare for us right guidance in our affair.
+**englishTransliteration:** Rabbana hab lana min ladunka rahmatan wa hayyi' lana min amrina rashada.
+
+### 14.7 — رب اشرح لي صدري ويسر لي أمري
+**englishMeaning:** My Lord, expand for me my breast, and ease for me my task.
+**englishTransliteration:** Rabbishrah li sadri wa yassir li amri.
+
+### 14.8 — رب زدني علمًا
+**englishMeaning:** My Lord, increase me in knowledge.
+**englishTransliteration:** Rabbi zidni ‘ilma.
+
+### 14.9 — لا إله إلا أنت سبحانك إني كنت من الظالمين
+**englishMeaning:** There is no god but You, glory be to You; indeed, I was among the wrongdoers. (Same record as 4.2.)
+**englishTransliteration:** La ilaha illa anta subhanaka inni kuntu minadh-dhalimeen.
+
+### 14.10 — رب هب لي من لدنك ذرية طيبة إنك سميع الدعاء
+**englishMeaning:** My Lord, grant me from Yourself good offspring; indeed, You are the Hearer of supplication. (Same record as 7.3.)
+**englishTransliteration:** Rabbi hab li min ladunka dhurriyyatan tayyibah, innaka Samee‘ud-du‘aa'.
+
+### 14.11 — رب اجعلني مقيم الصلاة ومن ذريتي ربنا وتقبل دعاء
+**englishMeaning:** My Lord, make me an establisher of prayer, and [also] from my offspring. Our Lord, and accept my supplication. (Same record as 7.5.)
+**englishTransliteration:** Rabbij‘alni muqeemas-salaati wa min dhurriyyati, Rabbana wa taqabbal du‘aa'.
+
+### 14.12 — رب اغفر لي ولوالدي وللمؤمنين يوم يقوم الحساب
+**englishMeaning:** My Lord, forgive me and my parents and the believers on the Day the reckoning is established.
+**englishTransliteration:** Rabbighfir li wa liwaalidayya wa lil-mu'mineena yawma yaqoomul-hisaab.
+
+### 14.13 — رب إني لما أنزلت إلي من خير فقير
+**englishMeaning:** My Lord, indeed I am, for whatever good You would send down to me, in need.
+**englishTransliteration:** Rabbi inni lima anzalta ilayya min khayrin faqeer.
+
+### 14.14 — ربنا هب لنا من أزواجنا وذرياتنا قرة أعين واجعلنا للمتقين إمامًا
+**englishMeaning:** Our Lord, grant us from among our spouses and offspring comfort to our eyes, and make us leaders for the righteous. (Same record as 7.4.)
+**englishTransliteration:** Rabbana hab lana min azwaajina wa dhurriyyaatina qurrata a‘yunin waj‘alna lil-muttaqeena imaama.
+
+### 14.15 — ربنا أفرغ علينا صبرًا وتوفنا مسلمين
+**englishMeaning:** Our Lord, pour upon us patience and let us die as Muslims [in submission to You].
+**englishTransliteration:** Rabbana afrigh ‘alayna sabran wa tawaffana muslimeen.
+
+### 14.16 — ربنا أفرغ علينا صبرًا وثبت أقدامنا وانصرنا على القوم الكافرين
+**englishMeaning:** Our Lord, pour upon us patience and plant firmly our feet and give us victory over the disbelieving people.
+**englishTransliteration:** Rabbana afrigh ‘alayna sabran wa thabbit aqdaamana wansurna ‘alal-qawmil-kaafireen.
+
+### 14.17 — ربنا لا تزغ قلوبنا بعد إذ هديتنا وهب لنا من لدنك رحمة
+**englishMeaning:** Our Lord, let not our hearts deviate after You have guided us, and grant us mercy from Yourself; indeed, You are the Bestower. (Same record as 19.3 — complete verse, Aal-Imran 8.)
+**englishTransliteration:** Rabbana la tuzigh quloobana ba‘da idh hadaytana wa hab lana min ladunka rahmah, innaka Antal-Wahhaab.
+
+### 14.18 — ربنا تقبل منا إنك أنت السميع العليم
+**englishMeaning:** Our Lord, accept [this] from us. Indeed, You are the Hearing, the Knowing.
+**englishTransliteration:** Rabbana taqabbal minna innaka Antas-Samee‘ul-‘Aleem.
+
+### 14.19 — ربنا اغفر لنا ولإخواننا الذين سبقونا بالإيمان
+**englishMeaning:** Our Lord, forgive us and our brothers who preceded us in faith.
+**englishTransliteration:** Rabbanaghfir lana wa li-ikhwaaninal-ladheena sabaqoona bil-eemaan.
+
+### 14.20 — ربنا عليك توكلنا وإليك أنبنا وإليك المصير
+**englishMeaning:** Our Lord, upon You we have relied, and to You we have returned, and to You is the final destination.
+**englishTransliteration:** Rabbana ‘alayka tawakkalna wa ilayka anabna wa ilaykal-maseer.
+
+### 14.21 — ربنا أتمم لنا نورنا واغفر لنا إنك على كل شيء قدير
+**englishMeaning:** Our Lord, perfect for us our light and forgive us; indeed, You are over all things competent.
+**englishTransliteration:** Rabbana atmim lana noorana waghfir lana innaka ‘ala kulli shay'in Qadeer.
+
+### 15.1 — أدعية الاستفتاح
+**englishMeaning:** (1) Glory be to You, O Allah, and praise be to You; blessed is Your name, and exalted is Your majesty; there is no god besides You. (2) O Allah, distance me from my sins as You have distanced the East from the West... [second line's Master Arabic text ends here].
+**englishTransliteration:** (1) Subhaanakallahumma wa bihamdik, wa tabaarakasmuk, wa ta‘aala jadduk, wa la ilaha ghayruk. (2) Allahumma baa‘id bayni wa bayna khataayaaya kama baa‘adta baynal-mashriqi wal-maghrib...
+
+### 15.2 — الركوع
+**englishMeaning:** Glory be to my Lord, the Most Great.
+**englishTransliteration:** Subhaana Rabbiyal-‘Adheem.
+
+### 15.3 — السجود
+**englishMeaning:** Glory be to my Lord, the Most High.
+**englishTransliteration:** Subhaana Rabbiyal-A‘la.
+
+### 15.4 — بين السجدتين
+**englishMeaning:** My Lord, forgive me.
+**englishTransliteration:** Rabbighfir li.
+
+### 15.5 — عند نهاية الصلاة قبل السلام
+**englishMeaning:** O Allah, I seek refuge in You from the punishment of Hell, from the punishment of the grave, from the trial of life and death, and from the evil of the trial of the False Messiah (al-Masih ad-Dajjal).
+**englishTransliteration:** Allahumma inni a‘oothu bika min ‘adhaabi jahannam, wa min ‘adhaabil-qabr, wa min fitnatil-mahya wal-mamaat, wa min sharri fitnatil-Maseehid-Dajjaal.
+
+### 15.6 — اللهم أعني على ذكرك وشكرك وحسن عبادتك
+**englishMeaning:** O Allah, help me to remember You, to thank You, and to worship You in the best manner.
+**englishTransliteration:** Allahumma a‘inni ‘ala dhikrika wa shukrika wa husni ‘ibaadatik.
+
+### 15.7 — اللهم أعوذ برضاك من سخطك
+**englishMeaning:** O Allah, I seek refuge in Your pleasure from Your displeasure, and in Your pardon from Your punishment, and I seek refuge in You from You. I cannot enumerate praise of You; You are as You have praised Yourself.
+**englishTransliteration:** Allahumma a‘oothu biridaaka min sakhatik, wa bimu‘aafaatika min ‘uqoobatik, wa a‘oothu bika mink, la uhsi thanaa'an ‘alayk, anta kama athnayta ‘ala nafsik.
+
+### 15.8 — اللهم إني أسألك فعل الخيرات
+**englishMeaning:** O Allah, I ask You for the doing of good deeds, the abandoning of evil deeds, and the love of the poor, and that if You intend trial for Your servants, You take me to Yourself without being tried.
+**englishTransliteration:** Allahumma inni as'aluka fi‘lal-khayraat, wa tarkal-munkaraat, wa hubbal-masaakeen, wa idha aradta bi‘ibaadika fitnatan faqbidni ilayka ghayra maftoon.
+
+### 15.9 — اللهم حاسبني حسابًا يسيرًا
+**englishMeaning:** O Allah, call me to account with an easy reckoning.
+**englishTransliteration:** Allahumma haasibni hisaaban yaseera.
+
+### 17.1 — دعاء الاستخارة
+**englishMeaning:** O Allah, I seek Your guidance [in making a choice] by virtue of Your knowledge, and I seek ability by virtue of Your power, and I ask You of Your great bounty. For You are able and I am not, and You know and I do not, and You are the Knower of unseen things. O Allah, if You know that this matter is good for me in my religion, my livelihood, and the outcome of my affairs — or he said: in my present and future affairs — then decree it for me, make it easy for me, and then bless it for me. And if You know that this matter is bad for me in my religion, my livelihood, and the outcome of my affairs — or he said: in my present and future affairs — then turn it away from me, and turn me away from it, and decree for me what is good wherever it may be, and make me content with it.
+**englishTransliteration:** Allahumma inni astakheeruka bi‘ilmik, wa astaqdiruka biqudratik, wa as'aluka min fadlikal-‘adheem, fa'innaka taqdiru wa la aqdir, wa ta‘lamu wa la a‘lam, wa anta ‘allaamul-ghuyoob. Allahumma in kunta ta‘lamu anna haadhal-amra khayrun li fi deeni wa ma‘aashi wa ‘aaqibati amri - aw qaala: fi ‘aajili amri wa aajilih - faqdurhu li wa yassirhu li, thumma baarik li feeh, wa in kunta ta‘lamu anna haadhal-amra sharrun li fi deeni wa ma‘aashi wa ‘aaqibati amri - aw qaala: fi ‘aajili amri wa aajilih - fasrifhu ‘anni wasrifni ‘anh, waqdur liyal-khayra haythu kaan, thumma ardini bih.
+
+### 18.1 — اللهم إني أعوذ بك من المأثم والمغرم
+**englishMeaning:** O Allah, I seek refuge in You from sin and from debt.
+**englishTransliteration:** Allahumma inni a‘oothu bika minal-ma'thami wal-maghram.
+
+### 18.2 — اللهم إني أعوذ بك من الهم والحزن...
+**englishMeaning:** O Allah, I seek refuge in You from anxiety and grief, from helplessness and laziness, from cowardice and miserliness, from being overwhelmed by debt, and from being overpowered by [other] men. (Same record as 4.3.)
+**englishTransliteration:** Allahumma inni a‘oothu bika minal-hammi wal-hazan, wal-‘ajzi wal-kasal, wal-jubni wal-bukhl, wa dala‘id-dayni wa ghalabatir-rijaal.
+
+### 18.3 — اللهم اكفني بحلالك عن حرامك...
+**englishMeaning:** O Allah, suffice me with what You have made lawful, [keeping me] away from what You have made unlawful, and enrich me by Your bounty, so that I need no one other than You.
+**englishTransliteration:** Allahummakfini bihalaalika ‘an haraamik, wa aghnini bifadlika ‘amman siwaak.
+
+### 18.4 — اللهم إني أسألك من فضلك ورحمتك
+**englishMeaning:** O Allah, I ask You from Your bounty and Your mercy, for none possesses them but You.
+**englishTransliteration:** Allahumma inni as'aluka min fadlika wa rahmatik, fa'innahu la yamlikuha illa ant.
+
+### 19.1 — يا مقلب القلوب ثبت قلبي على دينك
+**englishMeaning:** O Turner of hearts, make my heart firm upon Your religion.
+**englishTransliteration:** Ya Muqallibal-quloob, thabbit qalbi ‘ala deenik.
+
+### 19.2 — اللهم إني أسألك الهدى والتقى والعفاف والغنى
+**englishMeaning:** O Allah, I ask You for guidance, piety, chastity, and self-sufficiency (contentment of the heart). (Same record as 1.2.)
+**englishTransliteration:** Allahumma inni as'aluka al-huda wat-tuqa wal-‘afaafa wal-ghina.
+
+### 19.3 — ربنا لا تزغ قلوبنا بعد إذ هديتنا...
+**englishMeaning:** Our Lord, let not our hearts deviate after You have guided us, and grant us mercy from Yourself; indeed, You are the Bestower.
+**englishTransliteration:** Rabbana la tuzigh quloobana ba‘da idh hadaytana wa hab lana min ladunka rahmah, innaka Antal-Wahhaab.
+
+### 19.4 — اللهم اهدني وسددني
+**englishMeaning:** O Allah, guide me and make me steadfast/upright. (Same record as 1.4.)
+**englishTransliteration:** Allahummahdini wa saddidni.
+
+### 20.1.1 — ذهب الظمأ وابتلت العروق وثبت الأجر إن شاء الله
+**englishMeaning:** The thirst has gone, the veins are moistened, and the reward is confirmed, if Allah wills.
+**englishTransliteration:** Dhahabaz-zama'u wabtallatil-‘urooqu wa thabatal-ajru in shaa' Allah.
+**mapping note:** Placeholder ID corrected from section header "20.1" to the actual leaf record "20.1.1" (the only dua text under this section in the Arabic Master). No wording, source, or grade changed.
+
+### 20.2.1 — اللهم إنك عفو تحب العفو فاعف عني
+**englishMeaning:** O Allah, You are Most Forgiving, and You love forgiveness, so forgive me.
+**englishTransliteration:** Allahumma innaka ‘afuwwun tuhibbul-‘afwa fa‘fu ‘anni.
+**mapping note:** Placeholder ID corrected from section header "20.2" to the actual leaf record "20.2.1" (the only dua text under this section in the Arabic Master). No wording, source, or grade changed.
+
+### 20.3.1 — التلبية (لبيك اللهم لبيك)
+**englishMeaning:** Here I am, O Allah, here I am. Here I am, You have no partner, here I am. Indeed, all praise, blessing, and sovereignty belong to You. You have no partner.
+**englishTransliteration:** Labbaykallahumma labbayk, labbayka la shareeka laka labbayk, innal-hamda wan-ni‘mata laka wal-mulk, la shareeka lak.
+**mapping note:** This section's placeholder ("20.3 — الحج والعمرة") did not correspond to any single leaf record — the section contains three distinct texts (talbiyah, the Safa/Marwah dhikr, and the Baqarah 201 dua at Tawaf). Split below into the three actual Master leaf IDs (20.3.1, 20.3.2, 20.3.3) so each real record gets its own English content. No wording, source, or grade changed.
+
+### 20.3.2 — ذكر الصفا والمروة
+**englishMeaning:** There is no god but Allah alone, with no partner. His is the dominion and His is all praise, and He is able to do all things. There is no god but Allah alone; He fulfilled His promise, gave victory to His servant, and defeated the confederate armies alone.
+**englishTransliteration:** La ilaha illallahu wahdahu la shareeka lah, lahul-mulku wa lahul-hamd, wa huwa ‘ala kulli shay'in qadeer, la ilaha illallahu wahdah, anjaza wa‘dah, wa nasara ‘abdah, wa hazamal-ahzaaba wahdah.
+
+### 20.3.3 — ربنا آتنا في الدنيا حسنة... (عند الطواف)
+**englishMeaning:** Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire. (Same record as 1.1; this entry documents its occurrence between the Yemeni Corner and the Black Stone during Tawaf.)
+**englishTransliteration:** Rabbana aatina fid-dunya hasanatan wa fil-aakhirati hasanatan wa qina ‘adhaaban-naar.
+
+### 20.4 — ضوابط الإضافة الموسمية
+**Not applicable.** This is an editorial policy/rules note in the Arabic Master (guidelines for what may be added under "Seasonal Worship"), not a dhikr or dua text. It has no Arabic wording to translate or transliterate, so no englishMeaning/englishTransliteration fields are produced for it.
+
+---
+
+# PRODUCTION CHECKLIST
+
+Before replacing the project master with this file:
+
+- [ ] Every actual Miscellaneous dhikr/dua has an English meaning.
+- [ ] Every English-facing Arabic dhikr that needs pronunciation has transliteration.
+- [ ] No English field changes the Arabic wording.
+- [ ] No English field invents source, grade, count, occasion, or virtue.
+- [ ] Duplicate IDs remain single records.
+- [ ] Pending records remain pending.
+- [ ] The four UI categories use the same compact card structure:
+      Arabic text → Listen → English Meaning.

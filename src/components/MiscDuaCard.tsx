@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Copy, Heart } from "lucide-react";
+import { Copy, Heart, Volume2, VolumeX, Languages } from "lucide-react";
 import type { MiscDuaItem } from "../data/misc-library";
-import { miscLibraryLabels as t } from "../data/misc-library";
+import { miscLibraryLabels as t, miscMeaningLabels } from "../data/misc-library";
+import { useLanguage } from "../theme/LanguageContext";
 
 // The single reading card shared by the category list and search results —
 // per spec section 10: the COMPLETE Arabic text once, a count line (only
@@ -9,18 +10,30 @@ import { miscLibraryLabels as t } from "../data/misc-library";
 // takhrij/source line — the dua text is the main content, never
 // overpowered by its citation. No repetition/completion tracking here
 // (this is a read-only reference library, not a daily-wird journey like
-// Written Adhkar) — only two lightweight, existing-architecture-compatible
-// actions: copy and a local favorite toggle.
+// Written Adhkar) — only lightweight, existing-architecture-compatible
+// actions: copy, favorite, listen, and (when the record has an English
+// layer) a button revealing the meaning in a separate sheet — see
+// MiscMeaningModal. The Arabic text stays the ONLY thing shown inline;
+// englishMeaning/englishTransliteration never render inside this card
+// itself, only through that dedicated button+modal (spec section 7).
 export function MiscDuaCard({
   item,
   isFavorite,
   onToggleFavorite,
+  isSpeaking,
+  onToggleListen,
+  onShowMeaning,
 }: {
   item: MiscDuaItem;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  isSpeaking: boolean;
+  onToggleListen: () => void;
+  onShowMeaning: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const { language } = useLanguage();
+  const mt = miscMeaningLabels[language];
 
   async function handleCopy() {
     try {
@@ -79,6 +92,19 @@ export function MiscDuaCard({
         <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
+            onClick={onToggleListen}
+            aria-pressed={isSpeaking}
+            aria-label={isSpeaking ? mt.stopListenAria : mt.listenAria}
+            className="flex h-8 w-8 items-center justify-center rounded-full"
+            style={{
+              boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)",
+              color: isSpeaking ? "var(--wa-gold)" : "var(--wa-ink-muted)",
+            }}
+          >
+            {isSpeaking ? <VolumeX size={15} strokeWidth={1.8} /> : <Volume2 size={15} strokeWidth={1.8} />}
+          </button>
+          <button
+            type="button"
             onClick={handleCopy}
             aria-label={t.copyAria}
             className="flex h-8 w-8 items-center justify-center rounded-full"
@@ -101,6 +127,22 @@ export function MiscDuaCard({
           </button>
         </div>
       </div>
+
+      {/* Separate, dedicated action — never inline text — per spec section
+          7/9: only rendered when this record actually has an English
+          layer; a record left pending/without Master coverage shows no
+          button at all rather than an invented or empty meaning. */}
+      {item.englishMeaning && (
+        <button
+          type="button"
+          onClick={onShowMeaning}
+          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full py-2 text-[11.5px] font-semibold"
+          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-gold)" }}
+        >
+          <Languages size={14} strokeWidth={1.8} />
+          {mt.meaningButton}
+        </button>
+      )}
 
       {copied && (
         <span

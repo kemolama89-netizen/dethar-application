@@ -25,6 +25,7 @@ import { TopBar } from "./TopBar";
 import { BackHeader } from "./BackHeader";
 import { BottomNav } from "./BottomNav";
 import { MiscDuaCard } from "./MiscDuaCard";
+import { MiscMeaningModal } from "./MiscMeaningModal";
 import { MedallionIcon, LanternOutlineIcon, MosqueDomeIcon, ArchNicheOutline } from "../icons/CustomIcons";
 import {
   MISC_CATEGORY_ORDER,
@@ -34,8 +35,9 @@ import {
   MISC_FEATURED_IDS,
   miscLibraryLabels as t,
 } from "../data/misc-library";
-import type { MiscCategoryKey } from "../data/misc-library";
+import type { MiscCategoryKey, MiscDuaItem } from "../data/misc-library";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
+import { useMiscSpeech } from "../lib/useMiscSpeech";
 
 interface MiscLibraryScreenProps {
   onBack: () => void;
@@ -183,6 +185,8 @@ export function MiscLibraryScreen({
   const [favorites, setFavorites] = useState<Set<string>>(() => loadMiscFavorites());
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [meaningItem, setMeaningItem] = useState<MiscDuaItem | null>(null);
+  const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
 
   function handleToggleFavorite(id: string) {
     setFavorites((prev) => {
@@ -214,7 +218,7 @@ export function MiscLibraryScreen({
   const isSearching = searchOpen && query.trim().length > 0;
 
   return (
-    <DeviceFrame background="var(--wa-page-bg)">
+    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningItem !== null}>
       <AppShell>
         <TopBar />
         <div className="flex flex-1 flex-col">
@@ -271,6 +275,9 @@ export function MiscLibraryScreen({
                     item={item}
                     isFavorite={favorites.has(item.id)}
                     onToggleFavorite={() => handleToggleFavorite(item.id)}
+                    isSpeaking={speakingId === item.id}
+                    onToggleListen={() => toggleSpeech(item.id, item.text_ar)}
+                    onShowMeaning={() => setMeaningItem(item)}
                   />
                 ))
               )}
@@ -291,6 +298,9 @@ export function MiscLibraryScreen({
                         item={item}
                         isFavorite={favorites.has(item.id)}
                         onToggleFavorite={() => handleToggleFavorite(item.id)}
+                        isSpeaking={speakingId === item.id}
+                        onToggleListen={() => toggleSpeech(item.id, item.text_ar)}
+                        onShowMeaning={() => setMeaningItem(item)}
                       />
                     ))}
                   </div>
@@ -319,6 +329,8 @@ export function MiscLibraryScreen({
           }}
         />
       </AppShell>
+
+      <MiscMeaningModal item={meaningItem} onClose={() => setMeaningItem(null)} />
     </DeviceFrame>
   );
 }
