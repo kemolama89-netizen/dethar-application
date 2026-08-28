@@ -16,6 +16,31 @@
 // stated. See the end-of-task report for the exact list of what was
 // excluded and why.
 //
+// The Master file was later updated to add sections 17-20 (الاستخارة،
+// قضاء الدين والرزق، الهداية والثبات، العبادة الموسمية) — integrated below
+// using the same completeness rule as everything else in this file.
+//
+import miscGeneralDuas from "../assets/illustrations/dithar-misc-general-duas.webp";
+import miscIstighfarTaubah from "../assets/illustrations/dithar-misc-istighfar-taubah.webp";
+import miscProtection from "../assets/illustrations/dithar-misc-protection.webp";
+import miscDistress from "../assets/illustrations/dithar-misc-distress.webp";
+import miscHealing from "../assets/illustrations/dithar-misc-healing.webp";
+import miscFunerals from "../assets/illustrations/dithar-misc-funerals.webp";
+import miscTravel from "../assets/illustrations/dithar-misc-travel.webp";
+import miscHomeDailyLife from "../assets/illustrations/dithar-misc-home-daily-life.webp";
+import miscRainCosmicPhenomena from "../assets/illustrations/dithar-misc-rain-cosmic-phenomena.webp";
+import miscQuranicDuas from "../assets/illustrations/dithar-misc-quranic-duas.webp";
+import miscSalahDuas from "../assets/illustrations/dithar-misc-salah-duas.webp";
+import miscAuthenticHidden from "../assets/illustrations/dithar-misc-authentic-hidden.webp";
+import miscFamilyProgeny from "../assets/illustrations/dithar-misc-family-progeny.webp";
+import miscFoodDrink from "../assets/illustrations/dithar-misc-food-drink.webp";
+import miscMosqueAdhan from "../assets/illustrations/dithar-misc-mosque-adhan.webp";
+import miscPeaceGatherings from "../assets/illustrations/dithar-misc-peace-gatherings.webp";
+import miscIstikhara from "../assets/illustrations/dithar-misc-istikhara.webp";
+import miscDebtRizq from "../assets/illustrations/dithar-misc-debt-rizq.webp";
+import miscGuidanceStability from "../assets/illustrations/dithar-misc-guidance-stability.webp";
+import miscSeasonalWorship from "../assets/illustrations/dithar-misc-seasonal-worship.webp";
+
 // No wording, count, narrator, source, or grade below was invented —
 // every field is copied verbatim from the Master Content Library (or, for
 // the two Home-category duas noted below, from this app's own existing,
@@ -43,17 +68,33 @@ export type MiscCategoryKey =
   | "weather"
   | "quran"
   | "prayer"
-  | "authenticRare";
+  | "authenticRare"
+  | "istikharah"
+  | "debtRizq"
+  | "guidance"
+  | "seasonal";
 
 export interface MiscCategoryMeta {
   key: MiscCategoryKey;
   title_ar: string;
   subtitle_ar: string;
+  /**
+   * Category-card artwork (src/assets/illustrations/dithar-misc-*.webp —
+   * re-encoded from the uploaded ASSETS/*.png source for file size; see
+   * that directory's README for the full derivation chain). Optional so a
+   * category can still fall back to its existing icon if a future
+   * category ships with no matching asset yet.
+   */
+  image?: string;
 }
 
 // Display order — follows the Master Content Library's own section order
-// (1 through 16), which is itself a deliberate curatorial sequence
-// (comprehensive duas first, the editorial "صحيح مهجور" section last).
+// (1 through 20), which is itself a deliberate curatorial sequence
+// (comprehensive duas first, the editorial "صحيح مهجور" section marked as
+// the deliberate visual close of the grid — see MiscLibraryScreen, which
+// always renders it last regardless of its position in this array — with
+// the four newly added sections 17-20 following it here in Master File
+// numbering order).
 export const MISC_CATEGORY_ORDER: MiscCategoryKey[] = [
   "comprehensive",
   "istighfar",
@@ -71,26 +112,163 @@ export const MISC_CATEGORY_ORDER: MiscCategoryKey[] = [
   "quran",
   "prayer",
   "authenticRare",
+  "istikharah",
+  "debtRizq",
+  "guidance",
+  "seasonal",
 ];
 
 export const MISC_CATEGORIES: Record<MiscCategoryKey, MiscCategoryMeta> = {
-  comprehensive: { key: "comprehensive", title_ar: "أدعية جامعة", subtitle_ar: "أدعية ثابتة واسعة المعنى" },
-  istighfar: { key: "istighfar", title_ar: "الاستغفار والتوبة", subtitle_ar: "أدعية طلب المغفرة والرجوع إلى الله" },
-  protection: { key: "protection", title_ar: "الحفظ والاستعاذة", subtitle_ar: "أدعية الحماية واللجوء إلى الله" },
-  distress: { key: "distress", title_ar: "الكرب والهم", subtitle_ar: "أدعية عند الضيق والشدة والحزن" },
-  healing: { key: "healing", title_ar: "المرض والشفاء", subtitle_ar: "أدعية الرقية وعيادة المريض" },
-  deceased: { key: "deceased", title_ar: "الميت والجنائز", subtitle_ar: "أدعية ثابتة للميت وعند المصيبة" },
-  family: { key: "family", title_ar: "الأسرة والذرية", subtitle_ar: "أدعية الزواج والأبناء" },
-  travel: { key: "travel", title_ar: "السفر والركوب", subtitle_ar: "أدعية الركوب والسفر والعودة" },
-  home: { key: "home", title_ar: "المنزل والحياة اليومية", subtitle_ar: "أدعية الخروج والدخول والنوم" },
-  mosque: { key: "mosque", title_ar: "المسجد والأذان", subtitle_ar: "أدعية الوضوء ودخول المسجد والأذان" },
-  food: { key: "food", title_ar: "الطعام والشراب", subtitle_ar: "أدعية قبل الطعام وبعده" },
-  gatherings: { key: "gatherings", title_ar: "السلام والمجالس", subtitle_ar: "أدعية المجالس والعطاس" },
-  weather: { key: "weather", title_ar: "المطر والظواهر الكونية", subtitle_ar: "أدعية الريح والمطر" },
-  quran: { key: "quran", title_ar: "أدعية القرآن", subtitle_ar: "أدعية ثابتة من كتاب الله" },
-  prayer: { key: "prayer", title_ar: "أدعية الصلاة", subtitle_ar: "أذكار داخل الصلاة نفسها" },
-  authenticRare: { key: "authenticRare", title_ar: "صحيح مهجور", subtitle_ar: "أذكار صحيحة قلّ انتشارها" },
+  comprehensive: {
+    key: "comprehensive",
+    title_ar: "أدعية جامعة",
+    subtitle_ar: "أدعية ثابتة واسعة المعنى",
+    image: miscGeneralDuas,
+  },
+  istighfar: {
+    key: "istighfar",
+    title_ar: "الاستغفار والتوبة",
+    subtitle_ar: "أدعية طلب المغفرة والرجوع إلى الله",
+    image: miscIstighfarTaubah,
+  },
+  protection: {
+    key: "protection",
+    title_ar: "الحفظ والاستعاذة",
+    subtitle_ar: "أدعية الحماية واللجوء إلى الله",
+    image: miscProtection,
+  },
+  distress: {
+    key: "distress",
+    title_ar: "الكرب والهم",
+    subtitle_ar: "أدعية عند الضيق والشدة والحزن",
+    image: miscDistress,
+  },
+  healing: {
+    key: "healing",
+    title_ar: "المرض والشفاء",
+    subtitle_ar: "أدعية الرقية وعيادة المريض",
+    image: miscHealing,
+  },
+  deceased: {
+    key: "deceased",
+    title_ar: "الميت والجنائز",
+    subtitle_ar: "أدعية ثابتة للميت وعند المصيبة",
+    image: miscFunerals,
+  },
+  family: {
+    key: "family",
+    title_ar: "الأسرة والذرية",
+    subtitle_ar: "أدعية الزواج والأبناء",
+    image: miscFamilyProgeny,
+  },
+  travel: {
+    key: "travel",
+    title_ar: "السفر والركوب",
+    subtitle_ar: "أدعية الركوب والسفر والعودة",
+    image: miscTravel,
+  },
+  home: {
+    key: "home",
+    title_ar: "المنزل والحياة اليومية",
+    subtitle_ar: "أدعية الخروج والدخول والنوم",
+    image: miscHomeDailyLife,
+  },
+  mosque: {
+    key: "mosque",
+    title_ar: "المسجد والأذان",
+    subtitle_ar: "أدعية الوضوء ودخول المسجد والأذان",
+    image: miscMosqueAdhan,
+  },
+  food: {
+    key: "food",
+    title_ar: "الطعام والشراب",
+    subtitle_ar: "أدعية قبل الطعام وبعده",
+    image: miscFoodDrink,
+  },
+  gatherings: {
+    key: "gatherings",
+    title_ar: "السلام والمجالس",
+    subtitle_ar: "أدعية المجالس والعطاس",
+    image: miscPeaceGatherings,
+  },
+  weather: {
+    key: "weather",
+    title_ar: "المطر والظواهر الكونية",
+    subtitle_ar: "أدعية الريح والمطر",
+    image: miscRainCosmicPhenomena,
+  },
+  quran: {
+    key: "quran",
+    title_ar: "أدعية القرآن",
+    subtitle_ar: "أدعية ثابتة من كتاب الله",
+    image: miscQuranicDuas,
+  },
+  prayer: {
+    key: "prayer",
+    title_ar: "أدعية الصلاة",
+    subtitle_ar: "أذكار داخل الصلاة نفسها",
+    image: miscSalahDuas,
+  },
+  authenticRare: {
+    key: "authenticRare",
+    title_ar: "صحيح مهجور",
+    subtitle_ar: "أذكار صحيحة قلّ انتشارها",
+    image: miscAuthenticHidden,
+  },
+  // Sections 17-20 — newly added to the Master Content Library.
+  istikharah: {
+    key: "istikharah",
+    title_ar: "الاستخارة",
+    subtitle_ar: "دعاء طلب الخِيَرة من الله عند التردد",
+    image: miscIstikhara,
+  },
+  debtRizq: {
+    key: "debtRizq",
+    title_ar: "قضاء الدين والرزق",
+    subtitle_ar: "أدعية تفريج الدين وسعة الرزق",
+    image: miscDebtRizq,
+  },
+  guidance: {
+    key: "guidance",
+    title_ar: "الهداية والثبات",
+    subtitle_ar: "أدعية الثبات على الحق وسلامة القلب",
+    image: miscGuidanceStability,
+  },
+  seasonal: {
+    key: "seasonal",
+    title_ar: "العبادة الموسمية",
+    subtitle_ar: "أذكار المواسم الثابتة كالصيام والحج",
+    image: miscSeasonalWorship,
+  },
 };
+
+// Proactively fetch every category-card image the instant this module
+// loads — deliberately not gated by which tile is actually visible/near
+// the viewport, so scrolling the category grid never hits a loading gap.
+// This runs at module-evaluation time (before MiscLibraryScreen or
+// MiscCategoryScreen even render), which is the earliest point in this
+// module's own lifecycle — no separate startup hook needed. All 20 WebP
+// files combined are already small after the earlier size optimization
+// (tens of KB each, well under 1MB total), so requesting all of them at
+// once costs far less than the visible per-card delay it removes; a
+// throttled/batched fetch would only add complexity for no real benefit
+// at this payload size. ES modules evaluate exactly once no matter how
+// many places import this file, so this never re-runs on repeat
+// navigation into the Misc screens — and the existing-link check makes it
+// a no-op if the module is ever re-evaluated anyway (dev HMR).
+if (typeof document !== "undefined") {
+  Object.values(MISC_CATEGORIES)
+    .map((meta) => meta.image)
+    .filter((src): src is string => Boolean(src))
+    .forEach((href) => {
+      if (document.head.querySelector(`link[rel="preload"][href="${href}"]`)) return;
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = href;
+      document.head.appendChild(link);
+    });
+}
 
 export interface MiscDuaItem {
   id: string;
@@ -106,6 +284,21 @@ export interface MiscDuaItem {
    */
   source_ar?: string;
   isQuranic?: boolean;
+  /**
+   * The Master file's "المناسبة" line, shown only when present — introduced
+   * for the "العبادة الموسمية" (seasonal) category, section 20, where
+   * several distinct occasions (fitr, laylat al-qadr, hajj) sit inside one
+   * category card and the occasion is no longer implied by the category
+   * itself the way it is everywhere else.
+   */
+  occasion_ar?: string;
+  /**
+   * A Master-file "ملاحظات" line surfaced verbatim only where it carries
+   * information the user needs to perform the dua correctly (e.g. praying
+   * two rakahs before istikharah) — not added retroactively to existing
+   * entries whose notes are documentation-only.
+   */
+  note_ar?: string;
   categories: MiscCategoryKey[];
 }
 
@@ -117,14 +310,21 @@ export const MISC_DUAS: MiscDuaItem[] = [
     count_ar: "بدون عدد محدد",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 201",
     isQuranic: true,
-    categories: ["comprehensive", "quran"],
+    // Also listed at Master file 20.3.3 — ثبت وروده بين الركن اليماني
+    // والحجر الأسود في الطواف (أحمد والنسائي وابن خزيمة، عن عبد الله بن
+    // السائب) — linked to "العبادة الموسمية" by category rather than
+    // duplicated (20.3.3: "النص موجود أصلًا في 1.1").
+    categories: ["comprehensive", "quran", "seasonal"],
   },
   {
     id: "allahumma-inni-asaluka-alhuda",
     text_ar: "اللهم إني أسألك الهدى والتقى والعفاف والغنى.",
     count_ar: "بدون عدد محدد",
     source_ar: "صحيح مسلم (2721)",
-    categories: ["comprehensive"],
+    // Also listed at Master file 19.2 under "الهداية والثبات" — same
+    // record, linked by category rather than duplicated (per 19.2's own
+    // note: "النص موجود أصلًا في 1.2؛ لا يُكرر في قاعدة البيانات").
+    categories: ["comprehensive", "guidance"],
   },
   {
     id: "allahumma-ighfir-li-warhamni",
@@ -138,7 +338,9 @@ export const MISC_DUAS: MiscDuaItem[] = [
     text_ar: "اللهم اهدني وسددني.",
     count_ar: "بدون عدد محدد",
     source_ar: "صحيح مسلم",
-    categories: ["comprehensive"],
+    // Also listed at Master file 19.4 under "الهداية والثبات" — linked by
+    // category, not duplicated (19.4: "النص موجود أصلًا في 1.4").
+    categories: ["comprehensive", "guidance"],
   },
   {
     id: "allahumma-aslih-li-dini",
@@ -227,7 +429,9 @@ export const MISC_DUAS: MiscDuaItem[] = [
     text_ar: "اللهم إني أعوذ بك من الهم والحزن، والعجز والكسل، والجبن والبخل، وضلع الدين وغلبة الرجال.",
     count_ar: "بدون عدد محدد",
     source_ar: "صحيح البخاري وصحيح مسلم",
-    categories: ["distress"],
+    // Also listed at Master file 18.2 under "قضاء الدين والرزق" — linked
+    // by category, not duplicated (18.2: "النص موجود أصلًا في 4.3").
+    categories: ["distress", "debtRizq"],
   },
   {
     id: "audhu-billahi-min-al-shaytan-al-rajim",
@@ -537,10 +741,16 @@ export const MISC_DUAS: MiscDuaItem[] = [
   },
   {
     id: "rabbana-la-tuzigh-qulubana",
-    text_ar: "ربنا لا تزغ قلوبنا بعد إذ هديتنا وهب لنا من لدنك رحمة.",
+    // Corrected to the complete ayah per the updated Master file's section
+    // 19.3, which gives the full verse including "إنك أنت الوهاب" — the
+    // previous text here (from section 14.17) stopped short of it. Per the
+    // rule that a dua must be displayed once in full — never a partial
+    // version in one place and the complete one elsewhere — this single
+    // canonical record now carries the complete text and both categories.
+    text_ar: "ربنا لا تزغ قلوبنا بعد إذ هديتنا وهب لنا من لدنك رحمة إنك أنت الوهاب.",
     source_ar: "القرآن الكريم — سورة آل عمران، الآية 8",
     isQuranic: true,
-    categories: ["quran"],
+    categories: ["quran", "guidance"],
   },
   {
     id: "rabbana-taqabbal-minna",
@@ -607,7 +817,107 @@ export const MISC_DUAS: MiscDuaItem[] = [
     source_ar: "أبو داود (1522)، والنسائي، وابن خزيمة — عن معاذ بن جبل رضي الله عنه، صححه الألباني",
     categories: ["prayer"],
   },
+
+  // ---- 17. الاستخارة (newly added to the Master Content Library) ----
+  {
+    id: "dua-al-istikharah",
+    text_ar:
+      "اللهم إني أستخيرك بعلمك، وأستقدرك بقدرتك، وأسألك من فضلك العظيم، فإنك تقدر ولا أقدر، وتعلم ولا أعلم، وأنت علام الغيوب، اللهم إن كنت تعلم أن هذا الأمر خير لي في ديني ومعاشي وعاقبة أمري - أو قال: في عاجل أمري وآجله - فاقدره لي ويسره لي، ثم بارك لي فيه، وإن كنت تعلم أن هذا الأمر شر لي في ديني ومعاشي وعاقبة أمري - أو قال: في عاجل أمري وآجله - فاصرفه عني واصرفني عنه، واقدر لي الخير حيث كان، ثم أرضني به.",
+    count_ar: "مرة واحدة للدعاء بعد صلاة الاستخارة، دون تكرار عددي مخصوص ثابت للدعاء نفسه",
+    narrator_ar: "جابر بن عبد الله رضي الله عنهما",
+    source_ar: "صحيح البخاري (6382) — عن جابر بن عبد الله رضي الله عنهما",
+    note_ar:
+      "يسبق الدعاء صلاة ركعتين من غير الفريضة، كما في الحديث، ويستبدل المستخدم «هذا الأمر» بحاجته عند الدعاء، دون تغيير أصل النص.",
+    categories: ["istikharah"],
+  },
+
+  // ---- 18. قضاء الدين والرزق (newly added) ----
+  {
+    id: "allahumma-inni-audhu-bika-min-al-matham-wal-maghram",
+    text_ar: "اللهم إني أعوذ بك من المأثم والمغرم.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "عائشة رضي الله عنها",
+    source_ar: "صحيح البخاري (2397) وصحيح مسلم (589) — عن عائشة رضي الله عنها",
+    categories: ["debtRizq", "protection", "comprehensive"],
+  },
+  {
+    id: "allahumma-ikfini-bihalalika-an-haramik",
+    text_ar: "اللهم اكفني بحلالك عن حرامك، وأغنني بفضلك عمن سواك.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "علي بن أبي طالب رضي الله عنه",
+    // Master file explicitly instructs: "لا يُوصف في البطاقة بأنه حديث
+    // صحيح؛ ويُذكر الحكم كما هو" — grade is "حسن", stated as such.
+    source_ar: "جامع الترمذي (3563) — عن علي بن أبي طالب رضي الله عنه، حسنه الألباني",
+    categories: ["debtRizq"],
+  },
+
+  // ---- 19. الهداية والثبات (newly added) ----
+  {
+    id: "ya-muqallib-al-qulub-thabbit-qalbi",
+    text_ar: "يا مقلب القلوب، ثبت قلبي على دينك.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "أم سلمة رضي الله عنها",
+    source_ar: "جامع الترمذي (3522) — عن أم سلمة رضي الله عنها، صححه الألباني وحسنه الترمذي",
+    categories: ["guidance"],
+  },
+
+  // ---- 20. العبادة الموسمية (newly added) — content restricted to what
+  // the Master file itself explicitly establishes (section 20.4: no
+  // occasion is added merely because it is well-known; Ashura, Arafah,
+  // Eid, and Dhul-Hijjah appear nowhere in the Master file's section 20
+  // and are deliberately NOT added here) ----
+  {
+    id: "dhahaba-al-zama-wabtallat-al-uruq",
+    text_ar: "ذهب الظمأ، وابتلت العروق، وثبت الأجر إن شاء الله.",
+    occasion_ar: "عند الإفطار",
+    count_ar: "مرة عند الإفطار، ولا يثبت تكرار عددي آخر",
+    narrator_ar: "عبد الله بن عمر رضي الله عنهما",
+    source_ar: "سنن أبي داود (2357) — عن عبد الله بن عمر رضي الله عنهما، حسنه الألباني في صحيح أبي داود",
+    categories: ["seasonal"],
+  },
+  {
+    id: "allahumma-innaka-afuwwun-tuhibb-al-afw",
+    text_ar: "اللهم إنك عفو تحب العفو فاعف عني.",
+    occasion_ar: "ليلة القدر — سؤال النبي ﷺ عن الدعاء فيها",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "عائشة رضي الله عنها",
+    source_ar: "جامع الترمذي (3513) وابن ماجه (3850) — عن عائشة رضي الله عنها، حسن صحيح عند الترمذي وصححه الألباني",
+    categories: ["seasonal"],
+  },
+  {
+    id: "talbiyah",
+    text_ar: "لبيك اللهم لبيك، لبيك لا شريك لك لبيك، إن الحمد والنعمة لك والملك، لا شريك لك.",
+    occasion_ar: "عند الإهلال بالحج أو العمرة",
+    count_ar: "بحسب التلبية أثناء النسك، ولا عدد ثابت مخصوص",
+    narrator_ar: "عبد الله بن عمر رضي الله عنهما",
+    source_ar: "صحيح البخاري (1549) وصحيح مسلم (1184) — عن عبد الله بن عمر رضي الله عنهما",
+    categories: ["seasonal"],
+  },
+  {
+    id: "dhikr-al-safa-wal-marwah",
+    text_ar:
+      "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد، وهو على كل شيء قدير، لا إله إلا الله وحده، أنجز وعده، ونصر عبده، وهزم الأحزاب وحده.",
+    occasion_ar: "على الصفا والمروة أثناء السعي",
+    count_ar: "ثلاث مرات، ويتخلل ذلك الدعاء",
+    narrator_ar: "جابر رضي الله عنه",
+    source_ar: "حديث جابر رضي الله عنه في صفة حج النبي ﷺ، رواه مسلم",
+    note_ar: "يثبت الذكر في الموضع المذكور، ولا يُحوَّل إلى دعاء عام خاص بالسعي خارج هذا السياق.",
+    categories: ["seasonal"],
+  },
 ];
+
+// Per-category item counts, computed ONCE here (module load) rather than by
+// filtering the full MISC_DUAS array from inside every category tile's
+// render — MISC_DUAS never changes at runtime, so re-deriving this on every
+// re-render of the category grid (e.g. on each favorite toggle) was pure
+// wasted work for a result that's always identical.
+export const MISC_CATEGORY_COUNTS: Record<MiscCategoryKey, number> = MISC_CATEGORY_ORDER.reduce(
+  (acc, key) => {
+    acc[key] = MISC_DUAS.filter((item) => item.categories.includes(key)).length;
+    return acc;
+  },
+  {} as Record<MiscCategoryKey, number>,
+);
 
 // A small, FIXED editorial selection for the landing screen's "مختارات
 // اليوم" strip — never randomly generated, always a hand-picked subset of
@@ -639,6 +949,8 @@ export const miscLibraryLabels = {
   // hadith-style label for a Quranic verse, per spec section 11.
   sourceLabelHadith: "التخريج",
   sourceLabelQuran: "المصدر",
+  occasionLabel: "المناسبة",
+  noteLabel: "ملاحظة",
   favoriteAria: "إضافة إلى المفضلة",
   unfavoriteAria: "إزالة من المفضلة",
   copyAria: "نسخ النص",

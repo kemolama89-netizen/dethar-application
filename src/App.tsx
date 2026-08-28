@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
 import { PaletteProvider } from "./theme/PaletteContext";
@@ -10,17 +10,47 @@ import { InsightCard } from "./components/InsightCard";
 import { PrayerTimesPanel } from "./components/PrayerTimesPanel";
 import { BottomNav } from "./components/BottomNav";
 import { ContentModal } from "./components/ContentModal";
-import { TasbeehScreen } from "./components/TasbeehScreen";
-import { WrittenAdhkarScreen } from "./components/WrittenAdhkarScreen";
-import { WrittenAdhkarReader } from "./components/WrittenAdhkarReader";
-import { SettingsScreen } from "./components/SettingsScreen";
-import { MiscLibraryScreen } from "./components/MiscLibraryScreen";
-import { MiscCategoryScreen } from "./components/MiscCategoryScreen";
 import { BookOpen } from "lucide-react";
 import { MosqueDomeIcon } from "./icons/CustomIcons";
 import { labels, insightCardContent, hadithCardContent } from "./data/content";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
+
+// Every screen except Home is loaded lazily, in its own chunk, fetched only
+// the first time the user actually navigates there — Home is the one
+// screen guaranteed to be needed at startup, so it alone stays a static
+// import. Named exports need the .then() remap since React.lazy expects a
+// module with a default export. Behavior is unchanged: AppRouter still
+// picks exactly one of these to render, exactly as before.
+const TasbeehScreen = lazy(() => import("./components/TasbeehScreen").then((m) => ({ default: m.TasbeehScreen })));
+const WrittenAdhkarScreen = lazy(() =>
+  import("./components/WrittenAdhkarScreen").then((m) => ({ default: m.WrittenAdhkarScreen })),
+);
+const WrittenAdhkarReader = lazy(() =>
+  import("./components/WrittenAdhkarReader").then((m) => ({ default: m.WrittenAdhkarReader })),
+);
+const SettingsScreen = lazy(() => import("./components/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
+const MiscLibraryScreen = lazy(() =>
+  import("./components/MiscLibraryScreen").then((m) => ({ default: m.MiscLibraryScreen })),
+);
+const MiscCategoryScreen = lazy(() =>
+  import("./components/MiscCategoryScreen").then((m) => ({ default: m.MiscCategoryScreen })),
+);
+
+// Shown for the brief moment a lazy screen's chunk is being fetched — just
+// the same frame chrome every screen already renders first (see
+// DeviceFrame/AppShell/TopBar below), so the transition never drops to a
+// bare blank page. On a bundled production build this chunk fetch is
+// typically imperceptible; this only guards the rare slow-network case.
+function ScreenFallback() {
+  return (
+    <DeviceFrame>
+      <AppShell>
+        <TopBar />
+      </AppShell>
+    </DeviceFrame>
+  );
+}
 
 // The Featured Hadith under the logo is never previewed/clamped — it has
 // no modal state here. "Read more" remains only for the two content cards.
@@ -148,89 +178,101 @@ function AppRouter() {
   if (screen === "tasbeeh") {
     return (
       <div key={screen} className="dithar-app-transition">
-        <TasbeehScreen
-          onNavigateHome={() => setScreen("home")}
-          onNavigateToWritten={() => setScreen("written")}
-          onNavigateToSettings={() => setScreen("settings")}
-        />
+        <Suspense fallback={<ScreenFallback />}>
+          <TasbeehScreen
+            onNavigateHome={() => setScreen("home")}
+            onNavigateToWritten={() => setScreen("written")}
+            onNavigateToSettings={() => setScreen("settings")}
+          />
+        </Suspense>
       </div>
     );
   }
   if (screen === "written") {
     return (
       <div key={screen} className="dithar-app-transition">
-        <WrittenAdhkarScreen
-          onNavigateHome={() => setScreen("home")}
-          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-          onNavigateToSettings={() => setScreen("settings")}
-          onSelectCategory={(key) => {
-            // "Miscellaneous Adhkar & Duas" is now the richer Dithar
-            // Library (landing + category grid + search) built from
-            // ASSETS/dithar_master_content_library.md, rather than the
-            // old flat single-reader list — every other category is
-            // completely unaffected and still opens the existing reader.
-            if (key === "misc") {
-              setScreen("misc-library");
-              return;
-            }
-            setWrittenCategory(key);
-            setScreen("written-reader");
-          }}
-        />
+        <Suspense fallback={<ScreenFallback />}>
+          <WrittenAdhkarScreen
+            onNavigateHome={() => setScreen("home")}
+            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+            onNavigateToSettings={() => setScreen("settings")}
+            onSelectCategory={(key) => {
+              // "Miscellaneous Adhkar & Duas" is now the richer Dithar
+              // Library (landing + category grid + search) built from
+              // ASSETS/dithar_master_content_library.md, rather than the
+              // old flat single-reader list — every other category is
+              // completely unaffected and still opens the existing reader.
+              if (key === "misc") {
+                setScreen("misc-library");
+                return;
+              }
+              setWrittenCategory(key);
+              setScreen("written-reader");
+            }}
+          />
+        </Suspense>
       </div>
     );
   }
   if (screen === "written-reader") {
     return (
       <div key={screen} className="dithar-app-transition">
-        <WrittenAdhkarReader
-          category={writtenCategory}
-          onNavigateHome={() => setScreen("home")}
-          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-          onNavigateToSettings={() => setScreen("settings")}
-          onBackToCategories={() => setScreen("written")}
-        />
+        <Suspense fallback={<ScreenFallback />}>
+          <WrittenAdhkarReader
+            category={writtenCategory}
+            onNavigateHome={() => setScreen("home")}
+            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+            onNavigateToSettings={() => setScreen("settings")}
+            onBackToCategories={() => setScreen("written")}
+          />
+        </Suspense>
       </div>
     );
   }
   if (screen === "misc-library") {
     return (
       <div key={screen} className="dithar-app-transition">
-        <MiscLibraryScreen
-          onBack={() => setScreen("written")}
-          onNavigateHome={() => setScreen("home")}
-          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-          onNavigateToSettings={() => setScreen("settings")}
-          onSelectCategory={(key) => {
-            setMiscCategory(key);
-            setScreen("misc-category");
-          }}
-        />
+        <Suspense fallback={<ScreenFallback />}>
+          <MiscLibraryScreen
+            onBack={() => setScreen("written")}
+            onNavigateHome={() => setScreen("home")}
+            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+            onNavigateToSettings={() => setScreen("settings")}
+            onSelectCategory={(key) => {
+              setMiscCategory(key);
+              setScreen("misc-category");
+            }}
+          />
+        </Suspense>
       </div>
     );
   }
   if (screen === "misc-category") {
     return (
       <div key={screen} className="dithar-app-transition">
-        <MiscCategoryScreen
-          categoryKey={miscCategory}
-          onBack={() => setScreen("misc-library")}
-          onNavigateToWrittenRoot={() => setScreen("written")}
-          onNavigateHome={() => setScreen("home")}
-          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-          onNavigateToSettings={() => setScreen("settings")}
-        />
+        <Suspense fallback={<ScreenFallback />}>
+          <MiscCategoryScreen
+            categoryKey={miscCategory}
+            onBack={() => setScreen("misc-library")}
+            onNavigateToWrittenRoot={() => setScreen("written")}
+            onNavigateHome={() => setScreen("home")}
+            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+            onNavigateToSettings={() => setScreen("settings")}
+          />
+        </Suspense>
       </div>
     );
   }
   if (screen === "settings") {
     return (
       <div key={screen} className="dithar-app-transition">
-        <SettingsScreen
-          onNavigateHome={() => setScreen("home")}
-          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-          onNavigateToWritten={() => setScreen("written")}
-        />
+        <Suspense fallback={<ScreenFallback />}>
+          <SettingsScreen
+            onNavigateHome={() => setScreen("home")}
+            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+            onNavigateToWritten={() => setScreen("written")}
+          />
+        </Suspense>
       </div>
     );
   }
