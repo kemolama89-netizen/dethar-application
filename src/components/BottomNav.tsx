@@ -58,7 +58,7 @@ export function BottomNav({
       style={{
         background: "var(--color-surface)",
         borderColor: "var(--color-gold-soft)",
-        boxShadow: "0 -8px 24px -12px rgba(18, 33, 63, 0.35), 0 12px 24px -14px rgba(18, 33, 63, 0.4)",
+        boxShadow: "0 -8px 24px -12px rgba(var(--color-shadow-rgb), 0.35), 0 12px 24px -14px rgba(var(--color-shadow-rgb), 0.4)",
       }}
     >
       {NAV_ITEMS.map((item) => {
@@ -88,7 +88,7 @@ export function BottomNav({
                       background: "var(--color-primary)",
                       color: "var(--color-gold)",
                       transform: "translateY(-10px)",
-                      boxShadow: "0 8px 16px -4px rgba(18, 33, 63, 0.5)",
+                      boxShadow: "0 8px 16px -4px rgba(var(--color-shadow-rgb), 0.5)",
                     }
                   : undefined
               }

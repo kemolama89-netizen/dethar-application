@@ -55,7 +55,7 @@ export function InsightCard({
         background: "var(--color-surface)",
         borderColor: "var(--color-gold-soft)",
         borderRadius: "var(--card-radius)",
-        boxShadow: "0 8px 20px -14px rgba(18, 33, 63, 0.35)",
+        boxShadow: "0 8px 20px -14px rgba(var(--color-shadow-rgb), 0.35)",
       }}
     >
       <div className="flex gap-3">

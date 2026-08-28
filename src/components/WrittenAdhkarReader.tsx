@@ -9,12 +9,15 @@ import { BackHeader } from "./BackHeader";
 import { CATEGORY_ARTWORK } from "../icons/CategoryEmblem";
 import { useLanguage } from "../theme/LanguageContext";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels, writtenAdhkarItems } from "../data/written-adhkar";
-import type { WrittenAdhkarCategoryKey, WrittenAdhkarItem } from "../data/written-adhkar";
+import type { WrittenAdhkarCategoryKey, WrittenAdhkarItem, PrayerName, PrayerScope } from "../data/written-adhkar";
+import { usePrefersReducedMotion } from "../lib/motion";
+import { recordWrittenRepetition, recordWirdComplete } from "../lib/stats";
 
 interface WrittenAdhkarReaderProps {
   category: WrittenAdhkarCategoryKey;
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
+  onNavigateToSettings: () => void;
   onBackToCategories: () => void;
 }
 
@@ -23,25 +26,74 @@ type Labels = (typeof writtenAdhkarLabels)["ar"];
 // Items with no established repetition count are read once — the ring
 // still gives them the same tap-to-confirm interaction (target 1) rather
 // than a separate, different affordance, so the whole journey uses one
-// consistent gesture throughout.
-function targetFor(item: WrittenAdhkarItem): number {
-  return item.repeat ?? 1;
+// consistent gesture throughout. `selectedPrayer` only ever matters for the
+// small number of items carrying `repeatByPrayer` (the three Quls after
+// prayer) — every other item's target is completely unaffected by it.
+function targetFor(item: WrittenAdhkarItem, selectedPrayer: PrayerName): number {
+  return item.repeatByPrayer?.[selectedPrayer] ?? item.repeat ?? 1;
+}
+
+// The ONLY place that decides whether a Dhikr is shown for the currently
+// selected prayer — see `WrittenAdhkarItem.prayerScope`'s doc comment in
+// written-adhkar.ts. Irrelevant outside `category === "prayer"`, where
+// every item is always visible regardless of `prayerScope`.
+function isInPrayerScope(item: WrittenAdhkarItem, category: WrittenAdhkarCategoryKey, selectedPrayer: PrayerName): boolean {
+  if (category !== "prayer") return true;
+  const scope: PrayerScope = item.prayerScope ?? "all";
+  if (scope === "all") return true;
+  if (Array.isArray(scope)) return scope.includes(selectedPrayer);
+  return scope === selectedPrayer;
+}
+
+const PRAYER_NAMES: PrayerName[] = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
+
+function prayerLabel(labels: Labels, prayer: PrayerName): string {
+  switch (prayer) {
+    case "fajr":
+      return labels.prayerFajr;
+    case "dhuhr":
+      return labels.prayerDhuhr;
+    case "asr":
+      return labels.prayerAsr;
+    case "maghrib":
+      return labels.prayerMaghrib;
+    case "isha":
+      return labels.prayerIsha;
+  }
 }
 
 const RING_SIZE = 56;
 const RING_STROKE = 4;
 const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
-const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
-// The tap-to-count interaction shared by every card, regardless of
-// whether its target is 1 (a plain "mark as read" confirmation) or a
-// real repeated count (3, 7, 33...) — one consistent gesture and visual
-// language throughout the journey, per spec.
+// Written Adhkar's ring is a SIMPLE STATIC BUTTON — no timer, no countdown,
+// no reading-duration calculation, no progress arc/fill, no automatic
+// completion, and no automatic advancement based on elapsed time. This is
+// deliberately the opposite of the Tasbeeh screen's timed pacing ring (see
+// TasbeehScreen.tsx / tasbeehTiming.ts) — the two experiences are
+// intentionally different and must not share behavior. The circle draws
+// exactly one plain, always-fully-visible hairline ring (pure decoration,
+// never animated, never a progress indicator) and shows either a number or
+// a checkmark inside it, purely from `count`/`target`/`isCompleted` — no
+// SVG arc, no stroke-dashoffset, no fill fraction of any kind.
+//
+// Two-step completion, for EVERY target (including target === 1):
+//   - While `count < target`: tapping increments the repetition count (see
+//     WrittenAdhkarReader's handleTap) and the ring shows that number.
+//   - Once `count === target` (all repetitions read) but not yet
+//     `isCompleted`: the ring shows ✓ but stays enabled — this tells the
+//     user "all repetitions done, tap again to confirm." Tapping now does
+//     NOT increment anything further; it is the explicit confirmation tap
+//     that marks the Dhikr as `isCompleted` (see handleTap) and only THEN
+//     triggers the parent's existing advance/scroll-to-next-Dhikr logic.
+//   - Once `isCompleted`: the ring shows ✓ and is disabled — final state.
+// So `showCheck` is true in the last two of those states; only `isCompleted`
+// additionally disables the button.
 function RepetitionRing({
   target,
   count,
   isCompleted,
-  onTap,
+  onConfirm,
   instructionLabel,
   ofTargetLabel,
   doneLabel,
@@ -49,25 +101,24 @@ function RepetitionRing({
   target: number;
   count: number;
   isCompleted: boolean;
-  onTap: () => void;
+  onConfirm: () => void;
   instructionLabel: string;
   ofTargetLabel: string;
   doneLabel: string;
 }) {
-  const fraction = Math.min(1, count / target);
-  const offset = RING_CIRCUMFERENCE * (1 - fraction);
+  const showCheck = isCompleted || count >= target;
 
   return (
     <div className="flex shrink-0 flex-col items-center gap-1">
       <button
         type="button"
-        onClick={onTap}
+        onClick={onConfirm}
         disabled={isCompleted}
         aria-label={isCompleted ? doneLabel : instructionLabel}
         className="dithar-wa-ring-btn relative flex shrink-0 items-center justify-center rounded-full"
         style={{ width: RING_SIZE, height: RING_SIZE }}
       >
-        <svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`} className="absolute inset-0 -rotate-90">
+        <svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`} className="absolute inset-0">
           <circle
             cx={RING_SIZE / 2}
             cy={RING_SIZE / 2}
@@ -76,20 +127,8 @@ function RepetitionRing({
             stroke="var(--wa-gold-hairline)"
             strokeWidth={RING_STROKE}
           />
-          <circle
-            cx={RING_SIZE / 2}
-            cy={RING_SIZE / 2}
-            r={RING_RADIUS}
-            fill="none"
-            stroke="var(--wa-gold)"
-            strokeWidth={RING_STROKE}
-            strokeLinecap="round"
-            strokeDasharray={RING_CIRCUMFERENCE}
-            strokeDashoffset={offset}
-            className="dithar-wa-ring-progress"
-          />
         </svg>
-        {isCompleted ? (
+        {showCheck ? (
           <Check size={20} strokeWidth={2.5} style={{ color: "var(--wa-gold)" }} />
         ) : (
           <span className="flex flex-col items-center leading-none">
@@ -158,7 +197,12 @@ function DhikrCard({
   const title = language === "ar" ? item.title_ar : item.title_en;
   const text = language === "ar" ? item.text_ar : item.text_en;
   const source = language === "ar" ? item.source_ar : item.source_en;
-  const instructionLabel = target > 1 ? labels.tapToIncrement : labels.tapToConfirm;
+  // Once every repetition has been read (count >= target) the ring shows ✓
+  // but is NOT yet `isCompleted` — that next tap is the explicit
+  // confirmation that advances to the next Dhikr (see handleTap in
+  // WrittenAdhkarReader), so the helper text must say so instead of the
+  // ordinary "tap to count/confirm" wording for that state only.
+  const instructionLabel = count >= target ? labels.tapToAdvance : target > 1 ? labels.tapToIncrement : labels.tapToConfirm;
   const ofTargetLabel = target > 1 ? labels.ofTarget(target) : "";
 
   return (
@@ -168,8 +212,8 @@ function DhikrCard({
         background: "var(--wa-surface)",
         borderRadius: "var(--wa-card-radius)",
         boxShadow: isActive
-          ? "0 16px 34px -18px rgba(23, 38, 58, 0.24), inset 0 0 0 1.5px var(--wa-gold-soft)"
-          : "0 8px 20px -16px rgba(23, 38, 58, 0.14), inset 0 0 0 1px var(--wa-gold-hairline)",
+          ? "0 16px 34px -18px rgba(var(--color-shadow-rgb), 0.24), inset 0 0 0 1.5px var(--wa-gold-soft)"
+          : "0 8px 20px -16px rgba(var(--color-shadow-rgb), 0.14), inset 0 0 0 1px var(--wa-gold-hairline)",
       }}
     >
       <AdhkarWatermark src={artworkSrc} />
@@ -193,7 +237,12 @@ function DhikrCard({
             <p className="text-[9.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--wa-gold)" }}>
               {labels.source}
             </p>
-            <p className="mt-0.5 truncate text-[11px]" style={{ color: "var(--wa-ink-muted)" }}>
+            {/* Short, card-ready source strings (see SHORT_SOURCE in
+                written-adhkar.ts) normally fit on one line; line-clamp-2
+                (instead of a single-line truncate) is the safety net for
+                the few that run long, so the grading never gets cut off
+                mid-word — it wraps to a second line instead. */}
+            <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
               {source}
             </p>
           </div>
@@ -202,7 +251,7 @@ function DhikrCard({
             target={target}
             count={count}
             isCompleted={isCompleted}
-            onTap={onTap}
+            onConfirm={onTap}
             instructionLabel={instructionLabel}
             ofTargetLabel={ofTargetLabel}
             doneLabel={labels.dhikrDone}
@@ -244,144 +293,53 @@ function JourneyRail({ index, isLast, isActive, isCompleted }: { index: number; 
   );
 }
 
-// One tiny light particle drifting a short distance outward and fading —
-// see the .dithar-adhkar-particle keyframe for the actual motion; this
-// just picks each particle's own direction/reach so they fan out rather
-// than all traveling identically.
-const PARTICLE_COUNT = 9;
-function buildParticles() {
-  return Array.from({ length: PARTICLE_COUNT }, (_, i) => {
-    const angle = (i / PARTICLE_COUNT) * Math.PI * 2 + (i % 2 === 0 ? 0.18 : -0.18);
-    const distance = 30 + (i % 3) * 9;
-    return {
-      id: i,
-      px: `${Math.cos(angle) * distance}px`,
-      // Biased slightly upward (negative y) — light rising, not falling.
-      py: `${Math.sin(angle) * distance * 0.7 - 8}px`,
-      delay: 150 + i * 45,
-    };
-  });
-}
-
-// How long the celebration's own motion (glow/breathe/particles) plays
-// before settling into the calm, still, final state — long enough for
-// the slowest piece (the 1700ms glow) to fully finish.
-const CELEBRATION_MS = 1900;
-const CELEBRATION_MS_REDUCED = 260;
-
-// The end-of-journey moment — appended inline after the last card, never
-// a takeover of the whole screen (spec: "do NOT immediately replace the
-// screen with a new page"). Plays its celebration sequence exactly once
-// per mount (i.e. once per finished journey): the SAME approved category
-// artwork that has been sitting as a quiet watermark on every card above
-// rises in visibility, a soft gold light and a handful of tiny particles
-// appear, the artwork takes one breath, and only then does the message
-// reveal. After ~1.9s everything settles back to stillness — no looping
-// animation is left running.
-function AdhkarCompletionCelebration({
-  artworkSrc,
+// The end-of-journey moment — appended inline in the same spot the reading
+// cards occupied, never a takeover of the whole screen. Deliberately
+// minimal per spec: no artwork, no glow, no particles, no badge — just a
+// calm text reveal ("تقبّل الله ذكرك" as the primary line, "أتممت وردك"
+// smaller beneath it) plus the existing Back/Repeat controls. The
+// dispersal of the completed cards themselves (see .dithar-wa-dispersing
+// in index.css) happens in the PARENT before this component ever mounts;
+// this component only ever renders once that's finished, so its own
+// entrance only needs one small, quiet fade+rise — reusing
+// .dithar-adhkar-text-in, already exactly that: "calm, non-celebratory
+// entrance (fade + tiny rise) ... no confetti, no bounce".
+function AdhkarCompletionMessage({
   labels,
-  categoryLabel,
   onBackToCategories,
   onRestart,
 }: {
-  artworkSrc: string;
   labels: Labels;
-  categoryLabel: string;
   onBackToCategories: () => void;
   onRestart: () => void;
 }) {
-  const prefersReducedMotion = useRef(
-    typeof window !== "undefined" && typeof window.matchMedia === "function"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false,
-  ).current;
-  const [phase, setPhase] = useState<"celebrating" | "settled">("celebrating");
-  const particles = useMemo(() => (prefersReducedMotion ? [] : buildParticles()), [prefersReducedMotion]);
-
-  // Runs the celebration exactly once: this component only ever mounts
-  // when the journey first becomes fully complete (its parent renders it
-  // conditionally on `allDone`), so "on mount" already means "on
-  // completion" — no separate trigger/guard needed.
-  useEffect(() => {
-    const timer = window.setTimeout(() => setPhase("settled"), prefersReducedMotion ? CELEBRATION_MS_REDUCED : CELEBRATION_MS);
-    return () => window.clearTimeout(timer);
-  }, [prefersReducedMotion]);
-
-  const celebrating = phase === "celebrating";
-  const textDelay = (ms: number) => (prefersReducedMotion ? "0ms" : `${ms}ms`);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const revealClass = prefersReducedMotion ? "" : "dithar-adhkar-text-in";
+  const textDelay = (ms: number) => (prefersReducedMotion ? undefined : `${ms}ms`);
 
   return (
     <div
-      className="relative overflow-hidden px-5 py-8 text-center"
+      className="relative overflow-hidden px-5 py-10 text-center"
       style={{
         background: "var(--wa-surface)",
         borderRadius: "var(--wa-card-radius)",
-        boxShadow: "0 16px 34px -20px rgba(23, 38, 58, 0.2), inset 0 0 0 1px var(--wa-gold-hairline)",
+        boxShadow: "0 16px 34px -20px rgba(var(--color-shadow-rgb), 0.2), inset 0 0 0 1px var(--wa-gold-hairline)",
       }}
     >
-      {/* Step 2 + 10: the same watermark every card carries, rising to a
-          still-subtle peak while celebrating, then settling back down. */}
-      <AdhkarWatermark
-        src={artworkSrc}
-        className={celebrating && !prefersReducedMotion ? "dithar-adhkar-watermark--rising dithar-adhkar-breathe" : ""}
-        style={
-          celebrating
-            ? ({ "--wm-start": 0.06, "--wm-peak": 0.22, opacity: prefersReducedMotion ? 0.22 : undefined } as CSSProperties)
-            : { opacity: 0.09 }
-        }
-      />
-
-      {/* Step 3: soft warm light, once. Step 4: a handful of tiny points
-          of light drifting out and fading. Both removed entirely once the
-          celebration settles — nothing keeps animating afterward. */}
-      {celebrating && !prefersReducedMotion && (
-        <>
-          <div
-            className="dithar-adhkar-glow pointer-events-none absolute inset-0"
-            style={{ background: "radial-gradient(circle at 50% 40%, var(--wa-gold-soft), transparent 65%)" }}
-            aria-hidden="true"
-          />
-          {particles.map((p) => (
-            <span
-              key={p.id}
-              className="dithar-adhkar-particle"
-              style={{ "--px": p.px, "--py": p.py, animationDelay: `${p.delay}ms` } as CSSProperties}
-              aria-hidden="true"
-            />
-          ))}
-        </>
-      )}
-
-      <div className="relative flex flex-col items-center gap-3">
-        <span
-          className="dithar-adhkar-text-in flex h-14 w-14 items-center justify-center rounded-full"
-          style={{ background: "var(--wa-badge-bg)", animationDelay: textDelay(500) }}
-        >
-          <Check size={26} strokeWidth={2} style={{ color: "var(--wa-gold)" }} />
-        </span>
-
-        {/* Step 6: title, then the dua beneath it exactly as specified. */}
-        <h2
-          className="dithar-adhkar-text-in text-[19px] font-bold"
-          style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)", animationDelay: textDelay(600) }}
-        >
-          {labels.journeyCompleteTitle}
-        </h2>
+      <div className="flex flex-col items-center gap-2">
+        {/* Primary message, per spec. */}
         <p
-          className="dithar-adhkar-text-in text-[14.5px]"
-          style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)", animationDelay: textDelay(680) }}
+          className={`text-[19px] font-bold ${revealClass}`}
+          style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)", animationDelay: textDelay(80) }}
         >
           {labels.journeyCompleteDua}
         </p>
-        <p className="dithar-adhkar-text-in text-[13px]" style={{ color: "var(--wa-ink-muted)", animationDelay: textDelay(750) }}>
-          {labels.journeyCompleteSubtitle(categoryLabel)}
+        {/* Secondary, smaller and more subtle, beneath it. */}
+        <p className={`text-[13px] ${revealClass}`} style={{ color: "var(--wa-ink-muted)", animationDelay: textDelay(180) }}>
+          {labels.journeyCompleteTitle}
         </p>
 
-        <div
-          className="dithar-adhkar-text-in mt-2 flex w-full max-w-[260px] flex-col gap-2"
-          style={{ animationDelay: textDelay(820) }}
-        >
+        <div className={`mt-4 flex w-full max-w-[260px] flex-col gap-2 ${revealClass}`} style={{ animationDelay: textDelay(300) }}>
           <button
             type="button"
             onClick={onBackToCategories}
@@ -415,55 +373,182 @@ function AdhkarCompletionCelebration({
 // deliberately drops them in favor of the spec's explicit "Dhikr number,
 // Arabic text, repetition count, status — avoid unnecessary icons" card
 // content and a single consistent tap-to-count interaction per item.
-export function WrittenAdhkarReader({ category, onNavigateHome, onNavigateToTasbeeh, onBackToCategories }: WrittenAdhkarReaderProps) {
+// How long the completed cards' dispersal fade/drift plays before the
+// content is actually removed and replaced by the completion message (spec
+// 3D/3F: "Adhkar dispersal/fade -> completion message fades in"). Matches
+// the .dithar-wa-dispersing CSS animation duration in index.css exactly —
+// this is the ONE place both are driven from, so they can never drift out
+// of sync with each other.
+const DISPERSAL_MS = 480;
+const DISPERSAL_MS_REDUCED = 120;
+
+export function WrittenAdhkarReader({
+  category,
+  onNavigateHome,
+  onNavigateToTasbeeh,
+  onNavigateToSettings,
+  onBackToCategories,
+}: WrittenAdhkarReaderProps) {
   const { language, dir } = useLanguage();
   const t = writtenAdhkarLabels[language];
   const categoryLabel = writtenAdhkarCategoryLabels[category][language];
   const items = useMemo(() => writtenAdhkarItems[category], [category]);
   const artworkSrc = CATEGORY_ARTWORK[category];
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  // counts[item.id] = how many times its ring has been tapped so far.
+  // counts[item.id] = how many repetitions have been read/tapped so far
+  // (0..target) — one per tap while count < target. Purely a running tally;
+  // reaching `target` alone does NOT mean the Dhikr is done (see
+  // `confirmed` below) — it only switches the ring to show ✓ and wait for
+  // one more, explicit confirming tap.
   const [counts, setCounts] = useState<Record<string, number>>({});
+  // confirmed[item.id] = true only after the user's EXTRA tap on the ✓ once
+  // count === target. This — not `counts` — is what actually marks a Dhikr
+  // "done" for the journey (activeIndex/scrolling/completion below), so
+  // reaching the repetition target by itself never advances anything.
+  const [confirmed, setConfirmed] = useState<Record<string, boolean>>({});
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const completionRef = useRef<HTMLDivElement | null>(null);
+  // "active" — normal reading, cards shown as usual.
+  // "dispersing" — the FINAL ✓-confirmation of the FINAL Dhikr has already
+  //   been recorded to Statistics (see handleTap); the completed cards are
+  //   now fading away, nothing else has changed yet.
+  // "completed" — the cards are gone; the completion message is shown in
+  //   their place. Set only after DISPERSAL_MS has elapsed, never before.
+  const [journeyPhase, setJourneyPhase] = useState<"active" | "dispersing" | "completed">("active");
+  // Which of the five daily prayers this session's Adhkar are being read
+  // after — only relevant for `category === "prayer"` (see targetFor and
+  // PRAYER_SPECIFIC_REPEAT), and only ever affects the three Quls' target
+  // count. Session-scoped, not persisted — the app has no existing
+  // general-purpose settings mechanism this would fit into.
+  const [selectedPrayer, setSelectedPrayer] = useState<PrayerName>("fajr");
 
-  // Fresh journey every time a different category is opened.
+  // The journey only ever reads/renders `visibleItems` — every Dhikr whose
+  // `prayerScope` includes the currently selected prayer (or has no scope
+  // at all, i.e. "all"/common Adhkar said after every prayer). This is the
+  // ONLY place prayer-specific visibility is decided — never a UI-level
+  // filter layered on top separately from the data. For any category other
+  // than "prayer", `prayerScope` is irrelevant and every item is visible.
+  const visibleItems = useMemo(
+    () => items.filter((item) => isInPrayerScope(item, category, selectedPrayer)),
+    [items, category, selectedPrayer],
+  );
+
+  // Fresh journey every time a different category OR prayer is selected —
+  // the visible set of Adhkar (and, for a few of them, their target count)
+  // can differ between prayers, so continuing stale progress across a
+  // prayer switch would be confusing (e.g. "3 of 9" suddenly becoming
+  // "3 of 7"). Same reset already applied on category change.
   useEffect(() => {
     setCounts({});
-  }, [category]);
+    setConfirmed({});
+    setJourneyPhase("active");
+  }, [category, selectedPrayer]);
 
   function isDone(item: WrittenAdhkarItem) {
-    return (counts[item.id] ?? 0) >= targetFor(item);
+    return confirmed[item.id] === true;
   }
 
-  const activeIndex = items.findIndex((item) => !isDone(item));
+  const activeIndex = visibleItems.findIndex((item) => !isDone(item));
   const allDone = activeIndex === -1;
-  const displayPosition = allDone ? items.length : activeIndex + 1;
+  const displayPosition = allDone ? visibleItems.length : activeIndex + 1;
 
   function handleTap(item: WrittenAdhkarItem) {
     if (isDone(item)) return;
-    const target = targetFor(item);
-    setCounts((prev) => ({ ...prev, [item.id]: Math.min(target, (prev[item.id] ?? 0) + 1) }));
+    const target = targetFor(item, selectedPrayer);
+    const current = counts[item.id] ?? 0;
+
+    if (current < target) {
+      // Reading tap: count this repetition. Never advances/scrolls by
+      // itself, even when this brings `current` up to `target` — the ring
+      // switches to showing ✓, but the Dhikr is not yet "done".
+      setCounts({ ...counts, [item.id]: current + 1 });
+      recordWrittenRepetition(category, item.id);
+      return;
+    }
+
+    // current === target: every repetition has already been read/tapped —
+    // this tap is the user's EXPLICIT confirmation (pressing the ✓), not
+    // another repetition, so it does not touch `counts` or record another
+    // repetition. Only this action marks the Dhikr done and can trigger
+    // advancing to the next one / finishing the journey.
+    const updatedConfirmed = { ...confirmed, [item.id]: true };
+
+    // CRITICAL ORDER (spec 3B): record + persist BEFORE any part of the
+    // visual transition begins. recordWirdComplete writes to localStorage
+    // synchronously, so it has already completed by the time
+    // setJourneyPhase runs — the dispersal animation can only ever start
+    // after the statistics event exists.
+    setConfirmed(updatedConfirmed);
+
+    const journeyFinished = visibleItems.every((i) => updatedConfirmed[i.id] === true);
+    if (journeyFinished) {
+      recordWirdComplete(category);
+      setJourneyPhase("dispersing");
+    }
   }
 
   function handleRestart() {
     setCounts({});
-    itemRefs.current[items[0]?.id ?? ""]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setConfirmed({});
+    setJourneyPhase("active");
+    itemRefs.current[visibleItems[0]?.id ?? ""]?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   // Move focus toward the next Dhikr the moment the active one completes —
   // "the journey" advancing on its own rather than requiring a manual
-  // "next" action.
+  // "next" action. This only ever runs off an explicit ✓ confirmation
+  // changing `activeIndex`, never off elapsed internal timing alone.
+  //
+  // `block: "start"` (not "center"): `center` asks the browser to position
+  // the element's middle at the scroll container's middle, which it can
+  // only do if there's enough content on BOTH sides to scroll to — near
+  // the end of the journey (fewer cards left below the new active one)
+  // there often isn't, so the browser scrolls as far as it can and the
+  // card lands lower than intended, sometimes still partially below the
+  // fold. `start` has no such shortfall: it always brings the target
+  // card's own top edge to the top of `.device-screen` (this reader's
+  // actual scrolling container — see DeviceFrame/index.css), which is
+  // never behind anything else here since neither TopBar nor BackHeader
+  // is sticky/fixed (verified in index.css — no `position: sticky|fixed`
+  // at all in this app), so no extra header-height offset is needed.
   useEffect(() => {
     if (allDone) return;
-    const activeItem = items[activeIndex];
+    const activeItem = visibleItems[activeIndex];
     if (!activeItem) return;
     const el = itemRefs.current[activeItem.id];
     if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
     // Only re-run when the ACTIVE item itself changes, not on every tap
     // (which would fight the user's own scroll position mid-repetition).
+    // `selectedPrayer` is included because switching prayers can change
+    // WHICH item sits at a given `activeIndex` (the visible set itself
+    // changes) even when the numeric index happens to stay the same.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex, category]);
+  }, [activeIndex, category, selectedPrayer]);
+
+  // Once the dispersal animation has had time to play, swap the (now
+  // invisible) cards out for the completion message. The statistics event
+  // itself was already recorded synchronously back in handleTap, well
+  // before this effect even exists — this only ever controls the VISUAL
+  // hand-off from cards to message.
+  useEffect(() => {
+    if (journeyPhase !== "dispersing") return;
+    const timer = window.setTimeout(
+      () => setJourneyPhase("completed"),
+      prefersReducedMotion ? DISPERSAL_MS_REDUCED : DISPERSAL_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [journeyPhase, prefersReducedMotion]);
+
+  // A light courtesy scroll toward the completion message once it appears
+  // — it renders "in the same area" the cards occupied, so the user's
+  // existing scroll position (already following the active card via the
+  // effect above) is normally already close; this just settles it exactly.
+  useEffect(() => {
+    if (journeyPhase !== "completed") return;
+    completionRef.current?.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+  }, [journeyPhase, prefersReducedMotion]);
 
   return (
     <DeviceFrame background="var(--wa-page-bg)">
@@ -480,54 +565,89 @@ export function WrittenAdhkarReader({ category, onNavigateHome, onNavigateToTasb
               className="text-[14px] font-semibold"
               style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)", letterSpacing: "0.04em" }}
             >
-              {t.journeyProgress(displayPosition, items.length)}
+              {t.journeyProgress(displayPosition, visibleItems.length)}
             </p>
             <span className="sr-only" aria-live="polite">
-              {t.progressAria(displayPosition, items.length)}
+              {t.progressAria(displayPosition, visibleItems.length)}
             </span>
           </div>
 
-          <div className="mt-4 flex flex-col">
-            {items.map((item, index) => {
-              const completed = isDone(item);
-              const active = !allDone && index === activeIndex;
-              return (
-                <div
-                  key={item.id}
-                  ref={(el) => {
-                    itemRefs.current[item.id] = el;
-                  }}
-                  className="flex items-stretch gap-3"
-                >
-                  <JourneyRail index={index} isLast={index === items.length - 1} isActive={active} isCompleted={completed} />
-                  <div className="min-w-0 flex-1 pb-5">
-                    <DhikrCard
-                      item={item}
-                      language={language}
-                      dir={dir}
-                      labels={t}
-                      isActive={active}
-                      isCompleted={completed}
-                      count={counts[item.id] ?? 0}
-                      target={targetFor(item)}
-                      onTap={() => handleTap(item)}
-                      artworkSrc={artworkSrc}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+          {/* Prayer picker — Prayer Adhkar only. A handful of these Adhkar
+              (the three Quls) have a repetition count that genuinely
+              differs by which prayer was just performed (see
+              PRAYER_SPECIFIC_REPEAT in written-adhkar.ts); everything else
+              about the journey (reading, repeating, confirming, scrolling)
+              is completely unaffected by this choice. Reuses the same
+              small-pill visual language already established for
+              JourneyRail's own node states just below (gold fill = the
+              active choice, plain surface + hairline ring = the rest) —
+              no new colors or component styles introduced. */}
+          {category === "prayer" && journeyPhase !== "completed" && (
+            <div className="mt-2 flex flex-col items-center gap-1.5">
+              <span className="text-[11px]" style={{ color: "var(--wa-on-page-muted)" }}>
+                {t.choosePrayer}
+              </span>
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {PRAYER_NAMES.map((prayer) => {
+                  const isSelected = prayer === selectedPrayer;
+                  return (
+                    <button
+                      key={prayer}
+                      type="button"
+                      onClick={() => setSelectedPrayer(prayer)}
+                      aria-pressed={isSelected}
+                      className="rounded-full px-3 py-1 text-[11.5px] font-medium"
+                      style={
+                        isSelected
+                          ? { background: "var(--wa-gold)", color: "var(--wa-surface)" }
+                          : { background: "var(--wa-surface)", color: "var(--wa-ink-muted)", boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)" }
+                      }
+                    >
+                      {prayerLabel(t, prayer)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-            {allDone && (
-              <AdhkarCompletionCelebration
-                artworkSrc={artworkSrc}
-                labels={t}
-                categoryLabel={categoryLabel}
-                onBackToCategories={onBackToCategories}
-                onRestart={handleRestart}
-              />
-            )}
-          </div>
+          {journeyPhase !== "completed" ? (
+            <div className={`mt-4 flex flex-col ${journeyPhase === "dispersing" ? "dithar-wa-dispersing" : ""}`}>
+              {visibleItems.map((item, index) => {
+                const completed = isDone(item);
+                const active = !allDone && index === activeIndex;
+                return (
+                  <div
+                    key={item.id}
+                    ref={(el) => {
+                      itemRefs.current[item.id] = el;
+                    }}
+                    className="flex items-stretch gap-3"
+                  >
+                    <JourneyRail index={index} isLast={index === visibleItems.length - 1} isActive={active} isCompleted={completed} />
+                    <div className="min-w-0 flex-1 pb-5">
+                      <DhikrCard
+                        item={item}
+                        language={language}
+                        dir={dir}
+                        labels={t}
+                        isActive={active}
+                        isCompleted={completed}
+                        count={counts[item.id] ?? 0}
+                        target={targetFor(item, selectedPrayer)}
+                        onTap={() => handleTap(item)}
+                        artworkSrc={artworkSrc}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div ref={completionRef} className="mt-4">
+              <AdhkarCompletionMessage labels={t} onBackToCategories={onBackToCategories} onRestart={handleRestart} />
+            </div>
+          )}
         </div>
 
         <BottomNav
@@ -537,6 +657,7 @@ export function WrittenAdhkarReader({ category, onNavigateHome, onNavigateToTasb
             if (key === "home") onNavigateHome();
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onBackToCategories();
+            if (key === "settings") onNavigateToSettings();
           }}
         />
       </AppShell>

@@ -71,7 +71,7 @@ export function PrayerTimesPanel({ className = "" }: { className?: string }) {
 
       <div
         className="mt-0.5 flex items-center justify-between gap-2 border-t pt-px opacity-90"
-        style={{ borderColor: "rgba(246,234,208,0.15)", fontSize: "clamp(8px, 2.2vw, 10.5px)" }}
+        style={{ borderColor: "rgba(var(--color-primary-contrast-rgb), 0.15)", fontSize: "clamp(8px, 2.2vw, 10.5px)" }}
       >
         <button type="button" className="flex min-w-0 items-center gap-1">
           <Calendar size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />

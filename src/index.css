@@ -5,12 +5,26 @@
   --color-surface: #f8f1e4;
   --color-primary: #12213f;
   --color-primary-contrast: #f6ead0;
+  /* RGB channels of --color-primary-contrast, for components (e.g.
+     PrayerTimesPanel's divider) that need it at a custom alpha rather than
+     the solid text color. */
+  --color-primary-contrast-rgb: 246, 234, 208;
   --color-gold: #c6a15b;
+  --color-gold-rgb: 198, 161, 91;
   --color-gold-soft: rgba(198, 161, 91, 0.35);
   --color-panel-divider: rgba(198, 161, 91, 0.45);
   --color-text-primary: #12213f;
   --color-text-muted: #6b6558;
   --card-radius: 16px;
+
+  /* Shared elevation-shadow tint — RGB channels only (no alpha), so any
+     component can compose `rgba(var(--color-shadow-rgb), <alpha>)` at
+     whatever strength it needs. Centralizes what used to be several
+     components' own hardcoded `rgba(18, 33, 63, ...)` literals (this
+     identity's own primary color) into one token that a palette can
+     recolor along with everything else — see BottomNav/TasbeehScreen/
+     InsightCard/WrittenAdhkarReader/ContentModal. */
+  --color-shadow-rgb: 18, 33, 63;
 
   /* Outer device-frame treatment (see .device-frame / .device-screen below).
      Thickness/radius are width-based clamp()s so the frame itself is
@@ -36,7 +50,7 @@
   --color-glass-tint-soft: rgba(255, 250, 238, 0.24);
   --color-glass-highlight: rgba(255, 255, 255, 0.75);
   --color-glass-edge: rgba(198, 161, 91, 0.55);
-  --color-glass-accent: rgba(18, 33, 63, 0.08);
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.08);
 
   /* Exactly half of the main circle's own responsive size
      (clamp(152px, 42vw, 180px) in TasbeehScreen.tsx — not duplicated
@@ -89,12 +103,15 @@
   --color-surface: #fcfaf3;
   --color-primary: #5b6e4e;
   --color-primary-contrast: #f3f6ec;
+  --color-primary-contrast-rgb: 243, 246, 236;
   --color-gold: #c6a15b;
+  --color-gold-rgb: 198, 161, 91;
   --color-gold-soft: rgba(198, 161, 91, 0.35);
   --color-panel-divider: rgba(214, 184, 128, 0.55);
   --color-text-primary: #3e4a34;
   --color-text-muted: #7a8069;
   --card-radius: 20px;
+  --color-shadow-rgb: 91, 110, 78;
 
   /* Women's reference has no dark bezel — just a thin gold line on a
      softly matted surface, close in tone to the page itself. */
@@ -106,7 +123,7 @@
   --color-glass-tint-soft: rgba(255, 253, 245, 0.26);
   --color-glass-highlight: rgba(255, 255, 255, 0.78);
   --color-glass-edge: rgba(198, 161, 91, 0.5);
-  --color-glass-accent: rgba(91, 110, 78, 0.07);
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.07);
 
   /* Written Adhkar — dedicated premium reading identity (women). A
      sophisticated sage/muted-olive identity — deliberately NOT a
@@ -131,6 +148,262 @@
   --wa-badge-bg: rgba(201, 167, 104, 0.16);
 
   --wa-category-bg: linear-gradient(180deg, #faf8f2 0%, #f5f2ea 100%);
+}
+
+/* ------------------------------------------------------------------ */
+/* Appearance -> Colors — optional palette overrides, layered on top of  */
+/* the two identity blocks above via the `data-palette` attribute that   */
+/* PaletteContext.tsx sets on <html> (see that file's own comment for    */
+/* why it lives there rather than a new wrapping element). "original"    */
+/* intentionally has NO block at all — it IS the identity's default      */
+/* appearance above, reproduced by overriding nothing.                   */
+/*                                                                       */
+/* Each block only redefines the COLOR tokens that meaningfully carry a  */
+/* palette's identity — background/surface/primary/text/frame/glass-     */
+/* accent and the Written Adhkar reader's own page/ink tokens. Radii,    */
+/* thicknesses, fonts, and every other structural token are untouched,   */
+/* and are simply inherited from the identity block above at full        */
+/* cascade priority as always. Gold stays the shared brand accent across */
+/* every palette (as it already is, identically, between the existing    */
+/* men/women originals) except where a palette's own description calls   */
+/* for a distinct accent metal-tone (Olive's bronze, below).             */
+/* ------------------------------------------------------------------ */
+
+html[data-palette="forest"] [data-theme="men"] {
+  --color-bg: #f1efe2;
+  --color-surface: #f8f6ec;
+  --color-primary: #223c2c;
+  --color-primary-contrast: #eef2e6;
+  --color-primary-contrast-rgb: 238, 242, 230;
+  --color-text-primary: #223c2c;
+  --color-text-muted: #66735f;
+  --color-frame-bezel: #0f1f16;
+  --color-frame-backdrop: #e4e6da;
+  --color-shadow-rgb: 34, 60, 44;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.08);
+  /* The Tasbeeh glass circle's rim/highlight and inner surface tint now
+     track THIS palette's own primary/surface instead of staying on the
+     brand-gold rim every other (non-Olive) palette keeps — a component-
+     level "complete visual skin", not just a background-color swap. */
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(248, 246, 236, 0.42);
+  --color-glass-tint-soft: rgba(248, 246, 236, 0.24);
+  --wa-page-bg: linear-gradient(180deg, #14261b 0%, #0f1d15 100%);
+  --wa-ink: #1b3223;
+  --wa-ink-muted: #66735f;
+  --wa-on-page: #eaeadc;
+  --wa-on-page-muted: rgba(234, 234, 220, 0.64);
+}
+
+html[data-palette="navy"] [data-theme="men"] {
+  --color-bg: #eef1f4;
+  --color-surface: #f6f8fa;
+  --color-primary: #23415f;
+  --color-primary-contrast: #eaf1f7;
+  --color-primary-contrast-rgb: 234, 241, 247;
+  --color-text-primary: #23415f;
+  --color-text-muted: #62727f;
+  --color-frame-bezel: #14273a;
+  --color-frame-backdrop: #dfe4e9;
+  --color-shadow-rgb: 35, 65, 95;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.08);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(246, 248, 250, 0.42);
+  --color-glass-tint-soft: rgba(246, 248, 250, 0.24);
+  --wa-page-bg: linear-gradient(180deg, #16293c 0%, #102132 100%);
+  --wa-ink: #1d3650;
+  --wa-ink-muted: #62727f;
+  --wa-on-page: #e6edf3;
+  --wa-on-page-muted: rgba(230, 237, 243, 0.64);
+}
+
+html[data-palette="olive"] [data-theme="men"] {
+  --color-bg: #f2ede1;
+  --color-surface: #f8f4ea;
+  /* Deepened slightly from an earlier draft (#4a4a34) — that shade measured
+     only ~2.6:1 against the bronze accent below (see gold-on-primary use
+     in BottomNav's active state / selected pills), a clear outlier next to
+     this palette's men-group siblings, which all land ~3.75-6.6:1. This
+     value restores it to ~3.4:1 while staying a muted, non-black olive. */
+  --color-primary: #3a3a26;
+  --color-primary-contrast: #f1eee1;
+  --color-primary-contrast-rgb: 241, 238, 225;
+  --color-text-primary: #3a3a26;
+  --color-text-muted: #7a765f;
+  --color-frame-bezel: #211f14;
+  --color-frame-backdrop: #e6e0cd;
+  --color-shadow-rgb: 58, 58, 38;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.08);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(248, 244, 234, 0.42);
+  --color-glass-tint-soft: rgba(248, 244, 234, 0.24);
+  --wa-page-bg: linear-gradient(180deg, #26261a 0%, #1e1e14 100%);
+  --wa-ink: #34341f;
+  --wa-ink-muted: #7a765f;
+  --wa-on-page: #ede8d3;
+  --wa-on-page-muted: rgba(237, 232, 211, 0.64);
+  /* Olive's own description calls for a "subtle bronze" accent rather
+     than the shared brand gold — the only palette that changes this. */
+  --wa-gold: #a9835d;
+  --wa-gold-soft: rgba(169, 131, 93, 0.32);
+  --wa-gold-hairline: rgba(169, 131, 93, 0.26);
+  --wa-badge-bg: rgba(169, 131, 93, 0.22);
+}
+
+html[data-palette="earth"] [data-theme="men"] {
+  --color-bg: #f2e8dc;
+  --color-surface: #f8f1e6;
+  --color-primary: #5a4433;
+  --color-primary-contrast: #f3ebe0;
+  --color-primary-contrast-rgb: 243, 235, 224;
+  --color-text-primary: #54402f;
+  --color-text-muted: #8a7663;
+  --color-frame-bezel: #241a10;
+  --color-frame-backdrop: #e8ddc9;
+  --color-shadow-rgb: 90, 68, 51;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.08);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(248, 241, 230, 0.42);
+  --color-glass-tint-soft: rgba(248, 241, 230, 0.24);
+  --wa-page-bg: linear-gradient(180deg, #2c2015 0%, #221910 100%);
+  --wa-ink: #4a3826;
+  --wa-ink-muted: #8a7663;
+  --wa-on-page: #f0e4d0;
+  --wa-on-page-muted: rgba(240, 228, 208, 0.64);
+}
+
+html[data-palette="charcoal"] [data-theme="men"] {
+  --color-bg: #f0efec;
+  --color-surface: #f7f6f3;
+  --color-primary: #3a3a3a;
+  --color-primary-contrast: #f2f1ee;
+  --color-primary-contrast-rgb: 242, 241, 238;
+  --color-text-primary: #383838;
+  --color-text-muted: #7d7d78;
+  --color-frame-bezel: #1c1c1c;
+  --color-frame-backdrop: #e6e5e1;
+  --color-shadow-rgb: 58, 58, 58;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.08);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(247, 246, 243, 0.42);
+  --color-glass-tint-soft: rgba(247, 246, 243, 0.24);
+  /* A calm deep charcoal, not black — per spec 12, dark palettes must
+     read as "calm, deep, quiet, premium", never harsh/gaming-like. */
+  --wa-page-bg: linear-gradient(180deg, #232323 0%, #1a1a1a 100%);
+  --wa-ink: #333333;
+  --wa-ink-muted: #7d7d78;
+  --wa-on-page: #eceae5;
+  --wa-on-page-muted: rgba(236, 234, 229, 0.64);
+}
+
+html[data-palette="mauve"] [data-theme="women"] {
+  --color-bg: #f5f0ee;
+  --color-surface: #fbf7f5;
+  --color-primary: #6d5560;
+  --color-primary-contrast: #f5eef1;
+  --color-primary-contrast-rgb: 245, 238, 241;
+  --color-text-primary: #5a4650;
+  --color-text-muted: #8a7a80;
+  --color-frame-bezel: #fbf6f8;
+  --color-frame-backdrop: #efe8ea;
+  --color-shadow-rgb: 109, 85, 96;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.07);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(251, 247, 245, 0.44);
+  --color-glass-tint-soft: rgba(251, 247, 245, 0.26);
+  --wa-page-bg: linear-gradient(180deg, #f7f0f1 0%, #f1e8ea 100%);
+  --wa-ink: #4d3c44;
+  --wa-ink-muted: #8a7a80;
+  --wa-on-page: #4d3c44;
+  --wa-on-page-muted: #8a7a80;
+}
+
+html[data-palette="rose"] [data-theme="women"] {
+  --color-bg: #f6efe9;
+  --color-surface: #fcf7f2;
+  --color-primary: #8c6560;
+  --color-primary-contrast: #f8efe9;
+  --color-primary-contrast-rgb: 248, 239, 233;
+  --color-text-primary: #6e4d49;
+  --color-text-muted: #957f78;
+  --color-frame-bezel: #fdf8f4;
+  --color-frame-backdrop: #f1e6df;
+  --color-shadow-rgb: 140, 101, 96;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.07);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(252, 247, 242, 0.44);
+  --color-glass-tint-soft: rgba(252, 247, 242, 0.26);
+  --wa-page-bg: linear-gradient(180deg, #f8f0ea 0%, #f3e8e0 100%);
+  --wa-ink: #5c413d;
+  --wa-ink-muted: #957f78;
+  --wa-on-page: #5c413d;
+  --wa-on-page-muted: #957f78;
+}
+
+html[data-palette="lavender"] [data-theme="women"] {
+  --color-bg: #f2f0f2;
+  --color-surface: #f9f7f9;
+  --color-primary: #615a72;
+  --color-primary-contrast: #f0eef3;
+  --color-primary-contrast-rgb: 240, 238, 243;
+  --color-text-primary: #4d475c;
+  --color-text-muted: #837e91;
+  --color-frame-bezel: #f9f7fa;
+  --color-frame-backdrop: #eae8ec;
+  --color-shadow-rgb: 97, 90, 114;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.07);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(249, 247, 249, 0.44);
+  --color-glass-tint-soft: rgba(249, 247, 249, 0.26);
+  --wa-page-bg: linear-gradient(180deg, #f4f2f6 0%, #eeecf1 100%);
+  --wa-ink: #423d51;
+  --wa-ink-muted: #837e91;
+  --wa-on-page: #423d51;
+  --wa-on-page-muted: #837e91;
+}
+
+html[data-palette="plum"] [data-theme="women"] {
+  --color-bg: #f3ede9;
+  --color-surface: #f9f4f0;
+  --color-primary: #563b4b;
+  --color-primary-contrast: #f1e9ed;
+  --color-primary-contrast-rgb: 241, 233, 237;
+  --color-text-primary: #47303d;
+  --color-text-muted: #83737b;
+  --color-frame-bezel: #f9f2f5;
+  --color-frame-backdrop: #ece2e5;
+  --color-shadow-rgb: 86, 59, 75;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.07);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(249, 244, 240, 0.44);
+  --color-glass-tint-soft: rgba(249, 244, 240, 0.26);
+  --wa-page-bg: linear-gradient(180deg, #f5eef1 0%, #efe6ea 100%);
+  --wa-ink: #3d2933;
+  --wa-ink-muted: #83737b;
+  --wa-on-page: #3d2933;
+  --wa-on-page-muted: #83737b;
+}
+
+html[data-palette="sand"] [data-theme="women"] {
+  --color-bg: #f6f0ec;
+  --color-surface: #fbf6f2;
+  --color-primary: #8a7355;
+  --color-primary-contrast: #f6f0e6;
+  --color-primary-contrast-rgb: 246, 240, 230;
+  --color-text-primary: #6b5940;
+  --color-text-muted: #9c8a78;
+  --color-frame-bezel: #faf5f0;
+  --color-frame-backdrop: #ede4dc;
+  --color-shadow-rgb: 138, 115, 85;
+  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.07);
+  --color-glass-edge: rgba(var(--color-shadow-rgb), 0.5);
+  --color-glass-tint: rgba(251, 246, 242, 0.44);
+  --color-glass-tint-soft: rgba(251, 246, 242, 0.26);
+  --wa-page-bg: linear-gradient(180deg, #f7f1ec 0%, #f1e8e0 100%);
+  --wa-ink: #5c4a34;
+  --wa-ink-muted: #9c8a78;
+  --wa-on-page: #5c4a34;
+  --wa-on-page-muted: #9c8a78;
 }
 
 *,
@@ -363,11 +636,6 @@ button {
   transition: box-shadow 320ms ease;
 }
 
-/* Repetition ring progress arc — smooth fill on every tap. */
-.dithar-wa-ring-progress {
-  transition: stroke-dashoffset 380ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
 /* Ring tap target — restrained press feedback only, no bounce. */
 .dithar-wa-ring-btn {
   transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -384,100 +652,29 @@ button {
   transition: opacity 900ms ease;
 }
 
-/* ---- Completion celebration — plays ONCE when the journey finishes ---- */
+/* ---- Completion transition — plays ONCE when the journey finishes ---- */
 
-/* Watermark rising from its resting ~6% to a still-subtle ~20-22% peak,
-   then settling back down afterward (that settle is the plain `opacity`
-   transition above, triggered by a class change once the timer in
-   AdhkarCompletionCelebration flips phase -> "settled"). */
-@keyframes dithar-adhkar-watermark-rise {
+/* The completed reading cards gently dissolve away as one unit — a small
+   fade + tiny upward drift/scale, never an explosive/particle effect. Only
+   ever applied to the whole cards container for the brief DISPERSAL_MS
+   window in WrittenAdhkarReader before it's replaced by the completion
+   message; `pointer-events: none` guards against a stray tap while it's
+   fading out (every ring underneath is already in its persistent "done"
+   state by this point anyway). */
+@keyframes dithar-wa-dispersal {
   from {
-    opacity: var(--wm-start, 0.06);
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
   to {
-    opacity: var(--wm-peak, 0.22);
-  }
-}
-
-.dithar-adhkar-watermark--rising {
-  animation: dithar-adhkar-watermark-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-/* Soft warm glow behind the artwork — appears once, holds briefly, fades
-   away entirely (never loops, never stays lit). */
-@keyframes dithar-adhkar-glow {
-  0% {
     opacity: 0;
-  }
-  35% {
-    opacity: 0.4;
-  }
-  70% {
-    opacity: 0.24;
-  }
-  100% {
-    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
   }
 }
 
-.dithar-adhkar-glow {
-  animation: dithar-adhkar-glow 1700ms ease-in-out both;
-}
-
-/* The ONE breathing pulse — brighter, gently expands, returns to rest.
-   `animation-delay` starts it a beat after the glow begins appearing, so
-   the breath reads as caused by the light rather than simultaneous with it. */
-@keyframes dithar-adhkar-breathe {
-  0% {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-  50% {
-    transform: scale(1.015);
-    filter: brightness(1.08);
-  }
-  100% {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-}
-
-.dithar-adhkar-breathe {
-  animation: dithar-adhkar-breathe 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 250ms;
-}
-
-/* A handful (6-12) of tiny warm-light points drifting a short, soft
-   distance outward from the artwork and fading — deliberately NOT the
-   Tasbeeh screen's confetti-burst system (that's a louder, more numerous
-   effect appropriate to a counter "target reached" moment); this is
-   fewer, smaller, and quieter, per spec ("few subtle light particles",
-   never confetti/fireworks). Position/reach is set per-particle via
-   --px/--py custom properties in WrittenAdhkarReader.tsx. */
-@keyframes dithar-adhkar-particle {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translate(0, 0) scale(0.5);
-  }
-  25% {
-    opacity: 0.85;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) translate(var(--px), var(--py)) scale(1);
-  }
-}
-
-.dithar-adhkar-particle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--wa-gold);
-  box-shadow: 0 0 5px 1px var(--wa-gold-soft);
-  animation: dithar-adhkar-particle 1300ms ease-out both;
+.dithar-wa-dispersing {
+  animation: dithar-wa-dispersal 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: none;
 }
 
 /* Completion message lines — same quiet fade+rise language as
@@ -497,25 +694,20 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .dithar-wa-node,
   .dithar-wa-dhikr-card,
-  .dithar-wa-ring-progress,
   .dithar-wa-watermark {
     transition-duration: 120ms !important;
   }
 
   .dithar-wa-complete-in,
-  .dithar-adhkar-watermark--rising,
   .dithar-adhkar-text-in {
     animation-duration: 120ms !important;
   }
 
-  /* Reduced motion drops the glow/breathe/particles entirely (spec:
-     "replace the celebration with a subtle opacity transition") — the
-     watermark still rises to its peak, just without visible motion. */
-  .dithar-adhkar-glow,
-  .dithar-adhkar-breathe,
-  .dithar-adhkar-particle {
-    animation: none !important;
-    opacity: 0 !important;
+  /* The dispersal keeps its fade but drops the drift/scale — WrittenAdhkarReader
+     also shortens DISPERSAL_MS itself to match, so the visual and the
+     card-swap timing stay in step. */
+  .dithar-wa-dispersing {
+    animation-duration: 120ms !important;
     transform: none !important;
   }
 }
