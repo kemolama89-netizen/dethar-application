@@ -688,6 +688,16 @@ export const MISC_DUAS: MiscDuaItem[] = [
     source_ar: "أبو داود (5095)، والترمذي (3426)، والنسائي؛ صححه الألباني",
     categories: ["home"],
   },
+  {
+    id: "allahumma-inni-audhu-bika-an-adilla-aw-udall",
+    text_ar: "اللهم إني أعوذ بك أن أضل أو أُضل، أو أزل أو أُزل، أو أظلم أو أُظلم، أو أجهل أو يُجهل علي.",
+    count_ar: "بدون عدد محدد (مرة عند الخروج)",
+    narrator_ar: "أم سلمة رضي الله عنها",
+    source_ar:
+      "سنن أبي داود (5094)، وجامع الترمذي (3427)، وسنن النسائي، وسنن ابن ماجه، ومسند أحمد — عن أم سلمة رضي الله عنها، حسن صحيح عند الترمذي، وصححه الألباني",
+    note_ar: "دعاء ثانٍ ومستقل عن دعاء «بسم الله، توكلت على الله...» (رواية مختلفة عن أم سلمة)، يُقال أيضًا عند الخروج من المنزل.",
+    categories: ["home", "protection"],
+  },
   // The following two have no equivalent in the Master Content Library —
   // they are this app's own PRE-EXISTING, already-verified entries (see
   // the `misc` array in written-adhkar.ts, ids "misc-5"/"misc-6"),
