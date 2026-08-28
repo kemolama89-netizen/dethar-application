@@ -14,6 +14,10 @@ import {
   BookOpen,
   Sunrise,
   Gem,
+  Sparkles,
+  Coins,
+  Anchor,
+  CalendarDays,
 } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
@@ -25,6 +29,7 @@ import { MedallionIcon, LanternOutlineIcon, MosqueDomeIcon, ArchNicheOutline } f
 import {
   MISC_CATEGORY_ORDER,
   MISC_CATEGORIES,
+  MISC_CATEGORY_COUNTS,
   MISC_DUAS,
   MISC_FEATURED_IDS,
   miscLibraryLabels as t,
@@ -71,11 +76,11 @@ const CATEGORY_ICONS: Record<MiscCategoryKey, IconComponent> = {
   quran: BookOpen,
   prayer: ArchNicheOutline,
   authenticRare: Gem,
+  istikharah: Sparkles,
+  debtRizq: Coins,
+  guidance: Anchor,
+  seasonal: CalendarDays,
 };
-
-function categoryItemCount(key: MiscCategoryKey): number {
-  return MISC_DUAS.filter((item) => item.categories.includes(key)).length;
-}
 
 // One shared tile for every category size — "large" (the single featured
 // "أدعية جامعة" entry point), "special" (the distinctly-but-subtly framed
@@ -92,7 +97,7 @@ function CategoryTile({
 }) {
   const meta = MISC_CATEGORIES[categoryKey];
   const Icon = CATEGORY_ICONS[categoryKey];
-  const count = categoryItemCount(categoryKey);
+  const count = MISC_CATEGORY_COUNTS[categoryKey];
   const isEmpty = count === 0;
 
   return (
@@ -100,7 +105,7 @@ function CategoryTile({
       type="button"
       onClick={onSelect}
       disabled={isEmpty}
-      className={`flex flex-col overflow-hidden text-start ${size === "large" ? "col-span-2" : ""}`}
+      className={`relative flex w-full flex-col overflow-hidden text-start ${size === "large" ? "col-span-2 aspect-[16/9]" : "aspect-[4/3]"}`}
       style={{
         borderRadius: "var(--wa-card-radius)",
         background: "var(--wa-surface)",
@@ -111,30 +116,56 @@ function CategoryTile({
         opacity: isEmpty ? 0.55 : 1,
       }}
     >
-      {/* Image-ready slot — a plain, neutral single-tone placeholder (never
-          a colorful gradient standing in for a photo) sized so a real
-          photographic asset can later fill it edge-to-edge via
-          object-fit: cover with no layout change. */}
-      <div
-        className={`relative flex w-full items-center justify-center ${size === "large" ? "aspect-[16/9]" : "aspect-[4/3]"}`}
-        style={{ background: "var(--wa-gold-soft)" }}
-      >
-        <Icon className={size === "large" ? "h-9 w-9 opacity-80" : "h-6 w-6 opacity-80"} />
-      </div>
+      {meta.image ? (
+        // The gold-soft tone underneath is the same one the icon fallback
+        // below already uses — it shows through for the instant between
+        // mount and image-decode so the card reads as "a warm Dithar
+        // card" rather than flashing the near-white --wa-surface behind
+        // it, with no separate loading state/animation to manage.
+        <div className="absolute inset-0" style={{ background: "var(--wa-gold-soft)" }}>
+          <img
+            src={meta.image}
+            alt=""
+            loading="eager"
+            decoding="async"
+            className="h-full w-full object-cover object-center"
+          />
+        </div>
+      ) : (
+        // Fallback for the categories with no uploaded artwork yet — the
+        // original plain, neutral single-tone icon placeholder.
+        <div className="absolute inset-0 flex items-center justify-center" style={{ background: "var(--wa-gold-soft)" }}>
+          <Icon className={size === "large" ? "h-9 w-9 opacity-80" : "h-6 w-6 opacity-80"} />
+        </div>
+      )}
 
-      <div className="flex flex-1 flex-col gap-0.5 px-3 py-2.5">
+      {/* Lower text overlay — a soft dark gradient only over the bottom of
+          the artwork, just enough to keep the title/count readable
+          regardless of the underlying photo. Real HTML text, never baked
+          into the image. */}
+      <div
+        className="relative mt-auto flex flex-col gap-0.5 px-3 py-2.5"
+        style={
+          meta.image
+            ? { background: "linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.28) 60%, rgba(0,0,0,0) 100%)" }
+            : undefined
+        }
+      >
         <h3
           className={size === "large" ? "text-[15px] font-bold" : "text-[12.5px] font-bold"}
-          style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
+          style={{ fontFamily: "var(--font-display)", color: meta.image ? "#ffffff" : "var(--wa-ink)" }}
         >
           {meta.title_ar}
         </h3>
         {size === "large" && (
-          <p className="text-[11px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
+          <p
+            className="text-[11px] leading-snug"
+            style={{ color: meta.image ? "rgba(255,255,255,0.85)" : "var(--wa-ink-muted)" }}
+          >
             {meta.subtitle_ar}
           </p>
         )}
-        <p className="mt-0.5 text-[10px]" style={{ color: "var(--wa-gold)" }}>
+        <p className="mt-0.5 text-[10px] font-semibold" style={{ color: "var(--wa-gold)" }}>
           {isEmpty ? t.comingSoon : t.itemsCount(count)}
         </p>
       </div>

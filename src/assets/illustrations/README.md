@@ -98,3 +98,63 @@ something this script added — lifting it further starts washing out real
 shadow detail, and cropping tighter starts clipping real content.
 `object-fit: cover` also crops some of this away automatically wherever a
 card's aspect ratio differs from the source rectangle's.
+
+## Misc Library ("الأذكار والأدعية المنوعة") category artwork
+
+- `dithar-misc-*.png` (16 files) — one photographic background per Misc
+  Library category card, used at `object-fit: cover` the same way as the
+  Written Adhkar artwork above.
+
+Source: `ASSETS/dithar-misc-*.png`, one file per category. Those reference
+files are read-only source material and were never modified, cropped in
+place, overwritten, or renamed. Each one arrived as a small rounded-rect
+photo (~15-25px corner radius) inset on a plain white canvas — not
+edge-to-edge — which left visible white corner slivers when used as a
+full-card `cover` background. The files here are a derived fix, generated
+on an in-memory copy of the decoded pixel data:
+
+1. Crop a fixed 26px margin off all four sides — comfortably past every
+   source file's rounded-corner radius (measured 13-25px, plus
+   anti-aliasing fringe) — removing the white cutout and any stray
+   1px border artifact at the image edge entirely.
+2. Center-crop that result to the exact aspect ratio the card renders at
+   (16:9 for `dithar-misc-general-duas.png`, the one "large" category
+   tile; 4:3 for the other 15, all default-size tiles) — cropping only
+   the excess width or height needed to hit that ratio, never distorting.
+3. Upscale 2x with Lanczos resampling for on-screen crispness at typical
+   card sizes.
+
+No new content was invented, redrawn, or outpainted — every output pixel
+comes from the original photograph; corners were trimmed, not filled.
+Known limitation: the two categories using a rounded-corner-heavy or
+sky/cloud-bright composition near their corners lost a little more of
+that content to the fixed 26px margin than a per-image-tuned crop would
+have, since a single uniform margin (rather than a per-file measurement)
+was used across all 16 for consistency — visually negligible at actual
+card size.
+
+### The four newly added categories (17-20)
+
+- `dithar-misc-istikhara.png`, `dithar-misc-debt-rizq.png`,
+  `dithar-misc-guidance-stability.png`, `dithar-misc-seasonal-worship.png`
+  — one background each for الاستخارة، قضاء الدين والرزق، الهداية والثبات،
+  العبادة الموسمية.
+
+Source: `ASSETS/` files of the same names, generated externally and
+uploaded by the project owner (768x512, larger and higher-resolution than
+the original 16). Those files are read-only source material and were
+never modified, cropped in place, overwritten, or renamed. They arrived
+with the same rounded-rect-photo-on-white-canvas issue as the original 16
+(here a larger ~30-40px corner radius plus a thin ~6-11px flat white
+border on all four sides — measured per-corner rather than assumed, since
+the radius/canvas proportions differ from the first batch). Fixed the
+same way, on an in-memory copy:
+
+1. Crop a fixed 45px margin off all four sides — past the measured
+   corner radius and the flat border together.
+2. Center-crop to the card's 4:3 aspect ratio (all four are default-size
+   tiles; none uses the 16:9 "large" slot).
+3. Upscale 1.5x with Lanczos (the source was already higher-resolution
+   than the first batch, so a smaller upscale factor was enough).
+
+No new content invented; corners and border trimmed, not filled.

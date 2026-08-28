@@ -54,6 +54,11 @@ export function MiscDuaCard({
 
       <div className="mt-3 flex items-end justify-between gap-3">
         <div className="min-w-0 flex-1">
+          {item.occasion_ar && (
+            <p className="text-[11px] font-semibold" style={{ color: "var(--wa-gold)" }}>
+              {t.occasionLabel}: {item.occasion_ar}
+            </p>
+          )}
           {item.count_ar && (
             <p className="text-[11px] font-semibold" style={{ color: "var(--wa-gold)" }}>
               {t.countLabel}: {item.count_ar}
@@ -62,6 +67,11 @@ export function MiscDuaCard({
           {item.source_ar && (
             <p className="mt-1 line-clamp-2 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
               {sourceLabel}: {item.source_ar}
+            </p>
+          )}
+          {item.note_ar && (
+            <p className="mt-1 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
+              {t.noteLabel}: {item.note_ar}
             </p>
           )}
         </div>
