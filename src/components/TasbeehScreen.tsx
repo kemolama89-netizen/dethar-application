@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { useLanguage } from "../theme/LanguageContext";
 import { DeviceFrame } from "./DeviceFrame";
@@ -7,10 +7,15 @@ import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { navLabels } from "../data/content";
 import { dhikrItems, sourceAr, tasbeehLabels } from "../data/tasbeeh";
+import { recordTasbeehRepetition } from "../lib/stats";
+import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
+import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
+import { usePrefersReducedMotion } from "../lib/motion";
 
 interface TasbeehScreenProps {
   onNavigateHome: () => void;
   onNavigateToWritten: () => void;
+  onNavigateToSettings: () => void;
 }
 
 interface Bubble {
@@ -36,6 +41,12 @@ interface ConfettiPiece {
 
 const MAX_VISIBLE_BUBBLES = 8;
 const BUBBLE_LIFETIME_MS = 4800; // must match the CSS animation duration below
+
+// Calm-counting pacing ring geometry — a viewBox-relative circle (r=47 of
+// a 0-100 viewBox) so the ring scales fluidly with the main circle's own
+// responsive clamp() size without any JS measurement.
+const TASBEEH_RING_RADIUS = 47;
+const TASBEEH_RING_CIRCUMFERENCE = 2 * Math.PI * TASBEEH_RING_RADIUS;
 
 const CONFETTI_COUNT = 28;
 const CONFETTI_LIFETIME_MS = 2300; // must match the CSS animation duration below
@@ -156,15 +167,25 @@ function bubbleTextClass(length: number) {
 //
 // Per-dhikr state: `counts`/`targets` are keyed by dhikr id, so switching
 // the selected dhikr never touches another item's count or target, and
-// Reset only zeroes the currently selected one. Deliberately local
-// component state (a couple of Records), not a new global store.
-export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehScreenProps) {
+// Reset only zeroes the currently selected one. Still plain local
+// component state (a couple of Records), not a new global store — `counts`
+// is just seeded from, and written back to, localStorage on every change
+// (see src/lib/tasbeehCounters.ts) so it survives this component
+// unmounting on navigation; `targetInputs`/`celebratedFor` remain
+// session-only exactly as before.
+export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateToSettings }: TasbeehScreenProps) {
   const { language } = useLanguage();
   const t = tasbeehLabels[language];
   const nav = navLabels[language];
 
   const [selectedId, setSelectedId] = useState<number>(dhikrItems[0]?.id ?? 1);
-  const [counts, setCounts] = useState<Record<number, number>>({});
+  // Lazily seeded from localStorage on mount (see src/lib/tasbeehCounters.ts)
+  // — the lazy-initializer form runs loadTasbeehCounters() exactly once,
+  // the moment this component mounts, so switching Tasbeeh Dhikr, leaving
+  // and returning to this screen, or any other navigation that unmounts
+  // and remounts it always picks the persisted counts back up rather than
+  // starting over at {}.
+  const [counts, setCounts] = useState<Record<number, number>>(() => loadTasbeehCounters());
   const [targetInputs, setTargetInputs] = useState<Record<number, string>>({});
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const bubbleIdRef = useRef(0);
@@ -180,6 +201,55 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
   const targetInput = targetInputs[selectedId] ?? "";
   const targetNum = /^[1-9]\d*$/.test(targetInput) ? Number(targetInput) : null;
   const justReached = targetNum !== null && count === targetNum;
+
+  // Calm-counting pacing ring — a SEPARATE, word-count-based timing model
+  // from the Written Adhkar reader's (see src/lib/tasbeehTiming.ts). "ready"
+  // means the next tap is accepted; "pacing" means a successful count was
+  // just registered and the ring is running — any tap while pacing is
+  // silently ignored (no count, no haptic, no Statistics record). This gate
+  // is mandatory and has no user-facing bypass/disable control by design.
+  const reducedMotion = usePrefersReducedMotion();
+  const readyDurationMs = useMemo(() => computeTasbeehReadyDurationMs(selected?.dhikr_ar ?? ""), [selected?.dhikr_ar]);
+  const [pacingPhase, setPacingPhase] = useState<"ready" | "pacing">("ready");
+  // 0..1 — recomputed every animation frame from real elapsed time (see the
+  // effect below), never from a CSS transition: a CSS-eased sweep would
+  // visually reach "looks full" well before the real duration elapses,
+  // exactly the mismatch already fixed the same way in the Written Adhkar
+  // reader's RepetitionRing. This is the one authoritative timing source.
+  const [pacingFraction, setPacingFraction] = useState(0);
+
+  // Switching Dhikr always presents a fresh, immediately-ready circle —
+  // pacing is per-current-interaction, never carried over from a
+  // different Dhikr's in-progress ring.
+  useEffect(() => {
+    setPacingPhase("ready");
+    setPacingFraction(0);
+  }, [selectedId]);
+
+  // Arms the pacing timer/ring ONLY while "pacing" — i.e. only right after
+  // a successful count — never on mount, never independently of a count.
+  useEffect(() => {
+    if (pacingPhase !== "pacing") return;
+
+    if (reducedMotion) {
+      const timer = window.setTimeout(() => setPacingPhase("ready"), readyDurationMs);
+      return () => window.clearTimeout(timer);
+    }
+
+    let frame = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const fraction = Math.min(1, (now - start) / readyDurationMs);
+      setPacingFraction(fraction);
+      if (fraction >= 1) {
+        setPacingPhase("ready");
+        return;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [pacingPhase, readyDurationMs, reducedMotion]);
 
   if (!selected) {
     // Defensive only — dhikrItems is always populated from the supplied
@@ -223,9 +293,21 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
   }
 
   function handleTap() {
+    // Calm-counting pacing gate: a tap while the ring hasn't reached READY
+    // is silently ignored — no count, no haptic, no bubble, no Statistics
+    // record. "No warning" per spec — it simply does nothing. Mandatory,
+    // with no user-facing bypass/disable control.
+    if (pacingPhase !== "ready") return;
+
     const nextCount = (counts[selectedId] ?? 0) + 1;
-    setCounts((prev) => ({ ...prev, [selectedId]: nextCount }));
+    const updatedCounts = { ...counts, [selectedId]: nextCount };
+    setCounts(updatedCounts);
+    // Persisted synchronously (not from an effect) so a count is never at
+    // risk of being lost to a same-tick navigation away from this screen —
+    // by the time this function returns, localStorage already reflects it.
+    saveTasbeehCounters(updatedCounts);
     triggerTapHaptic();
+    recordTasbeehRepetition(selectedId);
 
     const id = bubbleIdRef.current++;
     const drift = Math.round(Math.random() * 48 - 24); // px, natural sideways variation
@@ -242,10 +324,21 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
       setCelebratedFor((prev) => ({ ...prev, [selectedId]: targetNum }));
       spawnCelebration();
     }
+
+    // The count just registered — start the pacing ring for the NEXT one.
+    setPacingFraction(0);
+    setPacingPhase("pacing");
   }
 
   function handleReset() {
-    setCounts((prev) => ({ ...prev, [selectedId]: 0 }));
+    const updatedCounts = { ...counts, [selectedId]: 0 };
+    setCounts(updatedCounts);
+    // RESET COUNTER ≠ DELETE STATISTICS: this only ever touches the
+    // persistent counter store (tasbeehCounters.ts) for the CURRENTLY
+    // selected Dhikr — it never imports or calls anything from
+    // src/lib/stats.ts, so previously recorded Statistics history for this
+    // (or any other) Dhikr is completely untouched by pressing Reset.
+    saveTasbeehCounters(updatedCounts);
     // Allows the same target to celebrate again after a reset.
     setCelebratedFor((prev) => {
       if (!(selectedId in prev)) return prev;
@@ -253,6 +346,12 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
       delete next[selectedId];
       return next;
     });
+    // Resets THIS Dhikr's own pacing cycle back to immediately ready —
+    // never "the timing system globally" (the tiers/rates in
+    // tasbeehTiming.ts are untouched); the user shouldn't be left waiting
+    // out a stale ring for a counter they just zeroed.
+    setPacingPhase("ready");
+    setPacingFraction(0);
   }
 
   function handleTargetChange(value: string) {
@@ -292,7 +391,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
           style={{
             borderColor: "var(--color-glass-edge)",
             background: "var(--color-glass-tint-soft)",
-            boxShadow: "0 4px 10px -6px rgba(18, 33, 63, 0.18)",
+            boxShadow: "0 4px 10px -6px rgba(var(--color-shadow-rgb), 0.18)",
           }}
         >
           <p className="text-[11px] italic leading-[1.5]" style={{ color: "var(--color-text-muted)" }}>
@@ -316,6 +415,18 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
                   type="button"
                   onClick={() => setSelectedId(item.id)}
                   aria-pressed={isSelected}
+                  // This button's text (`item.dhikr_ar`) is ALWAYS Arabic,
+                  // regardless of interface language — but `dir` is set on
+                  // <html> from the INTERFACE language (see
+                  // LanguageContext.tsx), so in English mode the ambient
+                  // direction is "ltr" here unless overridden. Without this,
+                  // the `truncate` class's ellipsis (below) anchors/clips
+                  // against that inherited ltr direction while the text
+                  // itself is RTL, so a long Dhikr shows its LAST words with
+                  // the ellipsis, not its first — this explicit `dir="rtl"`
+                  // is what fixes that, matching the content's actual
+                  // script rather than the current UI language.
+                  dir="rtl"
                   className="max-w-[150px] shrink-0 truncate rounded-full border px-3 py-1.5 text-[13px] font-medium"
                   style={{
                     fontFamily: "var(--font-display)",
@@ -445,7 +556,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
             type="button"
             onClick={handleTap}
             aria-label={t.incrementAria}
-            className="flex flex-col items-center justify-center gap-1.5 rounded-full border-2 px-6 py-3 text-center backdrop-blur-sm transition-transform active:scale-[0.98]"
+            className="relative flex flex-col items-center justify-center gap-1.5 rounded-full border-2 px-6 py-3 text-center backdrop-blur-sm transition-transform active:scale-[0.98]"
             style={{
               width: "clamp(152px, 42vw, 180px)",
               height: "clamp(152px, 42vw, 180px)",
@@ -456,9 +567,38 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
                 "radial-gradient(circle at 50% 100%, var(--color-glass-accent), transparent 70%), " +
                 "var(--color-glass-tint)",
               boxShadow:
-                "0 18px 34px -18px rgba(18, 33, 63, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.55), inset 0 -12px 22px -16px rgba(18, 33, 63, 0.07)",
+                "0 18px 34px -18px rgba(var(--color-shadow-rgb), 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.55), inset 0 -12px 22px -16px rgba(var(--color-shadow-rgb), 0.07)",
             }}
           >
+            {/* Calm-counting pacing ring — only present while the NEXT tap
+                is gated (pacingPhase === "pacing"); it disappears entirely
+                once ready, leaving the plain glass circle with no lingering
+                indicator. viewBox-relative sizing (not fixed pixels) so it
+                scales fluidly with the circle's own responsive clamp()
+                size. No CSS transition on the arc itself — `pacingFraction`
+                is already recomputed every animation frame from real
+                elapsed time, so this is the one authoritative visual, never
+                a separately-timed sweep that could look "done" early. */}
+            {pacingPhase === "pacing" && (
+              <svg
+                viewBox="0 0 100 100"
+                className="pointer-events-none absolute inset-0 h-full w-full -rotate-90"
+                aria-hidden="true"
+              >
+                <circle cx="50" cy="50" r="47" fill="none" stroke="var(--color-glass-edge)" strokeWidth="2.5" />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="47"
+                  fill="none"
+                  stroke="var(--color-gold)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeDasharray={TASBEEH_RING_CIRCUMFERENCE}
+                  strokeDashoffset={TASBEEH_RING_CIRCUMFERENCE * (1 - (reducedMotion ? 0 : pacingFraction))}
+                />
+              </svg>
+            )}
             <span
               className={dhikrTextClass(selected.dhikr_ar.length)}
               style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
@@ -471,7 +611,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
               style={{
                 fontFamily: "var(--font-display)",
                 color: "var(--color-gold)",
-                textShadow: "0 0 10px rgba(198, 161, 91, 0.3)",
+                textShadow: "0 0 10px rgba(var(--color-gold-rgb), 0.3)",
               }}
             >
               {count}
@@ -521,6 +661,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten }: TasbeehSc
           onSelect={(key) => {
             if (key === "home") onNavigateHome();
             if (key === "written") onNavigateToWritten();
+            if (key === "settings") onNavigateToSettings();
           }}
         />
       </AppShell>

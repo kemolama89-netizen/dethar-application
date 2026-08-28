@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
+import { PaletteProvider } from "./theme/PaletteContext";
 import { DeviceFrame } from "./components/DeviceFrame";
 import { AppShell } from "./components/AppShell";
 import { TopBar } from "./components/TopBar";
@@ -12,10 +13,14 @@ import { ContentModal } from "./components/ContentModal";
 import { TasbeehScreen } from "./components/TasbeehScreen";
 import { WrittenAdhkarScreen } from "./components/WrittenAdhkarScreen";
 import { WrittenAdhkarReader } from "./components/WrittenAdhkarReader";
+import { SettingsScreen } from "./components/SettingsScreen";
+import { MiscLibraryScreen } from "./components/MiscLibraryScreen";
+import { MiscCategoryScreen } from "./components/MiscCategoryScreen";
 import { BookOpen } from "lucide-react";
 import { MosqueDomeIcon } from "./icons/CustomIcons";
 import { labels, insightCardContent, hadithCardContent } from "./data/content";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
+import type { MiscCategoryKey } from "./data/misc-library";
 
 // The Featured Hadith under the logo is never previewed/clamped — it has
 // no modal state here. "Read more" remains only for the two content cards.
@@ -32,9 +37,11 @@ type OpenCard = "quran" | "hadith" | null;
 function HomeScreen({
   onNavigateToTasbeeh,
   onNavigateToWritten,
+  onNavigateToSettings,
 }: {
   onNavigateToTasbeeh: () => void;
   onNavigateToWritten: () => void;
+  onNavigateToSettings: () => void;
 }) {
   const { language } = useLanguage();
   const t = labels[language];
@@ -81,6 +88,7 @@ function HomeScreen({
           onSelect={(key) => {
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onNavigateToWritten();
+            if (key === "settings") onNavigateToSettings();
           }}
         />
       </AppShell>
@@ -109,7 +117,7 @@ function HomeScreen({
   );
 }
 
-type Screen = "home" | "tasbeeh" | "written" | "written-reader";
+type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "misc-library" | "misc-category" | "settings";
 
 // Minimal in-memory screen switcher — no router dependency added. No
 // screen persists its state across a switch (matching how theme/language
@@ -132,11 +140,19 @@ type Screen = "home" | "tasbeeh" | "written" | "written-reader";
 function AppRouter() {
   const [screen, setScreen] = useState<Screen>("home");
   const [writtenCategory, setWrittenCategory] = useState<WrittenAdhkarCategoryKey>("morning");
+  // Which Misc-library category the detail screen should open — same
+  // pattern as `writtenCategory` above, set right before switching to
+  // "misc-category" and simply left as-is on the way back.
+  const [miscCategory, setMiscCategory] = useState<MiscCategoryKey>("comprehensive");
 
   if (screen === "tasbeeh") {
     return (
       <div key={screen} className="dithar-app-transition">
-        <TasbeehScreen onNavigateHome={() => setScreen("home")} onNavigateToWritten={() => setScreen("written")} />
+        <TasbeehScreen
+          onNavigateHome={() => setScreen("home")}
+          onNavigateToWritten={() => setScreen("written")}
+          onNavigateToSettings={() => setScreen("settings")}
+        />
       </div>
     );
   }
@@ -146,7 +162,17 @@ function AppRouter() {
         <WrittenAdhkarScreen
           onNavigateHome={() => setScreen("home")}
           onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onNavigateToSettings={() => setScreen("settings")}
           onSelectCategory={(key) => {
+            // "Miscellaneous Adhkar & Duas" is now the richer Dithar
+            // Library (landing + category grid + search) built from
+            // ASSETS/dithar_master_content_library.md, rather than the
+            // old flat single-reader list — every other category is
+            // completely unaffected and still opens the existing reader.
+            if (key === "misc") {
+              setScreen("misc-library");
+              return;
+            }
             setWrittenCategory(key);
             setScreen("written-reader");
           }}
@@ -161,14 +187,60 @@ function AppRouter() {
           category={writtenCategory}
           onNavigateHome={() => setScreen("home")}
           onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onNavigateToSettings={() => setScreen("settings")}
           onBackToCategories={() => setScreen("written")}
+        />
+      </div>
+    );
+  }
+  if (screen === "misc-library") {
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <MiscLibraryScreen
+          onBack={() => setScreen("written")}
+          onNavigateHome={() => setScreen("home")}
+          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onNavigateToSettings={() => setScreen("settings")}
+          onSelectCategory={(key) => {
+            setMiscCategory(key);
+            setScreen("misc-category");
+          }}
+        />
+      </div>
+    );
+  }
+  if (screen === "misc-category") {
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <MiscCategoryScreen
+          categoryKey={miscCategory}
+          onBack={() => setScreen("misc-library")}
+          onNavigateToWrittenRoot={() => setScreen("written")}
+          onNavigateHome={() => setScreen("home")}
+          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onNavigateToSettings={() => setScreen("settings")}
+        />
+      </div>
+    );
+  }
+  if (screen === "settings") {
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <SettingsScreen
+          onNavigateHome={() => setScreen("home")}
+          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onNavigateToWritten={() => setScreen("written")}
         />
       </div>
     );
   }
   return (
     <div key={screen} className="dithar-app-transition">
-      <HomeScreen onNavigateToTasbeeh={() => setScreen("tasbeeh")} onNavigateToWritten={() => setScreen("written")} />
+      <HomeScreen
+        onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+        onNavigateToWritten={() => setScreen("written")}
+        onNavigateToSettings={() => setScreen("settings")}
+      />
     </div>
   );
 }
@@ -177,7 +249,9 @@ export default function App() {
   return (
     <LanguageProvider>
       <ThemeProvider>
-        <AppRouter />
+        <PaletteProvider>
+          <AppRouter />
+        </PaletteProvider>
       </ThemeProvider>
     </LanguageProvider>
   );

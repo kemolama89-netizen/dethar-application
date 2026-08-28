@@ -14,6 +14,13 @@ export type Language = "ar" | "en";
 
 export const labels = {
   ar: {
+    // The app name shown as text directly under the logo — MAIN 1/male
+    // identity only (see LogoHeader.tsx): that logo artwork bakes in ONLY
+    // the Arabic wordmark, unlike MAIN 2/female's artwork, which already
+    // bakes in both "دثار" and "DITHAR" together. This label is what
+    // supplies the missing English name in English UI without touching
+    // the (untouchable) logo artwork itself.
+    appName: "دِثار",
     insightTitle: "لطيفة قرآنية",
     hadithTitle: "حديث نبوي",
     hadithAttribution: "قال رسول الله ﷺ",
@@ -27,6 +34,7 @@ export const labels = {
     close: "إغلاق",
   },
   en: {
+    appName: "Dithar",
     insightTitle: "Quranic Insight",
     hadithTitle: "Prophetic Hadith",
     hadithAttribution: "The Messenger of Allah ﷺ said:",

@@ -49,7 +49,7 @@ export function ContentModal({
           background: "var(--color-surface)",
           borderColor: "var(--color-gold-soft)",
           borderRadius: "var(--card-radius)",
-          boxShadow: "0 20px 50px -20px rgba(15, 15, 15, 0.5)",
+          boxShadow: "0 20px 50px -20px rgba(var(--color-shadow-rgb), 0.5)",
         }}
       >
         <div className="flex items-start gap-3 border-b p-4" style={{ borderColor: "var(--color-gold-soft)" }}>

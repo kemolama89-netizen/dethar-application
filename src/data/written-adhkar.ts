@@ -1,36 +1,45 @@
-// Written Adhkar ("الأذكار المكتوبة") data — a clean, independent data
-// source for this feature. Deliberately NOT merged with
-// src/data/tasbeeh-library.json / src/data/tasbeeh.ts (the Tasbeeh Dhikr
-// library), which documents itself as "independent from Written Adhkar
-// and Audio Adhkar" — this file is that independent Written Adhkar source,
-// created because no such data existed anywhere in the project yet
-// (ASSETS/ only contains the Tasbeeh library).
+// Written Adhkar ("الأذكار المكتوبة") data.
 //
-// Scope/methodology, matching the same content-integrity bar already
-// applied to the Tasbeeh audit:
-// - This is a curated starter set of widely-established Adhkar (8 per
-//   category), not an attempt at an exhaustive Hisn al-Muslim transcription.
-//   Every item here is among the most well-attested, universally published
-//   duas in that tradition — chosen specifically to minimize any risk of
-//   misquoting wording, a repetition count, or a source.
-// - Arabic wording is transcribed carefully from memory of extremely
-//   well-known, ubiquitously published texts (the same class of certainty
-//   as e.g. Ayat al-Kursi or the Fatiha — not obscure or disputed wording).
-// - `repeat` is set ONLY where the specific repetition count is itself
-//   part of the well-known narration (e.g. "three times", "33 times").
-//   Where no widely-agreed count applies to the exact wording used here,
-//   `repeat` is left unset rather than guessing — the UI must not display
-//   a repetition count for those items.
-// - `text_en` is a faithful, plain-meaning translation (not a copy of any
-//   single copyrighted published translation), same approach already used
-//   for `dhikr_en` in tasbeeh-library.json.
-// - No virtue/merit claims are attached to any item here — this file is
-//   the dua text + who narrated it, nothing more, so there is nothing to
-//   invent or overstate.
-// - This starter set can be extended later following the same bar; it is
-//   not meant to represent "all of Hisn al-Muslim" as final/complete.
+// Morning / Evening / Prayer are sourced from src/data/dithar-adhkar-cards.json
+// (NOT the ASSETS staging file directly — that file is only a reference used
+// when preparing this JSON, and is never imported by the app). This JSON has
+// been hadith-reviewed and corrected against ASSETS/dithar_adhkar_cards_v1_staging.json
+// and verified sourcing: it deliberately differs from that staging file in a
+// few reviewed places (e.g. the Ayat al-Kursi card holds only the ayah itself,
+// with no isti'adhah prefix; the three Quls are three independent cards, not
+// one combined "المعوذات" card; several source_reference/hadith_grade values
+// were corrected). Nothing here invents, rewrites, shortens, or completes
+// missing Arabic text — see the per-field notes below for the few places that
+// needed light, mechanical handling (stripping a bracketed editorial note, or
+// reusing a card's own literal bracketed alternate wording).
+//
+// Misc ("أذكار وأدعية متفرقة") is UNCHANGED from the original curated set
+// below — the integration spec explicitly defers Miscellaneous Adhkar to a
+// later phase, so it still follows the original methodology: a curated
+// starter set of widely-established Adhkar, Arabic transcribed carefully
+// from memory of extremely well-known, ubiquitously published texts, and
+// `text_en` a faithful, plain-meaning translation.
+
+import stagingAdhkarData from "./dithar-adhkar-cards.json";
 
 export type WrittenAdhkarCategoryKey = "morning" | "evening" | "prayer" | "misc";
+
+// The five daily prayers — used ONLY to select which of a Dhikr's
+// prayer-specific repetition counts applies (see `repeatByPrayer` below,
+// and the prayer picker in WrittenAdhkarReader.tsx). Not a general
+// "current prayer" concept used anywhere else in the app.
+export type PrayerName = "fajr" | "dhuhr" | "asr" | "maghrib" | "isha";
+
+// Which prayer(s) a post-prayer Dhikr actually applies to, per its own
+// verified source — "all" (the default when omitted) for common Adhkar
+// said after every obligatory prayer; a single PrayerName or a list of them
+// for Adhkar the source specifically ties to one or more particular
+// prayers (e.g. the Fajr-only knowledge/provision dua, or the "يحيي
+// ويميت" formula said only after Fajr and Maghrib). This is the ONLY
+// mechanism that decides whether a Dhikr is shown for a given prayer — see
+// isInPrayerScope in WrittenAdhkarReader.tsx — never a UI-level filter
+// bolted on separately from the data.
+export type PrayerScope = "all" | PrayerName | PrayerName[];
 
 export interface WrittenAdhkarItem {
   id: string;
@@ -41,6 +50,23 @@ export interface WrittenAdhkarItem {
   text_en: string;
   /** Set ONLY when the exact repetition count is itself part of the established narration. */
   repeat?: number;
+  /**
+   * For the small number of post-prayer Adhkar whose established repetition
+   * count genuinely differs by which prayer was just performed (the three
+   * Quls: 3 times after Fajr/Maghrib, once after Dhuhr/Asr/Isha) — when
+   * present, this OVERRIDES `repeat` for whichever PrayerName the user has
+   * selected (see the prayer picker in WrittenAdhkarReader.tsx). Absent for
+   * every other item, which just uses the plain `repeat` above regardless
+   * of prayer.
+   */
+  repeatByPrayer?: Record<PrayerName, number>;
+  /**
+   * Which prayer(s) this Dhikr is shown for — see the `PrayerScope` doc
+   * comment above. Only meaningful for `category === "prayer"`; absent (or
+   * "all") for every item in every other category, which are always shown
+   * regardless of any prayer context.
+   */
+  prayerScope?: PrayerScope;
   source_ar: string;
   source_en: string;
 }
@@ -73,6 +99,11 @@ export const writtenAdhkarLabels = {
     ofTarget: (n: number) => `من ${n}`,
     tapToIncrement: "اضغط لزيادة العدد",
     tapToConfirm: "اضغط للتأكيد",
+    // Shown ONLY once every repetition is read and the ✓ is available —
+    // replaces tapToIncrement/tapToConfirm for that state (never both at
+    // once), so the user knows this tap moves them forward, not that it
+    // starts anything or counts another repetition.
+    tapToAdvance: "اضغط للانتقال",
     dhikrDone: "تم",
     journeyCompleteTitle: "أتممت وردك",
     // A short, standalone dua shown beneath the completion title — exact
@@ -81,6 +112,16 @@ export const writtenAdhkarLabels = {
     journeyCompleteSubtitle: (categoryAr: string) => `أتممت ${categoryAr} بحمد الله`,
     restartCategory: "إعادة الأذكار",
     backToWrittenAdhkar: "العودة إلى المجموعات",
+    // Prayer picker — shown ONLY for the Prayer Adhkar category, since a
+    // few of its Adhkar (the three Quls) have a repetition count that
+    // genuinely differs by which prayer was just performed. Ordinary
+    // interface terminology, not religious content.
+    choosePrayer: "بعد أي صلاة؟",
+    prayerFajr: "الفجر",
+    prayerDhuhr: "الظهر",
+    prayerAsr: "العصر",
+    prayerMaghrib: "المغرب",
+    prayerIsha: "العشاء",
   },
   en: {
     back: "Back",
@@ -94,238 +135,483 @@ export const writtenAdhkarLabels = {
     ofTarget: (n: number) => `of ${n}`,
     tapToIncrement: "Tap to count",
     tapToConfirm: "Tap to confirm",
+    tapToAdvance: "Tap to continue",
     dhikrDone: "Done",
     journeyCompleteTitle: "You have completed your wird",
     journeyCompleteDua: "May Allah accept your remembrance",
     journeyCompleteSubtitle: (categoryEn: string) => `You have completed ${categoryEn}, alhamdulillah`,
     restartCategory: "Repeat these Adhkar",
     backToWrittenAdhkar: "Back to Categories",
+    // Interface labels for the prayer picker (see the `ar` block above) —
+    // added alongside it purely so the control itself isn't left blank in
+    // English mode; no Written Adhkar CONTENT (title_en/text_en/source_en)
+    // was touched for this task.
+    choosePrayer: "Which prayer?",
+    prayerFajr: "Fajr",
+    prayerDhuhr: "Dhuhr",
+    prayerAsr: "Asr",
+    prayerMaghrib: "Maghrib",
+    prayerIsha: "Isha",
   },
 };
 
+// ---------------------------------------------------------------------
+// Morning / Evening / Prayer — built from dithar-adhkar-cards.json
+// ---------------------------------------------------------------------
+
+interface StagingCard {
+  id: string;
+  category: "morning" | "morning_evening" | "evening" | "prayer" | "daily";
+  display_title_ar: string;
+  arabic_source_text: string;
+  count: number | null;
+  source_reference: string;
+  hadith_grade: string;
+}
+
+const stagingCards = stagingAdhkarData.cards as StagingCard[];
+
+// The staging file documents an alternate morning/evening wording as a
+// bracketed editorial note directly inside `arabic_source_text` (e.g.
+// "[وإذا أمسى قال: ...]") rather than as its own field. Spec requires the
+// app to show the correct wording per collection and NEVER show that
+// literal bracketed instruction to the user, so it is always stripped
+// before display — for every card, regardless of category.
+function stripEveningNote(text: string): string {
+  return text.replace(/\s*\[[^\]]*\]/g, "").trim();
+}
+
+// Of the staging ids tagged "morning_evening", most have IDENTICAL
+// morning/evening wording (the text never references "morning" or
+// "evening" at all — e.g. Ayat al-Kursi, Sayyid al-Istighfar) and need no
+// override at all. morning_004 is the one id whose bracketed note already
+// contains the FULL, untruncated alternate wording — reproduced here
+// verbatim from that same bracket (never rewritten/re-voweled from
+// memory). Its title is likewise taken verbatim from the opening of that
+// same bracketed sentence.
+const EVENING_TEXT_OVERRIDE: Record<string, string> = {
+  morning_004: "اللَّهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.",
+  // morning_003's own bracketed note gives two literal evening replacement
+  // clauses (the opening "أمسينا وأمسى..." and the "رب أسألك خير ما في هذه
+  // الليلة..." clause) — reproduced here verbatim from that same bracket;
+  // the clauses the bracket does NOT replace (الكسل وسوء الكبر / عذاب النار
+  // والقبر) carry no day/night reference at all, so they stay unchanged.
+  morning_003:
+    "((أمسينا وأمسى الملك للَّه، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رب أسألك خير ما في هذه الليلة، وخير ما بعدها، وأعوذ بك من شر ما في هذه الليلة، وشر ما بعدها، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ)).",
+  // morning_006: the hadith's own wording covers both occasions in one
+  // sentence ("من قال حين يصبح أو يمسي...") — only "أصبحتُ" becomes
+  // "أمسيت" (per the card's own bracket), everything else in the body is
+  // identical for both occasions.
+  morning_006:
+    "((اللَّهُمَّ إِنِّي أمسيت أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتِكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّداً عَبْدُكَ وَرَسُولُكَ)) (أربعَ مَرَّاتٍ).",
+  // morning_015's bracket already contains the FULL, untruncated evening
+  // sentence — reproduced verbatim from that same bracket.
+  morning_015:
+    "((أمسينا وأمسى الملك للَّه ربّ العالمين اللَّهم إني أسألك خير هذه الليلة: فتحها، ونصرها، ونورها، وبركتها، وهداها، وأعوذ بك من شر ما فيها، وشر ما بعدها.)).",
+  // morning_007: same single-word substitution pattern as morning_006 —
+  // "أَصْبَحَ" becomes "أمسى" (per the card's own bracket), rest identical.
+  morning_007:
+    "((اللَّهُمَّ مَا أمسى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ)).",
+  // morning_016: only the opening "أَصْبَحْنا" becomes "أمسينا" — the rest of
+  // the body (فطرة الإسلام / كلمة الإخلاص / دين نبينا محمد / ملة إبراهيم)
+  // carries no day/night reference at all.
+  morning_016:
+    "((أمسينا عَلَى فِطْرَةِ الْإِسْلاَمِ، وَعَلَى كَلِمَةِ الْإِخْلاَصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ صلى الله عليه وسلم، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفاً مُسْلِماً وَمَا كَانَ مِنَ الْمُشرِكِينَ)).",
+};
+const EVENING_TITLE_OVERRIDE: Record<string, string> = {
+  morning_004: "اللَّهم بك أمسينا",
+  morning_003: "أمسينا وأمسى الملك لله",
+  morning_006: "اللهم إني أمسيت أشهدك",
+  morning_015: "أمسينا وأمسى الملك لله رب العالمين",
+  morning_007: "اللهم ما أمسى بي من نعمة",
+  morning_016: "أمسينا على فطرة الإسلام",
+};
+
+// Every "morning_evening" id now has a confirmed evening wording — nothing
+// left pending.
+const EVENING_PENDING_IDS = new Set<string>([]);
+
+// Additive English layer — kept here, never in the staging JSON, the same
+// pattern already used for `sourceAr` in tasbeeh.ts. The staging dataset
+// has no English fields yet; every string below is a faithful,
+// plain-meaning translation of that same id's `arabic_source_text` (the
+// "_evening" suffix keys translate the EVENING_TEXT_OVERRIDE variant
+// above instead) — the Arabic itself is never altered by this layer, and
+// no transliteration is included anywhere here (spec: never auto-generate
+// transliteration from memory).
+interface EnglishContent {
+  title_en: string;
+  text_en: string;
+}
+
+const ENGLISH_CONTENT: Record<string, EnglishContent> = {
+  morning_001: {
+    title_en: "Ayat al-Kursi",
+    text_en:
+      "Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His seat extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
+  },
+  morning_002: {
+    title_en: "Surah Al-Ikhlas",
+    text_en:
+      'In the name of Allah, the Most Gracious, the Most Merciful. Say, "He is Allah, One. Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent." (three times)',
+  },
+  morning_002b: {
+    title_en: "Surah Al-Falaq",
+    text_en:
+      'In the name of Allah, the Most Gracious, the Most Merciful. Say, "I seek refuge in the Lord of daybreak, from the evil of that which He created, and from the evil of darkness when it settles, and from the evil of the blowers in knots, and from the evil of an envier when he envies." (three times)',
+  },
+  morning_002c: {
+    title_en: "Surah An-Nas",
+    text_en:
+      'In the name of Allah, the Most Gracious, the Most Merciful. Say, "I seek refuge in the Lord of mankind, the Sovereign of mankind, the God of mankind, from the evil of the retreating whisperer who whispers in the breasts of mankind, from among the jinn and mankind." (three times)',
+  },
+  morning_003: {
+    title_en: "We have reached the morning, and with it all dominion belongs to Allah (extended version)",
+    text_en:
+      "We have reached the morning, and with it all dominion belongs to Allah, and praise is for Allah. There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable. My Lord, I ask You for the good of this day and the good of what follows it, and I seek refuge in You from the evil of this day and the evil of what follows it. My Lord, I seek refuge in You from laziness and the misery of old age. My Lord, I seek refuge in You from punishment in the Fire and punishment in the grave.",
+  },
+  morning_004: {
+    title_en: "O Allah, by You we have reached the morning",
+    text_en:
+      "O Allah, by You we have reached the morning, and by You we reach the evening; by You we live, and by You we die, and to You is the resurrection.",
+  },
+  morning_004_evening: {
+    title_en: "O Allah, by You we have reached the evening",
+    text_en:
+      "O Allah, by You we have reached the evening, and by You we reach the morning; by You we live, and by You we die, and to You is the return.",
+  },
+  morning_005: {
+    title_en: "The Master Supplication for Forgiveness (Sayyid al-Istighfar)",
+    text_en:
+      "O Allah, You are my Lord, there is no deity except You. You created me and I am Your servant, and I abide by Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favor upon me, and I acknowledge my sin, so forgive me — for none forgives sins except You.",
+  },
+  morning_006: {
+    title_en: "O Allah, I have reached the morning and call You to witness (four times)",
+    text_en:
+      "O Allah, I have reached the morning and I call You to witness, and I call to witness the bearers of Your Throne, Your angels, and all of Your creation, that You are Allah, there is no deity except You, alone, without partner, and that Muhammad is Your servant and Your Messenger. (four times)",
+  },
+  morning_007: {
+    title_en: "O Allah, whatever blessing I have risen upon this morning",
+    text_en:
+      "O Allah, whatever blessing I or any of Your creation have risen upon this morning is from You alone, without partner; to You belongs all praise and all thanks.",
+  },
+  morning_008: {
+    title_en: "O Allah, grant me well-being (three times)",
+    text_en:
+      "O Allah, grant me well-being in my body. O Allah, grant me well-being in my hearing. O Allah, grant me well-being in my sight. There is no deity except You. O Allah, I seek refuge in You from disbelief and poverty, and I seek refuge in You from the punishment of the grave. There is no deity except You. (three times)",
+  },
+  morning_009: {
+    title_en: "Allah is sufficient for me (seven times)",
+    text_en: "Allah is sufficient for me; there is no deity except Him. Upon Him I have relied, and He is the Lord of the Mighty Throne. (seven times)",
+  },
+  morning_010: {
+    title_en: "O Allah, I ask You for pardon and well-being",
+    text_en:
+      "O Allah, I ask You for pardon and well-being in this world and the Hereafter. O Allah, I ask You for pardon and well-being in my religious and worldly affairs, and my family and my wealth. O Allah, conceal my faults and set at ease my times of fear. O Allah, guard me from before me and from behind me, and from my right and from my left, and from above me, and I seek refuge in Your greatness from being taken unaware from beneath me.",
+  },
+  morning_011: {
+    title_en: "O Allah, Knower of the unseen and the witnessed",
+    text_en:
+      "O Allah, Knower of the unseen and the witnessed, Creator of the heavens and the earth, Lord and Sovereign of all things, I bear witness that there is no deity except You. I seek refuge in You from the evil of my soul, and from the evil of Satan and his associating others with Allah, and from bringing about evil upon myself or drawing it toward another Muslim.",
+  },
+  morning_012: {
+    title_en: "In the name of Allah, with whose name nothing can cause harm (three times)",
+    text_en:
+      "In the name of Allah, with whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, the All-Knowing. (three times)",
+  },
+  morning_013: {
+    title_en: "I am pleased with Allah as my Lord (three times)",
+    text_en: "I am pleased with Allah as my Lord, Islam as my religion, and Muhammad ﷺ as my Prophet. (three times)",
+  },
+  morning_014: {
+    title_en: "O Ever-Living, O Sustainer, by Your mercy I seek help",
+    text_en:
+      "O Ever-Living, O Sustainer, by Your mercy I seek help; set right all of my affairs, and do not leave me to myself even for the blink of an eye.",
+  },
+  morning_015: {
+    title_en: "We have reached the morning, and with it all dominion belongs to Allah, Lord of the worlds",
+    text_en:
+      "We have reached the morning, and with it all dominion belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of this day: its triumph, its help, its light, its blessing, and its guidance, and I seek refuge in You from the evil that is in it and the evil that follows it.",
+  },
+  morning_016: {
+    title_en: "We have risen upon the natural disposition of Islam",
+    text_en:
+      "We have risen upon the natural disposition of Islam, upon the word of pure faith, upon the religion of our Prophet Muhammad ﷺ, and upon the way of our father Abraham, who was upright in submission and was not among those who associate others with Allah.",
+  },
+  morning_017: {
+    title_en: "Glory be to Allah and praise Him (a hundred times)",
+    text_en: "Glory be to Allah and praise Him. (a hundred times)",
+  },
+  morning_018: {
+    title_en: "There is no deity except Allah, alone, without partner (ten times)",
+    text_en:
+      "There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable. (ten times, or once if one feels unable)",
+  },
+  morning_019: {
+    title_en: "There is no deity except Allah, alone, without partner (a hundred times daily)",
+    text_en:
+      "There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable. (a hundred times when morning comes)",
+  },
+  morning_020: {
+    title_en: "Glory be to Allah and praise Him, by the number of His creation (three times)",
+    text_en:
+      "Glory be to Allah and praise Him: by the number of His creation, by His own good pleasure, by the weight of His Throne, and by the extent of His words. (three times, when morning comes)",
+  },
+  morning_022: {
+    title_en: "I seek Allah's forgiveness and repent to Him (a hundred times)",
+    text_en: "I seek the forgiveness of Allah and repent to Him. (a hundred times in a day)",
+  },
+  // prayer_001/001b: split from one combined staging card into two
+  // independent cards (see the same id split in dithar-adhkar-cards.json),
+  // matching the established pattern already used for the Quls and for
+  // prayer_004's own split earlier. Both English strings below are the
+  // SAME wording the single combined card already used — re-partitioned to
+  // match the new card boundary, never rewritten/retranslated — since this
+  // task's "do not modify the English version" applies to the CONTENT's
+  // wording/meaning, not to the structural necessity of giving each newly
+  // independent Arabic card a non-blank English counterpart.
+  prayer_001: {
+    title_en: "Seeking Allah's forgiveness (three times)",
+    text_en: "I seek the forgiveness of Allah. (three times)",
+  },
+  prayer_001b: {
+    title_en: "O Allah, You are Peace",
+    text_en: "O Allah, You are Peace and from You comes peace. Blessed are You, O Possessor of majesty and honor.",
+  },
+  prayer_002: {
+    title_en: "There is no deity except Allah — after-prayer form",
+    text_en:
+      "There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable (three times). O Allah, none can withhold what You give, and none can give what You withhold, and the might of the mighty does not benefit them against You.",
+  },
+  prayer_003: {
+    title_en: "The comprehensive formula of remembrance",
+    text_en:
+      "There is no deity except Allah, alone, without partner. To Him belongs the dominion, and to Him belongs all praise, and He is over all things capable. There is no might nor power except with Allah. There is no deity except Allah, and we worship none but Him. To Him belongs all favor, and to Him belongs all grace, and to Him belongs beautiful praise. There is no deity except Allah, sincere in devotion to Him, even though the disbelievers dislike it.",
+  },
+  // prayer_004/004b/004c/004d were split from a single combined staging card
+  // ("سبحان الله والحمد لله والله أكبر — 33") into four independent cards —
+  // same pattern already used for the three Quls (see morning_002/002b/002c,
+  // prayer_005/005b/005c) — so each phrase gets its own card, counter, and
+  // Statistics tracking instead of being read together as one card. No
+  // wording invented: each text_en below is the same faithful translation
+  // already used elsewhere in this file for the identical Arabic phrase
+  // (compare prayer_004d's to prayer_002/003's "There is no deity except
+  // Allah..." clause).
+  prayer_004: {
+    title_en: "Glory be to Allah (33 times)",
+    text_en: "Glory be to Allah. (thirty-three times)",
+  },
+  prayer_004b: {
+    title_en: "Praise be to Allah (33 times)",
+    text_en: "Praise be to Allah. (thirty-three times)",
+  },
+  prayer_004c: {
+    title_en: "Allah is the Greatest (33 times)",
+    text_en: "Allah is the Greatest. (thirty-three times)",
+  },
+  prayer_004d: {
+    title_en: "There is no deity except Allah — completing the hundred",
+    text_en:
+      "There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable.",
+  },
+  prayer_005: {
+    title_en: "Surah Al-Ikhlas after prayer",
+    text_en:
+      'In the name of Allah, the Most Gracious, the Most Merciful. Say, "He is Allah, One. Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent." (after every prayer)',
+  },
+  prayer_005b: {
+    title_en: "Surah Al-Falaq after prayer",
+    text_en:
+      'In the name of Allah, the Most Gracious, the Most Merciful. Say, "I seek refuge in the Lord of daybreak, from the evil of that which He created, and from the evil of darkness when it settles, and from the evil of the blowers in knots, and from the evil of an envier when he envies." (after every prayer)',
+  },
+  prayer_005c: {
+    title_en: "Surah An-Nas after prayer",
+    text_en:
+      'In the name of Allah, the Most Gracious, the Most Merciful. Say, "I seek refuge in the Lord of mankind, the Sovereign of mankind, the God of mankind, from the evil of the retreating whisperer who whispers in the breasts of mankind, from among the jinn and mankind." (after every prayer)',
+  },
+  prayer_006: {
+    title_en: "Ayat al-Kursi after prayer",
+    text_en:
+      "Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His seat extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great. (after every prayer)",
+  },
+  prayer_007: {
+    title_en: "There is no deity except Allah — after Fajr and Maghrib",
+    text_en:
+      "There is no deity except Allah, alone, without partner. To Him belongs the dominion, and to Him belongs all praise. He gives life and causes death, and He is over all things capable. (ten times after the Maghrib and Fajr prayers)",
+  },
+  prayer_008: {
+    title_en: "O Allah, I ask You for beneficial knowledge — after Fajr",
+    text_en:
+      "O Allah, I ask You for beneficial knowledge, good provision, and acceptable deeds. (after the closing salam of the Fajr prayer)",
+  },
+  morning_003_evening: {
+    title_en: "We have reached the evening, and with it all dominion belongs to Allah (extended version)",
+    text_en:
+      "We have reached the evening, and with it all dominion belongs to Allah, and praise is for Allah. There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable. My Lord, I ask You for the good of this night and the good of what follows it, and I seek refuge in You from the evil of this night and the evil of what follows it. My Lord, I seek refuge in You from laziness and the misery of old age. My Lord, I seek refuge in You from punishment in the Fire and punishment in the grave.",
+  },
+  morning_006_evening: {
+    title_en: "O Allah, I have reached the evening and call You to witness (four times)",
+    text_en:
+      "O Allah, I have reached the evening and I call You to witness, and I call to witness the bearers of Your Throne, Your angels, and all of Your creation, that You are Allah, there is no deity except You, alone, without partner, and that Muhammad is Your servant and Your Messenger. (four times)",
+  },
+  morning_015_evening: {
+    title_en: "We have reached the evening, and with it all dominion belongs to Allah, Lord of the worlds",
+    text_en:
+      "We have reached the evening, and with it all dominion belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of this night: its triumph, its help, its light, its blessing, and its guidance, and I seek refuge in You from the evil that is in it and the evil that follows it.",
+  },
+  morning_023: {
+    title_en: "Sending blessings upon the Prophet ﷺ",
+    text_en:
+      "O Allah, send blessings upon Muhammad and upon the family of Muhammad, as You sent blessings upon Ibrahim and upon the family of Ibrahim; indeed You are Praiseworthy and Glorious. O Allah, send grace upon Muhammad and upon the family of Muhammad, as You sent grace upon Ibrahim and upon the family of Ibrahim; indeed You are Praiseworthy and Glorious.",
+  },
+  evening_001: {
+    title_en: "I seek refuge in Allah's perfect words from the evil of what He created",
+    text_en:
+      "I seek refuge in Allah's perfect words from the evil of what He created. (three times)",
+  },
+  morning_007_evening: {
+    title_en: "O Allah, whatever blessing I have gained this evening",
+    text_en:
+      "O Allah, whatever blessing I or any of Your creation have gained this evening is from You alone, without partner; to You belongs all praise and all thanks.",
+  },
+  morning_016_evening: {
+    title_en: "We have reached the evening upon the natural disposition of Islam",
+    text_en:
+      "We have reached the evening upon the natural disposition of Islam, upon the word of pure faith, upon the religion of our Prophet Muhammad ﷺ, and upon the way of our father Abraham, who was upright in submission and was not among those who associate others with Allah.",
+  },
+};
+
+function englishFor(key: string): EnglishContent {
+  return ENGLISH_CONTENT[key] ?? { title_en: "", text_en: "" };
+}
+
+// Short, card-friendly source line for every card — collection name (no
+// hadith number/cross-references) plus, for anything outside the Sahihayn,
+// the shortest accurate ruling ("Hasan (al-Albani)" / "حسّنه الألباني" style).
+// This is a DISPLAY simplification only: the full citation and grade stay
+// in dithar-adhkar-cards.json's source_reference/hadith_grade untouched;
+// this table never invents a source or grade not already documented there.
+const SHORT_SOURCE: Record<string, { ar: string; en: string }> = {
+  morning_001: { ar: "القرآن الكريم", en: "Qur'an 2:255" },
+  morning_002: { ar: "سنن أبي داود — صححه الألباني", en: "Sunan Abi Dawud — Sahih (al-Albani)" },
+  morning_002b: { ar: "سنن أبي داود — صححه الألباني", en: "Sunan Abi Dawud — Sahih (al-Albani)" },
+  morning_002c: { ar: "سنن أبي داود — صححه الألباني", en: "Sunan Abi Dawud — Sahih (al-Albani)" },
+  morning_003: { ar: "صحيح مسلم", en: "Sahih Muslim" },
+  morning_004: { ar: "سنن أبي داود — صححه الألباني", en: "Sunan Abi Dawud — Sahih (al-Albani)" },
+  morning_005: { ar: "صحيح البخاري", en: "Sahih al-Bukhari" },
+  morning_006: { ar: "سنن أبي داود — حسّنه ابن باز", en: "Sunan Abi Dawud — Hasan (Ibn Baz)" },
+  morning_007: { ar: "سنن أبي داود — حسنه بعض أهل العلم، وفيه خلاف", en: "Sunan Abi Dawud — Hasan (some scholars), disputed" },
+  morning_008: { ar: "سنن أبي داود — حسّنه الألباني", en: "Sunan Abi Dawud — Hasan (al-Albani)" },
+  morning_009: {
+    ar: "سنن أبي داود — موقوف على أبي الدرداء بإسناد جيد، وفي حكم المرفوع عند ابن باز",
+    en: "Sunan Abi Dawud — Mawquf on Abu al-Darda' with a good chain; regarded as marfu' in ruling by Ibn Baz",
+  },
+  morning_010: { ar: "سنن ابن ماجه — صححه الألباني", en: "Sunan Ibn Majah — Sahih (al-Albani)" },
+  morning_011: { ar: "جامع الترمذي — صححه الألباني", en: "Jami` at-Tirmidhi — Sahih (al-Albani)" },
+  morning_012: { ar: "سنن أبي داود — حسّنه ابن باز", en: "Sunan Abi Dawud — Hasan (Ibn Baz)" },
+  morning_013: { ar: "جامع الترمذي — إسناده حسن (ابن باز)", en: "Jami` at-Tirmidhi — Isnad Hasan (Ibn Baz)" },
+  morning_014: { ar: "سنن النسائي الكبرى — حسّنه الألباني", en: "Sunan an-Nasa'i al-Kubra — Hasan (al-Albani)" },
+  morning_015: { ar: "سنن أبي داود — حسّنه الألباني، وفيه خلاف", en: "Sunan Abi Dawud — Hasan (al-Albani), differed upon" },
+  morning_016: { ar: "مسند أحمد — إسناده صحيح (ابن باز)", en: "Musnad Ahmad — Isnad Sahih (Ibn Baz)" },
+  morning_017: { ar: "صحيح البخاري، صحيح مسلم", en: "Sahih al-Bukhari, Sahih Muslim" },
+  morning_018: { ar: "صحيح البخاري، صحيح مسلم", en: "Sahih al-Bukhari, Sahih Muslim" },
+  morning_019: { ar: "صحيح البخاري، صحيح مسلم", en: "Sahih al-Bukhari, Sahih Muslim" },
+  morning_020: { ar: "صحيح مسلم", en: "Sahih Muslim" },
+  morning_022: { ar: "صحيح البخاري، صحيح مسلم", en: "Sahih al-Bukhari, Sahih Muslim" },
+  // Arabic values below updated to the short takhrij format (collection +
+  // hadith number + companion) supplied as this task's authoritative data.
+  // English (`en`) values deliberately left exactly as they were — this
+  // task is Arabic-only.
+  prayer_001: { ar: "صحيح مسلم (591) — عن ثوبان رضي الله عنه", en: "Sahih Muslim" },
+  prayer_001b: { ar: "صحيح مسلم (591) — عن ثوبان رضي الله عنه", en: "Sahih Muslim" },
+  prayer_002: { ar: "البخاري (844)، مسلم (593) — عن المغيرة بن شعبة رضي الله عنه", en: "Sahih al-Bukhari, Sahih Muslim" },
+  prayer_003: { ar: "صحيح مسلم (594) — عن عبد الله بن الزبير رضي الله عنه", en: "Sahih Muslim" },
+  prayer_004: { ar: "صحيح مسلم (597) — عن أبي هريرة رضي الله عنه", en: "Sahih Muslim" },
+  prayer_004b: { ar: "صحيح مسلم (597) — عن أبي هريرة رضي الله عنه", en: "Sahih Muslim" },
+  prayer_004c: { ar: "صحيح مسلم (597) — عن أبي هريرة رضي الله عنه", en: "Sahih Muslim" },
+  prayer_004d: { ar: "صحيح مسلم (597) — عن أبي هريرة رضي الله عنه", en: "Sahih Muslim" },
+  prayer_005: { ar: "ورد في السنة، وذكره الشيخ ابن باز ضمن أذكار أدبار الصلوات", en: "Sunan Abi Dawud — Sahih (al-Albani)" },
+  prayer_005b: { ar: "أبو داود (1523) — عن عقبة بن عامر رضي الله عنه — صحيح", en: "Sunan Abi Dawud — Sahih (al-Albani)" },
+  prayer_005c: { ar: "أبو داود (1523) — عن عقبة بن عامر رضي الله عنه — صحيح", en: "Sunan Abi Dawud — Sahih (al-Albani)" },
+  prayer_006: { ar: "رواه النسائي في السنن الكبرى (9928) — عن أبي أمامة رضي الله عنه", en: "Sunan an-Nasa'i — Hasan (al-Albani)" },
+  prayer_007: { ar: "رواه الترمذي — حديث حسن صحيح عند الترمذي", en: "Jami` at-Tirmidhi — Hasan (al-Tirmidhi)" },
+  prayer_008: { ar: "سنن ابن ماجه — حسّنه الألباني", en: "Sunan Ibn Majah — Hasan (al-Albani)" },
+  morning_023: { ar: "صحيح البخاري، صحيح مسلم", en: "Sahih al-Bukhari, Sahih Muslim" },
+  evening_001: { ar: "جامع الترمذي — حسّنه الترمذي وصححه الألباني", en: "Jami` at-Tirmidhi — Hasan (al-Tirmidhi); Sahih (al-Albani)" },
+};
+
+function formatSource(card: StagingCard): { source_ar: string; source_en: string } {
+  const short = SHORT_SOURCE[card.id];
+  if (short) return { source_ar: short.ar, source_en: short.en };
+  return { source_ar: card.source_reference, source_en: card.source_reference };
+}
+
+// The three Quls after prayer (Sunan Abi Dawud 1523) are said three times
+// after Fajr and Maghrib, once after Dhuhr/Asr/Isha — a genuine per-prayer
+// difference, unlike every other card's fixed `repeat`. Scoped to exactly
+// these three ids; every other card is untouched by this map.
+const PRAYER_SPECIFIC_REPEAT: Record<string, Record<PrayerName, number>> = {
+  prayer_005: { fajr: 3, dhuhr: 1, asr: 1, maghrib: 3, isha: 1 },
+  prayer_005b: { fajr: 3, dhuhr: 1, asr: 1, maghrib: 3, isha: 1 },
+  prayer_005c: { fajr: 3, dhuhr: 1, asr: 1, maghrib: 3, isha: 1 },
+};
+
+// Prayer-specific post-prayer Adhkar — every id NOT listed here defaults to
+// "all" (said after every obligatory prayer). Scoped narrowly per each
+// item's own verified source, never guessed from where it happens to sit
+// in the data:
+//   - prayer_007 ("...يحيي ويميت...", x10): reported specifically for
+//     after Fajr and Maghrib only.
+//   - prayer_008 ("اللهم إني أسألك علماً نافعاً..."): reported specifically
+//     for after Fajr only (Sunan Ibn Majah 925; also Musnad Ahmad 26602,
+//     Sunan al-Kubra of an-Nasa'i 9930 — Umm Salamah). This is the exact
+//     item that was previously (incorrectly) appearing under every prayer,
+//     including Maghrib.
+const PRAYER_SCOPE: Record<string, PrayerScope> = {
+  prayer_007: ["fajr", "maghrib"],
+  prayer_008: "fajr",
+};
+
+function toWrittenItem(card: StagingCard, opts?: { titleOverride?: string; textOverride?: string; englishKey?: string }): WrittenAdhkarItem {
+  const english = englishFor(opts?.englishKey ?? card.id);
+  const { source_ar, source_en } = formatSource(card);
+  return {
+    id: card.id,
+    title_ar: opts?.titleOverride ?? card.display_title_ar,
+    title_en: english.title_en,
+    text_ar: opts?.textOverride ?? stripEveningNote(card.arabic_source_text),
+    text_en: english.text_en,
+    repeat: card.count ?? undefined,
+    repeatByPrayer: PRAYER_SPECIFIC_REPEAT[card.id],
+    prayerScope: PRAYER_SCOPE[card.id],
+    source_ar,
+    source_en,
+  };
+}
+
+const morningCards = stagingCards.filter((c) => c.category === "morning" || c.category === "morning_evening");
+const eveningCards = stagingCards.filter(
+  (c) => (c.category === "morning_evening" && !EVENING_PENDING_IDS.has(c.id)) || c.category === "evening",
+);
+const prayerCards = stagingCards.filter((c) => c.category === "prayer");
+
+const morningItems: WrittenAdhkarItem[] = morningCards.map((c) => toWrittenItem(c));
+
+const eveningItems: WrittenAdhkarItem[] = eveningCards.map((c) => {
+  const textOverride = EVENING_TEXT_OVERRIDE[c.id];
+  return toWrittenItem(c, {
+    titleOverride: EVENING_TITLE_OVERRIDE[c.id],
+    textOverride,
+    englishKey: textOverride ? `${c.id}_evening` : c.id,
+  });
+});
+
+const prayerItems: WrittenAdhkarItem[] = prayerCards.map((c) => toWrittenItem(c));
+
 export const writtenAdhkarItems: Record<WrittenAdhkarCategoryKey, WrittenAdhkarItem[]> = {
-  morning: [
-    {
-      id: "morning-1",
-      text_ar:
-        "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ، لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ، لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ، مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ، يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ، وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ، وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ، وَلَا يَئُودُهُ حِفْظُهُمَا، وَهُوَ الْعَلِيُّ الْعَظِيمُ.",
-      text_en:
-        "Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His seat extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
-      title_ar: "آية الكرسي",
-      title_en: "Ayat al-Kursi",
-      source_ar: "القرآن الكريم (البقرة: 255)",
-      source_en: "Quran 2:255",
-    },
-    {
-      id: "morning-2",
-      text_ar:
-        "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.",
-      text_en:
-        "We have reached the morning, and with it all dominion belongs to Allah. Praise be to Allah. There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable.",
-      source_ar: "صحيح مسلم 2723",
-      source_en: "Sahih Muslim 2723",
-    },
-    {
-      id: "morning-3",
-      text_ar: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ.",
-      text_en:
-        "O Allah, by You we have reached the morning, and by You we reach the evening; by You we live, and by You we die, and to You is the resurrection.",
-      source_ar: "سنن الترمذي",
-      source_en: "Jami` at-Tirmidhi",
-    },
-    {
-      id: "morning-4",
-      title_ar: "سيد الاستغفار",
-      title_en: "The Master Supplication for Forgiveness",
-      text_ar:
-        "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.",
-      text_en:
-        "O Allah, You are my Lord, there is no deity except You. You created me and I am Your servant, and I abide by Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favor upon me, and I acknowledge my sin, so forgive me — for none forgives sins except You.",
-      source_ar: "صحيح البخاري 6306",
-      source_en: "Sahih al-Bukhari 6306",
-    },
-    {
-      id: "morning-5",
-      text_ar: "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا.",
-      text_en: "I am pleased with Allah as my Lord, Islam as my religion, and Muhammad ﷺ as my Prophet.",
-      repeat: 3,
-      source_ar: "سنن أبي داود والترمذي",
-      source_en: "Abu Dawud; Jami` at-Tirmidhi",
-    },
-    {
-      id: "morning-6",
-      text_ar: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ.",
-      text_en:
-        "In the name of Allah, with whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, the All-Knowing.",
-      repeat: 3,
-      source_ar: "سنن أبي داود والترمذي",
-      source_en: "Abu Dawud; Jami` at-Tirmidhi",
-    },
-    {
-      id: "morning-7",
-      text_ar: "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ، وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.",
-      text_en:
-        "Allah is sufficient for me; there is no deity except Him. Upon Him I have relied, and He is the Lord of the Mighty Throne.",
-      repeat: 7,
-      source_ar: "سنن أبي داود 5081",
-      source_en: "Abu Dawud 5081",
-    },
-    {
-      id: "morning-8",
-      text_ar: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ.",
-      text_en: "O Allah, I ask You for pardon and well-being in this world and the Hereafter.",
-      source_ar: "سنن ابن ماجه",
-      source_en: "Sunan Ibn Majah",
-    },
-  ],
-  evening: [
-    {
-      id: "evening-1",
-      title_ar: "آية الكرسي",
-      title_en: "Ayat al-Kursi",
-      text_ar:
-        "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ، لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ، لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ، مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ، يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ، وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ، وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ، وَلَا يَئُودُهُ حِفْظُهُمَا، وَهُوَ الْعَلِيُّ الْعَظِيمُ.",
-      text_en:
-        "Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His seat extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
-      source_ar: "القرآن الكريم (البقرة: 255)",
-      source_en: "Quran 2:255",
-    },
-    {
-      id: "evening-2",
-      text_ar:
-        "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.",
-      text_en:
-        "We have reached the evening, and with it all dominion belongs to Allah. Praise be to Allah. There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable.",
-      source_ar: "صحيح مسلم 2723",
-      source_en: "Sahih Muslim 2723",
-    },
-    {
-      id: "evening-3",
-      text_ar: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ.",
-      text_en:
-        "O Allah, by You we have reached the evening, and by You we reach the morning; by You we live, and by You we die, and to You is the return.",
-      source_ar: "سنن الترمذي",
-      source_en: "Jami` at-Tirmidhi",
-    },
-    {
-      id: "evening-4",
-      title_ar: "سيد الاستغفار",
-      title_en: "The Master Supplication for Forgiveness",
-      text_ar:
-        "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.",
-      text_en:
-        "O Allah, You are my Lord, there is no deity except You. You created me and I am Your servant, and I abide by Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favor upon me, and I acknowledge my sin, so forgive me — for none forgives sins except You.",
-      source_ar: "صحيح البخاري 6306",
-      source_en: "Sahih al-Bukhari 6306",
-    },
-    {
-      id: "evening-5",
-      text_ar: "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا.",
-      text_en: "I am pleased with Allah as my Lord, Islam as my religion, and Muhammad ﷺ as my Prophet.",
-      repeat: 3,
-      source_ar: "سنن أبي داود والترمذي",
-      source_en: "Abu Dawud; Jami` at-Tirmidhi",
-    },
-    {
-      id: "evening-6",
-      text_ar: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ.",
-      text_en:
-        "In the name of Allah, with whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, the All-Knowing.",
-      repeat: 3,
-      source_ar: "سنن أبي داود والترمذي",
-      source_en: "Abu Dawud; Jami` at-Tirmidhi",
-    },
-    {
-      id: "evening-7",
-      text_ar: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.",
-      text_en: "I seek refuge in the perfect words of Allah from the evil of what He has created.",
-      repeat: 3,
-      source_ar: "صحيح مسلم 2709",
-      source_en: "Sahih Muslim 2709",
-    },
-    {
-      id: "evening-8",
-      text_ar: "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ، وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.",
-      text_en:
-        "Allah is sufficient for me; there is no deity except Him. Upon Him I have relied, and He is the Lord of the Mighty Throne.",
-      repeat: 7,
-      source_ar: "سنن أبي داود 5081",
-      source_en: "Abu Dawud 5081",
-    },
-  ],
-  prayer: [
-    {
-      id: "prayer-1",
-      title_ar: "بعد التسليم مباشرة",
-      title_en: "Immediately after the closing salam",
-      text_ar: "أَسْتَغْفِرُ اللَّهَ.",
-      text_en: "I seek the forgiveness of Allah.",
-      repeat: 3,
-      source_ar: "صحيح مسلم 591",
-      source_en: "Sahih Muslim 591",
-    },
-    {
-      id: "prayer-2",
-      text_ar: "اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ.",
-      text_en: "O Allah, You are Peace and from You comes peace. Blessed are You, O Possessor of majesty and honor.",
-      source_ar: "صحيح مسلم 591",
-      source_en: "Sahih Muslim 591",
-    },
-    {
-      id: "prayer-3",
-      text_ar:
-        "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ.",
-      text_en:
-        "There is no deity except Allah, alone, without partner. To Him belongs the dominion, to Him belongs all praise, and He is over all things capable. O Allah, none can withhold what You give, and none can give what You withhold, and the might of the mighty does not benefit them against You.",
-      source_ar: "صحيح البخاري 844، صحيح مسلم 593",
-      source_en: "Sahih al-Bukhari 844; Sahih Muslim 593",
-    },
-    {
-      id: "prayer-4",
-      text_ar: "سُبْحَانَ اللَّهِ.",
-      text_en: "Glory be to Allah.",
-      repeat: 33,
-      source_ar: "صحيح مسلم 596",
-      source_en: "Sahih Muslim 596",
-    },
-    {
-      id: "prayer-5",
-      text_ar: "الْحَمْدُ لِلَّهِ.",
-      text_en: "Praise be to Allah.",
-      repeat: 33,
-      source_ar: "صحيح مسلم 596",
-      source_en: "Sahih Muslim 596",
-    },
-    {
-      id: "prayer-6",
-      text_ar: "اللَّهُ أَكْبَرُ.",
-      text_en: "Allah is the Greatest.",
-      repeat: 34,
-      source_ar: "صحيح مسلم 596",
-      source_en: "Sahih Muslim 596",
-    },
-    {
-      id: "prayer-7",
-      title_ar: "التسبيح الجامع",
-      title_en: "The combined tasbih",
-      text_ar: "سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ.",
-      text_en: "Glory be to Allah, praise be to Allah, there is no deity except Allah, and Allah is the Greatest.",
-      repeat: 25,
-      source_ar: "صحيح مسلم 597",
-      source_en: "Sahih Muslim 597",
-    },
-    {
-      id: "prayer-8",
-      title_ar: "آية الكرسي بعد الصلاة",
-      title_en: "Ayat al-Kursi after prayer",
-      text_ar:
-        "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ، لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ، لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ، مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ، يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ، وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ، وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ، وَلَا يَئُودُهُ حِفْظُهُمَا، وَهُوَ الْعَلِيُّ الْعَظِيمُ.",
-      text_en:
-        "Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His seat extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
-      source_ar: "القرآن الكريم (البقرة: 255)",
-      source_en: "Quran 2:255",
-    },
-  ],
+  morning: morningItems,
+  evening: eveningItems,
+  prayer: prayerItems,
   misc: [
     {
       id: "misc-1",
