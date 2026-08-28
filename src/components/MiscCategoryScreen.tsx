@@ -5,9 +5,11 @@ import { TopBar } from "./TopBar";
 import { BackHeader } from "./BackHeader";
 import { BottomNav } from "./BottomNav";
 import { MiscDuaCard } from "./MiscDuaCard";
+import { MiscMeaningModal } from "./MiscMeaningModal";
 import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels as t } from "../data/misc-library";
-import type { MiscCategoryKey } from "../data/misc-library";
+import type { MiscCategoryKey, MiscDuaItem } from "../data/misc-library";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
+import { useMiscSpeech } from "../lib/useMiscSpeech";
 
 interface MiscCategoryScreenProps {
   categoryKey: MiscCategoryKey;
@@ -35,6 +37,8 @@ export function MiscCategoryScreen({
   const meta = MISC_CATEGORIES[categoryKey];
   const items = useMemo(() => MISC_DUAS.filter((item) => item.categories.includes(categoryKey)), [categoryKey]);
   const [favorites, setFavorites] = useState<Set<string>>(() => loadMiscFavorites());
+  const [meaningItem, setMeaningItem] = useState<MiscDuaItem | null>(null);
+  const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
 
   function handleToggleFavorite(id: string) {
     setFavorites((prev) => {
@@ -47,7 +51,7 @@ export function MiscCategoryScreen({
   }
 
   return (
-    <DeviceFrame background="var(--wa-page-bg)">
+    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningItem !== null}>
       <AppShell>
         <TopBar />
         <div className="flex flex-1 flex-col">
@@ -71,6 +75,9 @@ export function MiscCategoryScreen({
                   item={item}
                   isFavorite={favorites.has(item.id)}
                   onToggleFavorite={() => handleToggleFavorite(item.id)}
+                  isSpeaking={speakingId === item.id}
+                  onToggleListen={() => toggleSpeech(item.id, item.text_ar)}
+                  onShowMeaning={() => setMeaningItem(item)}
                 />
               ))
             )}
@@ -91,6 +98,8 @@ export function MiscCategoryScreen({
           }}
         />
       </AppShell>
+
+      <MiscMeaningModal item={meaningItem} onClose={() => setMeaningItem(null)} />
     </DeviceFrame>
   );
 }

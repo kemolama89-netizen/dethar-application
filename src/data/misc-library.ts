@@ -309,9 +309,22 @@ export interface MiscDuaItem {
    */
   note_ar?: string;
   categories: MiscCategoryKey[];
+  /**
+   * English meaning of the COMPLETE Arabic text — sourced verbatim from
+   * ASSETS/dithar_master_content_library.md's "ENGLISH INTEGRATION LAYER"
+   * (added there per the same content-safety rule as the rest of this
+   * file: never invented, never upgrading a pending record). Applied below
+   * via `MISC_ENGLISH_CONTENT`, matched by id — never inlined per-item, so
+   * this stays a pure additive layer with no risk to the Arabic literals
+   * above. Absent for the small number of items with no Master coverage at
+   * all (see that map's own comment) — no meaning is invented for those.
+   */
+  englishMeaning?: string;
+  /** Latin transliteration of the same complete Arabic text — same source and rule as `englishMeaning`. */
+  englishTransliteration?: string;
 }
 
-export const MISC_DUAS: MiscDuaItem[] = [
+const MISC_DUAS_BASE: MiscDuaItem[] = [
   // ---- 1. أدعية جامعة ----
   {
     id: "rabbana-atina",
@@ -1101,6 +1114,431 @@ export const MISC_DUAS: MiscDuaItem[] = [
   },
 ];
 
+// Additive English layer — same pattern as ENGLISH_CONTENT in
+// written-adhkar.ts: kept as a separate lookup keyed by id, never inlined
+// into the Arabic literals above, so it can never touch text_ar/id/source/
+// categories/grade/count. Every value below is copied verbatim from
+// ASSETS/dithar_master_content_library.md's English Integration Layer for
+// the matching Master entry (matched by comparing this file's text_ar
+// against the Master's Arabic text, not by number alone, since ids here
+// are slugs rather than Master section numbers). Three ids have no Master
+// counterpart at all (before-sleeping/upon-waking/after-eating — see their
+// own comments above): their englishMeaning reuses this app's own
+// pre-existing, already-verified text_en from written-adhkar.ts's "misc-5"/
+// "misc-6"/"misc-4" entries (never invented), with a plain transliteration
+// of that same short, extremely well-known text added alongside it.
+const MISC_ENGLISH_CONTENT: Record<string, { englishMeaning: string; englishTransliteration: string }> = {
+  "rabbana-atina": {
+    englishMeaning: "Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.",
+    englishTransliteration: "Rabbana aatina fid-dunya hasanatan wa fil-aakhirati hasanatan wa qina ‘adhaaban-naar.",
+  },
+  "allahumma-inni-asaluka-alhuda": {
+    englishMeaning: "O Allah, I ask You for guidance, piety, chastity, and self-sufficiency (contentment of the heart).",
+    englishTransliteration: "Allahumma inni as'aluka al-huda wat-tuqa wal-‘afaafa wal-ghina.",
+  },
+  "allahumma-ighfir-li-warhamni": {
+    englishMeaning: "O Allah, forgive me, have mercy on me, guide me, grant me well-being, and provide for me.",
+    englishTransliteration: "Allahummaghfir li, warhamni, wahdini, wa ‘aafini, warzuqni.",
+  },
+  "allahumma-ihdini-wasaddidni": {
+    englishMeaning: "O Allah, guide me and make me steadfast/upright.",
+    englishTransliteration: "Allahummahdini wa saddidni.",
+  },
+  "allahumma-aslih-li-dini": {
+    englishMeaning:
+      "O Allah, set right for me my religion, which is the safeguard of my affairs; set right for me my worldly life, in which is my livelihood; and set right for me my Hereafter, to which is my return. Make life a means of increase for me in every good, and make death a relief for me from every evil.",
+    englishTransliteration:
+      "Allahumma aslih li deeni alladhi huwa ‘ismatu amri, wa aslih li dunyaaya allati feeha ma‘aashi, wa aslih li aakhirati allati feeha ma‘aadi, waj‘alil-hayaata ziyaadatan li fi kulli khayr, waj‘alil-mawta raahatan li min kulli sharr.",
+  },
+  "allahumma-inni-asaluka-min-al-khayr-kullih": {
+    englishMeaning:
+      "O Allah, I ask You for all good, its immediate and its delayed, what I know of it and what I do not know; and I seek refuge in You from all evil, its immediate and its delayed, what I know of it and what I do not know. O Allah, I ask You for the good that Your servant and Prophet asked You for, and I seek refuge in You from the evil that Your servant and Prophet sought refuge from. O Allah, I ask You for Paradise and whatever word or deed brings [one] closer to it, and I seek refuge in You from the Fire and whatever word or deed brings [one] closer to it, and I ask You to make every decree You ordain for me good.",
+    englishTransliteration:
+      "Allahumma inni as'aluka minal-khayri kullihi, ‘aajilihi wa aajilihi, ma ‘alimtu minhu wa ma lam a‘lam, wa a‘oothu bika minash-sharri kullihi, ‘aajilihi wa aajilihi, ma ‘alimtu minhu wa ma lam a‘lam. Allahumma inni as'aluka min khayri ma sa'alaka ‘abduka wa nabiyyuk, wa a‘oothu bika min sharri ma ‘aadha bihi ‘abduka wa nabiyyuk. Allahumma inni as'alukal-jannata wa ma qarraba ilayha min qawlin aw ‘amal, wa a‘oothu bika minan-naari wa ma qarraba ilayha min qawlin aw ‘amal, wa as'aluka an taj‘ala kulla qadaa'in qadaytahu li khayra.",
+  },
+  "allahumma-inni-asaluka-al-afiyah-fi-al-dunya-wal-akhirah": {
+    englishMeaning:
+      "O Allah, I ask You for well-being in this world and the Hereafter. O Allah, I ask You for pardon and well-being in my religion, my worldly life, my family, and my wealth. O Allah, conceal my faults and calm my fears. O Allah, guard me from before me, from behind me, from my right, from my left, and from above me, and I seek refuge in Your greatness from being taken unaware from beneath me.",
+    englishTransliteration:
+      "Allahumma inni as'alukal-‘aafiyata fid-dunya wal-aakhirah, Allahumma inni as'alukal-‘afwa wal-‘aafiyata fi deeni wa dunyaaya wa ahli wa maali, Allahummastur ‘awraati wa aamin raw‘aati, Allahummahfadhni min bayni yadayya wa min khalfi wa ‘an yameeni wa ‘an shimaali wa min fawqi, wa a‘oothu bi‘adhamatika an ughtaala min tahti.",
+  },
+  "allahumma-iqsim-lana-min-khashyatik": {
+    englishMeaning:
+      "O Allah, apportion for us such fear of You as will come between us and disobedience to You, and such obedience to You as will bring us to Your Paradise, and such certainty as will make the calamities of this world easy for us to bear. Let us enjoy our hearing, our sight, and our strength for as long as You keep us alive, and make that a lasting legacy for us. Make our vengeance fall upon those who wrong us, and grant us victory over those who show enmity to us. Do not let our affliction be in our religion, do not make this world our greatest concern or the sum of our knowledge, and do not let anyone who has no mercy for us be given power over us.",
+    englishTransliteration:
+      "Allahummaqsim lana min khashyatika ma yahoolu baynana wa bayna ma‘aasik, wa min taa‘atika ma tuballighuna bihi jannatak, wa minal-yaqeeni ma tuhawwinu bihi ‘alayna musibaatid-dunya, wa matti‘na bi-asma‘ina wa absaarina wa quwwatina ma ahyaytana, waj‘alhul-waaritha minna, waj‘al tha'rana ‘ala man dhalamana, wansurna ‘ala man ‘aadaana, wa la taj‘al musibatana fi deenina, wa la taj‘alid-dunya akbara hammina wa la mablagha ‘ilmina, wa la tusallit ‘alayna man la yarhamuna.",
+  },
+  "allahumma-bi-ilmika-al-ghayb": {
+    englishMeaning:
+      "O Allah, by Your knowledge of the unseen and Your power over creation, keep me alive as long as You know life is good for me, and take me in death when You know death is good for me. O Allah, I ask You for the fear of You in secret and in public, and I ask You for the word of truth in contentment and in anger, and I ask You for moderation in poverty and in wealth. I ask You for a bliss that never ends, and for a joy of the eye that never ceases. I ask You for contentment after the decree, and for a pleasant life after death, and I ask You for the sweetness of looking upon Your Face, and the longing to meet You, without harmful adversity or misguiding trial. O Allah, adorn us with the adornment of faith and make us guides who are rightly guided.",
+    englishTransliteration:
+      "Allahumma bi‘ilmikal-ghayba wa qudratika ‘alal-khalq, ahyini ma ‘alimtal-hayaata khayran li, wa tawaffani idha ‘alimtal-wafaata khayran li. Allahumma inni as'aluka khashyataka fil-ghaybi wash-shahaadah, wa as'aluka kalimatal-haqqi fir-rida wal-ghadab, wa as'alukal-qasda fil-faqri wal-ghina, wa as'aluka na‘eeman la yanfad, wa as'aluka qurrata ‘aynin la tanqati‘, wa as'alukar-rida ba‘dal-qadaa', wa as'aluka barda-l‘aysh ba‘dal-mawt, wa as'aluka ladhdhatan-nadhari ila wajhika wash-shawqa ila liqaa'ika, fi ghayri darraa'a mudirratin wa la fitnatin mudillah. Allahumma zayyinna bizeenatil-eemaan waj‘alna hudaatan muhtadeen.",
+  },
+  "allahumma-inni-asaluka-al-thabat-fi-al-amr": {
+    englishMeaning:
+      "O Allah, I ask You for steadfastness in my affairs, and resolve upon right guidance. I ask You for what brings about Your mercy, and the resolve of Your forgiveness. I ask You for thankfulness for Your blessing, and for excellence in worshipping You. I ask You for a sound heart, and a truthful tongue. I ask You for the good that You know, and I seek refuge in You from the evil that You know, and I ask Your forgiveness for what You know, for indeed You are the Knower of unseen things.",
+    englishTransliteration:
+      "Allahumma inni as'alukath-thabaata fil-amr, wal-‘azeemata ‘alar-rushd, wa as'aluka moojibaati rahmatik, wa ‘azaa'ima maghfiratik, wa as'aluka shukra ni‘matik, wa husna ‘ibaadatik, wa as'aluka qalban saleema, wa lisaanan saadiqa, wa as'aluka min khayri ma ta‘lam, wa a‘oothu bika min sharri ma ta‘lam, wa astaghfiruka lima ta‘lam, innaka anta ‘allaamul-ghuyoob.",
+  },
+  "rabbi-aini-wala-tuin-alayya": {
+    englishMeaning:
+      "My Lord, help me and do not help [others] against me; grant me victory and do not let [others] triumph over me; plan for me and do not let anyone plan against me; guide me and make guidance easy for me; and grant me victory over whoever wrongs me. My Lord, make me one who thanks You greatly, remembers You greatly, fears You greatly, is greatly obedient to You, humbles himself before You, and turns to You in devotion and repentance. My Lord, accept my repentance, wash away my sin, answer my call, make firm my proof, guide my tongue rightly, guide my heart, and draw out the rancour of my chest.",
+    englishTransliteration:
+      "Rabbi a‘inni wa la tu‘in ‘alayya, wansurni wa la tansur ‘alayya, wamkur li wa la tamkur ‘alayya, wahdini wa yassiril-hudaa li, wansurni ‘ala man baghaa ‘alayya. Rabbij‘alni laka shakkaara, laka dhakkaara, laka rahhaaba, laka mutawaa‘a, laka mukhbita, ilayka awwaahan muneeba. Rabbi taqabbal tawbati, waghsil hawbati, wa ajib da‘wati, wa thabbit hujjati, wa saddid lisaani, wahdi qalbi, waslul sakheemata sadri.",
+  },
+  "sayyid-al-istighfar": {
+    englishMeaning:
+      "O Allah, You are my Lord; there is no god but You. You created me and I am Your servant, and I abide by Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favour upon me, and I acknowledge my sin, so forgive me, for none forgives sins but You.",
+    englishTransliteration:
+      "Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana ‘abduka, wa ana ‘ala ‘ahdika wa wa‘dika mastata‘t, a‘oothu bika min sharri ma sana‘t, aboo'u laka bini‘matika ‘alayya, wa aboo'u bidhanbi, faghfir li fa'innahu la yaghfirudh-dhunooba illa anta.",
+  },
+  "rabbi-ighfir-li-watub-alayya": {
+    englishMeaning: "My Lord, forgive me and accept my repentance; indeed, You are the Ever-Accepting of repentance, the Most Merciful.",
+    englishTransliteration: "Rabbighfir li wa tub ‘alayya innaka antat-tawwaabur-raheem.",
+  },
+  "allahumma-ighfir-li-khatiati-wajahli": {
+    englishMeaning:
+      "O Allah, forgive me my error, my ignorance, and my excess in my affairs, and what You know better than I do. O Allah, forgive me what I have done in seriousness and in jest, my mistakes and my intentional acts — all of that is within me. O Allah, forgive me what I have put forward and what I have left behind, what I have concealed and what I have made known. You are the One who brings forward and the One who puts back, and You are able to do all things.",
+    englishTransliteration:
+      "Allahummaghfir li khati'ati wa jahli, wa israafi fi amri, wa ma anta a‘lamu bihi minni, Allahummaghfir li jiddi wa hazli, wa khata'i wa ‘amdi, wa kullu dhaalika ‘indi, Allahummaghfir li ma qaddamtu wa ma akhkhartu, wa ma asrartu wa ma a‘lantu, antal-muqaddimu wa antal-mu'akhkhiru, wa anta ‘ala kulli shay'in qadeer.",
+  },
+  "audhu-bikalimatillah-al-tammat": {
+    englishMeaning: "I seek refuge in the perfect words of Allah from the evil of what He has created.",
+    englishTransliteration: "A‘oothu bikalimaatillahit-taammaati min sharri ma khalaq.",
+  },
+  "allahumma-inni-audhu-bika-min-al-ajz": {
+    englishMeaning:
+      "O Allah, I seek refuge in You from helplessness and laziness, from cowardice and old age, and from miserliness, and I seek refuge in You from the punishment of the grave and from the trial of life and death.",
+    englishTransliteration:
+      "Allahumma inni a‘oothu bika minal-‘ajzi wal-kasal, wal-jubni wal-haram, wal-bukhl, wa a‘oothu bika min ‘adhaabil-qabr, wa min fitnatil-mahya wal-mamaat.",
+  },
+  "allahumma-inni-audhu-bika-min-jahd-al-bala": {
+    englishMeaning: "O Allah, I seek refuge in You from the hardship of trial, the depths of misery, the evil of the decree, and the gloating of enemies.",
+    englishTransliteration: "Allahumma inni a‘oothu bika min jahdil-balaa', wa darkish-shaqaa', wa soo'il-qadaa', wa shamaatatil-a‘daa'.",
+  },
+  "allahumma-inni-audhu-bika-min-al-faqr": {
+    englishMeaning: "O Allah, I seek refuge in You from poverty, scarcity, and humiliation, and I seek refuge in You from wronging others or being wronged.",
+    englishTransliteration: "Allahumma inni a‘oothu bika minal-faqri wal-qillati wadh-dhillah, wa a‘oothu bika min an adhlima aw udhlam.",
+  },
+  "allahumma-inni-audhu-bika-min-sharri-samee": {
+    englishMeaning:
+      "O Allah, I seek refuge in You from the evil of my hearing, from the evil of my sight, from the evil of my tongue, from the evil of my heart, and from the evil of my private desire.",
+    englishTransliteration: "Allahumma inni a‘oothu bika min sharri sam‘i, wa min sharri basari, wa min sharri lisaani, wa min sharri qalbi, wa min sharri manii.",
+  },
+  "allahumma-inni-audhu-bika-min-sharri-ma-amiltu": {
+    englishMeaning: "O Allah, I seek refuge in You from the evil of what I have done, and from the evil of what I have not done.",
+    englishTransliteration: "Allahumma inni a‘oothu bika min sharri ma ‘amiltu, wa min sharri ma lam a‘mal.",
+  },
+  "allahumma-inni-audhu-bika-min-zawal-nimatik": {
+    englishMeaning: "O Allah, I seek refuge in You from the decline of Your blessing, the turning away of Your protection, the suddenness of Your punishment, and all that displeases You.",
+    englishTransliteration: "Allahumma inni a‘oothu bika min zawaali ni‘matik, wa tahawwuli ‘aafiyatik, wa fajaa'ati niqmatik, wa jami‘i sakhatik.",
+  },
+  "allahumma-inni-audhu-bika-min-al-bukhl-wal-jubn": {
+    englishMeaning:
+      "O Allah, I seek refuge in You from miserliness, and I seek refuge in You from cowardice, and I seek refuge in You from being returned to the most decrepit old age, and I seek refuge in You from the trial of this world and the punishment of the grave.",
+    englishTransliteration:
+      "Allahumma inni a‘oothu bika minal-bukhl, wa a‘oothu bika minal-jubn, wa a‘oothu bika min an nuradda ila ardhalil-‘umur, wa a‘oothu bika min fitnatid-dunya wa ‘adhaabil-qabr.",
+  },
+  "dua-al-karb": {
+    englishMeaning:
+      "There is no god but Allah, the Mighty, the Forbearing. There is no god but Allah, Lord of the Mighty Throne. There is no god but Allah, Lord of the heavens, Lord of the earth, and Lord of the Noble Throne.",
+    englishTransliteration:
+      "La ilaha illallahul-‘Adheemul-Haleem, la ilaha illallahu Rabbul-‘Arshil-‘Adheem, la ilaha illallahu Rabbus-samaawaati wa Rabbul-ardi wa Rabbul-‘Arshil-Kareem.",
+  },
+  "la-ilaha-illa-anta-subhanaka": {
+    englishMeaning: "There is no god but You, glory be to You; indeed, I was among the wrongdoers.",
+    englishTransliteration: "La ilaha illa anta subhanaka inni kuntu minadh-dhalimeen.",
+  },
+  "allahumma-inni-audhu-bika-min-al-hamm": {
+    englishMeaning:
+      "O Allah, I seek refuge in You from anxiety and grief, from helplessness and laziness, from cowardice and miserliness, from being overwhelmed by debt, and from being overpowered by [other] men.",
+    englishTransliteration: "Allahumma inni a‘oothu bika minal-hammi wal-hazan, wal-‘ajzi wal-kasal, wal-jubni wal-bukhl, wa dala‘id-dayni wa ghalabatir-rijaal.",
+  },
+  "audhu-billahi-min-al-shaytan-al-rajim": {
+    englishMeaning: "I seek refuge in Allah from Satan, the accursed.",
+    englishTransliteration: "A‘oothu billahi minash-shaytaanir-rajeem.",
+  },
+  "allahumma-rabb-al-nas-adhhib-al-bas": {
+    englishMeaning: "O Allah, Lord of mankind, remove the affliction, and heal — You are the Healer; there is no healing but Your healing, a healing that leaves no illness behind.",
+    englishTransliteration: "Allahumma Rabban-naas, adhhibil-ba's, ishfi antash-Shaafi, la shifaa'a illa shifaa'uk, shifaa'an la yughaadiru saqama.",
+  },
+  "bismillahi-arqik": {
+    englishMeaning:
+      "In the name of Allah I recite a protective prayer over you, from everything that harms you, from the evil of every soul or envious eye — Allah heals you. In the name of Allah I recite a protective prayer over you.",
+    englishTransliteration: "Bismillahi arqeek, min kulli shay'in yu'dheek, min sharri kulli nafsin aw ‘aynin haasid, Allahu yashfeek, bismillahi arqeek.",
+  },
+  "asalu-allah-al-adhim-an-yashfiyak": {
+    englishMeaning: "I ask Allah, the Mighty, Lord of the Mighty Throne, to heal you.",
+    englishTransliteration: "As'alullahal-‘Adheem, Rabbal-‘Arshil-‘Adheem, an yashfiyak.",
+  },
+  "la-bas-tahurun-inshallah": {
+    englishMeaning: "No harm [will come to you]; it is a purification, if Allah wills.",
+    englishTransliteration: "La ba'sa, tahoorun in shaa' Allah.",
+  },
+  "dua-al-janaza": {
+    englishMeaning:
+      "O Allah, forgive him and have mercy on him, grant him well-being and pardon him, make honourable his reception, and widen his entrance. Wash him with water, snow, and hail, and cleanse him of sins as a white garment is cleansed of dirt. Give him in exchange a home better than his home, a family better than his family, and a spouse better than his spouse. Admit him into Paradise, and protect him from the punishment of the grave and the punishment of the Fire.",
+    englishTransliteration:
+      "Allahummaghfir lahu warhamh, wa ‘aafihi wa‘fu ‘anh, wa akrim nuzulah, wa wassi‘ madkhalah, waghsilhu bil-maa'i wath-thalji wal-barad, wa naqqihi minal-khataaya kama naqqaytath-thawbal-abyada minad-danas, wa abdilhu daaran khayran min daarih, wa ahlan khayran min ahlih, wa zawjan khayran min zawjih, wa adkhilhul-jannah, wa a‘idh-hu min ‘adhaabil-qabri wa min ‘adhaabin-naar.",
+  },
+  "allahumma-ighfir-li-abi-salama": {
+    englishMeaning:
+      "O Allah, forgive Abu Salamah, raise his rank among those who are rightly guided, take his place among his descendants who remain, and forgive us and him, O Lord of the worlds. Make spacious for him his grave, and grant him light within it.",
+    englishTransliteration:
+      "Allahummaghfir li-Abi Salamah, warfa‘ darajatahu fil-mahdiyyeen, wakhlufhu fi ‘aqibihi fil-ghaabireen, waghfir lana wa lahu ya Rabbal-‘aalameen, wafsah lahu fi qabrih, wa nawwir lahu feeh.",
+  },
+  "inna-lillahi-wa-inna-ilayhi-rajiun": {
+    englishMeaning: "Indeed, to Allah we belong and to Him we shall return. O Allah, reward me for my affliction and replace it for me with something better.",
+    englishTransliteration: "Inna lillahi wa inna ilayhi raaji‘oon, Allahumma'jurni fi museebati wakhluf li khayran minha.",
+  },
+  "bismillahi-allahumma-jannibna-al-shaytan": {
+    englishMeaning: "In the name of Allah. O Allah, keep Satan away from us, and keep Satan away from what You provide us [with offspring].",
+    englishTransliteration: "Bismillah, Allahumma jannibnash-shaytaana wa jannibish-shaytaana ma razaqtana.",
+  },
+  "rabbi-hab-li-min-ladunka-dhurriyyatan": {
+    englishMeaning: "My Lord, grant me from Yourself good offspring; indeed, You are the Hearer of supplication.",
+    englishTransliteration: "Rabbi hab li min ladunka dhurriyyatan tayyibah, innaka Samee‘ud-du‘aa'.",
+  },
+  "rabbi-ijalni-muqim-al-salah": {
+    englishMeaning: "My Lord, make me an establisher of prayer, and [also] from my offspring. Our Lord, and accept my supplication.",
+    englishTransliteration: "Rabbij‘alni muqeemas-salaati wa min dhurriyyati, Rabbana wa taqabbal du‘aa'.",
+  },
+  "rabbana-hab-lana-min-azwajina": {
+    englishMeaning: "Our Lord, grant us from among our spouses and offspring comfort to our eyes, and make us leaders for the righteous.",
+    englishTransliteration: "Rabbana hab lana min azwaajina wa dhurriyyaatina qurrata a‘yunin waj‘alna lil-muttaqeena imaama.",
+  },
+  "dua-al-rukub": {
+    englishMeaning: "Glory be to the One who has subjected this to us, and we could not have done it [by] ourselves. And indeed, to our Lord we will return.",
+    englishTransliteration: "Subhaanal-ladhi sakhkhara lana haadha wa ma kunna lahu muqrineen, wa inna ila Rabbina lamunqaliboon.",
+  },
+  "ayibun-taibun-abidun": {
+    englishMeaning: "Returning, repenting, worshipping, to our Lord we give praise.",
+    englishTransliteration: "Aayiboona taa'iboona ‘aabidoona li-Rabbina haamidoon.",
+  },
+  "khuruj-min-al-manzil": {
+    englishMeaning: "In the name of Allah, I place my trust in Allah, and there is no power and no strength except with Allah.",
+    englishTransliteration: "Bismillah, tawakkaltu ‘alallah, wa la hawla wa la quwwata illa billah.",
+  },
+  "allahumma-inni-audhu-bika-an-adilla-aw-udall": {
+    englishMeaning:
+      "O Allah, I seek refuge in You from misguiding or being misguided, from slipping [into error] or being made to slip, from wronging or being wronged, and from behaving ignorantly or being treated ignorantly.",
+    englishTransliteration: "Allahumma inni a‘oothu bika an adilla aw udall, aw azilla aw uzall, aw adhlima aw udhlam, aw ajhala aw yujhala ‘alayya.",
+  },
+  // No Master counterpart — englishMeaning reused verbatim from this app's
+  // existing written-adhkar.ts "misc-5" entry (never invented); only the
+  // transliteration is newly added here.
+  "before-sleeping": {
+    englishMeaning: "In Your name, O Allah, I die and I live.",
+    englishTransliteration: "Bismika Allahumma amootu wa ahya.",
+  },
+  // No Master counterpart — englishMeaning reused verbatim from "misc-6".
+  "upon-waking": {
+    englishMeaning: "Praise be to Allah who gave us life after having caused us to die, and unto Him is the resurrection.",
+    englishTransliteration: "Alhamdu lillahil-ladhi ahyaana ba‘da ma amaatana wa ilayhin-nushoor.",
+  },
+  // Master 11.3 marks this dua's SOURCE as still pending final confirmation
+  // (not its wording, which is complete) — per this app's own existing
+  // preference (see the Arabic-side comment on this id above), englishMeaning
+  // reuses the already-verified written-adhkar.ts "misc-4" translation
+  // rather than a fresh Master-side rendering of the same sentence.
+  "after-eating": {
+    englishMeaning: "Praise be to Allah who fed me this and provided it for me without any power or might on my part.",
+    englishTransliteration: "Alhamdu lillahil-ladhi at‘amani haadha wa razaqaneehi min ghayri hawlin minni wa la quwwah.",
+  },
+  "after-wudu": {
+    englishMeaning: "I bear witness that there is no god but Allah alone, with no partner, and I bear witness that Muhammad is His servant and Messenger.",
+    englishTransliteration: "Ash-hadu an la ilaha illallahu wahdahu la shareeka lah, wa ash-hadu anna Muhammadan ‘abduhu wa rasooluh.",
+  },
+  "entering-mosque": {
+    englishMeaning: "O Allah, open for me the doors of Your mercy.",
+    englishTransliteration: "Allahummaftah li abwaaba rahmatik.",
+  },
+  "leaving-mosque": {
+    englishMeaning: "O Allah, I ask You from Your bounty.",
+    englishTransliteration: "Allahumma inni as'aluka min fadlik.",
+  },
+  "after-adhan": {
+    englishMeaning:
+      "O Allah, Lord of this perfect call and of the established prayer, grant Muhammad the intercession (al-waseelah) and the excellence (al-fadeelah), and raise him to the praiseworthy station that You have promised him.",
+    englishTransliteration:
+      "Allahumma Rabba haadhihid-da‘watit-taammah, was-salaatil-qaa'imah, aati Muhammadanil-waseelata wal-fadeelah, wab‘athhu maqaaman mahmoodanil-ladhi wa‘adtah.",
+  },
+  "before-food": {
+    englishMeaning: "In the name of Allah.",
+    englishTransliteration: "Bismillah.",
+  },
+  "forgot-tasmiyah": {
+    englishMeaning: "In the name of Allah, at its beginning and its end.",
+    englishTransliteration: "Bismillahi awwalahu wa aakhirah.",
+  },
+  "kaffarat-al-majlis": {
+    englishMeaning: "Glory be to You, O Allah, and praise be to You; I bear witness that there is no god but You; I seek Your forgiveness and I turn to You in repentance.",
+    englishTransliteration: "Subhaanakallahumma wa bihamdik, la ilaha illa ant, astaghfiruka wa atoobu ilayk.",
+  },
+  "sneezing-alhamdulillah": {
+    englishMeaning: "All praise is due to Allah.",
+    englishTransliteration: "Alhamdulillah.",
+  },
+  "yarhamuk-allah": {
+    englishMeaning: "May Allah have mercy on you.",
+    englishTransliteration: "Yarhamukallah.",
+  },
+  "yahdikum-allah": {
+    englishMeaning: "May Allah guide you and set right your affairs.",
+    englishTransliteration: "Yahdeekumullahu wa yuslihu baalakum.",
+  },
+  "when-wind-blows": {
+    englishMeaning: "O Allah, I ask You for its good, the good within it, and the good it was sent with, and I seek refuge in You from its evil, the evil within it, and the evil it was sent with.",
+    englishTransliteration: "Allahumma inni as'aluka khayraha, wa khayra ma feeha, wa khayra ma ursilat bih, wa a‘oothu bika min sharriha, wa sharri ma feeha, wa sharri ma ursilat bih.",
+  },
+  "rabbana-la-tuakhidhna": {
+    englishMeaning: "Our Lord, do not hold us accountable if we forget or make a mistake.",
+    englishTransliteration: "Rabbana la tu'aakhidhna in naseena aw akhta'na.",
+  },
+  "rabbana-wala-tahmil-alayna-isran": {
+    englishMeaning: "Our Lord, and lay not upon us a burden like that which You laid upon those before us.",
+    englishTransliteration: "Rabbana wa la tahmil ‘alayna isran kama hamaltahu ‘alal-ladheena min qablina.",
+  },
+  "rabbana-wala-tuhammilna": {
+    englishMeaning: "Our Lord, and burden us not with that which we have no ability to bear.",
+    englishTransliteration: "Rabbana wa la tuhammilna ma la taaqata lana bih.",
+  },
+  "rabbana-dhalamna-anfusana": {
+    englishMeaning: "Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.",
+    englishTransliteration: "Rabbana dhalamna anfusana wa in lam taghfir lana wa tarhamna lanakoonanna minal-khaasireen.",
+  },
+  "rabbana-hab-lana-min-ladunka-rahmatan": {
+    englishMeaning: "Our Lord, grant us mercy from Yourself, and prepare for us right guidance in our affair.",
+    englishTransliteration: "Rabbana hab lana min ladunka rahmatan wa hayyi' lana min amrina rashada.",
+  },
+  "rabbi-ishrah-li-sadri": {
+    englishMeaning: "My Lord, expand for me my breast, and ease for me my task.",
+    englishTransliteration: "Rabbishrah li sadri wa yassir li amri.",
+  },
+  "rabbi-zidni-ilman": {
+    englishMeaning: "My Lord, increase me in knowledge.",
+    englishTransliteration: "Rabbi zidni ‘ilma.",
+  },
+  "rabbi-ighfir-li-waliwalidayya": {
+    englishMeaning: "My Lord, forgive me and my parents and the believers on the Day the reckoning is established.",
+    englishTransliteration: "Rabbighfir li wa liwaalidayya wa lil-mu'mineena yawma yaqoomul-hisaab.",
+  },
+  "rabbi-inni-lima-anzalta": {
+    englishMeaning: "My Lord, indeed I am, for whatever good You would send down to me, in need.",
+    englishTransliteration: "Rabbi inni lima anzalta ilayya min khayrin faqeer.",
+  },
+  "rabbana-afrigh-alayna-sabran-tawaffana": {
+    englishMeaning: "Our Lord, pour upon us patience and let us die as Muslims [in submission to You].",
+    englishTransliteration: "Rabbana afrigh ‘alayna sabran wa tawaffana muslimeen.",
+  },
+  "rabbana-afrigh-alayna-sabran-thabbit": {
+    englishMeaning: "Our Lord, pour upon us patience and plant firmly our feet and give us victory over the disbelieving people.",
+    englishTransliteration: "Rabbana afrigh ‘alayna sabran wa thabbit aqdaamana wansurna ‘alal-qawmil-kaafireen.",
+  },
+  "rabbana-la-tuzigh-qulubana": {
+    englishMeaning: "Our Lord, let not our hearts deviate after You have guided us, and grant us mercy from Yourself; indeed, You are the Bestower.",
+    englishTransliteration: "Rabbana la tuzigh quloobana ba‘da idh hadaytana wa hab lana min ladunka rahmah, innaka Antal-Wahhaab.",
+  },
+  "rabbana-taqabbal-minna": {
+    englishMeaning: "Our Lord, accept [this] from us. Indeed, You are the Hearing, the Knowing.",
+    englishTransliteration: "Rabbana taqabbal minna innaka Antas-Samee‘ul-‘Aleem.",
+  },
+  "rabbana-ighfir-lana-waliikhwanina": {
+    englishMeaning: "Our Lord, forgive us and our brothers who preceded us in faith.",
+    englishTransliteration: "Rabbanaghfir lana wa li-ikhwaaninal-ladheena sabaqoona bil-eemaan.",
+  },
+  "rabbana-alayka-tawakkalna": {
+    englishMeaning: "Our Lord, upon You we have relied, and to You we have returned, and to You is the final destination.",
+    englishTransliteration: "Rabbana ‘alayka tawakkalna wa ilayka anabna wa ilaykal-maseer.",
+  },
+  "rabbana-atmim-lana-nurana": {
+    englishMeaning: "Our Lord, perfect for us our light and forgive us; indeed, You are over all things competent.",
+    englishTransliteration: "Rabbana atmim lana noorana waghfir lana innaka ‘ala kulli shay'in Qadeer.",
+  },
+  "istiftah": {
+    englishMeaning: "Glory be to You, O Allah, and praise be to You; blessed is Your name, and exalted is Your majesty; there is no god besides You.",
+    englishTransliteration: "Subhaanakallahumma wa bihamdik, wa tabaarakasmuk, wa ta‘aala jadduk, wa la ilaha ghayruk.",
+  },
+  "ruku": {
+    englishMeaning: "Glory be to my Lord, the Most Great.",
+    englishTransliteration: "Subhaana Rabbiyal-‘Adheem.",
+  },
+  "sujud": {
+    englishMeaning: "Glory be to my Lord, the Most High.",
+    englishTransliteration: "Subhaana Rabbiyal-A‘la.",
+  },
+  "between-sajdatayn": {
+    englishMeaning: "My Lord, forgive me.",
+    englishTransliteration: "Rabbighfir li.",
+  },
+  "before-salam-audhu": {
+    englishMeaning:
+      "O Allah, I seek refuge in You from the punishment of Hell, from the punishment of the grave, from the trial of life and death, and from the evil of the trial of the False Messiah (al-Masih ad-Dajjal).",
+    englishTransliteration: "Allahumma inni a‘oothu bika min ‘adhaabi jahannam, wa min ‘adhaabil-qabr, wa min fitnatil-mahya wal-mamaat, wa min sharri fitnatil-Maseehid-Dajjaal.",
+  },
+  "allahumma-aini-ala-dhikrik": {
+    englishMeaning: "O Allah, help me to remember You, to thank You, and to worship You in the best manner.",
+    englishTransliteration: "Allahumma a‘inni ‘ala dhikrika wa shukrika wa husni ‘ibaadatik.",
+  },
+  "allahumma-audhu-biridaka-min-sakhatik": {
+    englishMeaning: "O Allah, I seek refuge in Your pleasure from Your displeasure, and in Your pardon from Your punishment, and I seek refuge in You from You. I cannot enumerate praise of You; You are as You have praised Yourself.",
+    englishTransliteration: "Allahumma a‘oothu biridaaka min sakhatik, wa bimu‘aafaatika min ‘uqoobatik, wa a‘oothu bika mink, la uhsi thanaa'an ‘alayk, anta kama athnayta ‘ala nafsik.",
+  },
+  "allahumma-inni-asaluka-fil-al-khayrat": {
+    englishMeaning: "O Allah, I ask You for the doing of good deeds, the abandoning of evil deeds, and the love of the poor, and that if You intend trial for Your servants, You take me to Yourself without being tried.",
+    englishTransliteration: "Allahumma inni as'aluka fi‘lal-khayraat, wa tarkal-munkaraat, wa hubbal-masaakeen, wa idha aradta bi‘ibaadika fitnatan faqbidni ilayka ghayra maftoon.",
+  },
+  "allahumma-hasibni-hisaban-yasiran": {
+    englishMeaning: "O Allah, call me to account with an easy reckoning.",
+    englishTransliteration: "Allahumma haasibni hisaaban yaseera.",
+  },
+  "dua-al-istikharah": {
+    englishMeaning:
+      "O Allah, I seek Your guidance [in making a choice] by virtue of Your knowledge, and I seek ability by virtue of Your power, and I ask You of Your great bounty. For You are able and I am not, and You know and I do not, and You are the Knower of unseen things. O Allah, if You know that this matter is good for me in my religion, my livelihood, and the outcome of my affairs — or he said: in my present and future affairs — then decree it for me, make it easy for me, and then bless it for me. And if You know that this matter is bad for me in my religion, my livelihood, and the outcome of my affairs — or he said: in my present and future affairs — then turn it away from me, and turn me away from it, and decree for me what is good wherever it may be, and make me content with it.",
+    englishTransliteration:
+      "Allahumma inni astakheeruka bi‘ilmik, wa astaqdiruka biqudratik, wa as'aluka min fadlikal-‘adheem, fa'innaka taqdiru wa la aqdir, wa ta‘lamu wa la a‘lam, wa anta ‘allaamul-ghuyoob. Allahumma in kunta ta‘lamu anna haadhal-amra khayrun li fi deeni wa ma‘aashi wa ‘aaqibati amri - aw qaala: fi ‘aajili amri wa aajilih - faqdurhu li wa yassirhu li, thumma baarik li feeh, wa in kunta ta‘lamu anna haadhal-amra sharrun li fi deeni wa ma‘aashi wa ‘aaqibati amri - aw qaala: fi ‘aajili amri wa aajilih - fasrifhu ‘anni wasrifni ‘anh, waqdur liyal-khayra haythu kaan, thumma ardini bih.",
+  },
+  "allahumma-inni-audhu-bika-min-al-matham-wal-maghram": {
+    englishMeaning: "O Allah, I seek refuge in You from sin and from debt.",
+    englishTransliteration: "Allahumma inni a‘oothu bika minal-ma'thami wal-maghram.",
+  },
+  "allahumma-ikfini-bihalalika-an-haramik": {
+    englishMeaning: "O Allah, suffice me with what You have made lawful, [keeping me] away from what You have made unlawful, and enrich me by Your bounty, so that I need no one other than You.",
+    englishTransliteration: "Allahummakfini bihalaalika ‘an haraamik, wa aghnini bifadlika ‘amman siwaak.",
+  },
+  "allahumma-inni-asaluka-min-fadlika-warahmatik": {
+    englishMeaning: "O Allah, I ask You from Your bounty and Your mercy, for none possesses them but You.",
+    englishTransliteration: "Allahumma inni as'aluka min fadlika wa rahmatik, fa'innahu la yamlikuha illa ant.",
+  },
+  "ya-muqallib-al-qulub-thabbit-qalbi": {
+    englishMeaning: "O Turner of hearts, make my heart firm upon Your religion.",
+    englishTransliteration: "Ya Muqallibal-quloob, thabbit qalbi ‘ala deenik.",
+  },
+  "dhahaba-al-zama-wabtallat-al-uruq": {
+    englishMeaning: "The thirst has gone, the veins are moistened, and the reward is confirmed, if Allah wills.",
+    englishTransliteration: "Dhahabaz-zama'u wabtallatil-‘urooqu wa thabatal-ajru in shaa' Allah.",
+  },
+  "allahumma-innaka-afuwwun-tuhibb-al-afw": {
+    englishMeaning: "O Allah, You are Most Forgiving, and You love forgiveness, so forgive me.",
+    englishTransliteration: "Allahumma innaka ‘afuwwun tuhibbul-‘afwa fa‘fu ‘anni.",
+  },
+  "talbiyah": {
+    englishMeaning: "Here I am, O Allah, here I am. Here I am, You have no partner, here I am. Indeed, all praise, blessing, and sovereignty belong to You. You have no partner.",
+    englishTransliteration: "Labbaykallahumma labbayk, labbayka la shareeka laka labbayk, innal-hamda wan-ni‘mata laka wal-mulk, la shareeka lak.",
+  },
+  "dhikr-al-safa-wal-marwah": {
+    englishMeaning:
+      "There is no god but Allah alone, with no partner. His is the dominion and His is all praise, and He is able to do all things. There is no god but Allah alone; He fulfilled His promise, gave victory to His servant, and defeated the confederate armies alone.",
+    englishTransliteration:
+      "La ilaha illallahu wahdahu la shareeka lah, lahul-mulku wa lahul-hamd, wa huwa ‘ala kulli shay'in qadeer, la ilaha illallahu wahdah, anjaza wa‘dah, wa nasara ‘abdah, wa hazamal-ahzaaba wahdah.",
+  },
+};
+
+export const MISC_DUAS: MiscDuaItem[] = MISC_DUAS_BASE.map((item) => {
+  const en = MISC_ENGLISH_CONTENT[item.id];
+  return en ? { ...item, ...en } : item;
+});
+
 // Per-category item counts, computed ONCE here (module load) rather than by
 // filtering the full MISC_DUAS array from inside every category tile's
 // render — MISC_DUAS never changes at runtime, so re-deriving this on every
@@ -1123,11 +1561,14 @@ export const MISC_CATEGORY_COUNTS: Record<MiscCategoryKey, number> = MISC_CATEGO
 // inventing one was out of scope for this task.
 export const MISC_FEATURED_IDS: string[] = ["sayyid-al-istighfar", "rabbana-atina", "dua-al-karb"];
 
-// Interface strings for the new library screens — Arabic-only for this
-// initial implementation (the Master Content Library itself, and every
-// example label/subtitle in this feature's own spec, is Arabic-only; no
-// English translation of this new content exists yet). Rendered regardless
-// of the app's global language toggle — see MiscLibraryScreen's own note.
+// Interface strings for the new library screens — Arabic-only, rendered
+// regardless of the app's global language toggle (see MiscLibraryScreen's
+// own note). The dua CONTENT itself now has an English layer (see
+// `englishMeaning`/`englishTransliteration` above and `miscMeaningLabels`
+// below) surfaced only through the dedicated "English Meaning" button —
+// these interface strings (screen titles, search, favorite/copy aria
+// labels, etc.) are a separate, still-Arabic-only concern untouched by
+// that addition.
 export const miscLibraryLabels = {
   screenTitle: "الأذكار والأدعية",
   screenSubtitle: "أدعية وأذكار ثابتة من القرآن والسنة",
@@ -1152,4 +1593,32 @@ export const miscLibraryLabels = {
   copiedToast: "تم النسخ",
   comingSoon: "قريبًا",
   back: "رجوع",
+};
+
+// Bilingual interface strings for the new "Listen" / "English Meaning"
+// card actions and the meaning sheet they open — kept separate from
+// `miscLibraryLabels` above (which stays Arabic-only, unchanged) so this
+// addition carries zero risk to that existing, already-shipped object.
+// Ordinary UI chrome only (button labels, aria text, section headings) —
+// never religious content; the actual englishMeaning/englishTransliteration
+// values always come from the data layer above, never from here.
+export const miscMeaningLabels = {
+  ar: {
+    meaningButton: "المعنى بالإنجليزي",
+    meaningModalTitle: "المعنى بالإنجليزي",
+    meaningHeading: "المعنى",
+    transliterationHeading: "النطق بالحروف اللاتينية",
+    close: "إغلاق",
+    listenAria: "استماع",
+    stopListenAria: "إيقاف الاستماع",
+  },
+  en: {
+    meaningButton: "English Meaning",
+    meaningModalTitle: "English Meaning",
+    meaningHeading: "Meaning",
+    transliterationHeading: "Transliteration",
+    close: "Close",
+    listenAria: "Listen",
+    stopListenAria: "Stop",
+  },
 };
