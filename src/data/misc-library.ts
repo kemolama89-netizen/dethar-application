@@ -20,6 +20,15 @@
 // قضاء الدين والرزق، الهداية والثبات، العبادة الموسمية) — integrated below
 // using the same completeness rule as everything else in this file.
 //
+// 2026-08 sync: the Master file's "تحديث مراجعة الأدعية — 2026-08" pass
+// completed several previously-pending entries (1.6, 1.7, 2.2, 3.2, 3.4,
+// 3.5) and added 12 new fully-documented entries. All of those are
+// integrated below, EXCEPT Master 3.10 ("اللهم احفظني بالإسلام قائمًا"),
+// which stays excluded per this file's own completeness rule: its grade is
+// disputed even by the single scholar who assessed it (Albani first graded
+// it sahih in Silsilah Sahihah 1540, then later reclassified it da'if in
+// Silsilah Da'ifah 6003) — not a settled grade, so it does not enter here.
+//
 import miscGeneralDuas from "../assets/illustrations/dithar-misc-general-duas.webp";
 import miscIstighfarTaubah from "../assets/illustrations/dithar-misc-istighfar-taubah.webp";
 import miscProtection from "../assets/illustrations/dithar-misc-protection.webp";
@@ -350,6 +359,62 @@ export const MISC_DUAS: MiscDuaItem[] = [
     source_ar: "صحيح مسلم",
     categories: ["comprehensive"],
   },
+  {
+    id: "allahumma-inni-asaluka-min-al-khayr-kullih",
+    text_ar:
+      "اللهم إني أسألك من الخير كله، عاجله وآجله، ما علمت منه وما لم أعلم، وأعوذ بك من الشر كله، عاجله وآجله، ما علمت منه وما لم أعلم، اللهم إني أسألك من خير ما سألك عبدك ونبيك، وأعوذ بك من شر ما عاذ به عبدك ونبيك، اللهم إني أسألك الجنة وما قرب إليها من قول أو عمل، وأعوذ بك من النار وما قرب إليها من قول أو عمل، وأسألك أن تجعل كل قضاء قضيته لي خيرًا.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "عائشة رضي الله عنها",
+    source_ar: "سنن ابن ماجه (3846) — عن عائشة رضي الله عنها، صححه الألباني في صحيح ابن ماجه",
+    categories: ["comprehensive"],
+  },
+  {
+    id: "allahumma-inni-asaluka-al-afiyah-fi-al-dunya-wal-akhirah",
+    text_ar:
+      "اللهم إني أسألك العافية في الدنيا والآخرة، اللهم إني أسألك العفو والعافية في ديني ودنياي وأهلي ومالي، اللهم استر عوراتي، وآمن روعاتي، اللهم احفظني من بين يدي، ومن خلفي، وعن يميني، وعن شمالي، ومن فوقي، وأعوذ بعظمتك أن أُغتال من تحتي.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "عبد الله بن عمر رضي الله عنهما",
+    source_ar:
+      "سنن أبي داود (5074)، وسنن ابن ماجه (3871)، ومسند أحمد (4785) — عن عبد الله بن عمر رضي الله عنهما، إسناده صحيح",
+    note_ar:
+      "الصيغة الشائعة «اللهم إني أسألك العفو والعافية في الدنيا والآخرة» دمج تقريبي غير حرفي لجملتين من هذا الحديث؛ اعتُمد هنا اللفظ الكامل كما ثبت.",
+    categories: ["comprehensive"],
+  },
+  {
+    id: "allahumma-iqsim-lana-min-khashyatik",
+    text_ar:
+      "اللهم اقسم لنا من خشيتك ما يحول بيننا وبين معاصيك، ومن طاعتك ما تبلغنا به جنتك، ومن اليقين ما تهون به علينا مصيبات الدنيا، ومتعنا بأسماعنا، وأبصارنا، وقوتنا ما أحييتنا، واجعله الوارث منا، واجعل ثأرنا على من ظلمنا، وانصرنا على من عادانا، ولا تجعل مصيبتنا في ديننا، ولا تجعل الدنيا أكبر همنا، ولا مبلغ علمنا، ولا تسلط علينا من لا يرحمنا.",
+    count_ar: "بدون عدد محدد",
+    source_ar: "جامع الترمذي (3502)، حسن عند الترمذي",
+    categories: ["comprehensive", "distress"],
+  },
+  {
+    id: "allahumma-bi-ilmika-al-ghayb",
+    text_ar:
+      "اللهم بعلمك الغيب، وقدرتك على الخلق، أحيني ما علمت الحياة خيرًا لي، وتوفني إذا علمت الوفاة خيرًا لي، اللهم إني أسألك خشيتك في الغيب والشهادة، وأسألك كلمة الحق في الرضا والغضب، وأسألك القصد في الفقر والغنى، وأسألك نعيمًا لا ينفد، وأسألك قرة عين لا تنقطع، وأسألك الرضا بعد القضاء، وأسألك برد العيش بعد الموت، وأسألك لذة النظر إلى وجهك، والشوق إلى لقائك، في غير ضراء مضرة ولا فتنة مضلة، اللهم زينا بزينة الإيمان واجعلنا هداة مهتدين.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "عمار بن ياسر رضي الله عنه",
+    source_ar: "سنن النسائي (1305)، ومسند أحمد (18351) — عن عمار بن ياسر رضي الله عنه، صححه الألباني",
+    categories: ["comprehensive", "guidance"],
+  },
+  {
+    id: "allahumma-inni-asaluka-al-thabat-fi-al-amr",
+    text_ar:
+      "اللهم إني أسألك الثبات في الأمر، والعزيمة على الرشد، وأسألك موجبات رحمتك، وعزائم مغفرتك، وأسألك شكر نعمتك، وحسن عبادتك، وأسألك قلبًا سليمًا، ولسانًا صادقًا، وأسألك من خير ما تعلم، وأعوذ بك من شر ما تعلم، وأستغفرك لما تعلم، إنك أنت علام الغيوب.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "شداد بن أوس رضي الله عنه",
+    source_ar:
+      "المعجم الكبير للطبراني، ومسند أحمد، وصحيح ابن حبان — عن شداد بن أوس رضي الله عنه، صححه الألباني في السلسلة الصحيحة (3228)",
+    categories: ["comprehensive", "guidance"],
+  },
+  {
+    id: "rabbi-aini-wala-tuin-alayya",
+    text_ar:
+      "رب أعني ولا تعن علي، وانصرني ولا تنصر علي، وامكر لي ولا تمكر علي، واهدني ويسر الهدى لي، وانصرني على من بغى علي، رب اجعلني لك شكّارًا، لك ذكّارًا، لك رهّابًا، لك مطواعًا، لك مخبتًا، إليك أواهًا منيبًا، رب تقبل توبتي، واغسل حوبتي، وأجب دعوتي، وثبت حجتي، وسدد لساني، واهد قلبي، واسلل سخيمة صدري.",
+    count_ar: "بدون عدد محدد",
+    source_ar: "جامع الترمذي (3551)، حسن صحيح عند الترمذي",
+    categories: ["comprehensive", "istighfar", "guidance"],
+  },
 
   // ---- 2. الاستغفار والتوبة ----
   {
@@ -369,6 +434,15 @@ export const MISC_DUAS: MiscDuaItem[] = [
     source_ar: "أبو داود (1516)، والترمذي (3434)، وابن ماجه (3814) — عن عبد الله بن عمر رضي الله عنهما",
     categories: ["istighfar"],
   },
+  {
+    id: "allahumma-ighfir-li-khatiati-wajahli",
+    text_ar:
+      "اللهم اغفر لي خطيئتي وجهلي، وإسرافي في أمري، وما أنت أعلم به مني، اللهم اغفر لي جدي وهزلي، وخطئي وعمدي، وكل ذلك عندي، اللهم اغفر لي ما قدمت وما أخرت، وما أسررت وما أعلنت، أنت المقدم وأنت المؤخر، وأنت على كل شيء قدير.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "أبو موسى الأشعري رضي الله عنه",
+    source_ar: "صحيح البخاري (6398) وصحيح مسلم — عن أبي موسى الأشعري رضي الله عنه",
+    categories: ["istighfar", "comprehensive"],
+  },
 
   // ---- 3. الحفظ والاستعاذة ----
   // "أعوذ بكلمات الله التامات من شر ما خلق" appears in the Master file
@@ -383,9 +457,14 @@ export const MISC_DUAS: MiscDuaItem[] = [
   },
   {
     id: "allahumma-inni-audhu-bika-min-al-ajz",
-    text_ar: "اللهم إني أعوذ بك من العجز والكسل والجبن والهرم، وأعوذ بك من فتنة المحيا والممات، وأعوذ بك من عذاب القبر.",
+    text_ar:
+      "اللهم إني أعوذ بك من العجز والكسل، والجبن والهرم، والبخل، وأعوذ بك من عذاب القبر، ومن فتنة المحيا والممات.",
     count_ar: "بدون عدد محدد",
-    source_ar: "صحيح البخاري وصحيح مسلم",
+    narrator_ar: "أنس بن مالك رضي الله عنه",
+    source_ar: "صحيح مسلم (2706) — عن أنس بن مالك رضي الله عنه",
+    // Master 3.2 (2026-08 update): unified onto Sahih Muslim's fuller
+    // wording (adds "والبخل") rather than Sahih al-Bukhari's shorter
+    // parallel narration, per the Master file's own note there.
     categories: ["protection"],
   },
   {
@@ -399,9 +478,45 @@ export const MISC_DUAS: MiscDuaItem[] = [
     id: "allahumma-inni-audhu-bika-min-al-faqr",
     text_ar: "اللهم إني أعوذ بك من الفقر والقلة والذلة، وأعوذ بك من أن أَظلم أو أُظلم.",
     count_ar: "بدون عدد محدد",
-    source_ar: "أبو داود والنسائي، وصححه جمع من أهل العلم",
+    narrator_ar: "أبو هريرة رضي الله عنه",
+    source_ar:
+      "سنن أبي داود (1544)، وسنن النسائي (5460، 5462) — عن أبي هريرة رضي الله عنه، صححه الألباني وابن حبان والحاكم",
     categories: ["protection"],
   },
+  {
+    id: "allahumma-inni-audhu-bika-min-sharri-samee",
+    text_ar: "اللهم إني أعوذ بك من شر سمعي، ومن شر بصري، ومن شر لساني، ومن شر قلبي، ومن شر منيي.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "شكل بن حميد رضي الله عنه",
+    source_ar:
+      "سنن أبي داود (1551)، وجامع الترمذي (3492)، وسنن النسائي (5444) — عن شكل بن حميد رضي الله عنه، صححه الألباني",
+    categories: ["protection"],
+  },
+  {
+    id: "allahumma-inni-audhu-bika-min-sharri-ma-amiltu",
+    text_ar: "اللهم إني أعوذ بك من شر ما عملت، ومن شر ما لم أعمل.",
+    count_ar: "بدون عدد محدد",
+    source_ar: "صحيح مسلم (2716)",
+    categories: ["protection", "istighfar", "comprehensive"],
+  },
+  {
+    id: "allahumma-inni-audhu-bika-min-zawal-nimatik",
+    text_ar: "اللهم إني أعوذ بك من زوال نعمتك، وتحول عافيتك، وفجاءة نقمتك، وجميع سخطك.",
+    count_ar: "بدون عدد محدد",
+    source_ar: "صحيح مسلم (2739)",
+    categories: ["protection", "comprehensive"],
+  },
+  {
+    id: "allahumma-inni-audhu-bika-min-al-bukhl-wal-jubn",
+    text_ar:
+      "اللهم إني أعوذ بك من البخل، وأعوذ بك من الجبن، وأعوذ بك من أن نرد إلى أرذل العمر، وأعوذ بك من فتنة الدنيا، وعذاب القبر.",
+    count_ar: "بدون عدد محدد",
+    source_ar: "صحيح البخاري",
+    categories: ["protection"],
+  },
+  // Master 3.10 ("اللهم احفظني بالإسلام قائمًا") deliberately NOT included
+  // here — see the file-header note: its grade is disputed even within
+  // al-Albani's own assessments (sahih, later reclassified da'if).
 
   // ---- 4. الكرب والهم والحزن والغضب والوسوسة ----
   {
@@ -817,6 +932,34 @@ export const MISC_DUAS: MiscDuaItem[] = [
     source_ar: "أبو داود (1522)، والنسائي، وابن خزيمة — عن معاذ بن جبل رضي الله عنه، صححه الألباني",
     categories: ["prayer"],
   },
+  {
+    id: "allahumma-audhu-biridaka-min-sakhatik",
+    text_ar:
+      "اللهم أعوذ برضاك من سخطك، وبمعافاتك من عقوبتك، وأعوذ بك منك، لا أحصي ثناء عليك، أنت كما أثنيت على نفسك.",
+    count_ar: "بدون عدد محدد",
+    source_ar: "صحيح مسلم (486)",
+    occasion_ar: "في السجود (ضمن سياق قيام الليل)",
+    categories: ["prayer", "protection", "comprehensive"],
+  },
+  {
+    id: "allahumma-inni-asaluka-fil-al-khayrat",
+    text_ar:
+      "اللهم إني أسألك فعل الخيرات، وترك المنكرات، وحب المساكين، وإذا أردت بعبادك فتنة فاقبضني إليك غير مفتون.",
+    count_ar: "بدون عدد محدد",
+    source_ar: "جامع الترمذي (3233)، وصححه الألباني لغيره في صحيح الترغيب (3192)",
+    occasion_ar: "دعاء ورد في سياق الصلاة",
+    categories: ["prayer", "comprehensive"],
+  },
+  {
+    id: "allahumma-hasibni-hisaban-yasiran",
+    text_ar: "اللهم حاسبني حسابًا يسيرًا.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "عائشة رضي الله عنها",
+    source_ar: "صحيح البخاري (6536) وصحيح مسلم (2876) — عن عائشة رضي الله عنها",
+    note_ar:
+      "مطلع الحديث الذي سألت فيه عائشة رضي الله عنها عن معنى «الحساب اليسير»، فأجابها النبي ﷺ: «أن يُنظر في كتابه فيُتجاوز عنه»؛ وردت الجملة ضمن سياق صلاته ﷺ.",
+    categories: ["prayer"],
+  },
 
   // ---- 17. الاستخارة (newly added to the Master Content Library) ----
   {
@@ -850,6 +993,15 @@ export const MISC_DUAS: MiscDuaItem[] = [
     source_ar: "جامع الترمذي (3563) — عن علي بن أبي طالب رضي الله عنه، حسنه الألباني",
     categories: ["debtRizq"],
   },
+  {
+    id: "allahumma-inni-asaluka-min-fadlika-warahmatik",
+    text_ar: "اللهم إني أسألك من فضلك ورحمتك، فإنه لا يملكها إلا أنت.",
+    count_ar: "بدون عدد محدد",
+    narrator_ar: "عبد الله بن مسعود رضي الله عنه",
+    source_ar:
+      "المعجم الكبير للطبراني (10379)، وحلية الأولياء لأبي نعيم — عن عبد الله بن مسعود رضي الله عنه، صححه الألباني في السلسلة الصحيحة (1543)",
+    categories: ["debtRizq", "comprehensive"],
+  },
 
   // ---- 19. الهداية والثبات (newly added) ----
   {
@@ -857,7 +1009,11 @@ export const MISC_DUAS: MiscDuaItem[] = [
     text_ar: "يا مقلب القلوب، ثبت قلبي على دينك.",
     count_ar: "بدون عدد محدد",
     narrator_ar: "أم سلمة رضي الله عنها",
-    source_ar: "جامع الترمذي (3522) — عن أم سلمة رضي الله عنها، صححه الألباني وحسنه الترمذي",
+    // Hadith number corrected 2026-08: 2140 is the number carried in the
+    // Tirmidhi print editions in common circulation today (Kitab
+    // al-Da'awat) and in Albani's Sahih al-Tirmidhi grading — the prior
+    // "3522" here was a documentation error, fixed at the Master file.
+    source_ar: "جامع الترمذي (2140) — عن أم سلمة رضي الله عنها، حسنه الترمذي وصححه الألباني",
     categories: ["guidance"],
   },
 
