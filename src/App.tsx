@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
 import { PaletteProvider } from "./theme/PaletteContext";
@@ -22,20 +22,51 @@ import type { MiscCategoryKey } from "./data/misc-library";
 // import. Named exports need the .then() remap since React.lazy expects a
 // module with a default export. Behavior is unchanged: AppRouter still
 // picks exactly one of these to render, exactly as before.
-const TasbeehScreen = lazy(() => import("./components/TasbeehScreen").then((m) => ({ default: m.TasbeehScreen })));
-const WrittenAdhkarScreen = lazy(() =>
-  import("./components/WrittenAdhkarScreen").then((m) => ({ default: m.WrittenAdhkarScreen })),
-);
-const WrittenAdhkarReader = lazy(() =>
-  import("./components/WrittenAdhkarReader").then((m) => ({ default: m.WrittenAdhkarReader })),
-);
-const SettingsScreen = lazy(() => import("./components/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
-const MiscLibraryScreen = lazy(() =>
-  import("./components/MiscLibraryScreen").then((m) => ({ default: m.MiscLibraryScreen })),
-);
-const MiscCategoryScreen = lazy(() =>
-  import("./components/MiscCategoryScreen").then((m) => ({ default: m.MiscCategoryScreen })),
-);
+//
+// Each loader is kept as its own named function (rather than inlined into
+// `lazy(...)`) so the SAME function can also be called directly, ahead of
+// time, from the idle-prefetch effect below — `import()` for a module
+// that's already loaded/loading just returns the cached promise instead
+// of firing a second network request, so calling a loader early here and
+// having React.lazy call it again later never double-fetches anything.
+const loadTasbeehScreen = () => import("./components/TasbeehScreen").then((m) => ({ default: m.TasbeehScreen }));
+const loadWrittenAdhkarScreen = () =>
+  import("./components/WrittenAdhkarScreen").then((m) => ({ default: m.WrittenAdhkarScreen }));
+const loadWrittenAdhkarReader = () =>
+  import("./components/WrittenAdhkarReader").then((m) => ({ default: m.WrittenAdhkarReader }));
+const loadSettingsScreen = () => import("./components/SettingsScreen").then((m) => ({ default: m.SettingsScreen }));
+const loadMiscLibraryScreen = () =>
+  import("./components/MiscLibraryScreen").then((m) => ({ default: m.MiscLibraryScreen }));
+const loadMiscCategoryScreen = () =>
+  import("./components/MiscCategoryScreen").then((m) => ({ default: m.MiscCategoryScreen }));
+
+const TasbeehScreen = lazy(loadTasbeehScreen);
+const WrittenAdhkarScreen = lazy(loadWrittenAdhkarScreen);
+const WrittenAdhkarReader = lazy(loadWrittenAdhkarReader);
+const SettingsScreen = lazy(loadSettingsScreen);
+const MiscLibraryScreen = lazy(loadMiscLibraryScreen);
+const MiscCategoryScreen = lazy(loadMiscCategoryScreen);
+
+// Fetches a lazy screen's chunk ahead of the user actually navigating to
+// it, once the browser is idle (never competing with the current screen's
+// own render/paint work) — so by the time they tap the nav item, the
+// chunk is already cached and Suspense resolves on the same tick instead
+// of waiting on a network round trip. `requestIdleCallback` isn't in
+// Safari, hence the timeout fallback; the failure catch is because a
+// prefetch that's interrupted (e.g. the user navigates away first) should
+// never surface as an unhandled rejection — the real navigation's own
+// lazy() call just falls back to loading it normally.
+function preloadOnIdle(loader: () => Promise<unknown>) {
+  const run = () => {
+    loader().catch(() => {});
+  };
+  if (typeof window === "undefined") return;
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(run);
+  } else {
+    window.setTimeout(run, 200);
+  }
+}
 
 // Shown for the brief moment a lazy screen's chunk is being fetched — just
 // the same frame chrome every screen already renders first (see
@@ -174,6 +205,28 @@ function AppRouter() {
   // pattern as `writtenCategory` above, set right before switching to
   // "misc-category" and simply left as-is on the way back.
   const [miscCategory, setMiscCategory] = useState<MiscCategoryKey>("comprehensive");
+
+  // Warms the chunk (and, for Misc Library, its category images — see
+  // that module's own preload side effect) for whichever screen is the
+  // likely NEXT hop from wherever the user currently is, once the browser
+  // is idle. This is what makes Home -> Settings/Tasbeeh and
+  // Written -> Misc Library feel instant instead of waiting on a chunk
+  // fetch triggered only at the moment of navigation. Deliberately not
+  // "prefetch everything from Home": screens two hops away (the reader,
+  // the category detail screen) only get warmed once the user has
+  // actually entered that flow, so the initial idle work stays small.
+  useEffect(() => {
+    if (screen === "home") {
+      preloadOnIdle(loadTasbeehScreen);
+      preloadOnIdle(loadWrittenAdhkarScreen);
+      preloadOnIdle(loadSettingsScreen);
+    } else if (screen === "written") {
+      preloadOnIdle(loadWrittenAdhkarReader);
+      preloadOnIdle(loadMiscLibraryScreen);
+    } else if (screen === "misc-library") {
+      preloadOnIdle(loadMiscCategoryScreen);
+    }
+  }, [screen]);
 
   if (screen === "tasbeeh") {
     return (
