@@ -1,279 +1,245 @@
 import { X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { ReactNode, RefObject } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 
 // The one "Meaning" popup implementation shared by every reading card that
 // keeps its full English meaning out of the card itself — originally built
-// for Written Adhkar's DhikrCard, now reused as-is (not re-implemented) by
-// Miscellaneous Adhkar's MiscDuaCard. Two pieces:
-//   - `computeMeaningAnchor` — pure geometry: where the popup should sit.
-//   - `MeaningPopoverShell` — the presentational chrome (backdrop, card,
-//     close button, scrollable body); callers supply their own header/body
-//     content so this stays content-agnostic.
-// Neither piece owns any state — the caller (e.g. WrittenAdhkarReader,
-// MiscCategoryScreen) still owns which item's meaning is open.
-
-export interface MeaningAnchor<T> {
-  item: T;
-  // Expressed in the anchoring list container's own content coordinate
-  // space (see `computeMeaningAnchor`), not raw viewport coordinates.
-  top: number;
-  left: number;
-  width: number;
-  maxHeight: number;
-}
-
-// Margins kept clear between the popup and the visible edges of
-// `.device-screen` — the "never partially off-screen" / "safe spacing on
-// small screens" requirement.
-const MEANING_MODAL_MARGIN_X = 16;
-const MEANING_MODAL_MARGIN_Y = 20;
-// A comfortable reading width on a wide/desktop preview of the phone
-// frame — clamped down to the screen's own width (minus margins) on a
-// narrow/mobile one, so this is a ceiling, not a fixed size.
-const MEANING_MODAL_MAX_WIDTH = 400;
-const MEANING_MODAL_MAX_HEIGHT = 320;
-const MEANING_MODAL_MIN_HEIGHT = 140;
-// 2026-08 correction (small, targeted fix — see the `cardTop` comment
-// below): the vertical gap kept between the popup's own bottom edge and
-// the top edge of the card whose Meaning button was tapped, so it reads
-// as "sitting just above that card" rather than touching it.
-const MEANING_MODAL_CARD_GAP = 10;
-
-// Walks up from `el` to the element that is a DIRECT CHILD of `listEl` —
-// i.e. the one list-row wrapper for whichever card `el` is inside,
-// regardless of that card's own internal markup (Written Adhkar's rail+card
-// row, Misc's plain card root, ...). Generic on purpose: no card-specific
-// class name to keep in sync across screens.
-function closestListChild(el: HTMLElement, listEl: HTMLElement): HTMLElement | null {
-  let node: HTMLElement | null = el;
-  while (node && node.parentElement !== listEl) {
-    node = node.parentElement;
-  }
-  return node;
-}
-
-// Called right before opening the Meaning popup for `buttonEl`'s card —
-// NOT part of `computeMeaningAnchor` itself, which stays a pure
-// measurement (no side effects). The popup always renders at its full,
-// fixed height, fully above the selected card (see `computeMeaningAnchor`
-// below) and is never allowed to shrink or slide down onto that card — so
-// when the card sits close enough to the screen's own top margin that the
-// full-height popup would otherwise render partly above the visible
-// screen, this scrolls `.device-screen` UP just enough first (pushing the
-// card further down on screen, opening up the needed room above it)
-// rather than compromising on size or position. A no-op — no scroll at
-// all — for the ordinary case where there's already enough room.
-export function ensureRoomAboveCard(buttonEl: HTMLButtonElement, listSelector: string, screenSelector = ".device-screen") {
-  const listEl = buttonEl.closest<HTMLElement>(listSelector);
-  const screenEl = buttonEl.closest<HTMLElement>(screenSelector);
-  if (!listEl || !screenEl) return;
-
-  const screenRect = screenEl.getBoundingClientRect();
-  const height = Math.max(
-    MEANING_MODAL_MIN_HEIGHT,
-    Math.min(MEANING_MODAL_MAX_HEIGHT, screenRect.height - MEANING_MODAL_MARGIN_Y * 2),
-  );
-  const minTop = screenRect.top + MEANING_MODAL_MARGIN_Y;
-  const cardEl = closestListChild(buttonEl, listEl);
-  const cardTop = (cardEl ?? buttonEl).getBoundingClientRect().top;
-  const deficit = minTop - (cardTop - height - MEANING_MODAL_CARD_GAP);
-  if (deficit > 0) {
-    // Clamped at 0 by the browser itself if the list is already scrolled
-    // to its very top — the popup then simply starts as high as the
-    // document allows, exactly the same graceful last resort this
-    // popup's very first design already relied on for a squeezed layout.
-    screenEl.scrollTop -= deficit;
-  }
-}
-
-// Computes where the Meaning popup should sit relative to `listSelector`'s
-// own top-left corner — the nearest ancestor of `buttonEl` matching that
-// selector, made the caller's own positioning context (`position: relative`
-// on a plain marker class with no other styling — see each caller).
+// for Written Adhkar's DhikrCard (verified there first), now reused as-is
+// by Miscellaneous Adhkar's MiscDuaCard too, rather than the two keeping
+// separate implementations. Two pieces:
+//   - `useMeaningCardState` — tracks which item is open and the specific
+//     DOM card it was opened from.
+//   - `DraggableMeaningCard` — the presentational + interactive card
+//     itself; callers supply their own header/body content so this stays
+//     content-agnostic.
 //
-// 2026-08 correction (anchored-popover behavior): the popup keeps its
-// EXACT original size (same MIN/MAX_HEIGHT formula as this popup has
-// always used — never shrunk, never squeezed to fit) and is always
-// positioned FULLY ABOVE the specific card whose Meaning button was
-// tapped, its bottom edge sitting `MEANING_MODAL_CARD_GAP` above that
-// card's own top edge. It is deliberately allowed to visually overlap
-// whatever card(s) sit above the selected one — covering an unrelated,
-// not-currently-being-read card is the acceptable trade-off; covering the
-// SELECTED card's own Arabic text is not, ever. There is no "flip below"
-// and no clamping that would push the popup's bottom edge down past the
-// selected card's top — the one thing this must never do. Horizontal
-// position and size are otherwise independent of the card, exactly as
-// this popup's very first (pre-anchored) design always computed them.
-export function computeMeaningAnchor<T>(
-  item: T,
-  buttonEl: HTMLButtonElement,
-  listSelector: string,
-  screenSelector = ".device-screen",
-): MeaningAnchor<T> | null {
-  const listEl = buttonEl.closest<HTMLElement>(listSelector);
-  const screenEl = buttonEl.closest<HTMLElement>(screenSelector);
-  if (!listEl || !screenEl) return null;
+// 2026-08: this popup has NO internal scroll and no max-height cap — it
+// always renders its complete content in full (an earlier, capped-height
+// design could crop part of a long popup, most visibly Ayat al-Kursi's
+// full English meaning on the very first Written Adhkar Dhikr). It opens
+// anchored just above the SPECIFIC card whose Meaning button was tapped,
+// then is freely draggable to anywhere on screen by pressing and dragging
+// the card itself — it never snaps back or auto-repositions afterward.
+//
+// `position: fixed` (not `absolute` within the scrolling list the way an
+// earlier version of this popup worked) — verified none of
+// .device-backdrop/.device-frame/.device-screen sets
+// transform/filter/will-change, so a fixed-position descendant here is NOT
+// trapped by `.device-screen`'s own `overflow-x:hidden`/`overflow-y:auto`
+// (the actual cropping risk the old `position:absolute` version was still
+// exposed to for tall content) — it renders directly against the real
+// viewport, with left/width clamped to `.device-frame`'s own current
+// on-screen rect so it never visually escapes the phone-frame illusion on
+// a wide desktop preview.
 
-  const listRect = listEl.getBoundingClientRect();
-  const screenRect = screenEl.getBoundingClientRect();
+const MEANING_CARD_MARGIN_X = 16;
+const MEANING_CARD_MARGIN_Y = 20;
+const MEANING_CARD_GAP = 10;
 
-  // Fixed size — identical formula to this popup's original design,
-  // independent of the card. `MEANING_MODAL_MAX_HEIGHT` is comfortably
-  // less than a typical `.device-screen`, so this lands on that cap on
-  // any normal viewport; the `screenRect.height`-based lower bound only
-  // ever matters on an unusually short one.
-  const fullHeight = Math.max(
-    MEANING_MODAL_MIN_HEIGHT,
-    Math.min(MEANING_MODAL_MAX_HEIGHT, screenRect.height - MEANING_MODAL_MARGIN_Y * 2),
-  );
-  const width = Math.min(MEANING_MODAL_MAX_WIDTH, screenRect.width - MEANING_MODAL_MARGIN_X * 2);
-  const left = screenRect.left + (screenRect.width - width) / 2;
-
-  // The tapped card's own top edge (falls back to the button's own top if,
-  // for some reason, no direct list-child wrapper can be found).
-  const cardEl = closestListChild(buttonEl, listEl);
-  const cardTop = (cardEl ?? buttonEl).getBoundingClientRect().top;
-  const minTop = screenRect.top + MEANING_MODAL_MARGIN_Y;
-
-  // Always anchored fully above the selected card, bottom edge pinned at
-  // `cardTop - GAP` — deliberately UNCLAMPED downward: nothing here is
-  // ever allowed to push `top` toward (or past) the card, since that is
-  // exactly what would let the popup creep onto it. `show()` (see
-  // `ensureRoomAboveCard`/`useMeaningPopoverState` below) already scrolled
-  // the list up first if that alone could make room, so `fullHeight` fits
-  // above the card in every ordinary case by the time this runs.
-  //
-  // The one residual case scrolling can't fix: a card sitting so close to
-  // the very START of the whole list (not just the current scroll
-  // position) that even a maximally-scrolled-up view still doesn't leave
-  // `fullHeight` of room above it — e.g. the first couple of cards. Only
-  // then does the popup shrink, and only down to exactly what's needed to
-  // stay fully on-screen while still never touching the card — the same
-  // non-negotiable priority as everywhere else, just with a smaller popup
-  // as the last resort instead of one that's partly invisible.
-  const height = Math.min(fullHeight, Math.max(0, cardTop - MEANING_MODAL_CARD_GAP - minTop));
-  const top = cardTop - height - MEANING_MODAL_CARD_GAP;
-
-  return {
-    item,
-    top: top - listRect.top,
-    left: left - listRect.left,
-    width,
-    maxHeight: height,
-  };
+export interface MeaningCardTarget<T> {
+  item: T;
+  cardEl: HTMLElement;
 }
 
-// Closes an open Meaning popup on an outside tap/click — EXCEPT when that
-// click is itself another card's own Meaning trigger (marked with
-// `data-meaning-trigger`): that button's own onClick already switches
-// straight to the new card, and this listener must not also fire and
-// immediately close what was just opened.
-export function useMeaningOutsideClose(isOpen: boolean, dialogRef: RefObject<HTMLElement | null>, onClose: () => void) {
-  useEffect(() => {
-    if (!isOpen) return;
-    function handlePointerDown(e: PointerEvent) {
-      const target = e.target as Node;
-      if (dialogRef.current?.contains(target)) return;
-      if (target instanceof Element && target.closest("[data-meaning-trigger]")) return;
-      onClose();
-    }
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [isOpen, dialogRef, onClose]);
-}
-
-// Bundles the state + handlers a screen needs to own ONE Meaning popup
-// shared across every MiscDuaCard it renders (matching WrittenAdhkarReader's
-// own hand-rolled version of the same four pieces) — `listSelector` is the
-// marker class on that screen's own `position: relative` list container
-// (see `computeMeaningAnchor`).
-export function useMeaningPopoverState<T>(listSelector: string) {
-  const [anchor, setAnchor] = useState<MeaningAnchor<T> | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+// Bundles the state a screen needs to own ONE Meaning popup shared across
+// every card it renders — keyed by which item is open AND the specific DOM
+// card it was opened from (needed to anchor `DraggableMeaningCard` above
+// THAT card). `cardSelector` is a marker class on the card's own root
+// (Written Adhkar's `.dithar-wa-dhikr-card`, Misc's
+// `.dithar-misc-dua-card`) — a direct `.closest()` on it, so this works
+// correctly no matter how deeply a caller's own layout nests the card
+// (MiscLibraryScreen wraps its cards in extra layout divs; MiscCategoryScreen
+// doesn't — both resolve the same way).
+export function useMeaningCardState<T extends { id: string }>(cardSelector: string) {
+  const [target, setTarget] = useState<MeaningCardTarget<T> | null>(null);
   const show = useCallback(
     (item: T, buttonEl: HTMLButtonElement) => {
-      ensureRoomAboveCard(buttonEl, listSelector);
-      setAnchor(computeMeaningAnchor(item, buttonEl, listSelector));
+      const cardEl = buttonEl.closest<HTMLElement>(cardSelector) ?? buttonEl;
+      setTarget({ item, cardEl });
     },
-    [listSelector],
+    [cardSelector],
   );
-  const close = useCallback(() => setAnchor(null), []);
-  useMeaningOutsideClose(anchor !== null, dialogRef, close);
-  return { anchor, show, close, dialogRef };
+  const close = useCallback(() => setTarget(null), []);
+  return { target, show, close };
 }
 
-// The popup's presentational chrome only — floats over `.device-screen`'s
-// visible area, NOT a full-page navigation and NOT `position: fixed`
-// (which would escape the phone frame on the desktop preview): it's meant
-// to be rendered as a plain descendant of the same positioned list
-// container `computeMeaningAnchor` measured against, with `position:
-// absolute` and the pixel offsets that function derived.
-export function MeaningPopoverShell({
-  anchor,
+// The popup itself — position, free-drag, and the always-fully-visible
+// correction logic; callers supply `cardEl` (which card to anchor above),
+// `listSelector` (the nearest scrollable list ancestor — used only for the
+// post-render "make room" correction below, via `cardEl.closest(...)`, so
+// it's resolved independently of how `cardEl` itself was found), plus
+// their own header/body content.
+export function DraggableMeaningCard({
+  cardEl,
+  listSelector,
   onClose,
-  dialogRef,
   ariaLabel,
   closeAria,
   header,
   children,
 }: {
-  anchor: { top: number; left: number; width: number; maxHeight: number } | null;
+  cardEl: HTMLElement;
+  listSelector: string;
   onClose: () => void;
-  dialogRef: RefObject<HTMLDivElement | null>;
   ariaLabel: string;
   closeAria: string;
   header: ReactNode;
   children: ReactNode;
 }) {
-  if (!anchor) return null;
-  const { top, left, width, maxHeight } = anchor;
+  const cardRef = useRef<HTMLDivElement>(null);
+  // `left`/`width` are fixed once computed (a comfortable reading width,
+  // centered, clamped to the phone frame minus margins). `bottom` (not
+  // `top`) is what lets the box grow upward to fit its full, uncapped
+  // content with no height measurement needed before first paint — its
+  // actual height is left entirely to the browser (`height: auto`); only
+  // its bottom edge is pinned, just above the selected card. A pure
+  // computation from `cardEl` (stable for this component's whole
+  // lifetime — callers remount it per open, keyed by item id) — no
+  // state/effect needed for it, unlike the post-render correction below.
+  const basePos = useMemo(() => {
+    const frameEl = (cardEl.closest(".device-frame") as HTMLElement | null) ?? cardEl;
+    const frameRect = frameEl.getBoundingClientRect();
+    const width = Math.min(400, frameRect.width - MEANING_CARD_MARGIN_X * 2);
+    const left = frameRect.left + (frameRect.width - width) / 2;
+    const cardRect = cardEl.getBoundingClientRect();
+    const bottom = window.innerHeight - (cardRect.top - MEANING_CARD_GAP);
+    return { left, width, bottom };
+  }, [cardEl]);
+  // Free-drag offset, applied as a `transform` on top of `basePos` —
+  // callers remount this component fresh (keyed by item id) each time a
+  // different item's Meaning is opened, so a previous drag never carries
+  // over; within one open, nothing else ever resets it.
+  const [dragDelta, setDragDelta] = useState({ x: 0, y: 0 });
+  const dragRef = useRef<{ pointerId: number; startX: number; startY: number; baseX: number; baseY: number } | null>(null);
+
+  // Once the (now fully, uncapped-height) card has actually rendered,
+  // confirm its own top edge didn't land above the frame's visible top
+  // margin — if it did (a long Meaning opened for a card near the top of
+  // the list — most visibly Ayat al-Kursi on Written Adhkar's very first
+  // Dhikr), scroll the list up just enough to reveal the room, driven by
+  // this card's REAL measured height rather than a fixed formula, since
+  // nothing here is capped.
+  //
+  // Scrolling alone can only ever close a gap up to however much the list
+  // was ALREADY scrolled down. For a card at or near the very top of the
+  // whole list, that can be less than the popup needs, with nowhere
+  // further to scroll. Rather than let the popup stay partly off-screen
+  // (or shrink it, which this popup must never do), the remainder is made
+  // up with a temporary `padding-top` on the card list — invisible in the
+  // ordinary case (it's 0 whenever scrolling alone was enough) and removed
+  // the moment this popup closes (the effect's own cleanup, run on unmount
+  // since callers remount this component per open).
+  //
+  // Written to be idempotent/safe to run more than once (React
+  // StrictMode's dev-only double-invoke of effects runs this, its
+  // cleanup, then this again before first paint) — every value here is
+  // freshly re-measured from the CURRENT live DOM on each run rather than
+  // accumulated from a previous pass, so re-running it lands on the exact
+  // same correct result instead of drifting.
+  useLayoutEffect(() => {
+    const screenEl = cardEl.closest<HTMLElement>(".device-screen");
+    const listEl = cardEl.closest<HTMLElement>(listSelector);
+    if (!screenEl || !listEl || !cardRef.current) return;
+    const frameEl = (cardEl.closest(".device-frame") as HTMLElement | null) ?? cardEl;
+    const frameRect = frameEl.getBoundingClientRect();
+    const minTop = frameRect.top + MEANING_CARD_MARGIN_Y;
+    // The popup's own natural height is stable across re-runs (content
+    // doesn't change) even though its POSITION might have been touched by
+    // an earlier run — only the card's actual current position is used
+    // below to decide what (if anything) still needs correcting.
+    const popupHeight = cardRef.current.getBoundingClientRect().height;
+    const requiredCardTop = minTop + popupHeight + MEANING_CARD_GAP;
+    const currentCardTop = cardEl.getBoundingClientRect().top;
+    const pushNeeded = requiredCardTop - currentCardTop;
+    if (pushNeeded > 0.5) {
+      const scrollable = screenEl.scrollTop;
+      const scrollBy = Math.min(scrollable, pushNeeded);
+      screenEl.scrollTop = scrollable - scrollBy;
+      const remaining = pushNeeded - scrollBy;
+      listEl.style.paddingTop = remaining > 0.5 ? `${remaining}px` : "";
+    } else {
+      listEl.style.paddingTop = "";
+    }
+    // Re-anchor the popup's bottom edge fresh, relative to the card's
+    // CURRENT (possibly just-adjusted) position — never a delta from the
+    // initial `basePos`, so this is exact regardless of how many times
+    // the effect has run.
+    const finalCardTop = cardEl.getBoundingClientRect().top;
+    cardRef.current.style.bottom = `${window.innerHeight - (finalCardTop - MEANING_CARD_GAP)}px`;
+
+    return () => {
+      listEl.style.paddingTop = "";
+    };
+    // Deliberately empty deps: this only needs `cardEl`, captured in the
+    // closure, which never changes for a given open popup (callers
+    // remount this component, and this effect, for every new open) — it
+    // must not re-run on later renders this same instance produces (e.g.
+    // while dragging).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Drag the whole card by pressing anywhere on it EXCEPT the close button
+  // (`data-meaning-no-drag`, so a plain tap still closes it instead of
+  // starting a drag). `setPointerCapture` keeps receiving move/up events
+  // even if the finger/cursor leaves the card's own bounds mid-drag.
+  const handlePointerDown = useCallback(
+    (e: ReactPointerEvent<HTMLDivElement>) => {
+      if ((e.target as HTMLElement).closest("[data-meaning-no-drag]")) return;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      dragRef.current = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, baseX: dragDelta.x, baseY: dragDelta.y };
+    },
+    [dragDelta],
+  );
+  const handlePointerMove = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    setDragDelta({ x: drag.baseX + (e.clientX - drag.startX), y: drag.baseY + (e.clientY - drag.startY) });
+  }, []);
+  const handlePointerUp = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
+    if (dragRef.current?.pointerId === e.pointerId) dragRef.current = null;
+  }, []);
 
   return (
-    <>
-      {/* Backdrop spans the full list (not just the current viewport slice
-          of `.device-screen`) so whatever portion happens to be visible is
-          dimmed. `pointer-events-none`: closing-on-outside-click and
-          switching-to-a-different-card's-Meaning are both handled by
-          `useMeaningOutsideClose` instead — a click-catching backdrop here
-          would sit on top of every OTHER card's own Meaning button too
-          (it spans the whole list), silently swallowing that tap instead of
-          switching straight to the new card. */}
-      <div className="pointer-events-none absolute inset-0 z-20" style={{ background: "rgba(11, 21, 38, 0.45)" }} aria-hidden="true" />
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={ariaLabel}
-        className="absolute z-30 flex flex-col overflow-hidden rounded-2xl border"
-        style={{
-          top,
-          left,
-          width,
-          maxHeight,
-          background: "var(--wa-surface)",
-          borderColor: "var(--wa-gold-hairline)",
-          borderRadius: "var(--wa-card-radius)",
-          boxShadow: "0 20px 50px -20px rgba(var(--color-shadow-rgb), 0.5)",
-        }}
-      >
-        <div className="flex items-start gap-3 border-b p-3" style={{ borderColor: "var(--wa-gold-hairline)" }}>
-          <div className="min-w-0 flex-1 pt-0.5">{header}</div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={closeAria}
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-            style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
-          >
-            <X size={15} strokeWidth={2} />
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto p-3" dir="ltr">
-          {children}
-        </div>
+    <div
+      ref={cardRef}
+      role="dialog"
+      aria-label={ariaLabel}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      className="fixed z-[999] flex touch-none flex-col overflow-hidden rounded-2xl border"
+      style={{
+        left: basePos.left,
+        bottom: basePos.bottom,
+        width: basePos.width,
+        transform: dragDelta.x || dragDelta.y ? `translate(${dragDelta.x}px, ${dragDelta.y}px)` : undefined,
+        cursor: "grab",
+        touchAction: "none",
+        background: "var(--wa-surface)",
+        borderColor: "var(--wa-gold-hairline)",
+        borderRadius: "var(--wa-card-radius)",
+        boxShadow: "0 20px 50px -20px rgba(var(--color-shadow-rgb), 0.5)",
+      }}
+    >
+      <div className="flex items-start gap-3 border-b p-3" style={{ borderColor: "var(--wa-gold-hairline)" }}>
+        <div className="min-w-0 flex-1 pt-0.5">{header}</div>
+        <button
+          type="button"
+          data-meaning-no-drag="true"
+          onClick={onClose}
+          aria-label={closeAria}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
+        >
+          <X size={15} strokeWidth={2} />
+        </button>
       </div>
-    </>
+
+      <div className="p-3" dir="ltr">
+        {children}
+      </div>
+    </div>
   );
 }

@@ -25,7 +25,7 @@ import { TopBar } from "./TopBar";
 import { BackHeader, StickyBackButton } from "./BackHeader";
 import { BottomNav } from "./BottomNav";
 import { MiscDuaCard, MiscMeaningPopover } from "./MiscDuaCard";
-import { useMeaningPopoverState } from "./MeaningPopover";
+import { useMeaningCardState } from "./MeaningPopover";
 import { MedallionIcon, LanternOutlineIcon, MosqueDomeIcon, ArchNicheOutline } from "../icons/CustomIcons";
 import {
   MISC_CATEGORY_ORDER,
@@ -192,11 +192,15 @@ export function MiscLibraryScreen({
   const [query, setQuery] = useState("");
   const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
   // Which single item's full Transliteration/Meaning is currently shown,
-  // and where — shared across both card lists below (search results and
-  // featured), which never render at the same time. See MiscDuaCard's
-  // Meaning button and MiscMeaningPopover.
-  const { anchor: meaningAnchor, show: handleShowMeaning, close: handleCloseMeaning, dialogRef: meaningDialogRef } =
-    useMeaningPopoverState<MiscDuaItem>(".dithar-misc-list");
+  // and the specific DOM card it was opened from — shared across both card
+  // lists below (search results and featured), which never render at the
+  // same time. `.dithar-misc-dua-card` (not the list container) is what
+  // resolves the card here, since MiscDuaCard ends up nested inside extra
+  // layout wrappers in this screen (the search-results/featured containers)
+  // that a list-relative lookup would otherwise catch instead of the card
+  // itself. See MiscDuaCard's Meaning button and MiscMeaningPopover.
+  const { target: meaningTarget, show: handleShowMeaning, close: handleCloseMeaning } =
+    useMeaningCardState<MiscDuaItem>(".dithar-misc-dua-card");
 
   // Stable identity (empty deps — only reads/writes state via functional
   // updaters) so it can be passed straight to every memoized MiscDuaCard;
@@ -231,14 +235,15 @@ export function MiscLibraryScreen({
   const isSearching = searchOpen && query.trim().length > 0;
 
   return (
-    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningAnchor !== null}>
+    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningTarget !== null}>
       <AppShell>
         <TopBar />
-        {/* `relative` + `dithar-misc-list` (a plain marker class, not a
-            style hook — same convention as WrittenAdhkarReader's own
-            `.dithar-wa-list`) turn this into the positioning context
-            MiscMeaningPopover anchors against; it's the common ancestor of
-            both card lists below, which never render at the same time. */}
+        {/* `dithar-misc-list` — plain marker class, matching
+            WrittenAdhkarReader's own `.dithar-wa-list` convention; used by
+            DraggableMeaningCard to find the nearest scrollable list
+            ancestor when it needs to make extra room above a card. Also
+            the common ancestor of both card lists below, which never
+            render at the same time. */}
         <div className="dithar-misc-list relative flex flex-1 flex-col">
           <StickyBackButton onBack={onBack} backLabel={t.back} dir={dir} />
           <div className="flex items-center gap-2">
@@ -336,7 +341,9 @@ export function MiscLibraryScreen({
             </>
           )}
 
-          <MiscMeaningPopover anchor={meaningAnchor} onClose={handleCloseMeaning} dialogRef={meaningDialogRef} />
+          {meaningTarget && (
+            <MiscMeaningPopover key={meaningTarget.item.id} item={meaningTarget.item} cardEl={meaningTarget.cardEl} onClose={handleCloseMeaning} />
+          )}
         </div>
 
         <BottomNav

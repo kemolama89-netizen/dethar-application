@@ -5,7 +5,7 @@ import { TopBar } from "./TopBar";
 import { BackHeader, StickyBackButton } from "./BackHeader";
 import { BottomNav } from "./BottomNav";
 import { MiscDuaCard, MiscMeaningPopover } from "./MiscDuaCard";
-import { useMeaningPopoverState } from "./MeaningPopover";
+import { useMeaningCardState } from "./MeaningPopover";
 import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels } from "../data/misc-library";
 import type { MiscCategoryKey, MiscDuaItem } from "../data/misc-library";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
@@ -42,9 +42,12 @@ export function MiscCategoryScreen({
   const [favorites, setFavorites] = useState<Set<string>>(() => loadMiscFavorites());
   const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
   // Which single item's full Transliteration/Meaning is currently shown,
-  // and where — see MiscDuaCard's Meaning button and MiscMeaningPopover.
-  const { anchor: meaningAnchor, show: handleShowMeaning, close: handleCloseMeaning, dialogRef: meaningDialogRef } =
-    useMeaningPopoverState<MiscDuaItem>(".dithar-misc-list");
+  // and the specific DOM card it was opened from — see MiscDuaCard's
+  // Meaning button and MiscMeaningPopover. Same shared hook Written
+  // Adhkar's own reader uses (see MeaningPopover.tsx), not a separate
+  // implementation.
+  const { target: meaningTarget, show: handleShowMeaning, close: handleCloseMeaning } =
+    useMeaningCardState<MiscDuaItem>(".dithar-misc-dua-card");
 
   // Stable identity (empty deps — only reads/writes state via functional
   // updaters) so it can be passed straight to every memoized MiscDuaCard;
@@ -60,7 +63,7 @@ export function MiscCategoryScreen({
   }, []);
 
   return (
-    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningAnchor !== null}>
+    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningTarget !== null}>
       <AppShell>
         <TopBar />
         <div className="flex flex-1 flex-col">
@@ -73,10 +76,10 @@ export function MiscCategoryScreen({
             {t.itemsCount(items.length)}
           </p>
 
-          {/* `relative` + `dithar-misc-list` (a plain marker class, not a
-              style hook — same convention as WrittenAdhkarReader's own
-              `.dithar-wa-list`) turn this into the positioning context
-              MiscMeaningPopover anchors against. */}
+          {/* `dithar-misc-list` — plain marker class, matching
+              WrittenAdhkarReader's own `.dithar-wa-list` convention; used
+              by DraggableMeaningCard to find the nearest scrollable list
+              ancestor when it needs to make extra room above a card. */}
           <div className="dithar-misc-list relative mt-4 flex flex-col gap-3 pb-4">
             {items.length === 0 ? (
               <p className="mt-8 text-center text-[13px]" style={{ color: "var(--wa-on-page-muted)" }}>
@@ -95,9 +98,11 @@ export function MiscCategoryScreen({
                 />
               ))
             )}
-
-            <MiscMeaningPopover anchor={meaningAnchor} onClose={handleCloseMeaning} dialogRef={meaningDialogRef} />
           </div>
+
+          {meaningTarget && (
+            <MiscMeaningPopover key={meaningTarget.item.id} item={meaningTarget.item} cardEl={meaningTarget.cardEl} onClose={handleCloseMeaning} />
+          )}
         </div>
 
         <BottomNav

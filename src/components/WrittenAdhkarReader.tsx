@@ -1,11 +1,12 @@
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
-import { BookOpenText, Check, X } from "lucide-react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
+import { BookOpenText, Check } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { BackHeader, StickyBackButton } from "./BackHeader";
+import { DraggableMeaningCard, useMeaningCardState } from "./MeaningPopover";
 import { CATEGORY_ARTWORK } from "../icons/CategoryEmblem";
 import { useLanguage } from "../theme/LanguageContext";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels, writtenAdhkarItems } from "../data/written-adhkar";
@@ -466,31 +467,11 @@ function AdhkarCompletionMessage({
   );
 }
 
-// 2026-08 UX fix: the Meaning popup for Written Adhkar no longer shares
-// MeaningPopoverShell/computeMeaningAnchor (see MeaningPopover.tsx) — that
-// implementation is untouched and still exactly what Miscellaneous
-// Adhkar's MiscDuaCard uses. Written Adhkar's own popup now:
-//   - has NO internal scroll and no max-height cap — it always renders its
-//     complete content in full (the previous shared design capped height
-//     and could crop part of a long popup, most visibly on Ayat al-Kursi's
-//     full English meaning and the very first Dhikr).
-//   - opens anchored just above the SPECIFIC card whose Meaning button was
-//     tapped (`cardEl`, captured once at open time), then is freely
-//     draggable to anywhere on screen by pressing and dragging the card
-//     itself — it never snaps back or auto-repositions afterward.
-// `position: fixed` (not `absolute` within the scrolling list the way
-// MeaningPopoverShell still works) — verified none of .device-backdrop/
-// .device-frame/.device-screen sets transform/filter/will-change, so a
-// fixed-position descendant here is NOT trapped by `.device-screen`'s own
-// `overflow-x:hidden`/`overflow-y:auto` (the actual cropping risk the old
-// `position:absolute` version was still exposed to for tall content) — it
-// renders directly against the real viewport, with left/width clamped to
-// `.device-frame`'s own current on-screen rect so it never visually
-// escapes the phone-frame illusion on a wide desktop preview.
-const MEANING_CARD_MARGIN_X = 16;
-const MEANING_CARD_MARGIN_Y = 20;
-const MEANING_CARD_GAP = 10;
-
+// 2026-08 unification: this is now a thin wrapper around the shared
+// `DraggableMeaningCard` (see MeaningPopover.tsx) — the same positioning/
+// drag/full-visibility implementation verified here first is now also
+// what Miscellaneous Adhkar's MiscMeaningPopover uses, rather than the two
+// screens keeping separate popup behavior.
 function WrittenMeaningPopover({
   item,
   cardEl,
@@ -501,147 +482,16 @@ function WrittenMeaningPopover({
   onClose: () => void;
 }) {
   const mt = dhikrLanguageLabels.en;
-  const cardRef = useRef<HTMLDivElement>(null);
-  // `left`/`width` are fixed once computed (same "centered, screen-width-
-  // minus-margins" sizing this popup has always used). `bottom` (not
-  // `top`) is what lets the box grow upward to fit its full, uncapped
-  // content with no height measurement needed before first paint — its
-  // actual height is left entirely to the browser (`height: auto`); only
-  // its bottom edge is pinned, just above the selected card. A pure
-  // computation from `cardEl` (stable for this component's whole
-  // lifetime — it remounts per open, see `key={item.id}` at the call
-  // site) — no state/effect needed for it, unlike the post-render
-  // correction below.
-  const basePos = useMemo(() => {
-    const frameEl = (cardEl.closest(".device-frame") as HTMLElement | null) ?? cardEl;
-    const frameRect = frameEl.getBoundingClientRect();
-    const width = Math.min(400, frameRect.width - MEANING_CARD_MARGIN_X * 2);
-    const left = frameRect.left + (frameRect.width - width) / 2;
-    const cardRect = cardEl.getBoundingClientRect();
-    const bottom = window.innerHeight - (cardRect.top - MEANING_CARD_GAP);
-    return { left, width, bottom };
-  }, [cardEl]);
-  // Free-drag offset, applied as a `transform` on top of `basePos` — this
-  // component remounts fresh (via `key={item.id}` at the call site) each
-  // time a different Dhikr's Meaning is opened, so a previous drag never
-  // carries over; within one open, nothing else ever resets it.
-  const [dragDelta, setDragDelta] = useState({ x: 0, y: 0 });
-  const dragRef = useRef<{ pointerId: number; startX: number; startY: number; baseX: number; baseY: number } | null>(null);
-
-  // Once the (now fully, uncapped-height) card has actually rendered,
-  // confirm its own top edge didn't land above the frame's visible top
-  // margin — if it did (a long Meaning opened for a card near the top of
-  // the list — most visibly Ayat al-Kursi on the very first Dhikr), scroll
-  // the list up just enough to reveal the room, the same idea as
-  // `ensureRoomAboveCard` in MeaningPopover.tsx but driven by this card's
-  // REAL measured height rather than a fixed formula, since nothing here
-  // is capped anymore.
-  //
-  // Scrolling alone can only ever close a gap up to however much the list
-  // was ALREADY scrolled down (`screenEl.scrollTop`) — for a card at or
-  // near the very top of the whole list, that can be less than the popup
-  // needs, with nowhere further to scroll. Rather than let the popup stay
-  // partly off-screen (or shrink it, which this popup must never do), the
-  // remainder is made up with a temporary `padding-top` on the card list
-  // — invisible in the ordinary case (it's 0 whenever scrolling alone was
-  // enough) and removed the moment this popup closes (the effect's own
-  // cleanup, run on unmount since a fresh `key={item.id}` remounts this
-  // component for every open).
-  //
-  // Written to be idempotent/safe to run more than once (React
-  // StrictMode's dev-only double-invoke of effects runs this, its
-  // cleanup, then this again before first paint) — every value here is
-  // freshly re-measured from the CURRENT live DOM on each run rather than
-  // accumulated from a previous pass, so re-running it lands on the exact
-  // same correct result instead of drifting.
-  useLayoutEffect(() => {
-    const screenEl = cardEl.closest<HTMLElement>(".device-screen");
-    const listEl = cardEl.closest<HTMLElement>(".dithar-wa-list");
-    if (!screenEl || !listEl || !cardRef.current) return;
-    const frameEl = (cardEl.closest(".device-frame") as HTMLElement | null) ?? cardEl;
-    const frameRect = frameEl.getBoundingClientRect();
-    const minTop = frameRect.top + MEANING_CARD_MARGIN_Y;
-    // The popup's own natural height is stable across re-runs (content
-    // doesn't change) even though its POSITION might have been touched by
-    // an earlier run — only the card's actual current position is used
-    // below to decide what (if anything) still needs correcting.
-    const popupHeight = cardRef.current.getBoundingClientRect().height;
-    const requiredCardTop = minTop + popupHeight + MEANING_CARD_GAP;
-    const currentCardTop = cardEl.getBoundingClientRect().top;
-    const pushNeeded = requiredCardTop - currentCardTop;
-    if (pushNeeded > 0.5) {
-      const scrollable = screenEl.scrollTop;
-      const scrollBy = Math.min(scrollable, pushNeeded);
-      screenEl.scrollTop = scrollable - scrollBy;
-      const remaining = pushNeeded - scrollBy;
-      listEl.style.paddingTop = remaining > 0.5 ? `${remaining}px` : "";
-    } else {
-      listEl.style.paddingTop = "";
-    }
-    // Re-anchor the popup's bottom edge fresh, relative to the card's
-    // CURRENT (possibly just-adjusted) position — never a delta from the
-    // initial `basePos`, so this is exact regardless of how many times
-    // the effect has run.
-    const finalCardTop = cardEl.getBoundingClientRect().top;
-    cardRef.current.style.bottom = `${window.innerHeight - (finalCardTop - MEANING_CARD_GAP)}px`;
-
-    return () => {
-      listEl.style.paddingTop = "";
-    };
-    // Deliberately empty deps: this only needs the props captured in the
-    // closure (`cardEl`), which never change for a given open popup (a
-    // fresh `key={item.id}` remounts this component, and this effect,
-    // for every new open) — it must not re-run on later renders this same
-    // instance produces (e.g. while dragging).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Drag the whole card by pressing anywhere on it EXCEPT the close button
-  // (`data-meaning-no-drag`, so a plain tap still closes it instead of
-  // starting a drag). `setPointerCapture` keeps receiving move/up events
-  // even if the finger/cursor leaves the card's own bounds mid-drag.
-  const handlePointerDown = useCallback(
-    (e: ReactPointerEvent<HTMLDivElement>) => {
-      if ((e.target as HTMLElement).closest("[data-meaning-no-drag]")) return;
-      e.currentTarget.setPointerCapture(e.pointerId);
-      dragRef.current = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, baseX: dragDelta.x, baseY: dragDelta.y };
-    },
-    [dragDelta],
-  );
-  const handlePointerMove = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== e.pointerId) return;
-    setDragDelta({ x: drag.baseX + (e.clientX - drag.startX), y: drag.baseY + (e.clientY - drag.startY) });
-  }, []);
-  const handlePointerUp = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
-    if (dragRef.current?.pointerId === e.pointerId) dragRef.current = null;
-  }, []);
 
   return (
-    <div
-      ref={cardRef}
-      role="dialog"
-      aria-label={mt.meaningHeading}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-      className="fixed z-[999] flex touch-none flex-col overflow-hidden rounded-2xl border"
-      style={{
-        left: basePos.left,
-        bottom: basePos.bottom,
-        width: basePos.width,
-        transform: dragDelta.x || dragDelta.y ? `translate(${dragDelta.x}px, ${dragDelta.y}px)` : undefined,
-        cursor: "grab",
-        touchAction: "none",
-        background: "var(--wa-surface)",
-        borderColor: "var(--wa-gold-hairline)",
-        borderRadius: "var(--wa-card-radius)",
-        boxShadow: "0 20px 50px -20px rgba(var(--color-shadow-rgb), 0.5)",
-      }}
-    >
-      <div className="flex items-start gap-3 border-b p-3" style={{ borderColor: "var(--wa-gold-hairline)" }}>
-        <div className="min-w-0 flex-1 pt-0.5">
+    <DraggableMeaningCard
+      cardEl={cardEl}
+      listSelector=".dithar-wa-list"
+      onClose={onClose}
+      ariaLabel={mt.meaningHeading}
+      closeAria={mt.close}
+      header={
+        <>
           {item.title_en && (
             <p className="text-[11px] font-semibold" style={{ color: "var(--wa-gold)" }}>
               {item.title_en}
@@ -650,28 +500,16 @@ function WrittenMeaningPopover({
           <p dir="rtl" className="mt-1 line-clamp-1 text-[12.5px]" style={{ color: "var(--wa-ink-muted)" }}>
             {item.text_ar}
           </p>
-        </div>
-        <button
-          type="button"
-          data-meaning-no-drag="true"
-          onClick={onClose}
-          aria-label={mt.close}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
-        >
-          <X size={15} strokeWidth={2} />
-        </button>
-      </div>
-
-      <div className="p-3" dir="ltr">
-        <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--wa-gold)" }}>
-          {mt.meaningHeading}
-        </p>
-        <p className="mt-1 text-[14px] leading-[1.6]" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
-          {item.text_en}
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--wa-gold)" }}>
+        {mt.meaningHeading}
+      </p>
+      <p className="mt-1 text-[14px] leading-[1.6]" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
+        {item.text_en}
+      </p>
+    </DraggableMeaningCard>
   );
 }
 
@@ -750,21 +588,14 @@ export function WrittenAdhkarReader({
   // general-purpose settings mechanism this would fit into.
   const [selectedPrayer, setSelectedPrayer] = useState<PrayerName>("fajr");
   // Which single item's full Meaning is currently shown, and the specific
-  // DOM card it was opened from (captured once, at open time) — English
-  // mode only, see DhikrCard's meaning button and WrittenMeaningPopover
-  // above. Setting a NEW value always fully replaces whatever was open
-  // before, so tapping a different card's button can never show two
-  // popovers or the wrong item.
-  const [meaningState, setMeaningState] = useState<{ item: WrittenAdhkarItem; cardEl: HTMLElement } | null>(null);
-  // Stable identity (empty deps — reads no outside state) so it can be
-  // passed straight to every memoized DhikrCard as `onShowMeaning`;
-  // opening/closing only ever re-renders WrittenMeaningPopover, never the
-  // journey's card list.
-  const handleShowMeaning = useCallback((item: WrittenAdhkarItem, buttonEl: HTMLButtonElement) => {
-    const cardEl = buttonEl.closest<HTMLElement>(".dithar-wa-dhikr-card") ?? buttonEl;
-    setMeaningState({ item, cardEl });
-  }, []);
-  const handleCloseMeaning = useCallback(() => setMeaningState(null), []);
+  // DOM card it was opened from — English mode only, see DhikrCard's
+  // meaning button and WrittenMeaningPopover above. Shared with
+  // Miscellaneous Adhkar's own screens (same `useMeaningCardState` hook,
+  // see MeaningPopover.tsx) rather than a separate implementation here.
+  // Setting a NEW value always fully replaces whatever was open before, so
+  // tapping a different card's button can never show two popovers or the
+  // wrong item.
+  const { target: meaningState, show: handleShowMeaning, close: handleCloseMeaning } = useMeaningCardState<WrittenAdhkarItem>(".dithar-wa-dhikr-card");
 
   // The journey only ever reads/renders `visibleItems` — every Dhikr whose
   // `prayerScope` includes the currently selected prayer (or has no scope
