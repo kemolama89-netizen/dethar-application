@@ -209,7 +209,7 @@ export function DraggableMeaningCard({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="fixed z-[999] flex touch-none flex-col overflow-hidden rounded-2xl border"
+      className="fixed z-[999] flex touch-none flex-col overflow-hidden rounded-2xl border-[1.5px]"
       style={{
         left: basePos.left,
         bottom: basePos.bottom,
@@ -217,23 +217,40 @@ export function DraggableMeaningCard({
         transform: dragDelta.x || dragDelta.y ? `translate(${dragDelta.x}px, ${dragDelta.y}px)` : undefined,
         cursor: "grab",
         touchAction: "none",
-        background: "var(--wa-surface)",
-        borderColor: "var(--wa-gold-hairline)",
+        // A calm, warm wash — the SAME `--wa-gold-hairline` token every
+        // card's own border already uses, just layered as a flat fill
+        // instead of a 1px line — over the plain `--wa-surface` the card
+        // underneath also uses. Composed entirely from existing palette
+        // tokens (no new colors, no color-mix), so it stays correct for
+        // every accent in both the men's and women's identities. This is
+        // the actual fix for "blends with the card underneath": once the
+        // free-floating redesign dropped the old dimming backdrop, the
+        // popup and the card beneath were left sharing the exact same flat
+        // `--wa-surface` — this warm tint plus the stronger border/shadow
+        // below are what now separate them, entirely on the popup's own
+        // surface rather than dimming the rest of the screen.
+        background: "linear-gradient(var(--wa-gold-hairline), var(--wa-gold-hairline)), var(--wa-surface)",
+        borderColor: "var(--wa-gold-soft)",
         borderRadius: "var(--wa-card-radius)",
-        boxShadow: "0 20px 50px -20px rgba(var(--color-shadow-rgb), 0.5)",
+        boxShadow: "0 22px 54px -18px rgba(var(--color-shadow-rgb), 0.55)",
       }}
     >
-      <div className="flex items-start gap-3 border-b p-3" style={{ borderColor: "var(--wa-gold-hairline)" }}>
+      <div className="flex items-start gap-3 border-b p-3" style={{ borderColor: "var(--wa-gold-soft)" }}>
         <div className="min-w-0 flex-1 pt-0.5">{header}</div>
+        {/* Same "gold accent trigger" language the Meaning button itself
+            already uses on the card underneath (inset gold-hairline ring,
+            gold icon) — reused here rather than the previous muted
+            ink-colored X, so the close action reads as clearly actionable
+            against the new tinted background. */}
         <button
           type="button"
           data-meaning-no-drag="true"
           onClick={onClose}
           aria-label={closeAria}
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
+          style={{ boxShadow: "inset 0 0 0 1.5px var(--wa-gold-soft)", background: "var(--wa-surface)", color: "var(--wa-gold)" }}
         >
-          <X size={15} strokeWidth={2} />
+          <X size={15} strokeWidth={2.25} />
         </button>
       </div>
 
