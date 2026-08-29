@@ -1,11 +1,9 @@
 import { memo, useState } from "react";
-import type { RefObject } from "react";
 import { BookOpenText, Copy, Heart, Volume2, VolumeX } from "lucide-react";
 import type { MiscDuaItem } from "../data/misc-library";
 import { miscLibraryLabels, miscMeaningLabels } from "../data/misc-library";
 import { useLanguage } from "../theme/LanguageContext";
-import { MeaningPopoverShell } from "./MeaningPopover";
-import type { MeaningAnchor } from "./MeaningPopover";
+import { DraggableMeaningCard } from "./MeaningPopover";
 
 // The single reading card shared by the category list and search results —
 // per spec section 10: the COMPLETE Arabic text once, a count line (only
@@ -79,7 +77,14 @@ function MiscDuaCardImpl({
 
   return (
     <div
-      className="relative overflow-hidden px-4 py-4"
+      // `dithar-misc-dua-card` — plain marker class (no styling), matching
+      // Written Adhkar's own `.dithar-wa-dhikr-card` convention. Lets
+      // MiscMeaningPopover's Meaning button reliably find "the specific
+      // card this button belongs to" via a direct `.closest()` regardless
+      // of how deeply this card ends up nested inside a caller's own list
+      // markup (MiscLibraryScreen wraps its search-results/featured cards
+      // in intermediate layout divs, unlike MiscCategoryScreen).
+      className="dithar-misc-dua-card relative overflow-hidden px-4 py-4"
       style={{
         background: "var(--wa-surface)",
         borderRadius: "var(--wa-card-radius)",
@@ -212,26 +217,26 @@ export const MiscDuaCard = memo(MiscDuaCardImpl);
 // above — English mode only. Transliteration stays inline in the card
 // itself (see above) and is deliberately NOT repeated here — same split as
 // Written Adhkar's own DhikrCard/WrittenMeaningPopover. Thin wrapper around
-// the shared MeaningPopoverShell (see MeaningPopover.tsx) — the same
-// positioning/backdrop/scroll chrome already used by Written Adhkar.
+// the shared DraggableMeaningCard (see MeaningPopover.tsx) — the same
+// full-content, freely-draggable popup verified on Written Adhkar's
+// Morning/Evening Adhkar, unified here rather than kept as a second,
+// different implementation.
 export function MiscMeaningPopover({
-  anchor,
+  item,
+  cardEl,
   onClose,
-  dialogRef,
 }: {
-  anchor: MeaningAnchor<MiscDuaItem> | null;
+  item: MiscDuaItem;
+  cardEl: HTMLElement;
   onClose: () => void;
-  dialogRef: RefObject<HTMLDivElement | null>;
 }) {
   const mt = miscMeaningLabels.en;
-  if (!anchor) return null;
-  const { item } = anchor;
 
   return (
-    <MeaningPopoverShell
-      anchor={anchor}
+    <DraggableMeaningCard
+      cardEl={cardEl}
+      listSelector=".dithar-misc-list"
       onClose={onClose}
-      dialogRef={dialogRef}
       ariaLabel={mt.meaningHeading}
       closeAria={mt.close}
       header={
@@ -246,6 +251,6 @@ export function MiscMeaningPopover({
       <p className="mt-0.5 text-[13.5px] leading-[1.6]" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
         {item.englishMeaning}
       </p>
-    </MeaningPopoverShell>
+    </DraggableMeaningCard>
   );
 }
