@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { Copy, Heart, Volume2, VolumeX, Languages } from "lucide-react";
+import { memo, useState } from "react";
+import type { RefObject } from "react";
+import { BookOpenText, Copy, Heart, Volume2, VolumeX } from "lucide-react";
 import type { MiscDuaItem } from "../data/misc-library";
-import { miscLibraryLabels as t, miscMeaningLabels } from "../data/misc-library";
+import { miscLibraryLabels, miscMeaningLabels } from "../data/misc-library";
 import { useLanguage } from "../theme/LanguageContext";
+import { MeaningPopoverShell } from "./MeaningPopover";
+import type { MeaningAnchor } from "./MeaningPopover";
 
 // The single reading card shared by the category list and search results —
 // per spec section 10: the COMPLETE Arabic text once, a count line (only
@@ -11,12 +14,18 @@ import { useLanguage } from "../theme/LanguageContext";
 // overpowered by its citation. No repetition/completion tracking here
 // (this is a read-only reference library, not a daily-wird journey like
 // Written Adhkar) — only lightweight, existing-architecture-compatible
-// actions: copy, favorite, listen, and (when the record has an English
-// layer) a button revealing the meaning in a separate sheet — see
-// MiscMeaningModal. The Arabic text stays the ONLY thing shown inline;
-// englishMeaning/englishTransliteration never render inside this card
-// itself, only through that dedicated button+modal (spec section 7).
-export function MiscDuaCard({
+// actions: copy, favorite, listen. Strict language separation (per this
+// feature's language-rendering fix): the Arabic text and Arabic
+// metadata are the ONLY content shown when the app language is Arabic —
+// englishMeaning/englishTransliteration never render at all in that mode.
+// When the app language is English, the Arabic dhikr stays the primary
+// text (never replaced by a translation) and the transliteration renders
+// inline directly below it — same convention as Written Adhkar's own
+// DhikrCard — so a non-Arabic reader always has pronunciation visible
+// without opening anything. Only the full Meaning (when present) stays
+// behind the compact Meaning button/popup (see MeaningPopover.tsx),
+// exactly as Written Adhkar does.
+function MiscDuaCardImpl({
   item,
   isFavorite,
   onToggleFavorite,
@@ -26,13 +35,23 @@ export function MiscDuaCard({
 }: {
   item: MiscDuaItem;
   isFavorite: boolean;
-  onToggleFavorite: () => void;
+  // Takes the id (rather than being pre-bound per-item by the caller) so
+  // the parent screens can pass one stable, top-level callback shared by
+  // every card — the prerequisite for `memo` below to actually skip
+  // re-rendering cards whose own props haven't changed when a sibling
+  // card's favorite/listen state toggles.
+  onToggleFavorite: (id: string) => void;
   isSpeaking: boolean;
-  onToggleListen: () => void;
-  onShowMeaning: () => void;
+  onToggleListen: (id: string, text: string) => void;
+  // Passes the button's own DOM node (not just the item) so the caller can
+  // measure its actual on-screen position and anchor the Meaning popover to
+  // THIS specific card — same convention as WrittenAdhkarReader's own
+  // onShowMeaning.
+  onShowMeaning: (item: MiscDuaItem, buttonEl: HTMLButtonElement) => void;
 }) {
   const [copied, setCopied] = useState(false);
   const { language } = useLanguage();
+  const t = miscLibraryLabels[language];
   const mt = miscMeaningLabels[language];
 
   async function handleCopy() {
@@ -47,6 +66,16 @@ export function MiscDuaCard({
   }
 
   const sourceLabel = item.isQuranic ? t.sourceLabelQuran : t.sourceLabelHadith;
+  // Strict language separation for metadata (per this pass's fix): English
+  // mode reads the `_en` counterpart of each field, never the `_ar` value —
+  // and since every `_ar` metadata field on a real record has a matching
+  // `_en` value (see MISC_ENGLISH_METADATA in misc-library.ts), this never
+  // silently falls back to Arabic text inside the English UI.
+  const isEn = language === "en";
+  const occasion = isEn ? item.occasion_en : item.occasion_ar;
+  const count = isEn ? item.count_en : item.count_ar;
+  const source = isEn ? item.source_en : item.source_ar;
+  const note = isEn ? item.note_en : item.note_ar;
 
   return (
     <div
@@ -65,34 +94,68 @@ export function MiscDuaCard({
         {item.text_ar}
       </p>
 
+      {language === "en" && item.englishTransliteration && (
+        <div className="mt-3" dir="ltr">
+          <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--wa-gold)" }}>
+            {mt.transliterationHeading}
+          </p>
+          <p className="mt-0.5 text-[13px] italic leading-[1.6]" style={{ color: "var(--wa-ink-muted)" }}>
+            {item.englishTransliteration}
+          </p>
+        </div>
+      )}
+
       <div className="mt-3 flex items-end justify-between gap-3">
         <div className="min-w-0 flex-1">
-          {item.occasion_ar && (
+          {occasion && (
             <p className="text-[11px] font-semibold" style={{ color: "var(--wa-gold)" }}>
-              {t.occasionLabel}: {item.occasion_ar}
+              {t.occasionLabel}: {occasion}
             </p>
           )}
-          {item.count_ar && (
+          {count && (
             <p className="text-[11px] font-semibold" style={{ color: "var(--wa-gold)" }}>
-              {t.countLabel}: {item.count_ar}
+              {t.countLabel}: {count}
             </p>
           )}
-          {item.source_ar && (
-            <p className="mt-1 line-clamp-2 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
-              {sourceLabel}: {item.source_ar}
-            </p>
-          )}
-          {item.note_ar && (
+          {source && (
+            // No line-clamp here — the English metadata strings (collection
+            // name + hadith number + narrator + grading) run noticeably
+            // longer than the short Arabic citations this card was
+            // originally sized around, and a 2-line clamp silently cut them
+            // off mid-sentence (e.g. narrator/grading text after a long
+            // 'A'ishah reference). The card has no fixed height, so letting
+            // this paragraph wrap fully just grows the card to fit — same
+            // typography/spacing, no line ever hidden.
             <p className="mt-1 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
-              {t.noteLabel}: {item.note_ar}
+              {sourceLabel}: {source}
+            </p>
+          )}
+          {note && (
+            <p className="mt-1 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
+              {t.noteLabel}: {note}
             </p>
           )}
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
+          {/* English-only, matching Written Adhkar's DhikrCard: a compact
+              trigger for the full Meaning (see MiscMeaningPopover below)
+              instead of showing that text inline in every card. */}
+          {language === "en" && item.englishMeaning && (
+            <button
+              type="button"
+              data-meaning-trigger="true"
+              onClick={(e) => onShowMeaning(item, e.currentTarget)}
+              aria-label={mt.meaningButtonAria}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+              style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-gold)" }}
+            >
+              <BookOpenText size={15} strokeWidth={1.8} />
+            </button>
+          )}
           <button
             type="button"
-            onClick={onToggleListen}
+            onClick={() => onToggleListen(item.id, item.text_ar)}
             aria-pressed={isSpeaking}
             aria-label={isSpeaking ? mt.stopListenAria : mt.listenAria}
             className="flex h-8 w-8 items-center justify-center rounded-full"
@@ -114,7 +177,7 @@ export function MiscDuaCard({
           </button>
           <button
             type="button"
-            onClick={onToggleFavorite}
+            onClick={() => onToggleFavorite(item.id)}
             aria-pressed={isFavorite}
             aria-label={isFavorite ? t.unfavoriteAria : t.favoriteAria}
             className="flex h-8 w-8 items-center justify-center rounded-full"
@@ -128,22 +191,6 @@ export function MiscDuaCard({
         </div>
       </div>
 
-      {/* Separate, dedicated action — never inline text — per spec section
-          7/9: only rendered when this record actually has an English
-          layer; a record left pending/without Master coverage shows no
-          button at all rather than an invented or empty meaning. */}
-      {item.englishMeaning && (
-        <button
-          type="button"
-          onClick={onShowMeaning}
-          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full py-2 text-[11.5px] font-semibold"
-          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-gold)" }}
-        >
-          <Languages size={14} strokeWidth={1.8} />
-          {mt.meaningButton}
-        </button>
-      )}
-
       {copied && (
         <span
           className="absolute end-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-medium"
@@ -153,5 +200,52 @@ export function MiscDuaCard({
         </span>
       )}
     </div>
+  );
+}
+
+// Memoized so toggling one card's favorite/listen state doesn't re-render
+// every other card in the list — see the parent screens (MiscCategoryScreen/
+// MiscLibraryScreen) for the matching stable-callback half of this fix.
+export const MiscDuaCard = memo(MiscDuaCardImpl);
+
+// The Meaning popup opened from a single MiscDuaCard's Meaning button
+// above — English mode only. Transliteration stays inline in the card
+// itself (see above) and is deliberately NOT repeated here — same split as
+// Written Adhkar's own DhikrCard/WrittenMeaningPopover. Thin wrapper around
+// the shared MeaningPopoverShell (see MeaningPopover.tsx) — the same
+// positioning/backdrop/scroll chrome already used by Written Adhkar.
+export function MiscMeaningPopover({
+  anchor,
+  onClose,
+  dialogRef,
+}: {
+  anchor: MeaningAnchor<MiscDuaItem> | null;
+  onClose: () => void;
+  dialogRef: RefObject<HTMLDivElement | null>;
+}) {
+  const mt = miscMeaningLabels.en;
+  if (!anchor) return null;
+  const { item } = anchor;
+
+  return (
+    <MeaningPopoverShell
+      anchor={anchor}
+      onClose={onClose}
+      dialogRef={dialogRef}
+      ariaLabel={mt.meaningHeading}
+      closeAria={mt.close}
+      header={
+        <p dir="rtl" className="line-clamp-1 text-[12.5px]" style={{ color: "var(--wa-ink-muted)" }}>
+          {item.text_ar}
+        </p>
+      }
+    >
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--wa-gold)" }}>
+        {mt.meaningHeading}
+      </p>
+      <p className="mt-0.5 text-[13.5px] leading-[1.6]" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
+        {item.englishMeaning}
+      </p>
+    </MeaningPopoverShell>
   );
 }

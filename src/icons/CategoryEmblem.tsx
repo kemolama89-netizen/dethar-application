@@ -49,18 +49,40 @@ export const CATEGORY_ARTWORK: Record<CategoryEmblemVariant, string> = {
 
 // Module-scope, runs once (the first time this file is imported — i.e.
 // the moment WrittenAdhkarCategoryCard first renders): hints the browser
-// to start fetching all four assets immediately, rather than waiting for
-// each <img> to be discovered one at a time as React commits the grid.
-// Guarded so re-imports (Vite HMR, multiple bundles) don't duplicate tags.
-if (typeof document !== "undefined") {
-  for (const href of Object.values(CATEGORY_ARTWORK)) {
-    if (document.head.querySelector(`link[rel="preload"][href="${href}"]`)) continue;
-    const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "image";
-    link.href = href;
-    document.head.appendChild(link);
+// to start fetching all four assets, rather than waiting for each <img> to
+// be discovered one at a time as React commits the grid. Guarded so
+// re-imports (Vite HMR, multiple bundles) don't duplicate tags.
+//
+// Deferred to idle time (same requestIdleCallback-with-timeout-fallback
+// pattern already used for App.tsx's own screen-chunk prefetching, and for
+// misc-library.ts's identical category-artwork preload) rather than
+// running synchronously at module-evaluation time: this module is
+// imported by both WrittenAdhkarCategoryCard and WrittenAdhkarReader, so
+// it evaluates either during App.tsx's post-mount idle-prefetch of every
+// screen, or right when the user first navigates to a Written Adhkar
+// screen on a cold cache — DOM head mutations at exactly that moment are
+// avoidable, non-critical work competing with the actually-critical first
+// render.
+function schedulePreload(run: () => void) {
+  if (typeof window === "undefined") return;
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(run);
+  } else {
+    window.setTimeout(run, 200);
   }
+}
+
+if (typeof document !== "undefined") {
+  schedulePreload(() => {
+    for (const href of Object.values(CATEGORY_ARTWORK)) {
+      if (document.head.querySelector(`link[rel="preload"][href="${href}"]`)) continue;
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  });
 }
 
 // Fade-in is deliberately quiet (180ms, no spinner) — the card shell and

@@ -29,6 +29,7 @@
 // it sahih in Silsilah Sahihah 1540, then later reclassified it da'if in
 // Silsilah Da'ifah 6003) — not a settled grade, so it does not enter here.
 //
+import { dhikrLanguageLabels } from "./dhikr-language-labels";
 import miscGeneralDuas from "../assets/illustrations/dithar-misc-general-duas.webp";
 import miscIstighfarTaubah from "../assets/illustrations/dithar-misc-istighfar-taubah.webp";
 import miscProtection from "../assets/illustrations/dithar-misc-protection.webp";
@@ -88,6 +89,17 @@ export interface MiscCategoryMeta {
   title_ar: string;
   subtitle_ar: string;
   /**
+   * English title/subtitle — plain, established English terminology (never
+   * a new translation of religious content itself, just the category
+   * label), following the same naming conventions already used elsewhere
+   * in this app (writtenAdhkarCategoryLabels, tasbeehLabels): short noun
+   * phrases, transliterated Islamic terms kept as-is (Istikharah, Duas)
+   * rather than invented English equivalents. Shown only when the app
+   * language is English — see MiscLibraryScreen/MiscCategoryScreen.
+   */
+  title_en: string;
+  subtitle_en: string;
+  /**
    * Category-card artwork (src/assets/illustrations/dithar-misc-*.webp —
    * re-encoded from the uploaded ASSETS/*.png source for file size; see
    * that directory's README for the full derivation chain). Optional so a
@@ -132,96 +144,128 @@ export const MISC_CATEGORIES: Record<MiscCategoryKey, MiscCategoryMeta> = {
     key: "comprehensive",
     title_ar: "أدعية جامعة",
     subtitle_ar: "أدعية ثابتة واسعة المعنى",
+    title_en: "Comprehensive Duas",
+    subtitle_en: "Established duas broad in meaning",
     image: miscGeneralDuas,
   },
   istighfar: {
     key: "istighfar",
     title_ar: "الاستغفار والتوبة",
     subtitle_ar: "أدعية طلب المغفرة والرجوع إلى الله",
+    title_en: "Seeking Forgiveness & Repentance",
+    subtitle_en: "Duas for seeking forgiveness and returning to Allah",
     image: miscIstighfarTaubah,
   },
   protection: {
     key: "protection",
     title_ar: "الحفظ والاستعاذة",
     subtitle_ar: "أدعية الحماية واللجوء إلى الله",
+    title_en: "Protection & Refuge",
+    subtitle_en: "Duas for protection and seeking refuge in Allah",
     image: miscProtection,
   },
   distress: {
     key: "distress",
     title_ar: "الكرب والهم",
     subtitle_ar: "أدعية عند الضيق والشدة والحزن",
+    title_en: "Distress & Anxiety",
+    subtitle_en: "Duas for hardship, distress, and grief",
     image: miscDistress,
   },
   healing: {
     key: "healing",
     title_ar: "المرض والشفاء",
     subtitle_ar: "أدعية الرقية وعيادة المريض",
+    title_en: "Illness & Healing",
+    subtitle_en: "Duas for ruqyah and visiting the sick",
     image: miscHealing,
   },
   deceased: {
     key: "deceased",
     title_ar: "الميت والجنائز",
     subtitle_ar: "أدعية ثابتة للميت وعند المصيبة",
+    title_en: "The Deceased & Funerals",
+    subtitle_en: "Established duas for the deceased and times of calamity",
     image: miscFunerals,
   },
   family: {
     key: "family",
     title_ar: "الأسرة والذرية",
     subtitle_ar: "أدعية الزواج والأبناء",
+    title_en: "Family & Offspring",
+    subtitle_en: "Duas for marriage and children",
     image: miscFamilyProgeny,
   },
   travel: {
     key: "travel",
     title_ar: "السفر والركوب",
     subtitle_ar: "أدعية الركوب والسفر والعودة",
+    title_en: "Travel & Riding",
+    subtitle_en: "Duas for riding, travel, and returning",
     image: miscTravel,
   },
   home: {
     key: "home",
     title_ar: "المنزل والحياة اليومية",
     subtitle_ar: "أدعية الخروج والدخول والنوم",
+    title_en: "Home & Daily Life",
+    subtitle_en: "Duas for leaving, entering, and sleeping",
     image: miscHomeDailyLife,
   },
   mosque: {
     key: "mosque",
     title_ar: "المسجد والأذان",
     subtitle_ar: "أدعية الوضوء ودخول المسجد والأذان",
+    title_en: "The Mosque & Adhan",
+    subtitle_en: "Duas for wudu, entering the mosque, and the call to prayer",
     image: miscMosqueAdhan,
   },
   food: {
     key: "food",
     title_ar: "الطعام والشراب",
     subtitle_ar: "أدعية قبل الطعام وبعده",
+    title_en: "Food & Drink",
+    subtitle_en: "Duas before and after eating",
     image: miscFoodDrink,
   },
   gatherings: {
     key: "gatherings",
     title_ar: "السلام والمجالس",
     subtitle_ar: "أدعية المجالس والعطاس",
+    title_en: "Greetings & Gatherings",
+    subtitle_en: "Duas for gatherings and sneezing",
     image: miscPeaceGatherings,
   },
   weather: {
     key: "weather",
     title_ar: "المطر والظواهر الكونية",
     subtitle_ar: "أدعية الريح والمطر",
+    title_en: "Rain & Cosmic Phenomena",
+    subtitle_en: "Duas for wind and rain",
     image: miscRainCosmicPhenomena,
   },
   quran: {
     key: "quran",
     title_ar: "أدعية القرآن",
     subtitle_ar: "أدعية ثابتة من كتاب الله",
+    title_en: "Duas from the Qur'an",
+    subtitle_en: "Established duas from the Book of Allah",
     image: miscQuranicDuas,
   },
   prayer: {
     key: "prayer",
     title_ar: "أدعية الصلاة",
     subtitle_ar: "أذكار داخل الصلاة نفسها",
+    title_en: "Prayer Duas",
+    subtitle_en: "Adhkar said within the prayer itself",
     image: miscSalahDuas,
   },
   authenticRare: {
     key: "authenticRare",
     title_ar: "صحيح مهجور",
     subtitle_ar: "أذكار صحيحة قلّ انتشارها",
+    title_en: "Authentic Yet Overlooked",
+    subtitle_en: "Authentic adhkar that are less widely known",
     image: miscAuthenticHidden,
   },
   // Sections 17-20 — newly added to the Master Content Library.
@@ -229,54 +273,81 @@ export const MISC_CATEGORIES: Record<MiscCategoryKey, MiscCategoryMeta> = {
     key: "istikharah",
     title_ar: "الاستخارة",
     subtitle_ar: "دعاء طلب الخِيَرة من الله عند التردد",
+    title_en: "Istikharah",
+    subtitle_en: "The supplication for seeking Allah's guidance when in doubt",
     image: miscIstikhara,
   },
   debtRizq: {
     key: "debtRizq",
     title_ar: "قضاء الدين والرزق",
     subtitle_ar: "أدعية تفريج الدين وسعة الرزق",
+    title_en: "Debt & Provision",
+    subtitle_en: "Duas for relief from debt and abundant provision",
     image: miscDebtRizq,
   },
   guidance: {
     key: "guidance",
     title_ar: "الهداية والثبات",
     subtitle_ar: "أدعية الثبات على الحق وسلامة القلب",
+    title_en: "Guidance & Steadfastness",
+    subtitle_en: "Duas for steadfastness upon truth and a sound heart",
     image: miscGuidanceStability,
   },
   seasonal: {
     key: "seasonal",
     title_ar: "العبادة الموسمية",
     subtitle_ar: "أذكار المواسم الثابتة كالصيام والحج",
+    title_en: "Seasonal Worship",
+    subtitle_en: "Established adhkar for seasons of worship such as fasting and Hajj",
     image: miscSeasonalWorship,
   },
 };
 
-// Proactively fetch every category-card image the instant this module
+// Proactively fetch every category-card image shortly after this module
 // loads — deliberately not gated by which tile is actually visible/near
 // the viewport, so scrolling the category grid never hits a loading gap.
-// This runs at module-evaluation time (before MiscLibraryScreen or
-// MiscCategoryScreen even render), which is the earliest point in this
-// module's own lifecycle — no separate startup hook needed. All 20 WebP
-// files combined are already small after the earlier size optimization
-// (tens of KB each, well under 1MB total), so requesting all of them at
-// once costs far less than the visible per-card delay it removes; a
-// throttled/batched fetch would only add complexity for no real benefit
-// at this payload size. ES modules evaluate exactly once no matter how
-// many places import this file, so this never re-runs on repeat
-// navigation into the Misc screens — and the existing-link check makes it
-// a no-op if the module is ever re-evaluated anyway (dev HMR).
+// All 20 WebP files combined are already small after the earlier size
+// optimization (tens of KB each, well under 1MB total), so requesting all
+// of them costs far less than the visible per-card delay it removes; a
+// throttled/batched fetch would only add complexity for no real benefit at
+// this payload size. ES modules evaluate exactly once no matter how many
+// places import this file, so this never re-runs on repeat navigation into
+// the Misc screens — and the existing-link check makes it a no-op if the
+// module is ever re-evaluated anyway (dev HMR).
+//
+// Deferred to idle time (same requestIdleCallback-with-timeout-fallback
+// pattern App.tsx already uses for its own screen-chunk prefetching)
+// rather than running synchronously at module-evaluation time: this module
+// is bundled together with useMiscSpeech (their only two importers,
+// MiscLibraryScreen/MiscCategoryScreen, are both lazy-loaded together), so
+// evaluating it happens either during App.tsx's post-mount idle-prefetch of
+// every screen, or right when the user first navigates into a Misc screen
+// on a cold cache — 20 synchronous DOM head mutations at exactly that
+// moment is avoidable, non-critical work that was competing with the
+// actually-critical first render.
+function schedulePreload(run: () => void) {
+  if (typeof window === "undefined") return;
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(run);
+  } else {
+    window.setTimeout(run, 200);
+  }
+}
+
 if (typeof document !== "undefined") {
-  Object.values(MISC_CATEGORIES)
-    .map((meta) => meta.image)
-    .filter((src): src is string => Boolean(src))
-    .forEach((href) => {
-      if (document.head.querySelector(`link[rel="preload"][href="${href}"]`)) return;
-      const link = document.createElement("link");
-      link.rel = "preload";
-      link.as = "image";
-      link.href = href;
-      document.head.appendChild(link);
-    });
+  schedulePreload(() => {
+    Object.values(MISC_CATEGORIES)
+      .map((meta) => meta.image)
+      .filter((src): src is string => Boolean(src))
+      .forEach((href) => {
+        if (document.head.querySelector(`link[rel="preload"][href="${href}"]`)) return;
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = href;
+        document.head.appendChild(link);
+      });
+  });
 }
 
 export interface MiscDuaItem {
@@ -322,13 +393,27 @@ export interface MiscDuaItem {
   englishMeaning?: string;
   /** Latin transliteration of the same complete Arabic text — same source and rule as `englishMeaning`. */
   englishTransliteration?: string;
+  /**
+   * English rendering of `count_ar`/`source_ar`/`occasion_ar`/`note_ar` —
+   * NOT part of the Master Content Library's own English Integration Layer
+   * (that layer only covers englishMeaning/englishTransliteration; see the
+   * comment on `MISC_ENGLISH_METADATA` below for why and how these were
+   * produced). Applied via that same lookup, matched by id, so the Arabic
+   * fields above are never touched. Present only where the matching
+   * `_ar` field is present — never invented for a field the Arabic side
+   * doesn't have.
+   */
+  count_en?: string;
+  source_en?: string;
+  occasion_en?: string;
+  note_en?: string;
 }
 
 const MISC_DUAS_BASE: MiscDuaItem[] = [
   // ---- 1. أدعية جامعة ----
   {
     id: "rabbana-atina",
-    text_ar: "ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار.",
+    text_ar: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ.",
     count_ar: "بدون عدد محدد",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 201",
     isQuranic: true,
@@ -565,7 +650,7 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   // categories.
   {
     id: "la-ilaha-illa-anta-subhanaka",
-    text_ar: "لا إله إلا أنت سبحانك إني كنت من الظالمين.",
+    text_ar: "لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ.",
     count_ar: "بدون عدد محدد",
     source_ar: "القرآن الكريم — سورة الأنبياء، الآية 87",
     isQuranic: true,
@@ -659,21 +744,21 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   // 14.11, 14.14) — one record each, tagged into both categories.
   {
     id: "rabbi-hab-li-min-ladunka-dhurriyyatan",
-    text_ar: "رب هب لي من لدنك ذرية طيبة إنك سميع الدعاء.",
+    text_ar: "رَبِّ هَبْ لِي مِنْ لَدُنْكَ ذُرِّيَّةً طَيِّبَةً إِنَّكَ سَمِيعُ الدُّعَاءِ.",
     source_ar: "القرآن الكريم — سورة آل عمران، الآية 38",
     isQuranic: true,
     categories: ["family", "quran"],
   },
   {
     id: "rabbi-ijalni-muqim-al-salah",
-    text_ar: "رب اجعلني مقيم الصلاة ومن ذريتي ربنا وتقبل دعاء.",
+    text_ar: "رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِنْ ذُرِّيَّتِي رَبَّنَا وَتَقَبَّلْ دُعَاءِ.",
     source_ar: "القرآن الكريم — سورة إبراهيم، الآية 40",
     isQuranic: true,
     categories: ["family", "quran"],
   },
   {
     id: "rabbana-hab-lana-min-azwajina",
-    text_ar: "ربنا هب لنا من أزواجنا وذرياتنا قرة أعين واجعلنا للمتقين إمامًا.",
+    text_ar: "رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا.",
     source_ar: "القرآن الكريم — سورة الفرقان، الآية 74",
     isQuranic: true,
     categories: ["family", "quran"],
@@ -698,6 +783,7 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     id: "khuruj-min-al-manzil",
     text_ar: "بسم الله، توكلت على الله، ولا حول ولا قوة إلا بالله.",
     count_ar: "مرة عند الخروج",
+    narrator_ar: "أنس بن مالك رضي الله عنه",
     source_ar: "أبو داود (5095)، والترمذي (3426)، والنسائي؛ صححه الألباني",
     categories: ["home"],
   },
@@ -719,12 +805,18 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   {
     id: "before-sleeping",
     text_ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا.",
-    source_ar: "صحيح البخاري 6324",
+    narrator_ar: "حذيفة بن اليمان رضي الله عنه",
+    source_ar: "صحيح البخاري 6324 — عن حذيفة بن اليمان رضي الله عنه",
     categories: ["home"],
   },
   {
     id: "upon-waking",
     text_ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ.",
+    // NEEDS REVIEW (2026-08 audit): "صحيح البخاري 6312" could not be
+    // independently re-confirmed this pass — only 6324 (the same combined
+    // sleep/wake hadith used for "before-sleeping") was located for this
+    // exact wording. Left as-is rather than silently changed or removed;
+    // flagged for a follow-up primary-source check.
     source_ar: "صحيح البخاري 6312",
     categories: ["home"],
   },
@@ -735,7 +827,8 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   {
     id: "after-eating",
     text_ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا، وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ.",
-    source_ar: "سنن أبي داود والترمذي",
+    narrator_ar: "معاذ بن أنس رضي الله عنه",
+    source_ar: "سنن أبي داود (4023)، جامع الترمذي (3458) — حسن غريب عند الترمذي، وسنن ابن ماجه (3285) — عن معاذ بن أنس رضي الله عنه",
     categories: ["food"],
   },
 
@@ -744,28 +837,30 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     id: "after-wudu",
     text_ar: "أشهد أن لا إله إلا الله وحده لا شريك له، وأشهد أن محمدًا عبده ورسوله.",
     count_ar: "مرة بعد الوضوء",
-    source_ar: "صحيح مسلم",
+    narrator_ar: "عقبة بن عامر رضي الله عنه",
+    source_ar: "صحيح مسلم (234) — عن عقبة بن عامر رضي الله عنه",
     categories: ["mosque"],
   },
   {
     id: "entering-mosque",
     text_ar: "اللهم افتح لي أبواب رحمتك.",
     count_ar: "عند الدخول",
-    source_ar: "صحيح مسلم",
+    source_ar: "صحيح مسلم (713) — عن أبي حميد و/أو أبي أسيد رضي الله عنهما",
     categories: ["mosque"],
   },
   {
     id: "leaving-mosque",
     text_ar: "اللهم إني أسألك من فضلك.",
     count_ar: "عند الخروج",
-    source_ar: "صحيح مسلم",
+    source_ar: "صحيح مسلم (713) — عن أبي حميد و/أو أبي أسيد رضي الله عنهما",
     categories: ["mosque"],
   },
   {
     id: "after-adhan",
     text_ar:
       "اللهم رب هذه الدعوة التامة، والصلاة القائمة، آت محمدًا الوسيلة والفضيلة، وابعثه مقامًا محمودًا الذي وعدته.",
-    source_ar: "صحيح البخاري",
+    narrator_ar: "جابر بن عبد الله رضي الله عنه",
+    source_ar: "صحيح البخاري (614) — عن جابر بن عبد الله رضي الله عنه",
     categories: ["mosque"],
   },
 
@@ -774,13 +869,18 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     id: "before-food",
     text_ar: "بسم الله.",
     count_ar: "مرة",
-    source_ar: "ثابت في السنة",
+    source_ar: "صحيح البخاري (5376)، صحيح مسلم (2022) — عن عمر بن أبي سلمة رضي الله عنه",
+    narrator_ar: "عمر بن أبي سلمة رضي الله عنه",
     categories: ["food"],
   },
   {
     id: "forgot-tasmiyah",
     text_ar: "بسم الله أوله وآخره.",
     count_ar: "عند النسيان",
+    narrator_ar: "عائشة رضي الله عنها",
+    // NEEDS REVIEW (2026-08 audit): exact hadith number not independently
+    // confirmed this pass — left out rather than invented; source line
+    // kept as the prior, vaguer citation pending a follow-up check.
     source_ar: "الترمذي، وحسنه عدد من أهل العلم",
     categories: ["food"],
   },
@@ -789,25 +889,31 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   {
     id: "kaffarat-al-majlis",
     text_ar: "سبحانك اللهم وبحمدك، لا إله إلا أنت، أستغفرك وأتوب إليك.",
-    source_ar: "السنن، وله طرق حكم عليها أهل العلم بالصحة/الحسن",
+    narrator_ar: "أبو هريرة رضي الله عنه",
+    source_ar: "جامع الترمذي (3433) — عن أبي هريرة رضي الله عنه",
     categories: ["gatherings"],
   },
   {
     id: "sneezing-alhamdulillah",
     text_ar: "الحمد لله.",
-    source_ar: "صحيح البخاري",
+    narrator_ar: "أبو هريرة رضي الله عنه",
+    source_ar: "صحيح البخاري (6224) — عن أبي هريرة رضي الله عنه",
     categories: ["gatherings"],
   },
   {
     id: "yarhamuk-allah",
     text_ar: "يرحمك الله.",
-    source_ar: "صحيح البخاري",
+    source_ar: "صحيح البخاري (6224) — عن أبي هريرة رضي الله عنه",
     categories: ["gatherings"],
   },
   {
     id: "yahdikum-allah",
+    // Internal note (2026-08 audit, not user-facing): this reply is
+    // specifically the Prophet's ﷺ own reply to a sneezer when no one
+    // present said "يرحمك الله" (or the sneezer isn't a believer) — not a
+    // generic interchangeable gathering phrase.
     text_ar: "يهديكم الله ويصلح بالكم.",
-    source_ar: "صحيح البخاري",
+    source_ar: "صحيح البخاري (6224) — عن أبي هريرة رضي الله عنه",
     categories: ["gatherings"],
   },
 
@@ -825,77 +931,77 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   // categories are listed once, above, already tagged "quran") ----
   {
     id: "rabbana-la-tuakhidhna",
-    text_ar: "ربنا لا تؤاخذنا إن نسينا أو أخطأنا.",
+    text_ar: "رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا.",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 286",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-wala-tahmil-alayna-isran",
-    text_ar: "ربنا ولا تحمل علينا إصرًا كما حملته على الذين من قبلنا.",
+    text_ar: "رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِنْ قَبْلِنَا.",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 286",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-wala-tuhammilna",
-    text_ar: "ربنا ولا تحملنا ما لا طاقة لنا به.",
+    text_ar: "رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ.",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 286",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-dhalamna-anfusana",
-    text_ar: "ربنا ظلمنا أنفسنا وإن لم تغفر لنا وترحمنا لنكونن من الخاسرين.",
+    text_ar: "رَبَّنَا ظَلَمْنَا أَنْفُسَنَا وَإِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ.",
     source_ar: "القرآن الكريم — سورة الأعراف، الآية 23",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-hab-lana-min-ladunka-rahmatan",
-    text_ar: "ربنا هب لنا من لدنك رحمة وهيئ لنا من أمرنا رشدًا.",
+    text_ar: "﴿ رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا ﴾",
     source_ar: "القرآن الكريم — سورة الكهف، الآية 10",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbi-ishrah-li-sadri",
-    text_ar: "رب اشرح لي صدري ويسر لي أمري.",
+    text_ar: "رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي.",
     source_ar: "القرآن الكريم — سورة طه، الآيتان 25–26",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbi-zidni-ilman",
-    text_ar: "رب زدني علمًا.",
+    text_ar: "رَبِّ زِدْنِي عِلْمًا.",
     source_ar: "القرآن الكريم — سورة طه، الآية 114",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbi-ighfir-li-waliwalidayya",
-    text_ar: "رب اغفر لي ولوالدي وللمؤمنين يوم يقوم الحساب.",
+    text_ar: "﴿ رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ ﴾",
     source_ar: "القرآن الكريم — سورة إبراهيم، الآية 41",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbi-inni-lima-anzalta",
-    text_ar: "رب إني لما أنزلت إلي من خير فقير.",
+    text_ar: "رَبِّ إِنِّي لِمَا أَنْزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ.",
     source_ar: "القرآن الكريم — سورة القصص، الآية 24",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-afrigh-alayna-sabran-tawaffana",
-    text_ar: "ربنا أفرغ علينا صبرًا وتوفنا مسلمين.",
+    text_ar: "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَتَوَفَّنَا مُسْلِمِينَ.",
     source_ar: "القرآن الكريم — سورة الأعراف، الآية 126",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-afrigh-alayna-sabran-thabbit",
-    text_ar: "ربنا أفرغ علينا صبرًا وثبت أقدامنا وانصرنا على القوم الكافرين.",
+    text_ar: "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا وَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ.",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 250",
     isQuranic: true,
     categories: ["quran"],
@@ -908,35 +1014,35 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     // rule that a dua must be displayed once in full — never a partial
     // version in one place and the complete one elsewhere — this single
     // canonical record now carries the complete text and both categories.
-    text_ar: "ربنا لا تزغ قلوبنا بعد إذ هديتنا وهب لنا من لدنك رحمة إنك أنت الوهاب.",
+    text_ar: "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَدُنْكَ رَحْمَةً إِنَّكَ أَنْتَ الْوَهَّابُ.",
     source_ar: "القرآن الكريم — سورة آل عمران، الآية 8",
     isQuranic: true,
     categories: ["quran", "guidance"],
   },
   {
     id: "rabbana-taqabbal-minna",
-    text_ar: "ربنا تقبل منا إنك أنت السميع العليم.",
+    text_ar: "رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ.",
     source_ar: "القرآن الكريم — سورة البقرة، الآية 127",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-ighfir-lana-waliikhwanina",
-    text_ar: "ربنا اغفر لنا ولإخواننا الذين سبقونا بالإيمان.",
+    text_ar: "رَبَّنَا اغْفِرْ لَنَا وَلِإِخْوَانِنَا الَّذِينَ سَبَقُونَا بِالْإِيمَانِ.",
     source_ar: "القرآن الكريم — سورة الحشر، الآية 10",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-alayka-tawakkalna",
-    text_ar: "ربنا عليك توكلنا وإليك أنبنا وإليك المصير.",
+    text_ar: "رَبَّنَا عَلَيْكَ تَوَكَّلْنَا وَإِلَيْكَ أَنَبْنَا وَإِلَيْكَ الْمَصِيرُ.",
     source_ar: "القرآن الكريم — سورة الممتحنة، الآية 4",
     isQuranic: true,
     categories: ["quran"],
   },
   {
     id: "rabbana-atmim-lana-nurana",
-    text_ar: "ربنا أتمم لنا نورنا واغفر لنا إنك على كل شيء قدير.",
+    text_ar: "رَبَّنَا أَتْمِمْ لَنَا نُورَنَا وَاغْفِرْ لَنَا إِنَّكَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ.",
     source_ar: "القرآن الكريم — سورة التحريم، الآية 8",
     isQuranic: true,
     categories: ["quran"],
@@ -946,6 +1052,11 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   // per the Master file's own note: "هذا باب مستقل عما بعد الصلاة") ----
   {
     id: "istiftah",
+    // NEEDS REVIEW (2026-08 audit): well-documented as Abu Dawud
+    // 775/Tirmidhi 243/Ibn Majah 806/Nasa'i 899, narrated by 'A'ishah —
+    // but not independently re-searched to primary sources this pass, so
+    // the vaguer existing source line is left as-is rather than upgraded
+    // on an unconfirmed basis.
     text_ar: "سبحانك اللهم وبحمدك، وتبارك اسمك، وتعالى جدك، ولا إله غيرك.",
     source_ar: "الأحاديث الصحيحة في الاستفتاح",
     categories: ["prayer"],
@@ -953,20 +1064,38 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   {
     id: "ruku",
     text_ar: "سبحان ربي العظيم.",
+    source_ar: "صحيح مسلم (772) — عن حذيفة بن اليمان رضي الله عنه",
+    narrator_ar: "حذيفة بن اليمان رضي الله عنه",
     categories: ["prayer"],
   },
   {
     id: "sujud",
     text_ar: "سبحان ربي الأعلى.",
+    source_ar: "صحيح مسلم (772) — عن حذيفة بن اليمان رضي الله عنه",
+    narrator_ar: "حذيفة بن اليمان رضي الله عنه",
     categories: ["prayer"],
   },
   {
     id: "between-sajdatayn",
+    // 2026-08 correction pass: kept as the short form per the app owner's
+    // decision — this is Muslim 772's own wording said once, doubled
+    // ("رب اغفر لي، رب اغفر لي"); Muslim 772 itself gives the longer
+    // "رب اغفر لي، وارحمني، واجبرني، وارزقني، وارفعني" for this position.
+    // The short form here instead matches a separate Nasa'i/Ibn Majah
+    // (897) narration. Text is not proven textually incorrect, so it is
+    // left unchanged; only the (distinct) source is now cited correctly.
+    // Grade not independently confirmed this pass — left unresolved,
+    // flagged for review before being asserted.
     text_ar: "رب اغفر لي.",
+    source_ar: "سنن ابن ماجه (897)، والسنن الكبرى للنسائي — عن حذيفة بن اليمان رضي الله عنه",
+    narrator_ar: "حذيفة بن اليمان رضي الله عنه",
     categories: ["prayer"],
   },
   {
     id: "before-salam-audhu",
+    // NEEDS REVIEW (2026-08 audit): commonly cited as Sahih Muslim 588,
+    // not independently re-confirmed this pass — left unresolved rather
+    // than adding an unverified number.
     text_ar: "اللهم إني أعوذ بك من عذاب جهنم، ومن عذاب القبر، ومن فتنة المحيا والممات، ومن شر فتنة المسيح الدجال.",
     source_ar: "صحيح مسلم",
     categories: ["prayer"],
@@ -984,6 +1113,7 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
       "اللهم أعوذ برضاك من سخطك، وبمعافاتك من عقوبتك، وأعوذ بك منك، لا أحصي ثناء عليك، أنت كما أثنيت على نفسك.",
     count_ar: "بدون عدد محدد",
     source_ar: "صحيح مسلم (486)",
+    narrator_ar: "عائشة رضي الله عنها",
     occasion_ar: "في السجود (ضمن سياق قيام الليل)",
     // 2026-08 classification audit: single-theme dua (Allah's pleasure vs.
     // wrath) despite its several clauses — "comprehensive" dropped.
@@ -994,6 +1124,7 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     text_ar:
       "اللهم إني أسألك فعل الخيرات، وترك المنكرات، وحب المساكين، وإذا أردت بعبادك فتنة فاقبضني إليك غير مفتون.",
     count_ar: "بدون عدد محدد",
+    narrator_ar: "ابن عباس رضي الله عنهما",
     source_ar: "جامع الترمذي (3233)، وصححه الألباني لغيره في صحيح الترغيب (3192)",
     occasion_ar: "دعاء ورد في سياق الصلاة",
     categories: ["prayer", "comprehensive"],
@@ -1086,6 +1217,9 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   {
     id: "allahumma-innaka-afuwwun-tuhibb-al-afw",
     text_ar: "اللهم إنك عفو تحب العفو فاعف عني.",
+    // NEEDS REVIEW (2026-08 audit): text/narrator/collection are
+    // well-known and low-risk, but not freshly re-confirmed to primary
+    // sources this pass — left unchanged.
     occasion_ar: "ليلة القدر — سؤال النبي ﷺ عن الدعاء فيها",
     count_ar: "بدون عدد محدد",
     narrator_ar: "عائشة رضي الله عنها",
@@ -1103,8 +1237,11 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   },
   {
     id: "dhikr-al-safa-wal-marwah",
+    // 2026-08 correction pass: "يحيي ويميت" restored — Sahih Muslim 1218
+    // (Jabir's hajj-description hadith) includes this clause at this exact
+    // position; the app's text previously omitted it.
     text_ar:
-      "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد، وهو على كل شيء قدير، لا إله إلا الله وحده، أنجز وعده، ونصر عبده، وهزم الأحزاب وحده.",
+      "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد، يحيي ويميت، وهو على كل شيء قدير، لا إله إلا الله وحده، أنجز وعده، ونصر عبده، وهزم الأحزاب وحده.",
     occasion_ar: "على الصفا والمروة أثناء السعي",
     count_ar: "ثلاث مرات، ويتخلل ذلك الدعاء",
     narrator_ar: "جابر رضي الله عنه",
@@ -1534,9 +1671,246 @@ const MISC_ENGLISH_CONTENT: Record<string, { englishMeaning: string; englishTran
   },
 };
 
+// English rendering of the count/source/occasion/note metadata — kept
+// separate from MISC_ENGLISH_CONTENT above because it has a different
+// provenance: the Master Content Library's own English Integration Layer
+// covers ONLY englishMeaning/englishTransliteration (see its header at
+// ASSETS/dithar_master_content_library.md — it never adds English count/
+// source/takhrij fields), so there was no existing English value to copy
+// for this metadata. Rather than leave it Arabic-only in English mode
+// (the exact bug this pass fixes) or touch the Master file, every value
+// below is a faithful English RENDERING of the SAME already-verified
+// Arabic fact already sitting in `count_ar`/`source_ar`/`occasion_ar`/
+// `note_ar` on the matching MISC_DUAS_BASE record — same collection, same
+// hadith/ayah numbers, same companion narrator, same grading verdict,
+// same occasion — using the standard English collection names and
+// "graded sahih/hasan by X" phrasing already established in this app's
+// own written-adhkar.ts (SHORT_SOURCE). Nothing here is a new source, a
+// new grading, or a new attribution; it is the existing one in English.
+// Additive and keyed by id exactly like MISC_ENGLISH_CONTENT, so the
+// Arabic literals on MISC_DUAS_BASE are never touched by this layer.
+const MISC_ENGLISH_METADATA: Record<
+  string,
+  { count_en?: string; source_en?: string; occasion_en?: string; note_en?: string }
+> = {
+  "rabbana-atina": { count_en: "No specific count", source_en: "The Noble Qur'an — Surah al-Baqarah, 2:201" },
+  "allahumma-inni-asaluka-alhuda": { count_en: "No specific count", source_en: "Sahih Muslim (2721)" },
+  "allahumma-ighfir-li-warhamni": { count_en: "No specific count", source_en: "Sahih Muslim" },
+  "allahumma-ihdini-wasaddidni": { count_en: "No specific count", source_en: "Sahih Muslim" },
+  "allahumma-aslih-li-dini": { count_en: "No specific count", source_en: "Sahih Muslim" },
+  "allahumma-inni-asaluka-min-al-khayr-kullih": {
+    count_en: "No specific count",
+    source_en: "Sunan Ibn Majah (3846) — narrated by 'A'ishah (may Allah be pleased with her), graded sahih by al-Albani in Sahih Ibn Majah",
+  },
+  "allahumma-inni-asaluka-al-afiyah-fi-al-dunya-wal-akhirah": {
+    count_en: "No specific count",
+    source_en:
+      "Sunan Abi Dawud (5074), Sunan Ibn Majah (3871), and Musnad Ahmad (4785) — narrated by Abdullah ibn Umar (may Allah be pleased with both of them), chain graded sahih",
+    note_en:
+      "The commonly heard phrase 'O Allah, I ask You for pardon and well-being in this world and the Hereafter' is an approximate, non-literal merging of two sentences from this hadith; the full wording, as authentically established, is used here.",
+  },
+  "allahumma-iqsim-lana-min-khashyatik": { count_en: "No specific count", source_en: "Jami` at-Tirmidhi (3502), graded hasan by al-Tirmidhi" },
+  "allahumma-bi-ilmika-al-ghayb": {
+    count_en: "No specific count",
+    source_en:
+      "Sunan an-Nasa'i (1305) and Musnad Ahmad (18351) — narrated by Ammar ibn Yasir (may Allah be pleased with him), graded sahih by al-Albani",
+  },
+  "allahumma-inni-asaluka-al-thabat-fi-al-amr": {
+    count_en: "No specific count",
+    source_en:
+      "Al-Mu'jam al-Kabir (al-Tabarani), Musnad Ahmad, and Sahih Ibn Hibban — narrated by Shaddad ibn Aws (may Allah be pleased with him), graded sahih by al-Albani in Silsilat al-Ahadith as-Sahihah (3228)",
+  },
+  "rabbi-aini-wala-tuin-alayya": { count_en: "No specific count", source_en: "Jami` at-Tirmidhi (3551), graded hasan sahih by al-Tirmidhi" },
+
+  "sayyid-al-istighfar": {
+    count_en: "As set by the hadith's own context, not a general daily count",
+    source_en: "Sahih al-Bukhari (6306) — narrated by Shaddad ibn Aws (may Allah be pleased with him)",
+  },
+  "rabbi-ighfir-li-watub-alayya": {
+    count_en: "Mentioned in the context of saying it often in a gathering, not an absolute daily count",
+    source_en: "Abu Dawud (1516), al-Tirmidhi (3434), and Ibn Majah (3814) — narrated by Abdullah ibn Umar (may Allah be pleased with both of them)",
+  },
+  "allahumma-ighfir-li-khatiati-wajahli": {
+    count_en: "No specific count",
+    source_en: "Sahih al-Bukhari (6398) and Sahih Muslim — narrated by Abu Musa al-Ash'ari (may Allah be pleased with him)",
+  },
+
+  "audhu-bikalimatillah-al-tammat": { count_en: "Depends on the occasion; no general count is fixed", source_en: "Sahih Muslim" },
+  "allahumma-inni-audhu-bika-min-al-ajz": {
+    count_en: "No specific count",
+    source_en: "Sahih Muslim (2706) — narrated by Anas ibn Malik (may Allah be pleased with him)",
+  },
+  "allahumma-inni-audhu-bika-min-jahd-al-bala": { count_en: "No specific count", source_en: "Sahih al-Bukhari and Sahih Muslim" },
+  "allahumma-inni-audhu-bika-min-al-faqr": {
+    count_en: "No specific count",
+    source_en:
+      "Sunan Abi Dawud (1544) and Sunan an-Nasa'i (5460, 5462) — narrated by Abu Hurairah (may Allah be pleased with him), graded sahih by al-Albani, Ibn Hibban, and al-Hakim",
+  },
+  "allahumma-inni-audhu-bika-min-sharri-samee": {
+    count_en: "No specific count",
+    source_en:
+      "Sunan Abi Dawud (1551), Jami` at-Tirmidhi (3492), and Sunan an-Nasa'i (5444) — narrated by Shakal ibn Humayd (may Allah be pleased with him), graded sahih by al-Albani",
+  },
+  "allahumma-inni-audhu-bika-min-sharri-ma-amiltu": { count_en: "No specific count", source_en: "Sahih Muslim (2716)" },
+  "allahumma-inni-audhu-bika-min-zawal-nimatik": { count_en: "No specific count", source_en: "Sahih Muslim (2739)" },
+  "allahumma-inni-audhu-bika-min-al-bukhl-wal-jubn": { count_en: "No specific count", source_en: "Sahih al-Bukhari" },
+
+  "dua-al-karb": {
+    count_en: "No specific count",
+    source_en: "Sahih al-Bukhari and Sahih Muslim — narrated by Abdullah ibn Abbas (may Allah be pleased with both of them)",
+  },
+  "la-ilaha-illa-anta-subhanaka": { count_en: "No specific count", source_en: "The Noble Qur'an — Surah al-Anbiya, 21:87" },
+  "allahumma-inni-audhu-bika-min-al-hamm": { count_en: "No specific count", source_en: "Sahih al-Bukhari and Sahih Muslim" },
+  "audhu-billahi-min-al-shaytan-al-rajim": {
+    count_en: "Depends on the situation; not a fixed general count",
+    source_en: "Established in the Sunnah",
+    occasion_en: "When angry or experiencing Satan's whispers",
+  },
+
+  "allahumma-rabb-al-nas-adhhib-al-bas": { count_en: "No specific count", source_en: "Sahih al-Bukhari and Sahih Muslim" },
+  "bismillahi-arqik": {
+    count_en: "No specific count",
+    source_en: "Sahih Muslim (2186) — narrated by Abu Sa'id al-Khudri (may Allah be pleased with him)",
+  },
+  "asalu-allah-al-adhim-an-yashfiyak": { count_en: "7 times when visiting the sick", source_en: "Abu Dawud (3106)" },
+  "la-bas-tahurun-inshallah": { count_en: "No count", source_en: "Sahih al-Bukhari" },
+
+  "dua-al-janaza": {
+    count_en: "As said within the funeral prayer supplication",
+    source_en: "Sahih Muslim (963) — narrated by Awf ibn Malik (may Allah be pleased with him)",
+  },
+  "allahumma-ighfir-li-abi-salama": { source_en: "Sahih Muslim" },
+  "inna-lillahi-wa-inna-ilayhi-rajiun": { source_en: "Sahih Muslim" },
+
+  "bismillahi-allahumma-jannibna-al-shaytan": { count_en: "Once, on the occasion", source_en: "Sahih al-Bukhari and Sahih Muslim" },
+  "rabbi-hab-li-min-ladunka-dhurriyyatan": { source_en: "The Noble Qur'an — Surah Aal 'Imran, 3:38" },
+  "rabbi-ijalni-muqim-al-salah": { source_en: "The Noble Qur'an — Surah Ibrahim, 14:40" },
+  "rabbana-hab-lana-min-azwajina": { source_en: "The Noble Qur'an — Surah al-Furqan, 25:74" },
+
+  "dua-al-rukub": { source_en: "Established in the Sunnah, within the supplication for riding and travel" },
+  "ayibun-taibun-abidun": { source_en: "Sahih Muslim" },
+
+  "khuruj-min-al-manzil": { count_en: "Once, when leaving", source_en: "Abu Dawud (5095), al-Tirmidhi (3426), and al-Nasa'i; graded sahih by al-Albani" },
+  "allahumma-inni-audhu-bika-an-adilla-aw-udall": {
+    count_en: "No specific count (once, when leaving)",
+    source_en:
+      "Sunan Abi Dawud (5094), Jami` at-Tirmidhi (3427), Sunan an-Nasa'i, Sunan Ibn Majah, and Musnad Ahmad — narrated by Umm Salamah (may Allah be pleased with her), graded hasan sahih by al-Tirmidhi and sahih by al-Albani",
+    note_en:
+      "A second, independent supplication from 'In the name of Allah, I place my trust in Allah...' (a different narration from Umm Salamah); also said when leaving the house.",
+  },
+  "before-sleeping": { source_en: "Sahih al-Bukhari 6324" },
+  "upon-waking": { source_en: "Sahih al-Bukhari 6312" },
+  "after-eating": { source_en: "Abu Dawud; Jami` at-Tirmidhi" },
+
+  "after-wudu": { count_en: "Once, after wudu", source_en: "Sahih Muslim" },
+  "entering-mosque": { count_en: "Upon entering", source_en: "Sahih Muslim" },
+  "leaving-mosque": { count_en: "Upon leaving", source_en: "Sahih Muslim" },
+  "after-adhan": { source_en: "Sahih al-Bukhari" },
+
+  "before-food": { count_en: "Once", source_en: "Established in the Sunnah" },
+  "forgot-tasmiyah": { count_en: "If forgotten [at the start]", source_en: "Al-Tirmidhi, graded hasan by a number of scholars" },
+
+  "kaffarat-al-majlis": { source_en: "The Sunan collections, through multiple chains graded sahih/hasan by scholars" },
+  "sneezing-alhamdulillah": { source_en: "Sahih al-Bukhari" },
+  "yarhamuk-allah": { source_en: "Sahih al-Bukhari" },
+  "yahdikum-allah": { source_en: "Sahih al-Bukhari" },
+
+  "when-wind-blows": { source_en: "Sahih al-Bukhari and Sahih Muslim — narrated by 'A'ishah (may Allah be pleased with her)" },
+
+  "rabbana-la-tuakhidhna": { source_en: "The Noble Qur'an — Surah al-Baqarah, 2:286" },
+  "rabbana-wala-tahmil-alayna-isran": { source_en: "The Noble Qur'an — Surah al-Baqarah, 2:286" },
+  "rabbana-wala-tuhammilna": { source_en: "The Noble Qur'an — Surah al-Baqarah, 2:286" },
+  "rabbana-dhalamna-anfusana": { source_en: "The Noble Qur'an — Surah al-A'raf, 7:23" },
+  "rabbana-hab-lana-min-ladunka-rahmatan": { source_en: "The Noble Qur'an — Surah al-Kahf, 18:10" },
+  "rabbi-ishrah-li-sadri": { source_en: "The Noble Qur'an — Surah Ta-Ha, 20:25-26" },
+  "rabbi-zidni-ilman": { source_en: "The Noble Qur'an — Surah Ta-Ha, 20:114" },
+  "rabbi-ighfir-li-waliwalidayya": { source_en: "The Noble Qur'an — Surah Ibrahim, 14:41" },
+  "rabbi-inni-lima-anzalta": { source_en: "The Noble Qur'an — Surah al-Qasas, 28:24" },
+  "rabbana-afrigh-alayna-sabran-tawaffana": { source_en: "The Noble Qur'an — Surah al-A'raf, 7:126" },
+  "rabbana-afrigh-alayna-sabran-thabbit": { source_en: "The Noble Qur'an — Surah al-Baqarah, 2:250" },
+  "rabbana-la-tuzigh-qulubana": { source_en: "The Noble Qur'an — Surah Aal 'Imran, 3:8" },
+  "rabbana-taqabbal-minna": { source_en: "The Noble Qur'an — Surah al-Baqarah, 2:127" },
+  "rabbana-ighfir-lana-waliikhwanina": { source_en: "The Noble Qur'an — Surah al-Hashr, 59:10" },
+  "rabbana-alayka-tawakkalna": { source_en: "The Noble Qur'an — Surah al-Mumtahanah, 60:4" },
+  "rabbana-atmim-lana-nurana": { source_en: "The Noble Qur'an — Surah at-Tahrim, 66:8" },
+
+  "istiftah": { source_en: "Authentically established hadiths on the opening supplication (istiftah)" },
+  "before-salam-audhu": { source_en: "Sahih Muslim" },
+  "allahumma-aini-ala-dhikrik": {
+    source_en:
+      "Abu Dawud (1522), al-Nasa'i, and Ibn Khuzaymah — narrated by Mu'adh ibn Jabal (may Allah be pleased with him), graded sahih by al-Albani",
+  },
+  "allahumma-audhu-biridaka-min-sakhatik": {
+    count_en: "No specific count",
+    source_en: "Sahih Muslim (486)",
+    occasion_en: "In prostration (within the context of night prayer)",
+  },
+  "allahumma-inni-asaluka-fil-al-khayrat": {
+    count_en: "No specific count",
+    source_en: "Jami` at-Tirmidhi (3233), graded sahih li-ghayrihi (through corroborating chains) by al-Albani in Sahih al-Targhib (3192)",
+    occasion_en: "A supplication mentioned in the context of prayer",
+  },
+  "allahumma-hasibni-hisaban-yasiran": {
+    count_en: "No specific count",
+    source_en: "Sahih al-Bukhari (6536) and Sahih Muslim (2876) — narrated by 'A'ishah (may Allah be pleased with her)",
+    note_en:
+      "The opening of the hadith in which 'A'ishah (may Allah be pleased with her) asked about the meaning of 'an easy reckoning'; the Prophet ﷺ replied: 'that his record be looked into and he be overlooked.' The sentence occurs within the context of his ﷺ prayer.",
+  },
+
+  "dua-al-istikharah": {
+    count_en: "Once, as the supplication after the Istikharah prayer; no fixed repetition count for the dua itself",
+    source_en: "Sahih al-Bukhari (6382) — narrated by Jabir ibn Abdullah (may Allah be pleased with both of them)",
+    note_en:
+      "The supplication is preceded by praying two non-obligatory rak'ahs, as stated in the hadith; the person substitutes 'this matter' with their actual need when supplicating, without changing the original wording.",
+  },
+
+  "allahumma-inni-audhu-bika-min-al-matham-wal-maghram": {
+    count_en: "No specific count",
+    source_en: "Sahih al-Bukhari (2397) and Sahih Muslim (589) — narrated by 'A'ishah (may Allah be pleased with her)",
+  },
+  "allahumma-ikfini-bihalalika-an-haramik": {
+    count_en: "No specific count",
+    source_en: "Jami` at-Tirmidhi (3563) — narrated by Ali ibn Abi Talib (may Allah be pleased with him), graded hasan by al-Albani",
+  },
+  "allahumma-inni-asaluka-min-fadlika-warahmatik": {
+    count_en: "No specific count",
+    source_en:
+      "Al-Mu'jam al-Kabir (al-Tabarani) (10379) and Hilyat al-Awliya (Abu Nu'aym) — narrated by Abdullah ibn Mas'ud (may Allah be pleased with him), graded sahih by al-Albani in Silsilat al-Ahadith as-Sahihah (1543)",
+  },
+
+  "ya-muqallib-al-qulub-thabbit-qalbi": {
+    count_en: "No specific count",
+    source_en: "Jami` at-Tirmidhi (2140) — narrated by Umm Salamah (may Allah be pleased with her), graded hasan by al-Tirmidhi and sahih by al-Albani",
+  },
+
+  "dhahaba-al-zama-wabtallat-al-uruq": {
+    occasion_en: "At the breaking of the fast",
+    count_en: "Once, at the breaking of the fast; no other repetition count is established",
+    source_en: "Sunan Abi Dawud (2357) — narrated by Abdullah ibn Umar (may Allah be pleased with both of them), graded hasan by al-Albani in Sahih Abi Dawud",
+  },
+  "allahumma-innaka-afuwwun-tuhibb-al-afw": {
+    occasion_en: "Laylat al-Qadr — asked of the Prophet ﷺ about what to say on this night",
+    count_en: "No specific count",
+    source_en:
+      "Jami` at-Tirmidhi (3513) and Ibn Majah (3850) — narrated by 'A'ishah (may Allah be pleased with her), graded hasan sahih by al-Tirmidhi and sahih by al-Albani",
+  },
+  "talbiyah": {
+    occasion_en: "Upon entering the state of ihram for Hajj or Umrah",
+    count_en: "As repeated during the Talbiyah throughout the rites; no fixed specific count",
+    source_en: "Sahih al-Bukhari (1549) and Sahih Muslim (1184) — narrated by Abdullah ibn Umar (may Allah be pleased with both of them)",
+  },
+  "dhikr-al-safa-wal-marwah": {
+    occasion_en: "At Safa and Marwah during the sa'i",
+    count_en: "Three times, with supplication in between",
+    source_en: "The hadith of Jabir (may Allah be pleased with him) describing the Prophet's ﷺ Hajj, narrated by Muslim",
+    note_en: "This dhikr is established at the place mentioned, and is not turned into a general supplication for the sa'i outside this context.",
+  },
+};
+
 export const MISC_DUAS: MiscDuaItem[] = MISC_DUAS_BASE.map((item) => {
   const en = MISC_ENGLISH_CONTENT[item.id];
-  return en ? { ...item, ...en } : item;
+  const meta = MISC_ENGLISH_METADATA[item.id];
+  return { ...item, ...en, ...meta };
 });
 
 // Per-category item counts, computed ONCE here (module load) rather than by
@@ -1565,59 +1939,75 @@ export const MISC_FEATURED_IDS: string[] = ["sayyid-al-istighfar", "rabbana-atin
 // regardless of the app's global language toggle (see MiscLibraryScreen's
 // own note). The dua CONTENT itself now has an English layer (see
 // `englishMeaning`/`englishTransliteration` above and `miscMeaningLabels`
-// below) surfaced only through the dedicated "English Meaning" button —
+// below), shown inline in the card only when the app language is English —
 // these interface strings (screen titles, search, favorite/copy aria
 // labels, etc.) are a separate, still-Arabic-only concern untouched by
 // that addition.
 export const miscLibraryLabels = {
-  screenTitle: "الأذكار والأدعية",
-  screenSubtitle: "أدعية وأذكار ثابتة من القرآن والسنة",
-  searchPlaceholder: "ابحث في المكتبة...",
-  searchAria: "بحث في الأذكار والأدعية",
-  noResults: "لا توجد نتائج مطابقة",
-  featuredTitle: "مختارات اليوم",
-  itemsCount: (n: number) => `${n} ${n === 1 ? "دعاء" : "أدعية"}`,
-  countLabel: "العدد",
-  noSpecificCount: "بدون عدد محدد",
-  // The Master Content Library's own footer rules use two DIFFERENT labels
-  // depending on the kind of source — "التخريج" for hadith takhrij,
-  // "المصدر" for a Quranic citation (see MiscDuaItem.isQuranic) — never the
-  // hadith-style label for a Quranic verse, per spec section 11.
-  sourceLabelHadith: "التخريج",
-  sourceLabelQuran: "المصدر",
-  occasionLabel: "المناسبة",
-  noteLabel: "ملاحظة",
-  favoriteAria: "إضافة إلى المفضلة",
-  unfavoriteAria: "إزالة من المفضلة",
-  copyAria: "نسخ النص",
-  copiedToast: "تم النسخ",
-  comingSoon: "قريبًا",
-  back: "رجوع",
+  ar: {
+    screenTitle: "الأذكار والأدعية",
+    screenSubtitle: "أدعية وأذكار ثابتة من القرآن والسنة",
+    searchPlaceholder: "ابحث في المكتبة...",
+    searchAria: "بحث في الأذكار والأدعية",
+    noResults: "لا توجد نتائج مطابقة",
+    featuredTitle: "مختارات اليوم",
+    itemsCount: (n: number) => `${n} ${n === 1 ? "دعاء" : "أدعية"}`,
+    countLabel: "العدد",
+    // The Master Content Library's own footer rules use two DIFFERENT labels
+    // depending on the kind of source — "التخريج" for hadith takhrij,
+    // "المصدر" for a Quranic citation (see MiscDuaItem.isQuranic) — never the
+    // hadith-style label for a Quranic verse, per spec section 11.
+    sourceLabelHadith: "التخريج",
+    sourceLabelQuran: "المصدر",
+    occasionLabel: "المناسبة",
+    noteLabel: "ملاحظة",
+    favoriteAria: "إضافة إلى المفضلة",
+    unfavoriteAria: "إزالة من المفضلة",
+    copyAria: "نسخ النص",
+    copiedToast: "تم النسخ",
+    comingSoon: "قريبًا",
+    back: "رجوع",
+  },
+  en: {
+    screenTitle: "Adhkar & Duas",
+    screenSubtitle: "Established duas and adhkar from the Qur'an and Sunnah",
+    searchPlaceholder: "Search the library...",
+    searchAria: "Search Adhkar & Duas",
+    noResults: "No matching results",
+    featuredTitle: "Today's Selections",
+    itemsCount: (n: number) => `${n} ${n === 1 ? "dua" : "duas"}`,
+    countLabel: "Count",
+    sourceLabelHadith: "Reference / Takhrij",
+    sourceLabelQuran: "Source",
+    occasionLabel: "Occasion",
+    noteLabel: "Note",
+    favoriteAria: "Add to favorites",
+    unfavoriteAria: "Remove from favorites",
+    copyAria: "Copy text",
+    copiedToast: "Copied",
+    comingSoon: "Coming soon",
+    back: "Back",
+  },
 };
 
-// Bilingual interface strings for the new "Listen" / "English Meaning"
-// card actions and the meaning sheet they open — kept separate from
+// Bilingual interface strings for the "Listen" card action and the inline
+// Transliteration/Meaning section headings — kept separate from
 // `miscLibraryLabels` above (which stays Arabic-only, unchanged) so this
 // addition carries zero risk to that existing, already-shipped object.
-// Ordinary UI chrome only (button labels, aria text, section headings) —
-// never religious content; the actual englishMeaning/englishTransliteration
-// values always come from the data layer above, never from here.
+// Ordinary UI chrome only (aria text, section headings) — never religious
+// content; the actual englishMeaning/englishTransliteration values always
+// come from the data layer above, never from here. The `en` heading strings
+// are the ones actually shown (the inline section only renders when
+// language === "en" — see MiscDuaCard); the `ar` strings exist purely so
+// this stays a uniform bilingual lookup like every other labels object.
 export const miscMeaningLabels = {
   ar: {
-    meaningButton: "المعنى بالإنجليزي",
-    meaningModalTitle: "المعنى بالإنجليزي",
-    meaningHeading: "المعنى",
-    transliterationHeading: "النطق بالحروف اللاتينية",
-    close: "إغلاق",
+    ...dhikrLanguageLabels.ar,
     listenAria: "استماع",
     stopListenAria: "إيقاف الاستماع",
   },
   en: {
-    meaningButton: "English Meaning",
-    meaningModalTitle: "English Meaning",
-    meaningHeading: "Meaning",
-    transliterationHeading: "Transliteration",
-    close: "Close",
+    ...dhikrLanguageLabels.en,
     listenAria: "Listen",
     stopListenAria: "Stop",
   },
