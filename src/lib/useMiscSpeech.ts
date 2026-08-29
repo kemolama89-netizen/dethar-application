@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Minimal "Listen" support for the Misc library cards — the browser's own
 // built-in Web Speech API (SpeechSynthesis), not a new audio asset/CDN
@@ -14,6 +14,17 @@ export function useMiscSpeech() {
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const supported = typeof window !== "undefined" && "speechSynthesis" in window;
 
+  // Tracks the same value as `speakingId` state, read from inside `toggle`
+  // instead of `speakingId` itself — keeps `toggle`'s identity stable
+  // (depends only on `supported`, which never changes after mount) so it
+  // can be passed straight down to every memoized MiscDuaCard without its
+  // reference changing — and therefore without defeating that memoization
+  // — every time any card's speaking state changes.
+  const speakingIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    speakingIdRef.current = speakingId;
+  }, [speakingId]);
+
   // Stop any in-flight utterance if the screen unmounts (navigating away
   // mid-playback) — speechSynthesis is a shared, page-global resource, so
   // leaving it speaking after the user has left the screen would be a bug.
@@ -26,7 +37,7 @@ export function useMiscSpeech() {
     (id: string, text: string) => {
       if (!supported) return;
       window.speechSynthesis.cancel();
-      if (speakingId === id) {
+      if (speakingIdRef.current === id) {
         setSpeakingId(null);
         return;
       }
@@ -37,7 +48,7 @@ export function useMiscSpeech() {
       setSpeakingId(id);
       window.speechSynthesis.speak(utterance);
     },
-    [speakingId, supported],
+    [supported],
   );
 
   return { speakingId, toggle, supported };

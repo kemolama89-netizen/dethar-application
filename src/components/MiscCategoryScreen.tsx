@@ -1,15 +1,16 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
-import { BackHeader } from "./BackHeader";
+import { BackHeader, StickyBackButton } from "./BackHeader";
 import { BottomNav } from "./BottomNav";
-import { MiscDuaCard } from "./MiscDuaCard";
-import { MiscMeaningModal } from "./MiscMeaningModal";
-import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels as t } from "../data/misc-library";
+import { MiscDuaCard, MiscMeaningPopover } from "./MiscDuaCard";
+import { useMeaningPopoverState } from "./MeaningPopover";
+import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels } from "../data/misc-library";
 import type { MiscCategoryKey, MiscDuaItem } from "../data/misc-library";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
 import { useMiscSpeech } from "../lib/useMiscSpeech";
+import { useLanguage } from "../theme/LanguageContext";
 
 interface MiscCategoryScreenProps {
   categoryKey: MiscCategoryKey;
@@ -34,13 +35,21 @@ export function MiscCategoryScreen({
   onNavigateToTasbeeh,
   onNavigateToSettings,
 }: MiscCategoryScreenProps) {
+  const { language, dir } = useLanguage();
+  const t = miscLibraryLabels[language];
   const meta = MISC_CATEGORIES[categoryKey];
   const items = useMemo(() => MISC_DUAS.filter((item) => item.categories.includes(categoryKey)), [categoryKey]);
   const [favorites, setFavorites] = useState<Set<string>>(() => loadMiscFavorites());
-  const [meaningItem, setMeaningItem] = useState<MiscDuaItem | null>(null);
   const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
+  // Which single item's full Transliteration/Meaning is currently shown,
+  // and where — see MiscDuaCard's Meaning button and MiscMeaningPopover.
+  const { anchor: meaningAnchor, show: handleShowMeaning, close: handleCloseMeaning, dialogRef: meaningDialogRef } =
+    useMeaningPopoverState<MiscDuaItem>(".dithar-misc-list");
 
-  function handleToggleFavorite(id: string) {
+  // Stable identity (empty deps — only reads/writes state via functional
+  // updaters) so it can be passed straight to every memoized MiscDuaCard;
+  // see that component's own comment for why this matters.
+  const handleToggleFavorite = useCallback((id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -48,22 +57,27 @@ export function MiscCategoryScreen({
       saveMiscFavorites(next);
       return next;
     });
-  }
+  }, []);
 
   return (
-    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningItem !== null}>
+    <DeviceFrame background="var(--wa-page-bg)" scrollLocked={meaningAnchor !== null}>
       <AppShell>
         <TopBar />
         <div className="flex flex-1 flex-col">
-          <BackHeader title={meta.title_ar} onBack={onBack} backLabel={t.back} />
+          <BackHeader title={language === "en" ? meta.title_en : meta.title_ar} onBack={onBack} backLabel={t.back} hideButton />
+          <StickyBackButton onBack={onBack} backLabel={t.back} dir={dir} />
           <p className="mt-1 text-center text-[12.5px]" style={{ color: "var(--wa-on-page-muted)" }}>
-            {meta.subtitle_ar}
+            {language === "en" ? meta.subtitle_en : meta.subtitle_ar}
           </p>
           <p className="mt-0.5 text-center text-[11px]" style={{ color: "var(--wa-on-page-muted)" }}>
             {t.itemsCount(items.length)}
           </p>
 
-          <div className="mt-4 flex flex-col gap-3 pb-4">
+          {/* `relative` + `dithar-misc-list` (a plain marker class, not a
+              style hook — same convention as WrittenAdhkarReader's own
+              `.dithar-wa-list`) turn this into the positioning context
+              MiscMeaningPopover anchors against. */}
+          <div className="dithar-misc-list relative mt-4 flex flex-col gap-3 pb-4">
             {items.length === 0 ? (
               <p className="mt-8 text-center text-[13px]" style={{ color: "var(--wa-on-page-muted)" }}>
                 {t.comingSoon}
@@ -74,13 +88,15 @@ export function MiscCategoryScreen({
                   key={item.id}
                   item={item}
                   isFavorite={favorites.has(item.id)}
-                  onToggleFavorite={() => handleToggleFavorite(item.id)}
+                  onToggleFavorite={handleToggleFavorite}
                   isSpeaking={speakingId === item.id}
-                  onToggleListen={() => toggleSpeech(item.id, item.text_ar)}
-                  onShowMeaning={() => setMeaningItem(item)}
+                  onToggleListen={toggleSpeech}
+                  onShowMeaning={handleShowMeaning}
                 />
               ))
             )}
+
+            <MiscMeaningPopover anchor={meaningAnchor} onClose={handleCloseMeaning} dialogRef={meaningDialogRef} />
           </div>
         </div>
 
@@ -98,8 +114,6 @@ export function MiscCategoryScreen({
           }}
         />
       </AppShell>
-
-      <MiscMeaningModal item={meaningItem} onClose={() => setMeaningItem(null)} />
     </DeviceFrame>
   );
 }
