@@ -592,6 +592,27 @@ button {
   border-radius: 60% 40% 65% 35% / 55% 35% 65% 45%;
 }
 
+/* Voice Tasbeeh's "actively listening" indicator — a small dot next to the
+   toggle label, breathing gently rather than blinking, to match the
+   screen's calm/dignified character. Purely decorative (see
+   useVoiceTasbeeh.ts for the actual listening state machine); removing it
+   changes nothing about recognition or counting. */
+@keyframes dithar-voice-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.dithar-voice-pulse {
+  animation: dithar-voice-pulse 1.6s ease-in-out infinite;
+}
+
 /* ------------------------------------------------------------------ */
 /* Written Adhkar reader — vertical "journey" reading experience.       */
 /* Most transitions live as Tailwind utility classes directly in        */
@@ -701,6 +722,12 @@ button {
   .dithar-wa-complete-in,
   .dithar-adhkar-text-in {
     animation-duration: 120ms !important;
+  }
+
+  .dithar-voice-pulse {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   /* The dispersal keeps its fade but drops the drift/scale — WrittenAdhkarReader

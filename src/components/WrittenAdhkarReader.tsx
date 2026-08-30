@@ -546,7 +546,7 @@ function WrittenMeaningPopover({
               {item.title_en}
             </p>
           )}
-          <p dir="rtl" className="mt-1 line-clamp-1 text-[12.5px]" style={{ color: "var(--wa-ink-muted)" }}>
+          <p dir="rtl" className="mt-1 text-[12.5px]" style={{ color: "var(--wa-ink-muted)" }}>
             {item.text_ar}
           </p>
         </>

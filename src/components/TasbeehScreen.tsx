@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { Mic, MicOff } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
@@ -11,6 +12,9 @@ import { recordTasbeehRepetition } from "../lib/stats";
 import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
 import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
+import { useVoiceTasbeeh } from "../lib/useVoiceTasbeeh";
+import { useAudioInputDevices } from "../lib/useAudioInputDevices";
+import { probeAudioInputDevice } from "../lib/audioInputDevices";
 
 interface TasbeehScreenProps {
   onNavigateHome: () => void;
@@ -196,11 +200,50 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // past it — and can fire again after Reset or after the target changes.
   const [celebratedFor, setCelebratedFor] = useState<Record<number, number>>({});
 
+  // Voice Tasbeeh — OFF by default (spec requirement), session-only (not
+  // persisted): re-enabling it on every visit rather than remembering a
+  // prior "on" state avoids ever silently re-requesting the microphone on
+  // page load without a fresh, explicit user action.
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+
   const selected = dhikrItems.find((d) => d.id === selectedId) ?? dhikrItems[0];
   const count = counts[selectedId] ?? 0;
   const targetInput = targetInputs[selectedId] ?? "";
   const targetNum = /^[1-9]\d*$/.test(targetInput) ? Number(targetInput) : null;
   const justReached = targetNum !== null && count === targetNum;
+
+  // The currently selected Dhikr (same selector manual Tasbeeh already
+  // uses) IS the Voice Tasbeeh target — reusing it rather than building a
+  // second, separate Dhikr picker for voice mode specifically. `onMatch`/
+  // `onRollback` refer to `applyVoiceRepetitions`/`applyVoiceRollback`,
+  // function declarations further down this component (hoisted, so
+  // referencing them here is valid) — see their own comments for why
+  // they're a distinct code path from handleTap's manual counting rather
+  // than a shared/refactored one.
+  const { status: voiceStatus, justMatched: voiceJustMatched } = useVoiceTasbeeh({
+    enabled: voiceEnabled,
+    targetPhrase: selected?.dhikr_ar ?? "",
+    onMatch: applyVoiceRepetitions,
+    onRollback: applyVoiceRollback,
+  });
+  // Distinct from `voiceEnabled` (the raw toggle/user intent): this is
+  // whether Voice Tasbeeh is MEANINGFULLY on right now, so the toggle's own
+  // "active" styling/icon never lies by staying lit up gold while a fatal
+  // status (denied/no-mic/unsupported/error) means nothing is actually
+  // listening.
+  const voiceActive = voiceEnabled && (voiceStatus === "requesting" || voiceStatus === "listening");
+
+  // Audio source — DETECTION/CONFIRMATION only, never wired into
+  // useVoiceTasbeeh above: the Web Speech API gives this app no way to
+  // route a chosen input device INTO SpeechRecognition (see that hook's
+  // own "MICROPHONE GAIN / QUIET-SPEECH SENSITIVITY" comment), so nothing
+  // here can or should affect recognition itself. Enumerating only while
+  // `voiceActive` avoids touching `navigator.mediaDevices` before the
+  // user has already turned Voice Tasbeeh on (permission is already
+  // settled by then, so this triggers no separate prompt).
+  const { supported: audioDevicesSupported, devices: audioInputDevices, hasLikelyExternal } = useAudioInputDevices(voiceActive);
+  const [audioSourcePreference, setAudioSourcePreference] = useState<"automatic" | "phone" | "headset">("automatic");
+  const [audioProbeStatus, setAudioProbeStatus] = useState<"checking" | "found" | "not-found" | null>(null);
 
   // Calm-counting pacing ring — a SEPARATE, word-count-based timing model
   // from the Written Adhkar reader's (see src/lib/tasbeehTiming.ts). "ready"
@@ -330,6 +373,97 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
     setPacingPhase("pacing");
   }
 
+  // Voice Tasbeeh's own increment path — a separate function from
+  // handleTap above (never shared/refactored into it), so the existing
+  // manual counting logic stays completely untouched. Two deliberate
+  // differences from handleTap:
+  //   - Uses a FUNCTIONAL setCounts update (`prev => ...`), not a plain
+  //     object spread off the render's `counts` closure. A single
+  //     recognizer result can report more than one confidently-matched
+  //     repetition at once (e.g. two "Subhan Allah"s recognized together
+  //     as one phrase — see useVoiceTasbeeh's per-result occurrence
+  //     counting), so `times` can be >1; reading `counts` from the closure
+  //     would make every repetition in that batch compute the same
+  //     "current + 1" and clobber each other instead of accumulating.
+  //   - Deliberately bypasses the manual "calm counting" pacing gate: that
+  //     gate exists to pace deliberate TAPPING, not natural recited
+  //     speech, and holding voice repetitions to its ready/pacing cycle
+  //     would silently drop confidently-recognized reps whenever they
+  //     arrive faster than the ring — exactly what this feature must not
+  //     do ("no noticeable delay... handle natural repeated speech").
+  function applyVoiceRepetitions(times: number) {
+    if (times <= 0) return;
+
+    setCounts((prev) => {
+      const nextCount = (prev[selectedId] ?? 0) + times;
+      const updated = { ...prev, [selectedId]: nextCount };
+      saveTasbeehCounters(updated);
+      // Same one-time-celebration rule as handleTap, adapted for a batch
+      // that might jump straight past the target rather than landing on
+      // it exactly.
+      if (targetNum !== null && nextCount >= targetNum && celebratedFor[selectedId] !== targetNum) {
+        setCelebratedFor((prevCel) => ({ ...prevCel, [selectedId]: targetNum }));
+        spawnCelebration();
+      }
+      return updated;
+    });
+
+    for (let rep = 0; rep < times; rep++) {
+      recordTasbeehRepetition(selectedId);
+      const id = bubbleIdRef.current++;
+      const drift = Math.round(Math.random() * 48 - 24);
+      const rotate = Math.round(Math.random() * 16 - 8);
+      const size = Math.round(52 + Math.random() * 20);
+      setBubbles((prev) => [...prev.slice(-(MAX_VISIBLE_BUBBLES - 1)), { id, text: selected!.dhikr_ar, drift, rotate, size }]);
+      setTimeout(() => {
+        setBubbles((prev) => prev.filter((b) => b.id !== id));
+      }, BUBBLE_LIFETIME_MS);
+    }
+  }
+
+  // Undoes `times` repetitions previously applied by applyVoiceRepetitions
+  // that useVoiceTasbeeh has determined were only SPECULATIVE — the
+  // recognizer had shown "سبحان الله" as a complete phrase and it was
+  // counted immediately to stay fast, but a moment later the transcript
+  // grew into "سبحان الله وبحمده" (or similar), proving it was only a
+  // prefix of a longer dhikr, not the selected one. Only the numeric
+  // counter is corrected (functional update + re-persisted, same pattern
+  // as applyVoiceRepetitions, clamped at 0 so a bug elsewhere can never
+  // drive it negative). Deliberately does NOT retract the already-spawned
+  // bubble, any already-recorded Statistics entry, or a celebration that
+  // may have fired — rollbacks are rare (only when a genuine prefix
+  // misfire happens) and unwinding those secondary effects would add
+  // meaningfully more surface area for a cosmetic/historical edge case.
+  function applyVoiceRollback(times: number) {
+    if (times <= 0) return;
+    setCounts((prev) => {
+      const nextCount = Math.max(0, (prev[selectedId] ?? 0) - times);
+      const updated = { ...prev, [selectedId]: nextCount };
+      saveTasbeehCounters(updated);
+      return updated;
+    });
+  }
+
+  // Records which pill the user tapped and, for anything other than
+  // "automatic", runs a one-off confirmation probe (see
+  // probeAudioInputDevice's own doc) — purely to show "yes, that device
+  // is currently reachable" or not. Never touches recognition: there is
+  // no mechanism for it to route a device into SpeechRecognition, and the
+  // caption shown alongside this control says so explicitly rather than
+  // implying this selection changes what Voice Tasbeeh actually listens
+  // through.
+  async function handleSelectAudioSource(option: "automatic" | "phone" | "headset") {
+    setAudioSourcePreference(option);
+    if (option === "automatic") {
+      setAudioProbeStatus(null);
+      return;
+    }
+    const device = audioInputDevices.find((d) => d.likelyExternal === (option === "headset"));
+    setAudioProbeStatus("checking");
+    const result = await probeAudioInputDevice(device?.deviceId);
+    setAudioProbeStatus(result.reachable ? "found" : "not-found");
+  }
+
   function handleReset() {
     const updatedCounts = { ...counts, [selectedId]: 0 };
     setCounts(updatedCounts);
@@ -402,6 +536,117 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
         <h1 className="mt-1 text-center text-[17px] font-bold" style={{ color: "var(--color-text-primary)" }}>
           {nav.tasbih}
         </h1>
+
+        {/* Voice Tasbeeh — the ONLY new UI this feature adds beyond the
+            status line below it. A plain toggle pill matching the existing
+            Dhikr-selector chip language (rounded-full border, same gold/
+            surface tokens) rather than a new control style. Off by
+            default; the currently selected Dhikr above/below it is the
+            target phrase, so there is no separate Dhikr picker here. */}
+        <div className="mt-1.5 flex flex-col items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setVoiceEnabled((v) => !v)}
+            aria-pressed={voiceEnabled}
+            aria-label={t.voiceTasbeehAria}
+            className="flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium transition-colors"
+            style={{
+              borderColor: voiceActive ? "var(--color-gold)" : "var(--color-gold-soft)",
+              background: voiceJustMatched ? "var(--color-gold-soft)" : voiceActive ? "var(--color-primary)" : "var(--color-surface)",
+              color: voiceActive ? "var(--color-gold)" : "var(--color-text-primary)",
+            }}
+          >
+            {voiceActive ? <Mic size={14} /> : <MicOff size={14} />}
+            {t.voiceTasbeeh}
+            {voiceEnabled && voiceStatus === "listening" && (
+              <span
+                className="dithar-voice-pulse h-1.5 w-1.5 rounded-full"
+                style={{ background: "var(--color-gold)" }}
+                aria-hidden="true"
+              />
+            )}
+          </button>
+
+          {/* Status line — only ever one short sentence, no separate
+              alert/modal, so it stays as calm as the rest of this screen. */}
+          {voiceEnabled && voiceStatus !== "listening" && (
+            <p className="max-w-[260px] text-center text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+              {voiceStatus === "requesting" && t.voiceRequesting}
+              {voiceStatus === "denied" && t.voiceDenied}
+              {voiceStatus === "no-mic" && t.voiceNoMic}
+              {voiceStatus === "unsupported" && t.voiceUnsupported}
+              {voiceStatus === "error" && t.voiceError}
+            </p>
+          )}
+          {voiceEnabled && voiceStatus === "listening" && (
+            <p className="max-w-[260px] text-center text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+              {t.voiceListeningFor} <bdi dir="rtl">{selected.dhikr_ar}</bdi>
+            </p>
+          )}
+
+          {/* Audio source — CONFIRMATION/detection only, never a real
+              selector: SpeechRecognition has no API to accept a chosen
+              input device (see useAudioInputDevices/audioInputDevices'
+              own doc comments), so nothing here can change what Voice
+              Tasbeeh actually listens through. Two cases only, both
+              deliberately quiet:
+                - the browser can't enumerate devices at all -> one line
+                  explaining the real (automatic) behavior, no controls;
+                - an external-looking device (e.g. a connected headset)
+                  IS currently visible -> the small pill group, so the
+                  common single-microphone case shows nothing extra at
+                  all ("Automatic" already being the whole, unchanged
+                  behavior). */}
+          {voiceActive && !audioDevicesSupported && (
+            <p className="max-w-[240px] text-center text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
+              {t.audioSourceUnsupportedNote}
+            </p>
+          )}
+          {voiceActive && audioDevicesSupported && hasLikelyExternal && (
+            <div className="mt-0.5 flex flex-col items-center gap-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.06em]" style={{ color: "var(--color-gold)" }}>
+                {t.audioSourceLabel}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {(
+                  [
+                    ["automatic", t.audioSourceAutomatic],
+                    ...(audioInputDevices.some((d) => !d.likelyExternal) ? [["phone", t.audioSourcePhone] as const] : []),
+                    ["headset", t.audioSourceHeadset],
+                  ] as const
+                ).map(([option, label]) => {
+                  const isSelected = audioSourcePreference === option;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => handleSelectAudioSource(option)}
+                      aria-pressed={isSelected}
+                      className="rounded-full border px-2.5 py-1 text-[10.5px] font-medium"
+                      style={{
+                        borderColor: isSelected ? "var(--color-gold)" : "var(--color-gold-soft)",
+                        background: isSelected ? "var(--color-primary)" : "var(--color-surface)",
+                        color: isSelected ? "var(--color-gold)" : "var(--color-text-primary)",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              {audioProbeStatus && (
+                <p className="text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
+                  {audioProbeStatus === "checking" && t.audioSourceProbeChecking}
+                  {audioProbeStatus === "found" && t.audioSourceProbeFound}
+                  {audioProbeStatus === "not-found" && t.audioSourceProbeNotFound}
+                </p>
+              )}
+              <p className="max-w-[240px] text-center text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
+                {t.audioSourceCaption}
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Dhikr selector — intentionally horizontally scrollable; 16 items
             today, architected to grow without any screen changes. */}
