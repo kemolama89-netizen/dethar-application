@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
@@ -19,6 +19,14 @@ interface MiscCategoryScreenProps {
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
+  /**
+   * Set ONLY when arriving here from the global Written Adhkar search (see
+   * WrittenAdhkarSearchScreen / App.tsx) — the specific dua to scroll
+   * straight to on mount, instead of the plain top-of-list start. Absent
+   * for every ordinary category-tile entry, which behaves exactly as
+   * before.
+   */
+  targetItemId?: string;
 }
 
 // A single category's verified dua cards — per spec section 9: title,
@@ -34,6 +42,7 @@ export function MiscCategoryScreen({
   onNavigateHome,
   onNavigateToTasbeeh,
   onNavigateToSettings,
+  targetItemId,
 }: MiscCategoryScreenProps) {
   const { language, dir } = useLanguage();
   const t = miscLibraryLabels[language];
@@ -41,6 +50,15 @@ export function MiscCategoryScreen({
   const items = useMemo(() => MISC_DUAS.filter((item) => item.categories.includes(categoryKey)), [categoryKey]);
   const [favorites, setFavorites] = useState<Set<string>>(() => loadMiscFavorites());
   const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
+  // Global-search deep link (see WrittenAdhkarSearchScreen / App.tsx): jump
+  // straight to the specific dua the user tapped in the results, instead of
+  // the plain top-of-list start — per this task's spec, tapping a result
+  // must land ON that exact card, not just open its category at the top.
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  useEffect(() => {
+    if (!targetItemId) return;
+    itemRefs.current[targetItemId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [targetItemId]);
   // Which single item's full Transliteration/Meaning is currently shown,
   // and the specific DOM card it was opened from — see MiscDuaCard's
   // Meaning button and MiscMeaningPopover. Same shared hook Written
@@ -87,15 +105,21 @@ export function MiscCategoryScreen({
               </p>
             ) : (
               items.map((item) => (
-                <MiscDuaCard
+                <div
                   key={item.id}
-                  item={item}
-                  isFavorite={favorites.has(item.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                  isSpeaking={speakingId === item.id}
-                  onToggleListen={toggleSpeech}
-                  onShowMeaning={handleShowMeaning}
-                />
+                  ref={(el) => {
+                    itemRefs.current[item.id] = el;
+                  }}
+                >
+                  <MiscDuaCard
+                    item={item}
+                    isFavorite={favorites.has(item.id)}
+                    onToggleFavorite={handleToggleFavorite}
+                    isSpeaking={speakingId === item.id}
+                    onToggleListen={toggleSpeech}
+                    onShowMeaning={handleShowMeaning}
+                  />
+                </div>
               ))
             )}
           </div>

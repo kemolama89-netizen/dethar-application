@@ -17,12 +17,16 @@ export const dhikrLanguageLabels = {
     transliterationHeading: "النطق بالحروف اللاتينية",
     meaningHeading: "المعنى",
     meaningButtonAria: "عرض المعنى بالإنجليزي",
+    shareAria: "مشاركة الذكر",
+    shareCopiedToast: "تم نسخ الذكر",
     close: "إغلاق",
   },
   en: {
     transliterationHeading: "Transliteration",
     meaningHeading: "Meaning",
     meaningButtonAria: "Meaning",
+    shareAria: "Share",
+    shareCopiedToast: "Copied to clipboard",
     close: "Close",
   },
 };

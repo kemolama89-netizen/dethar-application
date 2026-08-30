@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { BookOpenText, Check } from "lucide-react";
+import { BookOpenText, Check, Share2 } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
@@ -11,6 +11,7 @@ import { CATEGORY_ARTWORK } from "../icons/CategoryEmblem";
 import { useLanguage } from "../theme/LanguageContext";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels, writtenAdhkarItems } from "../data/written-adhkar";
 import type { WrittenAdhkarCategoryKey, WrittenAdhkarItem, PrayerName, PrayerScope } from "../data/written-adhkar";
+import { shareText } from "../lib/share";
 // The same "Transliteration"/"Meaning" heading strings Miscellaneous
 // Adhkar's MiscDuaCard already uses — from a small shared module (NOT a
 // direct import of misc-library.ts), which would otherwise drag that
@@ -26,6 +27,14 @@ interface WrittenAdhkarReaderProps {
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
   onBackToCategories: () => void;
+  /**
+   * Set ONLY when arriving here from a global search result (see
+   * WrittenAdhkarSearchScreen / App.tsx) — the specific Dhikr to scroll
+   * straight to on mount, instead of the journey's normal top-of-list
+   * start. Absent for every ordinary category-tile entry, which behaves
+   * exactly as before.
+   */
+  targetItemId?: string;
 }
 
 type Labels = (typeof writtenAdhkarLabels)["ar"];
@@ -192,6 +201,7 @@ const DhikrCard = memo(function DhikrCard({
   item,
   language,
   labels,
+  categoryLabel,
   isActive,
   isCompleted,
   count,
@@ -204,6 +214,10 @@ const DhikrCard = memo(function DhikrCard({
   item: WrittenAdhkarItem;
   language: "ar" | "en";
   labels: Labels;
+  // Fallback share title for items with no `title_ar`/`title_en` of their
+  // own — the category name (e.g. "Morning Adhkar") reads better in a
+  // share sheet than a blank title.
+  categoryLabel: string;
   isActive: boolean;
   isCompleted: boolean;
   count: number;
@@ -223,6 +237,20 @@ const DhikrCard = memo(function DhikrCard({
   const source = language === "ar" ? item.source_ar : item.source_en;
   const mt = dhikrLanguageLabels[language];
   const isUnbounded = item.unboundedCount === true;
+  // Share always carries the Arabic dhikr itself — the actual wording —
+  // and, in English mode, the established English meaning alongside it
+  // (never a translation invented on the spot; same `text_en` already
+  // shown in the Meaning popover), so the Arabic content stays Arabic and
+  // the English content stays English within the one shared message.
+  const [justCopiedShare, setJustCopiedShare] = useState(false);
+  async function handleShare() {
+    const shareBody = language === "en" && item.text_en ? `${item.text_ar}\n\n${item.text_en}` : item.text_ar;
+    const result = await shareText(title || categoryLabel, shareBody);
+    if (result === "copied") {
+      setJustCopiedShare(true);
+      window.setTimeout(() => setJustCopiedShare(false), 1400);
+    }
+  }
   // Once every repetition has been read (count >= target) the ring shows ✓
   // but is NOT yet `isCompleted` — that next tap is the explicit
   // confirmation that advances to the next Dhikr (see handleTap in
@@ -252,6 +280,15 @@ const DhikrCard = memo(function DhikrCard({
       }}
     >
       <AdhkarWatermark src={artworkSrc} />
+
+      {justCopiedShare && (
+        <span
+          className="absolute end-3 top-3 z-10 rounded-full px-2 py-0.5 text-[10px] font-medium"
+          style={{ background: "var(--wa-badge-bg)", color: "var(--wa-gold)" }}
+        >
+          {mt.shareCopiedToast}
+        </span>
+      )}
 
       <div className="relative">
         {title && (
@@ -332,6 +369,18 @@ const DhikrCard = memo(function DhikrCard({
                 <BookOpenText size={15} strokeWidth={1.8} />
               </button>
             )}
+            {/* Both languages — shares the Dhikr itself (and its English
+                meaning too, in English mode). Never disturbs counting,
+                audio, meaning, or favorite state. */}
+            <button
+              type="button"
+              onClick={handleShare}
+              aria-label={mt.shareAria}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+              style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-gold)" }}
+            >
+              <Share2 size={15} strokeWidth={1.8} />
+            </button>
             <RepetitionRing
               target={target}
               count={count}
@@ -539,6 +588,7 @@ export function WrittenAdhkarReader({
   onNavigateToTasbeeh,
   onNavigateToSettings,
   onBackToCategories,
+  targetItemId,
 }: WrittenAdhkarReaderProps) {
   const { language, dir } = useLanguage();
   const t = writtenAdhkarLabels[language];
@@ -574,6 +624,10 @@ export function WrittenAdhkarReader({
   }, [confirmed]);
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const completionRef = useRef<HTMLDivElement | null>(null);
+  // Set once the search-deep-link scroll (see the effect near the bottom
+  // of this component) has actually happened — read by the ordinary
+  // "follow the active card" effect just above it, so the two never race.
+  const targetScrolledRef = useRef(false);
   // "active" — normal reading, cards shown as usual.
   // "dispersing" — the FINAL ✓-confirmation of the FINAL Dhikr has already
   //   been recorded to Statistics (see handleTap); the completed cards are
@@ -585,8 +639,22 @@ export function WrittenAdhkarReader({
   // after — only relevant for `category === "prayer"` (see targetFor and
   // PRAYER_SPECIFIC_REPEAT), and only ever affects the three Quls' target
   // count. Session-scoped, not persisted — the app has no existing
-  // general-purpose settings mechanism this would fit into.
-  const [selectedPrayer, setSelectedPrayer] = useState<PrayerName>("fajr");
+  // general-purpose settings mechanism this would fit into. Defaults to
+  // Fajr, UNLESS a search result (`targetItemId`) is deep-linking straight
+  // to a Prayer-Adhkar item whose own `prayerScope` doesn't include Fajr —
+  // otherwise that item would be filtered out of `visibleItems` below and
+  // never actually reachable. Picking the first prayer its own scope
+  // allows keeps every other item's default behavior untouched.
+  const [selectedPrayer, setSelectedPrayer] = useState<PrayerName>(() => {
+    if (category === "prayer" && targetItemId) {
+      const target = items.find((i) => i.id === targetItemId);
+      const scope = target?.prayerScope;
+      if (scope && scope !== "all") {
+        return Array.isArray(scope) ? scope[0] : scope;
+      }
+    }
+    return "fajr";
+  });
   // Which single item's full Meaning is currently shown, and the specific
   // DOM card it was opened from — English mode only, see DhikrCard's
   // meaning button and WrittenMeaningPopover above. Shared with
@@ -714,6 +782,11 @@ export function WrittenAdhkarReader({
   // at all in this app), so no extra header-height offset is needed.
   useEffect(() => {
     if (allDone) return;
+    // A pending search deep-link (see the effect just below) gets first say
+    // over where the reader lands on mount — this normal "follow the
+    // active card" behavior only takes over once that initial jump has
+    // actually happened, so the two scrolls never fight each other.
+    if (targetItemId && !targetScrolledRef.current) return;
     const activeItem = visibleItems[activeIndex];
     if (!activeItem) return;
     const el = itemRefs.current[activeItem.id];
@@ -726,6 +799,22 @@ export function WrittenAdhkarReader({
     // changes) even when the numeric index happens to stay the same.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex, category, selectedPrayer]);
+
+  // Global-search deep link (see WrittenAdhkarSearchScreen / App.tsx): jump
+  // straight to the specific Dhikr the user tapped in the results, instead
+  // of the journey's normal top-of-list/active-card start — per this
+  // task's spec, tapping a result must land ON that exact card, not just
+  // open its category at the top. Runs once per mount (`targetItemId` never
+  // changes within a single reader visit — see App.tsx).
+  useEffect(() => {
+    if (!targetItemId) return;
+    const el = itemRefs.current[targetItemId];
+    if (el) {
+      el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    }
+    targetScrolledRef.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetItemId]);
 
   // Once the dispersal animation has had time to play, swap the (now
   // invisible) cards out for the completion message. The statistics event
@@ -837,6 +926,7 @@ export function WrittenAdhkarReader({
                         item={item}
                         language={language}
                         labels={t}
+                        categoryLabel={categoryLabel}
                         isActive={active}
                         isCompleted={completed}
                         count={counts[item.id] ?? 0}

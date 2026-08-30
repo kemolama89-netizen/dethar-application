@@ -15,6 +15,7 @@ import { MosqueDomeIcon } from "./icons/CustomIcons";
 import { labels, insightCardContent, hadithCardContent } from "./data/content";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
+import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -34,6 +35,8 @@ const loadWrittenAdhkarScreen = () =>
   import("./components/WrittenAdhkarScreen").then((m) => ({ default: m.WrittenAdhkarScreen }));
 const loadWrittenAdhkarReader = () =>
   import("./components/WrittenAdhkarReader").then((m) => ({ default: m.WrittenAdhkarReader }));
+const loadWrittenAdhkarSearchScreen = () =>
+  import("./components/WrittenAdhkarSearchScreen").then((m) => ({ default: m.WrittenAdhkarSearchScreen }));
 const loadSettingsScreen = () => import("./components/SettingsScreen").then((m) => ({ default: m.SettingsScreen }));
 const loadMiscLibraryScreen = () =>
   import("./components/MiscLibraryScreen").then((m) => ({ default: m.MiscLibraryScreen }));
@@ -43,6 +46,7 @@ const loadMiscCategoryScreen = () =>
 const TasbeehScreen = lazy(loadTasbeehScreen);
 const WrittenAdhkarScreen = lazy(loadWrittenAdhkarScreen);
 const WrittenAdhkarReader = lazy(loadWrittenAdhkarReader);
+const WrittenAdhkarSearchScreen = lazy(loadWrittenAdhkarSearchScreen);
 const SettingsScreen = lazy(loadSettingsScreen);
 const MiscLibraryScreen = lazy(loadMiscLibraryScreen);
 const MiscCategoryScreen = lazy(loadMiscCategoryScreen);
@@ -178,7 +182,7 @@ function HomeScreen({
   );
 }
 
-type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "misc-library" | "misc-category" | "settings";
+type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings";
 
 // Minimal in-memory screen switcher — no router dependency added. No
 // screen persists its state across a switch (matching how theme/language
@@ -205,6 +209,25 @@ function AppRouter() {
   // pattern as `writtenCategory` above, set right before switching to
   // "misc-category" and simply left as-is on the way back.
   const [miscCategory, setMiscCategory] = useState<MiscCategoryKey>("comprehensive");
+  // The specific Dhikr/dua a global search result pointed at — set ONLY
+  // right before jumping into "written-reader"/"misc-category" FROM a
+  // search result (see handleSelectSearchResult below), read once by that
+  // screen to scroll straight to it instead of starting at the top.
+  // Explicitly cleared to `null` at every ORDINARY entry point into those
+  // two screens (the category tiles, the bottom-nav "written" tab) so a
+  // stale target from a previous search never lingers into a normal visit.
+  const [searchTargetItemId, setSearchTargetItemId] = useState<string | null>(null);
+
+  function handleSelectSearchResult(result: WrittenSearchResult) {
+    setSearchTargetItemId(result.itemId);
+    if (result.kind === "written") {
+      setWrittenCategory(result.category);
+      setScreen("written-reader");
+    } else {
+      setMiscCategory(result.category);
+      setScreen("misc-category");
+    }
+  }
 
   // Warms the chunk (and, for Misc Library, its category images — see
   // that module's own preload side effect) for whichever screen is the
@@ -223,6 +246,7 @@ function AppRouter() {
     } else if (screen === "written") {
       preloadOnIdle(loadWrittenAdhkarReader);
       preloadOnIdle(loadMiscLibraryScreen);
+      preloadOnIdle(loadWrittenAdhkarSearchScreen);
     } else if (screen === "misc-library") {
       preloadOnIdle(loadMiscCategoryScreen);
     }
@@ -255,6 +279,7 @@ function AppRouter() {
               // ASSETS/dithar_master_content_library.md, rather than the
               // old flat single-reader list — every other category is
               // completely unaffected and still opens the existing reader.
+              setSearchTargetItemId(null);
               if (key === "misc") {
                 setScreen("misc-library");
                 return;
@@ -262,6 +287,7 @@ function AppRouter() {
               setWrittenCategory(key);
               setScreen("written-reader");
             }}
+            onOpenSearch={() => setScreen("written-search")}
           />
         </Suspense>
       </div>
@@ -277,6 +303,22 @@ function AppRouter() {
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
             onBackToCategories={() => setScreen("written")}
+            targetItemId={searchTargetItemId ?? undefined}
+          />
+        </Suspense>
+      </div>
+    );
+  }
+  if (screen === "written-search") {
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <Suspense fallback={<ScreenFallback />}>
+          <WrittenAdhkarSearchScreen
+            onBack={() => setScreen("written")}
+            onNavigateHome={() => setScreen("home")}
+            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+            onNavigateToSettings={() => setScreen("settings")}
+            onSelectResult={handleSelectSearchResult}
           />
         </Suspense>
       </div>
@@ -292,6 +334,7 @@ function AppRouter() {
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
             onSelectCategory={(key) => {
+              setSearchTargetItemId(null);
               setMiscCategory(key);
               setScreen("misc-category");
             }}
@@ -311,6 +354,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
+            targetItemId={searchTargetItemId ?? undefined}
           />
         </Suspense>
       </div>

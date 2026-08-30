@@ -1,9 +1,10 @@
 import { memo, useState } from "react";
-import { BookOpenText, Copy, Heart, Volume2, VolumeX } from "lucide-react";
+import { BookOpenText, Copy, Heart, Share2, Volume2, VolumeX } from "lucide-react";
 import type { MiscDuaItem } from "../data/misc-library";
 import { miscLibraryLabels, miscMeaningLabels } from "../data/misc-library";
 import { useLanguage } from "../theme/LanguageContext";
 import { DraggableMeaningCard } from "./MeaningPopover";
+import { shareText } from "../lib/share";
 
 // The single reading card shared by the category list and search results —
 // per spec section 10: the COMPLETE Arabic text once, a count line (only
@@ -60,6 +61,23 @@ function MiscDuaCardImpl({
     } catch {
       // Clipboard access can fail (permissions, insecure context) — copying
       // is a convenience only, never load-bearing for reading the dua.
+    }
+  }
+
+  // Share always carries the Arabic dua itself — the actual wording — and,
+  // in English mode, its established English meaning alongside it (never a
+  // translation invented on the spot; the same `englishMeaning` already
+  // shown in the Meaning popup), so Arabic content stays Arabic and English
+  // content stays English within the one shared message. Reuses the same
+  // "copied" toast as the Copy button above for the rare fallback path
+  // (no native share sheet available).
+  async function handleShare() {
+    const shareBody = isEn && item.englishMeaning ? `${item.text_ar}\n\n${item.englishMeaning}` : item.text_ar;
+    const shareTitle = occasion || t.screenTitle;
+    const result = await shareText(shareTitle, shareBody);
+    if (result === "copied") {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
     }
   }
 
@@ -179,6 +197,15 @@ function MiscDuaCardImpl({
             style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
           >
             <Copy size={15} strokeWidth={1.8} />
+          </button>
+          <button
+            type="button"
+            onClick={handleShare}
+            aria-label={mt.shareAria}
+            className="flex h-8 w-8 items-center justify-center rounded-full"
+            style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
+          >
+            <Share2 size={15} strokeWidth={1.8} />
           </button>
           <button
             type="button"
