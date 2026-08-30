@@ -149,6 +149,14 @@ export const writtenAdhkarLabels = {
     // Morning/Evening — see `unboundedCount` in the WrittenAdhkarItem type.
     unboundedNote: "ليس لهذا الذكر عدد محدد، يمكنك تكراره ما شئت.",
     finishDhikr: "إنهاء",
+    // Global search — across every Written Adhkar category (Morning,
+    // Evening, Prayer) and the whole Miscellaneous/Various Adhkar library
+    // together, see WrittenAdhkarSearchScreen.tsx.
+    searchTitle: "البحث في الأذكار",
+    searchAria: "البحث في جميع الأذكار المكتوبة",
+    searchPlaceholder: "ابحث عن ذكر...",
+    searchHint: "اكتب كلمة للبحث في جميع الأذكار المكتوبة",
+    noResults: "لا توجد نتائج مطابقة",
   },
   en: {
     back: "Back",
@@ -181,6 +189,11 @@ export const writtenAdhkarLabels = {
     prayerIsha: "Isha",
     unboundedNote: "There is no fixed count for this dhikr — repeat it as many times as you wish.",
     finishDhikr: "Finish",
+    searchTitle: "Search Adhkar",
+    searchAria: "Search all Written Adhkar",
+    searchPlaceholder: "Search for a dhikr...",
+    searchHint: "Type a word to search across every Written Adhkar category",
+    noResults: "No matching results",
   },
 };
 

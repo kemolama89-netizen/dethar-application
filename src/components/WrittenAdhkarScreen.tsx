@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Search } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
@@ -14,6 +15,7 @@ interface WrittenAdhkarScreenProps {
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
   onSelectCategory: (key: WrittenAdhkarCategoryKey) => void;
+  onOpenSearch: () => void;
 }
 
 // Matches the .dithar-wa-category-card transition duration in index.css —
@@ -32,7 +34,7 @@ const CATEGORY_ORDER: WrittenAdhkarCategoryKey[] = ["morning", "evening", "praye
 // control would just be redundant chrome (unlike the Reader below it,
 // which keeps its own back action for the one hop BottomNav can't do:
 // returning to this list without leaving Written Adhkar entirely).
-export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToSettings, onSelectCategory }: WrittenAdhkarScreenProps) {
+export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToSettings, onSelectCategory, onOpenSearch }: WrittenAdhkarScreenProps) {
   const { language } = useLanguage();
   const t = writtenAdhkarLabels[language];
   const nav = navLabels[language];
@@ -53,12 +55,31 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNav
       <AppShell>
         <TopBar />
         <div className="flex flex-1 flex-col">
-          <h1
-            className="mt-2 text-center text-[20px] font-bold"
-            style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
-          >
-            {nav.writtenAdhkar}
-          </h1>
+          <div className="mt-2 flex items-center gap-2">
+            {/* Empty spacer matching the search button's own size, so the
+                centered title stays visually centered rather than drifting
+                toward the (now one-sided) button — same convention as
+                BackHeader's own trailing spacer. */}
+            <div className="h-9 w-9 shrink-0" aria-hidden="true" />
+            <h1
+              className="min-w-0 flex-1 text-center text-[20px] font-bold"
+              style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
+            >
+              {nav.writtenAdhkar}
+            </h1>
+            {/* Global search across the ENTIRE Written Adhkar library
+                (Morning/Evening/Prayer + Miscellaneous/Various Adhkar
+                together) — see WrittenAdhkarSearchScreen.tsx. */}
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              aria-label={t.searchAria}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+              style={{ boxShadow: "inset 0 0 0 1.5px var(--wa-gold)", background: "var(--wa-surface)", color: "var(--wa-ink)" }}
+            >
+              <Search size={16} strokeWidth={1.8} />
+            </button>
+          </div>
           <p className="mt-0.5 text-center text-[13px]" style={{ color: "var(--wa-ink-muted)" }}>
             {t.chooseCategory}
           </p>
