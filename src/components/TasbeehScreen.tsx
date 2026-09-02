@@ -200,6 +200,14 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // past it — and can fire again after Reset or after the target changes.
   const [celebratedFor, setCelebratedFor] = useState<Record<number, number>>({});
 
+  // "Reset All" confirmation — mirrors SettingsScreen's own
+  // `confirmingReset` pattern for its (equally destructive, equally
+  // irreversible) "delete Statistics history" action: a single accidental
+  // tap must never itself erase anything, so the button only ever opens
+  // this dialog, and the actual reset happens exclusively from its
+  // confirm button below.
+  const [confirmingResetAll, setConfirmingResetAll] = useState(false);
+
   // Voice Tasbeeh — OFF by default (spec requirement), session-only (not
   // persisted): re-enabling it on every visit rather than remembering a
   // prior "on" state avoids ever silently re-requesting the microphone on
@@ -486,6 +494,34 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
     // out a stale ring for a counter they just zeroed.
     setPacingPhase("ready");
     setPacingFraction(0);
+  }
+
+  // Only ever called from the confirmation dialog's own "Reset All"
+  // button below — never from the toggle button itself, so a single
+  // accidental tap can't erase anything (requirement: confirm-before-
+  // destroy). Reuses EXACTLY the same store/state as handleReset above
+  // (setCounts + saveTasbeehCounters, the same celebratedFor/pacing
+  // resets) rather than a separate mechanism — it just applies them to
+  // EVERY Dhikr at once instead of only `selectedId`. An empty counters
+  // object is equivalent to "every id reset to 0", since `count` is
+  // always read as `counts[id] ?? 0` throughout this screen — the
+  // currently selected Dhikr's own displayed count zeroes out the same
+  // way any other one does, with no special-casing needed.
+  //
+  // Deliberately untouched: `targetInputs` (per-Dhikr TARGET preferences,
+  // not progress — Reset doesn't touch these either), `voiceEnabled`
+  // (Voice Tasbeeh's own on/off toggle — a session preference, not
+  // per-Dhikr progress), and anything in src/lib/stats.ts (Statistics
+  // history — same "RESET COUNTER ≠ DELETE STATISTICS" boundary
+  // handleReset already documents).
+  function handleResetAll() {
+    const clearedCounts: Record<number, number> = {};
+    setCounts(clearedCounts);
+    saveTasbeehCounters(clearedCounts);
+    setCelebratedFor({});
+    setPacingPhase("ready");
+    setPacingFraction(0);
+    setConfirmingResetAll(false);
   }
 
   function handleTargetChange(value: string) {
@@ -898,7 +934,76 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
           >
             {t.reset}
           </button>
+
+          {/* Reset All — same pill styling as Reset (requirement:
+              consistent with the existing reset button, not a redesign),
+              placed immediately next to it. Never resets anything
+              directly on click — only opens the confirmation dialog
+              below, so one accidental tap can't erase every Dhikr's
+              progress. */}
+          <button
+            type="button"
+            onClick={() => setConfirmingResetAll(true)}
+            aria-label={t.resetAllAria}
+            className="rounded-full border px-5 py-1.5 text-[13px] font-medium"
+            style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}
+          >
+            {t.resetAll}
+          </button>
         </div>
+
+        {/* Reset-All confirmation — same alertdialog/backdrop pattern as
+            SettingsScreen's "Delete Statistics history" confirmation
+            (same structure, same destructive-confirm/outline-cancel
+            button styling), scoped to this screen only. Clicking the
+            backdrop cancels, exactly like that dialog. */}
+        {confirmingResetAll && (
+          <div
+            className="absolute inset-0 z-20 flex items-center justify-center p-4"
+            style={{ background: "rgba(11, 21, 38, 0.45)" }}
+            role="presentation"
+            onClick={() => setConfirmingResetAll(false)}
+          >
+            <div
+              role="alertdialog"
+              aria-modal="true"
+              aria-label={t.resetAllConfirmTitle}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-2xl border p-5"
+              style={{
+                background: "var(--color-surface)",
+                borderColor: "var(--color-gold-soft)",
+                borderRadius: "var(--card-radius)",
+                boxShadow: "0 20px 50px -20px rgba(var(--color-shadow-rgb), 0.5)",
+              }}
+            >
+              <h3 className="text-[16px] font-bold" style={{ color: "var(--color-text-primary)" }}>
+                {t.resetAllConfirmTitle}
+              </h3>
+              <p className="mt-2 text-[13px] leading-[1.6]" style={{ color: "var(--color-text-muted)" }}>
+                {t.resetAllConfirmBody}
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={handleResetAll}
+                  className="w-full rounded-full py-2.5 text-[13.5px] font-bold"
+                  style={{ background: "#8a3b3b", color: "#fbf2ee" }}
+                >
+                  {t.resetAllConfirmConfirm}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingResetAll(false)}
+                  className="w-full rounded-full py-2.5 text-[13.5px] font-semibold"
+                  style={{ boxShadow: "inset 0 0 0 1.5px var(--color-gold-soft)", color: "var(--color-text-primary)" }}
+                >
+                  {t.resetAllConfirmCancel}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <BottomNav
           className="mt-2"

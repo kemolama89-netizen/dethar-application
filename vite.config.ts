@@ -28,6 +28,18 @@ export default defineConfig(({ command, isPreview }) => ({
   // the next port, which would otherwise look like this same "forwarded
   // but unreachable" symptom for a different reason (the forwarded port
   // number no longer matching where the server actually is).
-  server: { host: true, port: 5173, strictPort: true },
-  preview: { host: true, port: 4173, strictPort: true },
+  // `host: true` makes the server reachable from outside the container,
+  // but Vite 5+'s DNS-rebinding protection then rejects any request whose
+  // Host header isn't localhost/the bind address — exactly what the
+  // platform's forwarded preview domain sends. Vite's own response to a
+  // blocked host is a 403 with Content-Type: text/plain, which is what
+  // was actually triggering the browser's "download" prompt instead of
+  // rendering the app (a preview surface treats a non-text/html response
+  // as a file to save, not a page to display) — this was never a
+  // Content-Type problem on OUR index.html, which already serves
+  // correctly as text/html to any request Vite accepts. `allowedHosts:
+  // true` disables that host check entirely, matching `host: true`'s own
+  // "this dev server is meant to be reached from outside" intent.
+  server: { host: true, port: 5173, strictPort: true, allowedHosts: true },
+  preview: { host: true, port: 4173, strictPort: true, allowedHosts: true },
 }))

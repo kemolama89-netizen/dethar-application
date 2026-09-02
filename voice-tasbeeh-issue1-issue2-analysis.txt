@@ -1,0 +1,80 @@
+# Analysis — no code changed yet
+
+I inspected the full current `useVoiceTasbeeh.ts` and, for Issue 2's design, read-only-checked how `TasbeehScreen.tsx` consumes the hook's `status` (it exhaustively switches on each `VoiceTasbeehStatus` value with a translated message, and derives `voiceActive` from `status === "requesting" || "listening"` — this matters for my status-value decision below).
+
+---
+
+## A) Root cause — Issue 1
+
+`recognition.onresult` reads `const targetTokens = tokenize(targetRef.current);` (line 535) fresh on every invocation — it has no notion of "which target was selected when this `resultIndex` started accumulating." The target-change effect (lines 483–487) calls `resetAll("target-changed")`, which resets `highestCommittedIndexRef` to `-1` and `inFlightIndexRef` to `null`, but does **not** stop or restart the underlying `SpeechRecognition` instance — recognition keeps running continuously across a target switch, by design (so switching dhikr doesn't require the mic to restart).
+
+Because the floor resets to `-1` and `inFlightIndexRef` resets to `null`, a **late-arriving event for an index that began accumulating under the old target** looks, to the loop, exactly like a brand-new segment: `i <= highestCommittedIndexRef.current` is false (`-1` floors nothing), and `switchedSegment` evaluates `true`. So it gets fully processed — tokenized, replayed, potentially committed — against whatever target is *currently* selected, using words that were never spoken as an attempt at that new dhikr. This is exactly what the real log showed at `13:24:21.884`–`13:24:22.606`: segment `i=22`'s stale final result, carrying the *old* target's accumulated transcript, arrived after the switch and was evaluated against the new target (harmlessly, in that instance, only because none of its stray words happened to equal the new target's first word — but the mechanism is unguarded).
+
+## B) Proposed minimal fix — Issue 1 (generation/floor guard)
+
+Reuse the **existing** staleness-guard mechanism (`highestCommittedIndexRef` + the `i <= highestCommittedIndexRef.current` check at the top of the loop) rather than adding a parallel system, by changing what it gets reset *to* on a target change:
+
+1. Add `highestSeenIndexRef = useRef(-1)` — updated to `Math.max(highestSeenIndexRef.current, i)` unconditionally, as the very first statement inside the `onresult` loop, for every index the recognizer has ever mentioned (regardless of whether that index is otherwise skipped).
+2. Give `resetSessionBookkeeping`/`resetAll` an optional `staleIndexFloor = -1` parameter, used instead of the literal `-1` when setting `highestCommittedIndexRef.current`.
+3. At the **target-change** effect only, compute the floor from the current run's high-water mark and pass it through: `resetAll("target-changed", highestSeenIndexRef.current)`. This sets `highestCommittedIndexRef.current` to "everything the recognizer has told us about so far in this run" instead of `-1` — so any index at or below that (including a same-index late-arriving final) is caught by the *existing* `i <= highestCommittedIndexRef.current` guard and skipped via the *existing* `"stale result ignored"` log path, before any tokenizing/replay/commit logic ever runs.
+4. At the three call sites that precede a genuinely **new** recognizer run (`resetAll("mount")`, `resetSessionBookkeeping("session-restart")` in `onend`, `resetAll("devicechange-recovery")`), additionally reset `highestSeenIndexRef.current = -1` — because a new run renumbers indices from 0, so the old run's high-water mark must not carry over and block legitimate low indices in the new run.
+
+This is deliberately conservative: it treats the *entire* pre-switch index as stale (matching the real log's exact scenario — a segment that had effectively closed under the old target) rather than trying to salvage a hypothetical case where the recognizer keeps extending the *same* still-open index with genuinely new post-switch speech. I judge that narrower case low-probability (a finalized result index is never revisited per spec, so this only matters for a segment that *hadn't yet finalized* at the exact moment of the switch) and not worth the real complexity of a content-level split — consistent with "smallest robust fix," and the user can just repeat themselves if this rare timing lands badly, the same tolerance the app already has for other transient hiccups.
+
+## C) Where the guard applies, and why there
+
+Entirely inside the *existing* `i <= highestCommittedIndexRef.current` check at the top of `onresult`'s loop (line 541) — no new branch, no new guard location. This is the right place because it's the single chokepoint every index already passes through before any tokenizing/matching/commit logic runs; reusing it means Issue 1's fix cannot interact with `commonPrefixLength`/structural-commit at all (a stale index never reaches that code), satisfying constraint 6 by construction rather than by care.
+
+## D) Regression tests — Issue 1
+
+Using the existing `useVoiceTasbeeh.live.test.ts` harness (`MockSpeechRecognition`), I'll add:
+1. A stale, same-index late `isFinal` result arriving *after* `setTarget(...)`, carrying the old target's accumulated transcript — assert `h.net()` stays `0` for the new target.
+2. Same shape, but the stale content is deliberately constructed to *coincidentally begin with* the new target's own first word — proving the guard (not mere non-coincidence) is what prevents the count.
+3. Genuinely new speech on a fresh index right after a switch still counts normally against the new target (proves the fix doesn't over-block).
+4. Two rapid target switches in a row (mirroring the log's back-to-back switches within ~1s), each with a stale late result from an earlier target — none contaminate the currently-selected target's count.
+5. Full existing suite re-run (210/210) as the regression safety net — in particular the existing "dhikr-selection lifecycle" and "restart racing a dhikr switch" suites, which always use fresh indices post-switch and so shouldn't be affected, but I'll confirm empirically rather than assume.
+
+## E) Possible side effects / edge cases — Issue 1
+
+- Multiple rapid switches: the floor is monotonically non-decreasing (`highestSeenIndexRef` only grows), so repeated switches just keep raising it — safe.
+- A target switch before the recognizer has produced *any* event yet: floor stays `-1`, identical to current behavior.
+- No interaction with Issue 2's timer (different refs, different effect locations, only shared read of the `stopped` local — Issue 2 writes it, Issue 1 doesn't touch it).
+
+---
+
+## F) Root cause / design — Issue 2
+
+There is currently no session-level inactivity concept at all. `VALID_SETTLE_DELAY_MS` (1500ms) and `PENDING_ABANDON_DELAY_MS` (6000ms) only govern a single in-flight segment's match-state bookkeeping — neither stops recognition or the mic. Once `enabled` is true, `onend`'s auto-restart (line 801) keeps the session alive indefinitely regardless of whether the user is saying anything.
+
+**Definition of "meaningful activity"** (a genuine design choice, flagging it explicitly for your confirmation): I propose tying it to the *same* signal the code already uses to distinguish real content from noise — any `onresult` event that is **not** filtered out by the existing duplicate-transcript check (`arraysEqual(inFlightTokensRef.current, currentTokens)`, line 606). Concretely: any event that reaches the `"normalized transcript"` log line resets the clock; a repeated/unchanged interim re-emission does not. I chose this over a stricter "only resets on reaching valid/advancing progress" definition because the whole point of this multi-turn investigation has been that genuine, correctly-recited speech routinely produces transient `invalid` noise (mis-heard words, self-correcting partials) — a stricter definition risks the exact false-timeout failure mode this session has spent effort eliminating for counting. This directly satisfies your requirement 5 too: literal duplicate/repeated-identical interim results (a real, observed pattern in the device log — `"duplicate ignored"` fires constantly) never reset the timer under this definition.
+
+## G) Proposed minimal fix — Issue 2
+
+1. Add `inactivityTimeoutMs?: number` to `UseVoiceTasbeehArgs`, defaulting to a new module constant `DEFAULT_INACTIVITY_TIMEOUT_MS = 60000` — satisfies your configurability preference without hardcoding, and lets tests use small values for fast, deterministic runs.
+2. Inside the `[enabled]` effect (not a `useRef` — a plain `let inactivityTimer`, mirroring the existing `restartTimer` pattern, since it's fully re-created each time the effect re-runs):
+   - `scheduleInactivityTimeout()`: clears then reschedules `inactivityTimer` for `inactivityTimeoutMs` from now, calling `stopForInactivity`.
+   - `stopForInactivity()`: if `stopped` is already true, no-op (mirrors the existing guard pattern in `onend`'s restart path); otherwise sets `stopped = true` (blocks `onend`'s auto-restart, reusing the existing flag with zero new coordination), calls `recognition.abort()` (not `.stop()` — deliberately, so no trailing final result can fire and be processed after the decision to stop, directly satisfying requirement 3), and updates `status`.
+   - Call `scheduleInactivityTimeout()` once up front, right before the initial `recognition.start()` attempt — the clock starts the moment listening begins, even if the user never says anything (satisfies requirement 1's "no activity for 60s" from a cold start, not just from first speech).
+   - Call `scheduleInactivityTimeout()` again inside `onresult`, only for events that pass the existing duplicate check (satisfies requirement 4/5 per the definition above).
+   - **Deliberately not** rescheduled in `onstart` on every session auto-restart — Safari restarts sessions very eagerly (per this file's own platform notes); if a bare restart counted as "activity," the timeout would effectively never fire on the platform that needs it most. The clock only extends on genuine recognized content.
+   - Clear `inactivityTimer` in the effect's existing cleanup function, alongside `restartTimer`/`flashTimer.id`/`forgetTimerRef.current`.
+3. **Status value**: I checked `TasbeehScreen.tsx` — it exhaustively branches on each `VoiceTasbeehStatus` string with its own translated message, and derives `voiceActive` from `status === "requesting" || "listening"`. Reusing `"idle"` would contradict that value's own documented meaning ("voice mode is off" — but `enabled` is still `true` from the caller's perspective here) and would silently show a blank message block. I propose adding one new status value, `"timeout"`, to the `VoiceTasbeehStatus` union. `voiceActive` in `TasbeehScreen.tsx` will correctly become `false` for it automatically (it only matches `"requesting"`/`"listening"`) — functionally correct with **zero changes to `TasbeehScreen.tsx`**, since its existing unmatched-status fallback (an empty message block) is graceful, not broken. I will not touch `TasbeehScreen.tsx` in this turn — if you want a specific user-facing message for this state later, that's a distinct, separate follow-up.
+
+## H) Regression tests — Issue 2
+
+1. No meaningful activity for the configured timeout → recognition stops: mount with a small override (e.g. 500ms), advance fake timers past it with zero `onresult` activity, assert `recognition.started === false` (i.e. `.abort()` was called) and `status === "timeout"`.
+2. User resumes before the timeout → timer resets, recognition continues: advance partway (e.g. 300ms of 500ms), fire one genuine `onresult`, advance another 300ms (600ms total, which would have exceeded 500ms without the reset) — assert still listening.
+3. Repeated identical/duplicate interim results alone cannot prevent the timeout: fire the *same* unchanged transcript repeatedly across the whole window — assert the timeout still fires (proves the fix is tied to the existing dedup check, not merely "any event").
+4. Timeout cannot commit an extra repetition: build some genuine partial progress, then let the (small, configured) inactivity window elapse with no further speech — assert `matches`/`rollbacks` are unchanged by the abort itself (no spurious `onMatch`/`onRollback`).
+5. A normal, complete session well under the timeout counts exactly as before, with the new timer present but inert — plus a full re-run of the existing 210-test suite as the regression safety net.
+
+## I) Possible side effects / edge cases — Issue 2
+
+- `recognition.abort()` still fires `onend` per spec; since `stopped` is set `true` *before* calling it, the existing `if (stopped) return;` guard in `onend` already prevents any auto-restart — no new coordination needed there.
+- By the time 60s of *true* inactivity has elapsed, any earlier `pending` progress would already have been forgotten by the 6s `PENDING_ABANDON_DELAY_MS` timer, and any earlier `valid` credit was already applied synchronously via `onMatch` at the moment it was reached — so there is structurally nothing "in flight" left to lose or falsely commit at the 60s mark.
+- No interaction with `commonPrefixLength`/structural-commit (different code path entirely) or with Issue 1's floor guard (different refs, no shared writes).
+- `voiceEnabled` in `TasbeehScreen.tsx` (the caller's own toggle state) is not touched by this fix — after an inactivity stop, the toggle will still visually read "on" even though listening has internally stopped, since this hook has no mechanism to reach back and flip the caller's own state. Fixing that would mean adding a callback prop and touching `TasbeehScreen.tsx`, which is out of scope unless you want it as a deliberate follow-up.
+
+---
+
+Waiting for your approval (and confirmation/adjustment on the two flagged design decisions — the `"timeout"` status name, and the "any non-duplicate transcript = meaningful activity" definition) before touching any code.

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { INITIAL_MATCH_STATE, commonPrefixLength, contractWordSplits, expandFastSpeechMerges, replayTokens, tokenize } from "./voiceTasbeehMatch";
+import { INITIAL_MATCH_STATE, commonPrefixLength, contractWordSplits, expandFastSpeechMerges, historicalOverlapLength, replayTokens, tokenize } from "./voiceTasbeehMatch";
 import type { MatchState } from "./voiceTasbeehMatch";
 import { pushDiagLog } from "./voiceDiagnosticsOverlay";
 
@@ -202,7 +202,20 @@ export function detectAndroidPlatform(): boolean {
 // what makes listening feel unbroken across a whole Voice Tasbeeh session
 // rather than a single utterance. The delay avoids hammering `start()` in a
 // tight loop if a browser ends sessions instantly for some reason.
-const RESTART_DELAY_MS = 200;
+//
+// Was 200ms; raised to 300ms specifically to give the native recognizer's
+// PREVIOUS session more real time to fully quiesce before the next
+// start() call — confirmed via device logs as a real InvalidStateError
+// race (calling start() while the prior native session hadn't finished
+// tearing down yet). scheduleRestart already retries automatically on
+// exactly that throw (see its own doc below), reusing this SAME delay for
+// every retry — so if 200ms was too short and several retries were each
+// throwing in a row, the visible gap before recognition actually resumes
+// was the SUM of all those failed attempts, not a single 200ms wait. A
+// slightly longer delay makes the FIRST attempt far more likely to
+// succeed, which is what actually eliminates the noticeable pause — not
+// a lower number.
+const RESTART_DELAY_MS = 300;
 
 // How long the "justMatched" flash stays true — purely cosmetic pacing for
 // the calm, momentary UI confirmation described in the spec; unrelated to
@@ -300,6 +313,26 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
   // if some implementation violated it).
   const highestCommittedIndexRef = useRef(-1);
 
+  // The highest recognition result index the recognizer has ever
+  // mentioned in the CURRENT recognizer run, updated unconditionally for
+  // EVERY index onresult's loop sees — including ones skipped as stale —
+  // unlike highestCommittedIndexRef, which only advances when a segment
+  // actually finalizes. This is the TARGET-CHANGE STALE-INDEX FLOOR: see
+  // the `targetPhrase` effect below for why a dhikr switch needs it.
+  // Reset to -1 only when a genuinely NEW recognizer run starts (mount,
+  // an auto-restart after onend, or devicechange-recovery) — a fresh
+  // `start()` renumbers result indices from 0, so a stale high-water mark
+  // from the OLD run must never carry over and block legitimate low
+  // indices in the new one.
+  const highestSeenIndexRef = useRef(-1);
+
+  // Bumped once per target change — carried only for diagnostic logging
+  // (see the `targetPhrase` effect below); the actual cross-target
+  // staleness guard is enforced via highestSeenIndexRef/
+  // highestCommittedIndexRef, since a raw SpeechRecognition result has no
+  // notion of "generation" of its own to tag or compare against.
+  const targetGenerationRef = useRef(0);
+
   // IN-FLIGHT REPLAY — bookkeeping for the ONE recognition segment
   // currently being tracked (not yet finalized, or just finalized this
   // same event before the loop moves to the next index). Every time that
@@ -335,6 +368,29 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
   // segment's tokens position-by-position (commonPrefixLength) can only
   // ever find an equal-or-shorter overlap, never overshoot.
   const inFlightCommittedTokensRef = useRef<string[]>([]);
+
+  // TARGET-SWITCH BOUNDARY — for the ONE result index (if any) that was
+  // still open/in-flight at the exact moment the target last changed:
+  // the FULL token snapshot that index held AT THAT MOMENT. A raw
+  // SpeechRecognition result index can remain open ACROSS a dhikr
+  // switch — confirmed on a real device, where index `i` kept producing
+  // more transcript content for many seconds after the target changed —
+  // so treating the WHOLE index as stale (the older, coarser floor
+  // below) silently discards every word spoken toward the NEW target for
+  // as long as the recognizer keeps extending that SAME index instead of
+  // starting a fresh one. This is what lets the SAME index keep being
+  // processed after a switch while still excluding exactly the content
+  // that existed before it: consumed (cleared) the next time this index
+  // is actually seen again, in onresult's `switchedSegment` block below,
+  // where it seeds `inFlightCommittedTokensRef` instead of the usual
+  // empty reset — from that point on, the EXISTING commonPrefixLength
+  // checkpoint machinery (built for this exact purpose already) excludes
+  // it automatically, and only genuinely-new-since-the-switch tokens
+  // ever reach the new target's matcher. `null`/empty whenever nothing
+  // was open at switch time — nothing to preserve, the coarser floor
+  // alone is correct and unchanged for that case.
+  const targetSwitchBoundaryIndexRef = useRef<number | null>(null);
+  const targetSwitchBoundaryTokensRef = useRef<string[]>([]);
 
   // Backs BOTH VALID_SETTLE_DELAY_MS and PENDING_ABANDON_DELAY_MS — only
   // one is ever relevant at a time (whichever the current utterance's
@@ -536,9 +592,27 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
   // `silent`: resetAll (below) logs its own single "session reset" line
   // covering both parts of a full reset — passing true here avoids a
   // redundant second line for the bookkeeping half of that same reset.
-  const resetSessionBookkeeping = (reason: string, silent = false) => {
-    if (!silent) logVoice("session reset", { reason, kind: "bookkeeping-only", committedTotalPreserved: committedTotalRef.current });
-    highestCommittedIndexRef.current = -1;
+  // `staleIndexFloor`: what to set highestCommittedIndexRef to (instead of
+  // the literal -1) — see highestSeenIndexRef's own doc above. A TARGET
+  // CHANGE (not a new recognizer run) passes the CURRENT run's high-water
+  // mark here, so any index at or below it — including one still
+  // in-flight, not-yet-finalized under the OLD target — is caught by the
+  // EXISTING `i <= highestCommittedIndexRef.current` guard in onresult and
+  // skipped via the existing "stale result ignored" path, before any
+  // tokenizing/replay/commit logic for the NEW target ever runs on it.
+  // Defaults to -1 (its original literal value) for every other caller,
+  // for whom there is no old run's high-water mark to protect against.
+  // `newRecognizerRun`: true ONLY for a genuinely new underlying
+  // `recognition.start()` (mount, auto-restart after onend,
+  // devicechange-recovery) — a fresh run renumbers result indices from 0,
+  // so highestSeenIndexRef itself must also reset, or it would wrongly
+  // treat the new run's own low indices as still-stale leftovers from the
+  // old one.
+  const resetSessionBookkeeping = (reason: string, opts: { silent?: boolean; staleIndexFloor?: number; newRecognizerRun?: boolean } = {}) => {
+    const { silent = false, staleIndexFloor = -1, newRecognizerRun = false } = opts;
+    if (!silent) logVoice("session reset", { reason, kind: "bookkeeping-only", committedTotalPreserved: committedTotalRef.current, staleIndexFloor });
+    highestCommittedIndexRef.current = staleIndexFloor;
+    if (newRecognizerRun) highestSeenIndexRef.current = -1;
     inFlightIndexRef.current = null;
     inFlightTokensRef.current = null;
     inFlightTotalRef.current = 0;
@@ -555,17 +629,66 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
   // on). Never used for an in-session or auto-restart boundary — see
   // resetSessionBookkeeping's own doc for why that must preserve the
   // checkpoint instead.
-  const resetAll = (reason: string) => {
+  const resetAll = (reason: string, opts: { staleIndexFloor?: number; newRecognizerRun?: boolean } = {}) => {
     logVoice("session reset", { reason, kind: "full-discards-progress", discardedTotal: committedTotalRef.current });
     committedStateRef.current = INITIAL_MATCH_STATE;
     committedTotalRef.current = 0;
-    resetSessionBookkeeping(reason, true);
+    resetSessionBookkeeping(reason, { ...opts, silent: true });
   };
 
   useEffect(() => {
     targetRef.current = targetPhrase;
-    logVoice("target changed", { target: targetPhrase });
-    resetAll("target-changed");
+    targetGenerationRef.current += 1;
+
+    // OPEN-INDEX CAPTURE — confirmed on a real device: a result index can
+    // remain open (still receiving updates) ACROSS a dhikr switch, for
+    // many seconds. The OLD floor-only guard treated that entire index as
+    // stale forever after any switch — correct for content that existed
+    // before the switch (several adhkar share a prefix like "سبحان الله",
+    // so it must never be replayed against the new target), but it also
+    // silently discarded every word spoken AFTER the switch for as long
+    // as the recognizer kept extending that SAME index instead of
+    // starting a fresh one — confirmed live: index `i` kept producing new
+    // transcript content for ~15 seconds after a switch, all of it
+    // rejected as "stale result ignored", with nothing ever reaching the
+    // new target's matcher.
+    //
+    // Fix: if a segment is CURRENTLY in-flight right now (inFlightIndexRef
+    // is not null), snapshot its CURRENT tokens as the boundary for THAT
+    // SPECIFIC index — onresult's `switchedSegment` block (below) seeds
+    // `inFlightCommittedTokensRef` from this the next time this exact
+    // index is seen, so the EXISTING commonPrefixLength checkpoint
+    // machinery excludes precisely the pre-switch prefix and nothing
+    // more; only genuinely-new-since-the-switch tokens ever reach the new
+    // target. The stale-index FLOOR itself is set one below that open
+    // index (not AT it), so it alone survives the `i <=
+    // highestCommittedIndexRef.current` guard in onresult — every OLDER,
+    // already-closed index is still fully rejected, unchanged from
+    // before. If nothing is in-flight right now, there is no boundary to
+    // preserve and the floor reverts to the original, coarser behavior
+    // (the run's full high-water mark) — correct and sufficient for that
+    // case, and exactly what ran before this fix.
+    //
+    // Multiple rapid switches: each switch re-reads `inFlightIndexRef`/
+    // `inFlightTokensRef` FRESH, so if the same index survives several
+    // switches in a row, each one re-captures the boundary from the
+    // LATEST known transcript — stale content from any earlier target
+    // (not just the immediately previous one) is excluded, since the
+    // boundary always reflects everything recognized up to the MOST
+    // RECENT switch, never a stale earlier snapshot.
+    const openIndex = inFlightIndexRef.current;
+    const openTokens = inFlightTokensRef.current;
+    if (openIndex !== null && openTokens !== null) {
+      targetSwitchBoundaryIndexRef.current = openIndex;
+      targetSwitchBoundaryTokensRef.current = openTokens;
+    } else {
+      targetSwitchBoundaryIndexRef.current = null;
+      targetSwitchBoundaryTokensRef.current = [];
+    }
+    const staleIndexFloor = openIndex !== null ? openIndex - 1 : highestSeenIndexRef.current;
+
+    logVoice("target changed", { target: targetPhrase, generation: targetGenerationRef.current, staleIndexFloor, openIndexPreserved: openIndex });
+    resetAll("target-changed", { staleIndexFloor });
   }, [targetPhrase]);
 
   useEffect(() => {
@@ -633,7 +756,7 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
-    resetAll("mount");
+    resetAll("mount", { newRecognizerRun: true });
 
     recognition.onstart = () => {
       logVoice("session started", { target: targetRef.current });
@@ -658,9 +781,20 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
       const targetTokens = tokenize(targetRef.current);
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
+        // Recorded UNCONDITIONALLY, before the stale-skip check below, for
+        // every index this run's recognizer has ever mentioned — this is
+        // the high-water mark a target change reads (see the
+        // `targetPhrase` effect above) to set the NEXT target's stale-
+        // index floor. Must happen even for an index that gets skipped
+        // right below, since a skipped index still genuinely belongs to
+        // this run.
+        highestSeenIndexRef.current = Math.max(highestSeenIndexRef.current, i);
+
         // A finalized result's index is never revisited per spec — this
         // is a defensive no-op if some implementation did anyway, rather
-        // than a normal code path.
+        // than a normal code path. This same guard is also what makes a
+        // TARGET CHANGE's stale-index floor effective: see
+        // resetSessionBookkeeping's `staleIndexFloor` doc above.
         if (i <= highestCommittedIndexRef.current) {
           logVoice("stale result ignored", { i });
           continue;
@@ -712,7 +846,23 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
           inFlightIndexRef.current = i;
           inFlightTokensRef.current = null;
           inFlightTotalRef.current = committedTotalRef.current;
-          inFlightCommittedTokensRef.current = [];
+          // TARGET-SWITCH BOUNDARY consumption — see its own doc above
+          // (near its ref declarations) and the `targetPhrase` effect's
+          // doc for the full reasoning. This index is "switching" here
+          // only because a target change nulled inFlightIndexRef out from
+          // under it (the browser itself never stopped extending it) —
+          // if a boundary was captured for EXACTLY this index, seed the
+          // checkpoint with the pre-switch content instead of the usual
+          // empty reset, so the existing commonPrefixLength machinery
+          // excludes only that prefix and nothing more. Consumed
+          // (cleared) immediately so a LATER, genuinely fresh index never
+          // inherits it, and a follow-up target switch on this same index
+          // captures its own fresh boundary instead of reusing this one.
+          inFlightCommittedTokensRef.current = targetSwitchBoundaryIndexRef.current === i ? targetSwitchBoundaryTokensRef.current : [];
+          if (targetSwitchBoundaryIndexRef.current === i) {
+            targetSwitchBoundaryIndexRef.current = null;
+            targetSwitchBoundaryTokensRef.current = [];
+          }
         }
 
         // This segment's current text is EXACTLY what we already replayed
@@ -773,7 +923,90 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
         // segment.
         const previousState = switchedSegment ? committedStateRef.current : inFlightEndStateRef.current;
 
-        const tokensSinceCheckpoint = currentTokens.slice(commonPrefixLength(currentTokens, inFlightCommittedTokensRef.current));
+        // CROSS-SEGMENT STALE-CONTENT GUARD — see historicalOverlapLength's
+        // own doc in voiceTasbeehMatch.ts for the full reasoning; this is
+        // the useVoiceTasbeeh-side half of it. `committedTotalRef` (a bare
+        // number) survives a segment switch, but until now the actual
+        // committed WORDS never did — so a brand-new result index whose
+        // own transcript happens to replay/duplicate already-counted
+        // audio (a confirmed real recognizer behavior — see the
+        // "single-dhikr over-counting" investigation, reproduced live
+        // going 20->45 on "سبحان الله") had its full content re-credited
+        // from scratch, since nothing here remembered what words had
+        // already earned that total.
+        //
+        // REVISED (real-device follow-up — a SECOND capture, same
+        // "سبحان الله" target, committedCount 27): the original version of
+        // this guard compared currentTokens against a historical
+        // reconstruction sized by the ENTIRE committedTotalRef.current —
+        // meaning the "protected zone" only ever GREW with the session's
+        // running count and NEVER released. For a 2-token target, genuine
+        // new speech is byte-identical to that reconstruction at every
+        // position (there is nothing else it COULD say), so once a
+        // single still-open segment grew past one repetition, EVERY
+        // subsequent token — no matter how many more genuine repetitions
+        // followed, no matter how long the user kept speaking — matched
+        // the reconstruction and was silently withheld. Captured live:
+        // 13 consecutive, cleanly-recognized repetitions received
+        // delta:0 across a single ~16-second growing segment.
+        //
+        // The fix narrows WHEN this guard is even consulted, using a
+        // signal that is structural (how much brand-new content arrived
+        // in ONE onresult event), never a wall-clock timer: a genuine
+        // recognizer replay/restart artifact (the confirmed real
+        // mechanism behind the ORIGINAL 20->45 bug) dumps its whole
+        // buffered chunk into a segment at once — multiple repetitions'
+        // worth of tokens appearing in a SINGLE event that were not
+        // present in the PREVIOUS event for this same segment. Genuine
+        // incremental speech, by contrast, can only ever add a small,
+        // ordinary number of new tokens per event (ordinary ASR
+        // granularity — a word or two at a time), because real speech
+        // takes real time to arrive as it's recognized. So: only a
+        // single-event jump LARGER than one full repetition is ever
+        // treated as stale-history evidence — a small, incremental
+        // per-event advance is NEVER subjected to this guard, no matter
+        // how large the segment has grown overall or how long it's been
+        // open. This is what makes the protected zone self-releasing
+        // instead of growing indefinitely with the visible count: it
+        // only ever engages against a SUDDEN block of new content, never
+        // against a slow trickle of it, which is exactly the shape the
+        // real replay incident had and the real under-count incident
+        // did not.
+        //
+        // Every completed repetition's own tokens are, by construction,
+        // always an exact copy of targetTokens (that's what "valid"
+        // means) — so the full committed history can still be
+        // reconstructed on demand from just the total and the current
+        // target, with no separate ref to ever fall out of sync. Bounded
+        // to `currentTokens.length` since matching further than that is
+        // pointless (commonPrefixLength's own `max` does the same) — and
+        // ALSO bounded by `committedTotalRef.current` itself, so a jump
+        // can never be excluded as "historical" beyond what could
+        // plausibly have been committed before now; anything past that
+        // genuinely cannot be an echo of prior history and is credited.
+        //
+        // Once a jump IS excluded, that exclusion is folded into
+        // `inFlightCommittedTokensRef` (exactly like a forget-timer's own
+        // soft-commit) so it PERSISTS across this segment's later
+        // events — otherwise the next event's own (small) increment would
+        // see an empty checkpoint again and re-replay the whole,
+        // already-excluded prefix from scratch.
+        const targetLen = targetTokens.length;
+        const previousSegmentLength = switchedSegment ? 0 : (inFlightTokensRef.current?.length ?? 0);
+        const newTokensThisEvent = currentTokens.length - previousSegmentLength;
+        let checkpointBoundary = commonPrefixLength(currentTokens, inFlightCommittedTokensRef.current);
+        if (targetLen > 0 && newTokensThisEvent > targetLen) {
+          const historicalTokenCount = Math.min(committedTotalRef.current * targetLen, currentTokens.length);
+          const historicalTokens: string[] = new Array(historicalTokenCount);
+          for (let h = 0; h < historicalTokenCount; h++) historicalTokens[h] = targetTokens[h % targetLen];
+          const historicalOverlap = historicalOverlapLength(currentTokens, historicalTokens);
+          const staleHistoryBoundary = historicalOverlap > targetLen ? historicalOverlap : 0;
+          if (staleHistoryBoundary > checkpointBoundary) {
+            checkpointBoundary = staleHistoryBoundary;
+            inFlightCommittedTokensRef.current = currentTokens.slice(0, staleHistoryBoundary);
+          }
+        }
+        const tokensSinceCheckpoint = currentTokens.slice(checkpointBoundary);
         const { state, netDelta } = replayTokens(committedStateRef.current, tokensSinceCheckpoint, targetTokens);
         const replayTotal = committedTotalRef.current + netDelta;
 
@@ -782,6 +1015,24 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
         // last time we looked at this segment" from everything already
         // permanently resolved before it.
         const delta = replayTotal - inFlightTotalRef.current;
+
+        // TEMPORARY DIAGNOSTIC LOGGING — added ONLY to capture a real
+        // device log for the "سبحان الله" single-dhikr over-counting
+        // investigation; purely additive (reads already-computed values,
+        // never alters control flow or any counting decision) and slated
+        // for removal once that investigation concludes. Deliberately its
+        // own single line (not folded into an existing log call) so it's
+        // trivial to grep for and delete as one unit later.
+        logVoice("DIAG single-dhikr", {
+          resultIndex: event.resultIndex,
+          i,
+          isFinal: result.isFinal,
+          rawTranscript: transcript,
+          normalizedTokens: currentTokens,
+          checkpointBoundary,
+          committedCount: committedTotalRef.current,
+          delta,
+        });
 
         if (previousState.status !== state.status || previousState.progress !== state.progress) {
           logVoice("progress changed", { i, from: `${previousState.status}:${previousState.progress}`, to: `${state.status}:${state.progress}` });
@@ -886,14 +1137,77 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
       }
     };
 
-    // Set the instant an "audio-capture" error fires (below), cleared once
-    // a devicechange-triggered retry (further below) succeeds in calling
-    // start() again. Distinguishes "gave up, and nothing suggests a mic
-    // will reappear" (normal quiescent no-mic state) from "gave up, but
-    // still worth retrying if a device shows up" — used only by the
-    // devicechange listener, never read anywhere in the matching/counting
+    // Set only by handleDeviceChange's OWN retry failing (see its catch
+    // block further below) — a devicechange-triggered start() that itself
+    // threw, distinct from the ordinary scheduleRestart retry loop. Read
+    // only by handleDeviceChange itself, never in the matching/counting
     // path.
     let audioCaptureFailed = false;
+
+    // Schedules ONE restart attempt RESTART_DELAY_MS from now. Always
+    // clears any PREVIOUSLY pending restart timer first — this is what
+    // keeps `restartTimer` a true single-timer guard even when two call
+    // sites could otherwise both schedule one in quick succession (e.g.
+    // an "audio-capture" onerror followed moments later by the onend the
+    // spec says always follows an error): without this, the second call
+    // would leave the FIRST timer still silently pending (reassigning the
+    // `restartTimer` variable does not itself cancel the old timeout),
+    // and both would eventually fire, the second one calling
+    // recognition.start() on an already-running recognizer purely by
+    // accident. Cleanup's own `window.clearTimeout(restartTimer)` still
+    // always cancels whichever ONE timer is currently pending.
+    //
+    // If `recognition.start()` throws — confirmed on real devices as a
+    // transient InvalidStateError from calling start() before the
+    // previous native session has fully quiesced, NOT a sign anything is
+    // actually broken — this calls itself again instead of giving up, so
+    // Voice Tasbeeh keeps trying to recover listening exactly as the
+    // product requires (stopping only for user-disable, a genuinely fatal
+    // onerror, the inactivity timeout, or unmount, all of which already
+    // set `stopped = true` and are checked first here). This never
+    // becomes a tight/unbounded loop in practice: retries stay spaced at
+    // the SAME RESTART_DELAY_MS as a normal restart, and if start() never
+    // actually succeeds, no genuine speech ever reaches onresult either —
+    // so armInactivityTimer never resets, and the ALREADY-ARMED
+    // inactivity timer fires on its own schedule regardless of how many
+    // retries happened, sets `stopped = true`, and this loop ends cleanly
+    // on its own the next time its pending timer fires.
+    const scheduleRestart = (reason: string) => {
+      window.clearTimeout(restartTimer);
+      restartTimer = window.setTimeout(() => {
+        if (stopped) return;
+        try {
+          // Fold any still-open segment's progress into the committed
+          // checkpoint FIRST — same commit that would normally happen on
+          // `isFinal` or a same-session segment switch — so we capture
+          // what was truly last resolved (valid or not) rather than
+          // silently discarding in-flight progress that never got a
+          // chance to finalize before the browser ended this session.
+          // Idempotent on a retry that follows one that already ran it
+          // (a no-op the second time — see commitInFlight's own guard —
+          // and resetSessionBookkeeping resetting already-reset values).
+          commitInFlight("session-restart");
+          // Deliberately resetSessionBookkeeping(), NOT resetAll(): a
+          // fresh start() begins a new recognition run whose result
+          // indices count from 0 again, so the INDEX bookkeeping must
+          // reset — but the match-progress checkpoint commitInFlight()
+          // just folded the ending session's progress into must SURVIVE
+          // into the new session, not be wiped a line later. Ending
+          // mid-utterance is NOT rare here — Safari/iPad in particular
+          // ends `continuous` sessions eagerly, often mid-phrase for
+          // anything longer than a short dhikr — so a long dhikr's
+          // genuinely in-progress recitation must be able to continue
+          // seamlessly into the next session instead of restarting from
+          // zero every time the browser cuts the session.
+          resetSessionBookkeeping("session-restart", { newRecognizerRun: true });
+          logVoice("recognition restart", { reason });
+          recognition.start();
+        } catch (err) {
+          logVoice("recognition error", { error: "restart-threw", detail: err instanceof Error ? err.message : String(err) });
+          scheduleRestart("retry-after-restart-threw");
+        }
+      }, RESTART_DELAY_MS);
+    };
 
     recognition.onerror = (event) => {
       // Logged UNCONDITIONALLY, including values otherwise silently
@@ -913,16 +1227,36 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
         // Ambiguous by nature: this can mean "there has never been a
         // microphone" OR "the microphone that was in use a moment ago
         // just disappeared" — e.g. Bluetooth earbuds disconnecting, or a
-        // wired headset being unplugged, mid-session. Stop the normal
-        // onend auto-restart loop (so a genuinely mic-less device doesn't
-        // get hammered with repeated start() calls) but stay recoverable:
-        // see the "devicechange" listener below, which retries exactly
-        // once a device change suggests a microphone might be available
-        // again — the ONLY mechanism by which this ever un-stops itself.
-        stopped = true;
-        audioCaptureFailed = true;
-        clearInactivityTimer();
-        setVoiceStatus("no-mic", event.error);
+        // wired headset being unplugged, mid-session. CONFIRMED on a real
+        // device (the "static button" investigation) to also fire
+        // TRANSIENTLY mid-session with the microphone never actually
+        // having gone anywhere — treating it as unconditionally fatal
+        // left Voice Tasbeeh silently dead (status stuck at "no-mic", no
+        // restart ever scheduled) for however long it took an unrelated
+        // `devicechange` event to happen to fire, which has nothing to do
+        // with whether a microphone is actually available and nothing to
+        // do with the user's own speech (that apparent "waiting ~5
+        // seconds then speaking wakes it up" pattern was coincidence, not
+        // causation — confirmed by there being no code path connecting
+        // audio content to recovery at all).
+        //
+        // Fix: treat it exactly like a natural `onend` — schedule the
+        // SAME bounded restart loop already used there (never a new
+        // timing constant, never a new loop) instead of giving up.
+        // Deliberately does NOT set `stopped`, does NOT clear the
+        // inactivity timer, and does NOT change `status` here — matching
+        // exactly how the OTHER transient errors (no-speech/aborted/
+        // network) are already handled above: silently retried, with the
+        // untouched, already-armed 60-second inactivity timeout as the
+        // sole backstop if the microphone is genuinely, permanently gone
+        // (no genuine speech ever reaches onresult to keep resetting it,
+        // so it fires on its own schedule and cleanly reports "idle" —
+        // already an explicitly accepted terminal state). The
+        // `devicechange` listener further below is left in place as a
+        // secondary safety net; it simply won't have anything to do for
+        // this specific error anymore, since `stopped` no longer becomes
+        // true here for it to react to.
+        scheduleRestart("retry-after-audio-capture");
       } else if (event.error === "language-not-supported") {
         stopped = true;
         clearInactivityTimer();
@@ -933,40 +1267,7 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
     recognition.onend = () => {
       logVoice("session stopped", { willRestart: !stopped, committedTotal: committedTotalRef.current });
       if (stopped) return;
-      restartTimer = window.setTimeout(() => {
-        if (stopped) return;
-        try {
-          // Fold any still-open segment's progress into the committed
-          // checkpoint FIRST — same commit that would normally happen on
-          // `isFinal` or a same-session segment switch — so we capture
-          // what was truly last resolved (valid or not) rather than
-          // silently discarding in-flight progress that never got a
-          // chance to finalize before the browser ended this session.
-          commitInFlight("session-restart");
-          // Deliberately resetSessionBookkeeping(), NOT resetAll(): a
-          // fresh start() begins a new recognition run whose result
-          // indices count from 0 again, so the INDEX bookkeeping must
-          // reset — but the match-progress checkpoint commitInFlight()
-          // just folded the ending session's progress into must SURVIVE
-          // into the new session, not be wiped a line later. Ending
-          // mid-utterance is NOT rare here — Safari/iPad in particular
-          // ends `continuous` sessions eagerly, often mid-phrase for
-          // anything longer than a short dhikr — so a long dhikr's
-          // genuinely in-progress recitation must be able to continue
-          // seamlessly into the next session instead of restarting from
-          // zero every time the browser cuts the session.
-          resetSessionBookkeeping("session-restart");
-          logVoice("recognition restart", { reason: "auto-restart-after-end" });
-          recognition.start();
-        } catch (err) {
-          // Transient DOM exception (e.g. a stop()/start() race) — if
-          // start() throws HERE, no session ever begins, so no onend
-          // will ever fire again either; this rare-path log is what
-          // would reveal that silent-permanent-stall failure mode if
-          // it's actually happening on-device.
-          logVoice("recognition error", { error: "restart-threw", detail: err instanceof Error ? err.message : String(err) });
-        }
-      }, RESTART_DELAY_MS);
+      scheduleRestart("auto-restart-after-end");
     };
 
     // MICROPHONE DEVICE HANDLING — deliberately separate from everything
@@ -979,11 +1280,13 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
     // transparently; there is nothing here to "select" and nothing to
     // fake. The only thing genuinely actionable from this layer is
     // `navigator.mediaDevices`' own "devicechange" event, which fires
-    // when an input/output device is connected or disconnected — used
-    // ONLY to recover from the "audio-capture" fatal-stop above: if
-    // recognition had given up because no microphone was available, a
-    // device change might mean one just became available (e.g. AirPods
-    // just connected), so retry once. It deliberately does NOT touch a
+    // when an input/output device is connected or disconnected. A
+    // secondary safety net now that "audio-capture" (above) retries on
+    // its own via scheduleRestart rather than stopping outright: this
+    // only ever has anything to do if a devicechange-triggered restart
+    // itself throws (its own catch block below sets `audioCaptureFailed`
+    // for exactly that case) and a LATER device change gives it another
+    // chance. It deliberately does NOT touch a
     // currently-RUNNING session — the browser already transparently keeps
     // using whatever the current default input is for an ongoing or
     // freshly-started run, and forcing a restart while things are already
@@ -1007,7 +1310,7 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: 
         // state this hook only ever emits deltas into via onMatch/
         // onRollback), so the count and selected Dhikr are both
         // completely unaffected by a device reconnecting.
-        resetAll("devicechange-recovery");
+        resetAll("devicechange-recovery", { newRecognizerRun: true });
         recognition.start();
         armInactivityTimer("devicechange-recovery");
       } catch {

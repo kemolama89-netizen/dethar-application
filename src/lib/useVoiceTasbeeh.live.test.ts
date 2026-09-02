@@ -102,8 +102,8 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// RESTART_DELAY_MS in useVoiceTasbeeh.ts is 200ms — this must exceed it.
-const PAST_RESTART_DELAY_MS = 260;
+// RESTART_DELAY_MS in useVoiceTasbeeh.ts is 300ms — this must exceed it.
+const PAST_RESTART_DELAY_MS = 360;
 
 interface Harness {
   matches: number[];
@@ -626,7 +626,7 @@ describe("useVoiceTasbeeh — dhikr-selection lifecycle regression suite", () =>
 // PENDING_ABANDON_DELAY_MS = 6000ms — mirrored here rather than imported,
 // since they're deliberately not exported: only their externally-observable
 // effect matters). Every other test in this file either never lets real
-// time pass mid-utterance, or only advances past RESTART_DELAY_MS (200ms) —
+// time pass mid-utterance, or only advances past RESTART_DELAY_MS (300ms) —
 // neither approach can prove a PENDING utterance's progress actually
 // survives a multi-second natural breathing pause on the SAME still-open
 // segment (as opposed to surviving via a segment-index switch, which
@@ -2293,6 +2293,746 @@ describe("useVoiceTasbeeh — commit-vs-count invariant (LONG dhikr #5)", () => 
     });
     expect(h.net()).toBe(2);
     expect(h.matches).toEqual([1, 1]);
+    await h.unmount();
+  });
+});
+
+// ---------------------------------------------------------------------
+// Regression suite for the TARGET-CHANGE STALE-INDEX FLOOR
+// (highestSeenIndexRef in useVoiceTasbeeh.ts). Root cause: recognition
+// keeps running continuously across a dhikr switch (by design — switching
+// dhikr must not restart the mic), so a result index that was already
+// accumulating words under the OLD target — finalized or still
+// in-flight — can arrive AFTER the switch, carrying that OLD target's own
+// cumulative transcript. The old `resetAll("target-changed")` reset
+// highestCommittedIndexRef all the way to -1, so that stale index looked
+// exactly like a brand-new segment to the NEW target's matcher and got
+// tokenized/replayed against it. Several real adhkar share a literal
+// prefix ("سبحان الله"), so a stale segment's tokens can look like
+// genuine partial progress toward the new target purely by coincidence —
+// up to and including completing it from a single, later, unrelated word
+// (see the "FALSE-POSITIVE GUARD" case below for the exact mechanism).
+// The fix passes the run's current high-water mark of every index ever
+// seen (highestSeenIndexRef, updated unconditionally for every index
+// onresult's loop touches) as the new floor on a target change, so any
+// index at or below it is skipped via the EXISTING "stale result ignored"
+// guard, before any tokenizing/replay/commit logic for the new target
+// ever sees it.
+// ---------------------------------------------------------------------
+describe("useVoiceTasbeeh — target-change stale-transcript regression suite (shared-prefix adhkar)", () => {
+  const A = "سبحان الله"; // 2 tokens
+  const B = "سبحان الله وبحمده سبحان الله العظيم"; // 6 tokens — shares the "سبحان الله" prefix with A
+  const C = "سبحان الله وبحمده"; // 3 tokens — ALSO shares that same prefix
+
+  it("REQUIRED SEQUENCE: stale in-flight results from Target A delivered after switching to Target B do not advance B, then a genuine B recitation still counts exactly once", async () => {
+    const h = await mountVoiceTasbeeh(A);
+
+    // 1-2: Target A recognized normally, via an INTERIM result on index 0
+    // (continuous mode keeps this index open, not yet finalized).
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.9, false));
+    });
+    expect(h.net()).toBe(1);
+
+    // 3: switch to Target B — the underlying recognizer keeps running,
+    // completely unaware of the switch, on the SAME session/index.
+    await h.setTarget(B);
+
+    // 4: the recognizer, unaware of the switch, keeps delivering updates
+    // to that SAME still-open index — first re-emitting the exact stale
+    // "سبحان الله" transcript, then finalizing it.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.9, false));
+    });
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.95, true));
+    });
+
+    // 5: none of that may advance B's progress or count anything new.
+    expect(h.net()).toBe(1);
+    expect(h.matches).toEqual([1]);
+
+    // 6-7: a genuinely fresh, complete Target B recitation, on a NEW
+    // index, still counts exactly once.
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(B, 0.9, true));
+    });
+    expect(h.net()).toBe(2);
+    expect(h.matches).toEqual([1, 1]);
+
+    await h.unmount();
+  });
+
+  it("FALSE-POSITIVE GUARD: a stale Target-A segment finalizing right after switching to a 3-token Target C (also starting with \"سبحان الله\") must not let one later stray word complete C", async () => {
+    const h = await mountVoiceTasbeeh(A);
+
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.9, false));
+    });
+    expect(h.net()).toBe(1);
+
+    await h.setTarget(C);
+
+    // Stale finalization of the SAME index, still carrying Target A's own
+    // text — which happens to equal C's own first two words exactly.
+    // Without the fix, replaying this against C's matcher leaves a
+    // phantom "2 of 3 words already matched" checkpoint, even though the
+    // user never said a single word toward C yet.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.95, true));
+    });
+    expect(h.net()).toBe(1); // must not advance C's progress at all
+
+    // A single, later, unrelated stray word arrives on a fresh index —
+    // NOT a recitation of C. With the phantom checkpoint above, this
+    // word alone happens to be C's own third and final word, which would
+    // wrongly complete C from leftover Target-A content.
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult("وبحمده", 0.9, true));
+    });
+    expect(h.net()).toBe(1); // must NOT complete C via leftover A progress
+
+    // A genuine, complete recitation of C still counts normally.
+    await act(async () => {
+      h.recognition.fireResult(2, new MockResult(C, 0.9, true));
+    });
+    expect(h.net()).toBe(2);
+    expect(h.matches).toEqual([1, 1]);
+
+    await h.unmount();
+  });
+
+  it("REVERSE: stale in-flight results from Target B delivered after switching back to Target A do not advance A", async () => {
+    const h = await mountVoiceTasbeeh(B);
+
+    // Target B partially recited, still open (interim) on index 0 —
+    // genuinely begins with "سبحان الله", same as Target A.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان الله وبحمده", 0.9, false));
+    });
+    expect(h.net()).toBe(0); // not yet complete for B
+
+    await h.setTarget(A);
+
+    // The recognizer finalizes that SAME stale segment after the switch.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان الله وبحمده", 0.95, true));
+    });
+    expect(h.net()).toBe(0); // must NOT retroactively complete A either
+
+    // A genuine, fresh Target A recitation still counts normally.
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(A, 0.9, true));
+    });
+    expect(h.net()).toBe(1);
+    await h.unmount();
+  });
+
+  it("MULTI-ADHKAR CHURN: switching between three adhkar that all share \"سبحان الله\" never lets stale in-flight content from one contaminate the next", async () => {
+    const h = await mountVoiceTasbeeh(A);
+
+    // A recognized, still open.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.9, false));
+    });
+    expect(h.net()).toBe(1);
+
+    await h.setTarget(C); // switch 1: A -> C
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.95, true)); // stale A finalizing under C
+    });
+    expect(h.net()).toBe(1);
+
+    await h.setTarget(B); // switch 2: C -> B, with nothing genuinely said for C
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(C, 0.9, false)); // a stray, now-stale attempt at C, left open
+    });
+    expect(h.net()).toBe(1);
+
+    await h.setTarget(A); // switch 3: B -> A
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(C, 0.95, true)); // that same stale segment finally finalizes, now under A
+    });
+    expect(h.net()).toBe(1); // must not complete A via C's leftover tokens
+
+    // A genuine, fresh Target A recitation on a brand-new index still counts.
+    await act(async () => {
+      h.recognition.fireResult(2, new MockResult(A, 0.9, true));
+    });
+    expect(h.net()).toBe(2);
+    await h.unmount();
+  });
+});
+
+// ---------------------------------------------------------------------
+// Regression suite for the OPEN-INDEX TARGET-SWITCH BOUNDARY fix —
+// confirmed on a real device: a result index can stay open (still
+// receiving updates) ACROSS a dhikr switch, for many seconds, with the
+// OLD floor-only guard treating that whole index as permanently stale —
+// correctly rejecting pre-switch content, but ALSO silently discarding
+// every word spoken toward the NEW target for as long as the recognizer
+// kept extending that SAME index instead of starting a fresh one (the
+// real log showed ~15 seconds and two consecutive target switches worth
+// of genuine speech lost this way). Fix: capture the open index's exact
+// token snapshot at the moment of the switch and seed the existing
+// commonPrefixLength checkpoint with it, so only that specific pre-
+// switch prefix is excluded — everything appended afterward is replayed
+// normally against the new target.
+// ---------------------------------------------------------------------
+describe("useVoiceTasbeeh — open-index target-switch boundary", () => {
+  const A = "سبحان الله"; // 2 tokens
+  const B = "الحمد لله"; // 2 tokens, unrelated content (isolates this suite from the shared-prefix suite above)
+
+  it("A: SAME INDEX, OLD CONTENT ONLY -- re-emitting the unchanged pre-switch transcript on the still-open index must not count toward the new target", async () => {
+    const h = await mountVoiceTasbeeh(A);
+    // Index 0 left OPEN (interim, not final) at the moment of the switch.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false));
+    });
+    expect(h.net()).toBe(0);
+
+    await h.setTarget(B);
+
+    // The SAME index continues, re-emitting the exact same pre-switch
+    // content (no new words at all).
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false));
+    });
+    expect(h.net()).toBe(0); // no count for B from purely pre-switch content
+    await h.unmount();
+  });
+
+  it("B: SAME INDEX, NEW SUFFIX -- genuinely new tokens appended after the switch on the SAME index must count toward the new target", async () => {
+    const h = await mountVoiceTasbeeh(A);
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false)); // pre-switch: 1 stray token, index 0 stays open
+    });
+    expect(h.net()).toBe(0);
+
+    await h.setTarget(B);
+
+    // Same index (0) continues; the FULL new-target phrase is appended
+    // after the pre-switch "سبحان".
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(`سبحان ${B}`, 0.9, true));
+    });
+    expect(h.net()).toBe(1); // the genuinely new post-switch "الحمد لله" counts
+    await h.unmount();
+  });
+
+  it("C: SAME INDEX, OLD PREFIX + NEW SUFFIX -- only the post-switch portion may ever contribute, never the pre-switch prefix", async () => {
+    const h = await mountVoiceTasbeeh(A);
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(A, 0.9, false)); // pre-switch: a FULL "سبحان الله" left open (not final)
+    });
+    expect(h.net()).toBe(1); // credited under A while A is still selected
+
+    await h.setTarget(B);
+
+    // Same index continues: the pre-switch "سبحان الله" is still present
+    // verbatim, with the genuine new-target phrase appended after it.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(`${A} ${B}`, 0.9, true));
+    });
+    // The pre-switch "سبحان الله" must not ALSO be evaluated against B
+    // (it isn't B's own words at all, so it would score nothing anyway —
+    // the real assertion is that exactly one new B repetition lands).
+    expect(h.net()).toBe(2); // 1 (A, pre-switch) + 1 (B, genuine post-switch)
+    await h.unmount();
+  });
+
+  it("D: NEW INDEX AFTER SWITCH -- a genuinely fresh result index after the switch counts completely normally", async () => {
+    const h = await mountVoiceTasbeeh(A);
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false)); // left open pre-switch
+    });
+    expect(h.net()).toBe(0);
+
+    await h.setTarget(B);
+
+    // The recognizer rotates to a genuinely NEW index instead of
+    // continuing index 0 -- ordinary, already-tested behavior, must
+    // still work unaffected by this fix.
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(B, 0.9, true));
+    });
+    expect(h.net()).toBe(1);
+    await h.unmount();
+  });
+
+  it("E: RAPID MULTIPLE TARGET SWITCHES -- the same open index surviving several switches never lets stale content from an earlier target contaminate the current one, while genuine post-switch content keeps counting", async () => {
+    const C = "سبحان الله وبحمده"; // 3 tokens, shares a prefix with A -- deliberately reused from the suite above
+    const h = await mountVoiceTasbeeh(A);
+
+    // Pre-switch-1: a stray "سبحان" left open on index 0.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false));
+    });
+    expect(h.net()).toBe(0);
+
+    await h.setTarget(C); // switch 1: A -> C, index 0 still open
+
+    // Same index continues: the stray "سبحان" (pre-switch-1) plus a
+    // genuine partial start of C ("سبحان الله") -- not yet complete for C.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult("سبحان سبحان الله", 0.9, false));
+    });
+    expect(h.net()).toBe(0); // C is 3 tokens; only 2 genuine tokens so far
+
+    await h.setTarget(B); // switch 2: C -> B, index 0 STILL open, nothing ever completed C
+
+    // Same index continues again: everything before this point (from A
+    // AND from the incomplete C attempt) must be excluded; only a
+    // genuinely new B phrase appended now may count.
+    await act(async () => {
+      h.recognition.fireResult(0, new MockResult(`سبحان سبحان الله ${B}`, 0.9, true));
+    });
+    expect(h.net()).toBe(1); // exactly the one genuine B repetition, nothing from A or the abandoned C attempt
+    await h.unmount();
+  });
+});
+
+// ---------------------------------------------------------------------
+// Characterization suite for a reported "8 -> 17" over-counting failure
+// on the SHORT (2-token) dhikr "سبحان الله", where a single, never-
+// finalizing, continuously-growing recognition result (one result index,
+// no session restart, no target switch) allegedly caused the counter to
+// advance far beyond the number of genuinely completed repetitions.
+//
+// Investigation: this shape was reproduced directly against the exact
+// growing-transcript patterns described (clean alternating growth, growth
+// with a dangling extra "سبحان" between pairs exactly as reported, and
+// growth interleaved with real VALID_SETTLE_DELAY_MS gaps) — in every
+// case, `replayTokens`'s full-replay-from-checkpoint diffed against
+// `inFlightTotalRef` (see onresult's `delta = replayTotal -
+// inFlightTotalRef.current`) credited EXACTLY one repetition per genuine
+// "سبحان"+"الله" pair present in the token stream, never more. This
+// suite locks that invariant in as a permanent regression guard: if a
+// future change to the checkpoint/replay logic ever lets a single
+// growing segment re-credit content it already accounted for, one of
+// these tests will fail.
+// ---------------------------------------------------------------------
+describe("useVoiceTasbeeh — single-segment growth counting invariant (SHORT dhikr, reported 8->17 shape)", () => {
+  const SHORT = "سبحان الله"; // 2 tokens — the exact reported target
+
+  it("clean alternating growth: N genuine pairs appended one token at a time to ONE never-finalizing segment credits exactly N, never more", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async () => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+      });
+    };
+    const REPS = 20;
+    for (let i = 0; i < REPS; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(REPS);
+    await h.unmount();
+  });
+
+  it("EXACT reported log shape: a dangling extra \"سبحان\" between each pair (matching the pasted transcript growth verbatim) still credits exactly one repetition per genuine pair, discarding the dangling word", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async () => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+      });
+    };
+    words.push("سبحان", "الله");
+    await fire(); // ["سبحان","الله"] -> valid:2, +1
+    const CYCLES = 15;
+    for (let i = 0; i < CYCLES; i++) {
+      words.push("سبحان");
+      await fire(); // dangling extra "سبحان" (reported pattern) -- must NOT be credited
+      words.push("سبحان", "الله");
+      await fire(); // completes the NEXT pair from the freshly-appended tokens, discarding the dangling one via restart()
+    }
+    expect(h.net()).toBe(1 + CYCLES); // one for the initial pair, one per cycle -- never more
+    await h.unmount();
+  });
+
+  it("growth interleaved with real VALID_SETTLE_DELAY_MS gaps (settle timer fires mid-stream) still credits exactly one repetition per genuine pair", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const h = await mountVoiceTasbeeh(SHORT);
+      const words: string[] = [];
+      const fire = async () => {
+        await act(async () => {
+          h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+        });
+      };
+      const REPS = 10;
+      for (let i = 0; i < REPS; i++) {
+        words.push("سبحان");
+        await fire();
+        words.push("الله");
+        await fire();
+        if (i % 2 === 1) {
+          await act(async () => {
+            await vi.advanceTimersByTimeAsync(1600); // past VALID_SETTLE_DELAY_MS -- settle-timer soft-commits mid-growth
+          });
+        }
+      }
+      expect(h.net()).toBe(REPS);
+      await h.unmount();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------
+// Regression suite for the CROSS-SEGMENT STALE-CONTENT GUARD
+// (historicalOverlapLength in voiceTasbeehMatch.ts) — root cause
+// confirmed via a live capture on "سبحان الله": `committedTotalRef`
+// survives a SpeechRecognition result-index switch as a bare NUMBER, but
+// the actual committed WORDS never did, so a brand-new result index
+// whose own transcript replays/duplicates already-counted audio (a
+// confirmed real recognizer behavior, not hypothetical) got that content
+// re-credited from scratch — the captured failure went 20->45 on a
+// single 2-token dhikr, with the specific jump traced to one event:
+// `resultIndex:1, checkpointBoundary:2, committedCount:29, delta:15 ->
+// total:44`. Fix: reconstruct the full committed history on demand
+// (`targetTokens` repeated `committedTotalRef.current` times — always
+// exact, since a completed repetition's own tokens are by construction
+// an exact copy of targetTokens) and exclude from replay whatever
+// portion of a segment's CURRENT tokens is a plain, unhardened
+// continuation of that history — but ONLY when the overlap exceeds ONE
+// full repetition's worth, so a single genuine repeat on a fresh
+// segment (content-identical to history by definition, and the
+// overwhelmingly common real-world case) is never affected. Accepted
+// trade-off, confirmed with the user: a genuinely fresh segment that
+// happens to bundle 2+ repetitions whose content exactly matches an
+// existing stretch of history will under-count rather than risk any
+// amount of stale content ever being re-credited.
+// ---------------------------------------------------------------------
+describe("useVoiceTasbeeh — cross-segment stale-content guard (reported 20->45 over-count)", () => {
+  const SHORT = "سبحان الله";
+
+  it("acceptance: 20 genuine repetitions in one continuously-growing segment count as exactly 20", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async () => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+      });
+    };
+    for (let i = 0; i < 20; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(20);
+    await h.unmount();
+  });
+
+  it("acceptance: 45 genuine repetitions in one continuously-growing segment count as exactly 45", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async () => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+      });
+    };
+    for (let i = 0; i < 45; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(45);
+    await h.unmount();
+  });
+
+  it("REGRESSION (reported 20->45): a NEW result index whose transcript replays/duplicates already-committed history must not re-credit that content, even marked isFinal", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    // Build up 20 genuine repetitions in one continuously-growing segment
+    // (index 0), exactly as the report's own acceptance test 1 describes.
+    const words: string[] = [];
+    const fire = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 20; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(20);
+    await fire(true); // finalize index 0 with its genuine 20-rep transcript
+
+    // A NEW result index (1) arrives, marked final immediately — per the
+    // real captured log, its own transcript is a cumulative/replayed dump
+    // containing repetitions of the target, structurally indistinguishable
+    // from a plain continuation of the ALREADY-committed history. Exactly
+    // 20 repetitions here (matching index 0's own committed count) so the
+    // ENTIRE dump falls within known history — anything a fresh segment
+    // reproduces BEYOND the known committed count is, by the guard's own
+    // design, credited as genuinely new (see the "genuinely NEW content
+    // appended" test below for that half of the behavior).
+    const echoed = Array(20).fill(SHORT).join(" ");
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(echoed, 0.9, true));
+    });
+
+    // Must NOT become 40 -- none of this content is genuinely new; it is
+    // entirely indistinguishable from a replay of what index 0 already
+    // earned credit for.
+    expect(h.net()).toBe(20);
+    await h.unmount();
+  });
+
+  it("CORRECTED (real-device follow-up, committedCount 27, 13 genuine reps): a NEW segment growing gradually, one word at a time, must count every genuine repetition normally, even though its content is byte-identical to history", async () => {
+    // This test previously asserted the OPPOSITE of what's tested here —
+    // it treated a gradually-built-up new segment (interim growth spread
+    // across many separate events, never a single large jump) exactly
+    // like the atomic 20->45 replay dump above, and required it to be
+    // fully suppressed. A SECOND real-device capture disproved that: with
+    // committedCount already at 27, a genuinely spoken run of 13 MORE
+    // "سبحان الله" repetitions — confirmed clean and complete in the raw
+    // transcript, arriving one or two tokens per event over ~16 real
+    // seconds — was silently given delta:0 the entire time, because the
+    // OLD guard re-evaluated the ENTIRE current segment against a
+    // historical reconstruction on every single event, and for a 2-token
+    // target genuine speech is always byte-identical to that
+    // reconstruction. The fix (see useVoiceTasbeeh.ts's own CROSS-SEGMENT
+    // STALE-CONTENT GUARD doc) only ever treats a SUDDEN, large
+    // single-event jump as suspect — a slow, ordinary-ASR-granularity
+    // buildup like this one is never affected, no matter how large the
+    // segment eventually grows or how long it stays open. This is now
+    // the required, passing behavior.
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 20; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(20);
+    await fire(true);
+
+    // New index 1 grows GRADUALLY, exactly one word at a time (matching
+    // the real capture's own shape), to 20 MORE genuine repetitions.
+    const newWords: string[] = [];
+    const fireNew = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(1, new MockResult(newWords.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 20; i++) {
+      newWords.push("سبحان");
+      await fireNew();
+      newWords.push("الله");
+      await fireNew();
+    }
+    await fireNew(true);
+
+    expect(h.net()).toBe(40); // all 20 genuinely new repetitions must count
+    await h.unmount();
+  });
+
+  it("genuinely NEW content appended after an echoed prefix on a fresh segment still counts the new part", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 20; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(20);
+    await fire(true);
+
+    // New index 1: an echoed prefix (matching history) followed by 3
+    // genuinely NEW repetitions the user actually just said.
+    const echoedPrefix = Array(20).fill(SHORT).join(" ");
+    const genuinelyNew = Array(3).fill(SHORT).join(" ");
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(`${echoedPrefix} ${genuinelyNew}`, 0.9, true));
+    });
+
+    expect(h.net()).toBe(23); // the echoed 20 are NOT re-credited, but the genuinely new 3 ARE
+    await h.unmount();
+  });
+});
+
+// ---------------------------------------------------------------------
+// Regression suite for the SELF-RELEASING historical-zone fix — the
+// real-device follow-up incident (committedCount 27, "سبحان الله",
+// 13 genuine repetitions given delta:0 for ~16 seconds). Root cause: the
+// PREVIOUS guard re-evaluated a segment's ENTIRE current content against
+// a historical reconstruction sized by the full committedTotalRef.current
+// on every single event — for a 2-token target, genuine speech is always
+// byte-identical to that reconstruction, so once a still-open segment
+// grew past one repetition, nothing it grew into afterward could ever be
+// told apart from a replay again, no matter how long the user kept
+// speaking. Fix: the guard now only ever engages against a SUDDEN,
+// single-event jump larger than one repetition (the confirmed shape of
+// the ORIGINAL 20->45 replay) — a slow, one-or-two-token-per-event
+// buildup (the confirmed shape of BOTH real genuine speech and this
+// second incident) is never subjected to it, regardless of how large the
+// segment has grown overall.
+// ---------------------------------------------------------------------
+describe("useVoiceTasbeeh — self-releasing historical zone (real-device 27+13 under-count)", () => {
+  const SHORT = "سبحان الله";
+  const LONG = "سبحان الله وبحمده سبحان الله العظيم"; // 6 tokens
+
+  it("B: EXACT REPRODUCTION -- committedCount 27, then 13 genuine new repetitions arrive gradually on a fresh segment, all must count", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 27; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(27);
+    await fire(true); // segment 0 finalizes cleanly, matching the real capture
+
+    // Segment 1: 13 MORE genuine repetitions, one word per event -- the
+    // exact shape confirmed in the real log (checkpointBoundary growing
+    // by 1 token per event, all the way to 26 tokens / 13 reps).
+    const newWords: string[] = [];
+    const fireNew = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(1, new MockResult(newWords.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 13; i++) {
+      newWords.push("سبحان");
+      await fireNew();
+      newWords.push("الله");
+      await fireNew();
+    }
+    expect(h.net()).toBe(40); // 27 + all 13 genuine new repetitions
+    await fireNew(true);
+    expect(h.net()).toBe(40);
+    await h.unmount();
+  });
+
+  it("C: exactly ONE genuine repetition after an atomic replay episode still counts", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 20; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(20);
+    await fire(true);
+
+    // A single-event atomic replay dump (the ORIGINAL bug's own shape) --
+    // must be fully suppressed.
+    const echoed = Array(20).fill(SHORT).join(" ");
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(echoed, 0.9, false));
+    });
+    expect(h.net()).toBe(20);
+
+    // Exactly one MORE genuine repetition, appended in its own event.
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(`${echoed} ${SHORT}`, 0.9, true));
+    });
+    expect(h.net()).toBe(21);
+    await h.unmount();
+  });
+
+  it("D: multiple genuine repetitions after a replay episode, arriving gradually, all continue counting", async () => {
+    const h = await mountVoiceTasbeeh(SHORT);
+    const words: string[] = [];
+    const fire = async (final = false) => {
+      await act(async () => {
+        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, final));
+      });
+    };
+    for (let i = 0; i < 20; i++) {
+      words.push("سبحان");
+      await fire();
+      words.push("الله");
+      await fire();
+    }
+    expect(h.net()).toBe(20);
+    await fire(true);
+
+    // Atomic replay dump first (must be suppressed)...
+    const base: string[] = Array(20).fill(SHORT).join(" ").split(" ");
+    await act(async () => {
+      h.recognition.fireResult(1, new MockResult(base.join(" "), 0.9, false));
+    });
+    expect(h.net()).toBe(20);
+
+    // ...then 5 MORE genuine repetitions, one word at a time.
+    for (let i = 0; i < 5; i++) {
+      base.push("سبحان");
+      await act(async () => {
+        h.recognition.fireResult(1, new MockResult(base.join(" "), 0.9, false));
+      });
+      base.push("الله");
+      await act(async () => {
+        h.recognition.fireResult(1, new MockResult(base.join(" "), 0.9, false));
+      });
+    }
+    expect(h.net()).toBe(25); // 20 + all 5 genuine new repetitions
+    await h.unmount();
+  });
+
+  it("E: a longer (>3 token) target still suppresses an atomic replay AND still counts gradual genuine growth afterward", async () => {
+    const h = await mountVoiceTasbeeh(LONG);
+    const words = LONG.split(" ");
+    // Build committedCount to 5 via clean, separate segments.
+    for (let seg = 0; seg < 5; seg++) {
+      await act(async () => {
+        h.recognition.fireResult(seg, new MockResult(LONG, 0.9, true));
+      });
+    }
+    expect(h.net()).toBe(5);
+
+    // Atomic replay dump of the full history on a fresh segment -- must
+    // be suppressed (same protection as the 2-token case).
+    const echoed = Array(5).fill(LONG).join(" ");
+    await act(async () => {
+      h.recognition.fireResult(5, new MockResult(echoed, 0.9, false));
+    });
+    expect(h.net()).toBe(5);
+
+    // Genuine gradual growth afterward, one token at a time, must still count.
+    const growing = echoed.split(" ");
+    for (const w of words) {
+      growing.push(w);
+      await act(async () => {
+        h.recognition.fireResult(5, new MockResult(growing.join(" "), 0.9, false));
+      });
+    }
+    expect(h.net()).toBe(6); // one genuine additional repetition of LONG
     await h.unmount();
   });
 });
