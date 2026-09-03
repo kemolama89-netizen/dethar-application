@@ -13,8 +13,6 @@ import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters
 import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
 import { useVoiceTasbeeh } from "../lib/useVoiceTasbeeh";
-import { useAudioInputDevices } from "../lib/useAudioInputDevices";
-import { probeAudioInputDevice } from "../lib/audioInputDevices";
 
 interface TasbeehScreenProps {
   onNavigateHome: () => void;
@@ -221,37 +219,24 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   const justReached = targetNum !== null && count === targetNum;
 
   // The currently selected Dhikr (same selector manual Tasbeeh already
-  // uses) IS the Voice Tasbeeh target — reusing it rather than building a
-  // second, separate Dhikr picker for voice mode specifically. `onMatch`/
-  // `onRollback` refer to `applyVoiceRepetitions`/`applyVoiceRollback`,
-  // function declarations further down this component (hoisted, so
-  // referencing them here is valid) — see their own comments for why
-  // they're a distinct code path from handleTap's manual counting rather
-  // than a shared/refactored one.
+  // uses) IS the Voice Tasbeeh target — reusing it rather than a second,
+  // separate picker for voice mode. Switching it while voice is enabled
+  // never restarts recognition (see useVoiceTasbeeh/VoiceTasbeehMatcher);
+  // only the matching engine's target-specific progress resets.
+  // `onIdleTimeout` is the 60s watchdog's callback — it must genuinely
+  // flip this screen's own toggle off, not just an internal status, so
+  // reactivation is always a fresh, deliberate action.
   const { status: voiceStatus, justMatched: voiceJustMatched } = useVoiceTasbeeh({
     enabled: voiceEnabled,
     targetPhrase: selected?.dhikr_ar ?? "",
     onMatch: applyVoiceRepetitions,
-    onRollback: applyVoiceRollback,
+    onIdleTimeout: () => setVoiceEnabled(false),
   });
-  // Distinct from `voiceEnabled` (the raw toggle/user intent): this is
-  // whether Voice Tasbeeh is MEANINGFULLY on right now, so the toggle's own
+  // Distinct from `voiceEnabled` (the raw toggle/user intent): whether
+  // Voice Tasbeeh is MEANINGFULLY on right now, so the toggle's own
   // "active" styling/icon never lies by staying lit up gold while a fatal
-  // status (denied/no-mic/unsupported/error) means nothing is actually
-  // listening.
+  // status (denied/no-mic/unsupported/error) means nothing is listening.
   const voiceActive = voiceEnabled && (voiceStatus === "requesting" || voiceStatus === "listening");
-
-  // Audio source — DETECTION/CONFIRMATION only, never wired into
-  // useVoiceTasbeeh above: the Web Speech API gives this app no way to
-  // route a chosen input device INTO SpeechRecognition (see that hook's
-  // own "MICROPHONE GAIN / QUIET-SPEECH SENSITIVITY" comment), so nothing
-  // here can or should affect recognition itself. Enumerating only while
-  // `voiceActive` avoids touching `navigator.mediaDevices` before the
-  // user has already turned Voice Tasbeeh on (permission is already
-  // settled by then, so this triggers no separate prompt).
-  const { supported: audioDevicesSupported, devices: audioInputDevices, hasLikelyExternal } = useAudioInputDevices(voiceActive);
-  const [audioSourcePreference, setAudioSourcePreference] = useState<"automatic" | "phone" | "headset">("automatic");
-  const [audioProbeStatus, setAudioProbeStatus] = useState<"checking" | "found" | "not-found" | null>(null);
 
   // Calm-counting pacing ring — a SEPARATE, word-count-based timing model
   // from the Written Adhkar reader's (see src/lib/tasbeehTiming.ts). "ready"
@@ -382,23 +367,17 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   }
 
   // Voice Tasbeeh's own increment path — a separate function from
-  // handleTap above (never shared/refactored into it), so the existing
-  // manual counting logic stays completely untouched. Two deliberate
-  // differences from handleTap:
-  //   - Uses a FUNCTIONAL setCounts update (`prev => ...`), not a plain
-  //     object spread off the render's `counts` closure. A single
-  //     recognizer result can report more than one confidently-matched
-  //     repetition at once (e.g. two "Subhan Allah"s recognized together
-  //     as one phrase — see useVoiceTasbeeh's per-result occurrence
-  //     counting), so `times` can be >1; reading `counts` from the closure
-  //     would make every repetition in that batch compute the same
-  //     "current + 1" and clobber each other instead of accumulating.
-  //   - Deliberately bypasses the manual "calm counting" pacing gate: that
-  //     gate exists to pace deliberate TAPPING, not natural recited
-  //     speech, and holding voice repetitions to its ready/pacing cycle
-  //     would silently drop confidently-recognized reps whenever they
-  //     arrive faster than the ring — exactly what this feature must not
-  //     do ("no noticeable delay... handle natural repeated speech").
+  // handleTap above (never shared/refactored into it), so manual
+  // counting stays untouched. `times` can be >1 (VoiceTasbeehMatcher can
+  // emit more than one completion from a single recognition batch — see
+  // its own doc comment) so this uses a FUNCTIONAL setCounts update
+  // rather than the render's `counts` closure, and deliberately bypasses
+  // the manual "calm counting" pacing gate: that gate paces deliberate
+  // TAPPING, not natural recited speech, and every `times` passed here
+  // already represents a genuinely completed repetition of the currently
+  // selected dhikr (the matching engine never emits a count for a partial
+  // or different dhikr — see voiceTasbeehMatch.ts), so there is nothing
+  // speculative left to correct or roll back once this runs.
   function applyVoiceRepetitions(times: number) {
     if (times <= 0) return;
 
@@ -406,9 +385,6 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
       const nextCount = (prev[selectedId] ?? 0) + times;
       const updated = { ...prev, [selectedId]: nextCount };
       saveTasbeehCounters(updated);
-      // Same one-time-celebration rule as handleTap, adapted for a batch
-      // that might jump straight past the target rather than landing on
-      // it exactly.
       if (targetNum !== null && nextCount >= targetNum && celebratedFor[selectedId] !== targetNum) {
         setCelebratedFor((prevCel) => ({ ...prevCel, [selectedId]: targetNum }));
         spawnCelebration();
@@ -427,49 +403,6 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
         setBubbles((prev) => prev.filter((b) => b.id !== id));
       }, BUBBLE_LIFETIME_MS);
     }
-  }
-
-  // Undoes `times` repetitions previously applied by applyVoiceRepetitions
-  // that useVoiceTasbeeh has determined were only SPECULATIVE — the
-  // recognizer had shown "سبحان الله" as a complete phrase and it was
-  // counted immediately to stay fast, but a moment later the transcript
-  // grew into "سبحان الله وبحمده" (or similar), proving it was only a
-  // prefix of a longer dhikr, not the selected one. Only the numeric
-  // counter is corrected (functional update + re-persisted, same pattern
-  // as applyVoiceRepetitions, clamped at 0 so a bug elsewhere can never
-  // drive it negative). Deliberately does NOT retract the already-spawned
-  // bubble, any already-recorded Statistics entry, or a celebration that
-  // may have fired — rollbacks are rare (only when a genuine prefix
-  // misfire happens) and unwinding those secondary effects would add
-  // meaningfully more surface area for a cosmetic/historical edge case.
-  function applyVoiceRollback(times: number) {
-    if (times <= 0) return;
-    setCounts((prev) => {
-      const nextCount = Math.max(0, (prev[selectedId] ?? 0) - times);
-      const updated = { ...prev, [selectedId]: nextCount };
-      saveTasbeehCounters(updated);
-      return updated;
-    });
-  }
-
-  // Records which pill the user tapped and, for anything other than
-  // "automatic", runs a one-off confirmation probe (see
-  // probeAudioInputDevice's own doc) — purely to show "yes, that device
-  // is currently reachable" or not. Never touches recognition: there is
-  // no mechanism for it to route a device into SpeechRecognition, and the
-  // caption shown alongside this control says so explicitly rather than
-  // implying this selection changes what Voice Tasbeeh actually listens
-  // through.
-  async function handleSelectAudioSource(option: "automatic" | "phone" | "headset") {
-    setAudioSourcePreference(option);
-    if (option === "automatic") {
-      setAudioProbeStatus(null);
-      return;
-    }
-    const device = audioInputDevices.find((d) => d.likelyExternal === (option === "headset"));
-    setAudioProbeStatus("checking");
-    const result = await probeAudioInputDevice(device?.deviceId);
-    setAudioProbeStatus(result.reachable ? "found" : "not-found");
   }
 
   function handleReset() {
@@ -512,8 +445,8 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // not progress — Reset doesn't touch these either), `voiceEnabled`
   // (Voice Tasbeeh's own on/off toggle — a session preference, not
   // per-Dhikr progress), and anything in src/lib/stats.ts (Statistics
-  // history — same "RESET COUNTER ≠ DELETE STATISTICS" boundary
-  // handleReset already documents).
+  // history — same "RESET COUNTER ≠ DELETE
+  // STATISTICS" boundary handleReset already documents).
   function handleResetAll() {
     const clearedCounts: Record<number, number> = {};
     setCounts(clearedCounts);
@@ -573,7 +506,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
           {nav.tasbih}
         </h1>
 
-        {/* Voice Tasbeeh — the ONLY new UI this feature adds beyond the
+        {/* Voice Tasbeeh — the only new UI this feature adds beyond the
             status line below it. A plain toggle pill matching the existing
             Dhikr-selector chip language (rounded-full border, same gold/
             surface tokens) rather than a new control style. Off by
@@ -618,69 +551,6 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
             <p className="max-w-[260px] text-center text-[11px]" style={{ color: "var(--color-text-muted)" }}>
               {t.voiceListeningFor} <bdi dir="rtl">{selected.dhikr_ar}</bdi>
             </p>
-          )}
-
-          {/* Audio source — CONFIRMATION/detection only, never a real
-              selector: SpeechRecognition has no API to accept a chosen
-              input device (see useAudioInputDevices/audioInputDevices'
-              own doc comments), so nothing here can change what Voice
-              Tasbeeh actually listens through. Two cases only, both
-              deliberately quiet:
-                - the browser can't enumerate devices at all -> one line
-                  explaining the real (automatic) behavior, no controls;
-                - an external-looking device (e.g. a connected headset)
-                  IS currently visible -> the small pill group, so the
-                  common single-microphone case shows nothing extra at
-                  all ("Automatic" already being the whole, unchanged
-                  behavior). */}
-          {voiceActive && !audioDevicesSupported && (
-            <p className="max-w-[240px] text-center text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
-              {t.audioSourceUnsupportedNote}
-            </p>
-          )}
-          {voiceActive && audioDevicesSupported && hasLikelyExternal && (
-            <div className="mt-0.5 flex flex-col items-center gap-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.06em]" style={{ color: "var(--color-gold)" }}>
-                {t.audioSourceLabel}
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-1.5">
-                {(
-                  [
-                    ["automatic", t.audioSourceAutomatic],
-                    ...(audioInputDevices.some((d) => !d.likelyExternal) ? [["phone", t.audioSourcePhone] as const] : []),
-                    ["headset", t.audioSourceHeadset],
-                  ] as const
-                ).map(([option, label]) => {
-                  const isSelected = audioSourcePreference === option;
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => handleSelectAudioSource(option)}
-                      aria-pressed={isSelected}
-                      className="rounded-full border px-2.5 py-1 text-[10.5px] font-medium"
-                      style={{
-                        borderColor: isSelected ? "var(--color-gold)" : "var(--color-gold-soft)",
-                        background: isSelected ? "var(--color-primary)" : "var(--color-surface)",
-                        color: isSelected ? "var(--color-gold)" : "var(--color-text-primary)",
-                      }}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-              {audioProbeStatus && (
-                <p className="text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
-                  {audioProbeStatus === "checking" && t.audioSourceProbeChecking}
-                  {audioProbeStatus === "found" && t.audioSourceProbeFound}
-                  {audioProbeStatus === "not-found" && t.audioSourceProbeNotFound}
-                </p>
-              )}
-              <p className="max-w-[240px] text-center text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
-                {t.audioSourceCaption}
-              </p>
-            </div>
           )}
         </div>
 
@@ -1015,6 +885,144 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
           }}
         />
       </AppShell>
+
+      {/* TEMPORARY DEV DIAGNOSTIC — for the current Voice Tasbeeh live-device
+          forensic session ONLY. Delete this whole block (and nothing else)
+          once that session is over; nothing else in this file depends on
+          it. Gated by isDevBuild exactly like the haptics logging above —
+          Vite dead-code-eliminates this entire block in production, so it
+          is not a permanent UI change; it only exists in this dev-server
+          preview. `position: fixed` (verified DeviceFrame/AppShell apply no
+          `transform`, which would otherwise trap it inside the phone-frame
+          mockup) anchors it to the real viewport so it's reachable on the
+          iPad preview exactly where placed. Reads window.__ditharVoiceDebugLog
+          (populated by useVoiceTasbeeh.ts's existing dev-only logger — see
+          that file) and opens it as plain selectable text in a new tab,
+          rather than relying on the `download` attribute's inconsistent
+          iOS Safari support: tap the button, then on the new tab use
+          Select All + Copy (or the Share sheet) to get the log out.
+          Touching this button calls no Voice Tasbeeh code path at all —
+          it only reads a window-level log array for display. */}
+      {isDevBuild && (
+        <button
+          type="button"
+          onClick={() => {
+            const log = (window as unknown as { __ditharVoiceDebugLog?: unknown[] }).__ditharVoiceDebugLog ?? [];
+            const win = window.open("", "_blank");
+            if (!win) return;
+            win.document.title = "dithar voice debug log";
+            const pre = win.document.createElement("pre");
+            pre.style.whiteSpace = "pre-wrap";
+            pre.style.wordBreak = "break-word";
+            pre.style.fontSize = "11px";
+            pre.style.padding = "12px";
+            pre.textContent = JSON.stringify(log, null, 2);
+            win.document.body.appendChild(pre);
+          }}
+          style={{
+            position: "fixed",
+            bottom: 8,
+            left: 8,
+            zIndex: 99999,
+            padding: "6px 10px",
+            fontSize: 11,
+            lineHeight: 1.2,
+            background: "#000",
+            color: "#0f0",
+            opacity: 0.75,
+            borderRadius: 6,
+            border: "1px solid #0f0",
+          }}
+        >
+          voice log
+        </button>
+      )}
+
+      {/* TEMPORARY DEV DIAGNOSTIC (same session/removal note as above) —
+          resets window.__ditharVoiceDebugLog to an empty array in place, in
+          the current page/tab, with no reload. That array is the ONLY
+          place this diagnostic session's data lives (useVoiceTasbeeh.ts's
+          logger both console.logs and pushes into it; there is no other
+          buffer, file, or storage involved), so this is a complete reset.
+          Calls no Voice Tasbeeh/matcher/recognition code — it only
+          reassigns a window-level array used exclusively for logging. */}
+      {isDevBuild && (
+        <button
+          type="button"
+          onClick={() => {
+            const w = window as unknown as { __ditharVoiceDebugLog?: unknown[] };
+            const previousCount = w.__ditharVoiceDebugLog?.length ?? 0;
+            w.__ditharVoiceDebugLog = [];
+            window.alert(`Voice debug log cleared (${previousCount} entries removed). Ready for a fresh capture.`);
+          }}
+          style={{
+            position: "fixed",
+            bottom: 44,
+            left: 8,
+            zIndex: 99999,
+            padding: "6px 10px",
+            fontSize: 11,
+            lineHeight: 1.2,
+            background: "#300",
+            color: "#f66",
+            opacity: 0.75,
+            borderRadius: 6,
+            border: "1px solid #f66",
+          }}
+        >
+          clear log
+        </button>
+      )}
+
+      {/* TEMPORARY DEV DIAGNOSTIC (same session/removal note as above) —
+          exports window.__ditharVoiceDebugLog as a downloadable JSON file
+          via an in-page Blob + `<a download>` click, staying entirely on
+          the current page (no `window.open`/new tab). This deliberately
+          avoids the "voice log" button above's approach: opening a new tab
+          on iOS Safari can cause the OS to discard/reload the original tab
+          in the background under memory pressure, which is what silently
+          wiped the last two capture attempts — this button never
+          navigates or opens anything, so that can't happen here. Reads
+          the log, does nothing else to it (never clears it — that's still
+          the separate "clear log" button's job), and calls no Voice
+          Tasbeeh/matcher/recognition code. */}
+      {isDevBuild && (
+        <button
+          type="button"
+          onClick={() => {
+            const log = (window as unknown as { __ditharVoiceDebugLog?: unknown[] }).__ditharVoiceDebugLog ?? [];
+            if (log.length === 0) {
+              window.alert("Voice Log is empty");
+              return;
+            }
+            const blob = new Blob([JSON.stringify(log, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `dithar-voice-debug-${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }}
+          style={{
+            position: "fixed",
+            bottom: 80,
+            left: 8,
+            zIndex: 99999,
+            padding: "6px 10px",
+            fontSize: 11,
+            lineHeight: 1.2,
+            background: "#002a4d",
+            color: "#5ac8ff",
+            opacity: 0.75,
+            borderRadius: 6,
+            border: "1px solid #5ac8ff",
+          }}
+        >
+          تصدير Voice Log
+        </button>
+      )}
     </DeviceFrame>
   );
 }

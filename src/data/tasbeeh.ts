@@ -79,16 +79,6 @@ export const tasbeehLabels = {
     voiceNoMic: "لم يتم العثور على ميكروفون.",
     voiceUnsupported: "التسبيح الصوتي غير مدعوم في هذا المتصفح.",
     voiceError: "تعذّر بدء التسبيح الصوتي.",
-    audioSourceLabel: "مصدر الصوت",
-    audioSourceAutomatic: "تلقائي",
-    audioSourcePhone: "ميكروفون الهاتف",
-    audioSourceHeadset: "سماعة الرأس / ميكروفون خارجي",
-    audioSourceCaption:
-      "يستخدم التسبيح الصوتي دائمًا الميكروفون الافتراضي الحالي لجهازك. لاستخدام سماعة متصلة، اجعلها الميكروفون الافتراضي من إعدادات البلوتوث/الصوت في جهازك.",
-    audioSourceUnsupportedNote: "يستخدم التسبيح الصوتي دائمًا الميكروفون الافتراضي الحالي لجهازك.",
-    audioSourceProbeChecking: "جارٍ التحقق…",
-    audioSourceProbeFound: "تم الكشف عنه",
-    audioSourceProbeNotFound: "غير متاح حاليًا",
   },
   en: {
     reminder: "Take your time in remembrance, and let your heart and mind lead your tongue.",
@@ -117,15 +107,5 @@ export const tasbeehLabels = {
     voiceNoMic: "No microphone was found.",
     voiceUnsupported: "Voice Tasbeeh isn't supported in this browser.",
     voiceError: "Couldn't start Voice Tasbeeh.",
-    audioSourceLabel: "Audio source",
-    audioSourceAutomatic: "Automatic",
-    audioSourcePhone: "Phone microphone",
-    audioSourceHeadset: "Headset / external microphone",
-    audioSourceCaption:
-      "Voice Tasbeeh always listens through your device's current default microphone. To use a connected headset, set it as your device's default mic in your Bluetooth/audio settings.",
-    audioSourceUnsupportedNote: "Voice Tasbeeh always uses your device's current default microphone.",
-    audioSourceProbeChecking: "Checking…",
-    audioSourceProbeFound: "Detected",
-    audioSourceProbeNotFound: "Not currently available",
   },
 };
