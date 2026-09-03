@@ -7,7 +7,6 @@
 // nesting App.tsx itself uses, so useLanguage()/useTheme()/usePalette()
 // all resolve normally.
 import { describe, expect, it, beforeEach } from "vitest";
-import * as React from "react";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { TasbeehScreen } from "./TasbeehScreen";
