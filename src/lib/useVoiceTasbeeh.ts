@@ -1,415 +1,465 @@
 import { useEffect, useRef, useState } from "react";
-import { INITIAL_MATCH_STATE, contractWordSplits, expandFastSpeechMerges, matchNewTokens, safePrefixMatchLength, tokenize } from "./voiceTasbeehMatch";
-import type { MatchState } from "./voiceTasbeehMatch";
+import { VoiceTasbeehMatcher, type MatcherDebugEvent } from "./voiceTasbeehMatch";
 
-// REWRITE NOTE: this file replaces a prior implementation built up over
-// several rounds of real-device debugging that added, on top of each
-// other: a cross-segment "historical overlap" content reconstruction, a
-// target-switch index-floor/boundary system, structural commit-on-accept
-// for long targets only, layered settle/abandon forget-timers, and a
-// devicechange-based recovery path — several of which were themselves
-// the source of later bugs. This version is intentionally smaller: one
-// explicit per-target session state, one explicit per-segment consumed
-// boundary (the SAME mechanism handles "a repetition just completed" and
-// "the target just changed" — see its own doc below), and one simple
-// restart loop. See the state model doc further down for the full
-// design.
-//
-// Voice Tasbeeh's recognition engine: the browser's native Web Speech API
-// (`SpeechRecognition`/`webkitSpeechRecognition`) — see
-// src/lib/speechRecognition.d.ts for the ambient types it needs that
-// TypeScript's own DOM lib doesn't ship. Deliberately NOT a new
-// dependency: this project has none for audio/speech at all, and
-// src/lib/useMiscSpeech.ts already establishes the same "use the
-// browser's built-in Web Speech API, add nothing new" precedent for
-// text-to-speech.
-//
-// KNOWN PLATFORM LIMITATIONS (surfaced to the caller via `status`, not
-// hidden): Firefox ships no SpeechRecognition implementation at all
-// ("unsupported"); Safari/iOS supports it but tends to end a session
-// after a single utterance far more eagerly than Chrome, so continuous
-// listening there is restart-heavy; recognition audio is sent to the
-// browser vendor's own speech service, so this feature requires an
-// internet connection. Microphone gain/sensitivity is not controllable
-// from here — `SpeechRecognition.start()` takes no arguments per spec
-// and never hands the page a `MediaStream` to apply audio constraints
-// to.
-export type VoiceTasbeehStatus =
-  | "idle" // voice mode is off
-  | "requesting" // start() called, waiting on the permission prompt / first response
-  | "listening" // actively listening
-  | "denied" // microphone permission denied
-  | "no-mic" // no microphone device available
-  | "unsupported" // this browser has no SpeechRecognition implementation
-  | "error"; // any other fatal error starting the recognizer
+// DEV-ONLY diagnostic logging for forensic live-device traces. Vite
+// statically replaces `import.meta.env.DEV` with a literal true/false and
+// dead-code-eliminates the losing branch at build time (same mechanism
+// already used for the haptics diagnostics in TasbeehScreen.tsx) — none of
+// this exists in the production bundle, and every call below is a no-op
+// when DEV is false. Purely observational: nothing here feeds back into
+// any decision the hook or matcher makes, so wiring it up cannot change
+// counting/lifecycle/switching behavior in any way.
+const isDevBuild = import.meta.env.DEV;
 
-interface UseVoiceTasbeehArgs {
-  /** Voice Tasbeeh on/off — mirrors the screen's own toggle state. */
+interface VoiceDebugEntry {
+  t: string;
+  tag: string;
+  data?: unknown;
+}
+
+const MAX_DEBUG_LOG_ENTRIES = 4000;
+
+function emitVoiceDebug(tag: string, data?: unknown): void {
+  if (!isDevBuild) return;
+  const t = new Date().toISOString().slice(11, 23); // HH:MM:SS.mmm
+  console.log(`[dithar:voice] ${t} ${tag}`, data ?? "");
+  if (typeof window === "undefined") return;
+  const w = window as unknown as { __ditharVoiceDebugLog?: VoiceDebugEntry[] };
+  if (!w.__ditharVoiceDebugLog) w.__ditharVoiceDebugLog = [];
+  w.__ditharVoiceDebugLog.push({ t, tag, data });
+  if (w.__ditharVoiceDebugLog.length > MAX_DEBUG_LOG_ENTRIES) {
+    w.__ditharVoiceDebugLog.splice(0, w.__ditharVoiceDebugLog.length - MAX_DEBUG_LOG_ENTRIES);
+  }
+}
+
+// One console-invokable helper, attached once at module load — never a
+// visible UI element. Run `__ditharVoiceDebugDownload()` in the browser
+// devtools console after a reproduction to save the full captured session
+// as a JSON file (also available live as `window.__ditharVoiceDebugLog`).
+if (isDevBuild && typeof window !== "undefined") {
+  const w = window as unknown as { __ditharVoiceDebugDownload?: () => void; __ditharVoiceDebugLog?: VoiceDebugEntry[] };
+  if (!w.__ditharVoiceDebugDownload) {
+    w.__ditharVoiceDebugDownload = () => {
+      const log = w.__ditharVoiceDebugLog ?? [];
+      const blob = new Blob([JSON.stringify(log, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `dithar-voice-debug-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      console.log(`[dithar:voice] downloaded ${log.length} log entries`);
+    };
+  }
+}
+
+export type VoiceTasbeehStatus = "idle" | "requesting" | "listening" | "denied" | "no-mic" | "unsupported" | "error";
+
+interface UseVoiceTasbeehOptions {
   enabled: boolean;
-  /** The currently selected Dhikr's Arabic text — the ONLY phrase counted. */
   targetPhrase: string;
-  /**
-   * Called with the number of newly counted repetitions of `targetPhrase`
-   * (almost always 1, but can be >1 if one recognition segment captures
-   * several repetitions at once — e.g. "Subhan Allah Subhan Allah"
-   * recognized together). Applied the instant each repetition completes,
-   * with zero added delay.
-   */
   onMatch: (times: number) => void;
-  /**
-   * Kept for interface compatibility with the existing caller
-   * (TasbeehScreen.tsx) — this rewrite's counting model has no rollback
-   * concept at all (a completed repetition is consumed permanently the
-   * instant it completes, and its tokens are never matched again — see
-   * the checkpoint doc below), so this is never actually invoked. Left
-   * in the signature deliberately rather than touching the caller.
-   */
-  onRollback: (times: number) => void;
+  // Called when the 60-second inactivity watchdog fires, so the host can
+  // flip its own enabled/toggle state off — the feature must genuinely
+  // return to OFF, not just an internal status flag, requiring a fresh,
+  // deliberate re-activation.
+  onIdleTimeout: () => void;
 }
 
-// ---------------------------------------------------------------------
-// ANDROID-ONLY duplicate-final detection — see the call site in
-// `recognition.onresult` below. Android Chrome has no native OS-level
-// support for `continuous` recognition, so Chrome emulates it by
-// silently restarting its underlying native recognizer between segments
-// (documented in Chromium issue 40324711). A verified, reproducible side
-// effect of that silent restart is the SAME just-recognized utterance
-// occasionally reappearing as a brand-new, already-`isFinal` result under
-// a FRESH result index. The one confirmed, real signal: on Android
-// specifically, a spuriously re-fired final result's own confidence
-// score comes back as exactly 0, while a genuine final is always > 0.
-export function isSpuriousAndroidDuplicateFinal(isAndroidPlatform: boolean, result: { isFinal: boolean; confidence: number | undefined }): boolean {
-  // Never applied to interim results (routinely 0 anyway) or off Android
-  // (desktop/iOS confidence is unreliable and would wrongly discard real
-  // repetitions).
-  return isAndroidPlatform && result.isFinal && result.confidence === 0;
+interface UseVoiceTasbeehResult {
+  status: VoiceTasbeehStatus;
+  justMatched: boolean;
 }
 
-export function detectAndroidPlatform(): boolean {
-  return typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent ?? "");
+// Named, explicit recognition locale (see the approved design's locale
+// strategy) rather than an inline/implicit value — the matcher's
+// normalization/fuzzy layers carry the real burden of tolerating diverse
+// pronunciation; this only selects the recognizer's starting transcription
+// quality. Changing it is a session-level reconfiguration (like enable),
+// never a live/runtime toggle — unlike target switching, which never
+// restarts recognition.
+const VOICE_TASBEEH_LOCALE = "ar-SA";
+
+// Answers "has the USER stopped reciting" — driven by
+// lastGenuineActivityAtRef, which only moves on genuine dhikr-attempt
+// speech (see VoiceTasbeehMatcher.processSegment's hadGenuineActivity).
+// Unchanged in meaning by the recognizer-health mechanism below.
+export const INACTIVITY_TIMEOUT_MS = 60_000;
+
+// Answers a DIFFERENT question — "has the RECOGNIZER ITSELF gone quiet,
+// independent of whether the user is speaking" — driven by
+// lastResultEventAtRef, which moves on ANY event the recognizer produces
+// (a result OR an error), not just ones the matcher judges as genuine
+// dhikr engagement.
+//
+// Deliberately expressed as a fraction of INACTIVITY_TIMEOUT_MS (1/4)
+// rather than a standalone guessed number, so the two stay tunable
+// together and their relationship stays explicit. The rationale: the
+// longest item in the dhikr library (src/data/tasbeeh-library.json item
+// 14 — seven comma-separated clauses, "...اللهم اغفر لي، اللهم ارحمني،
+// اللهم ارزقني") has natural inter-clause breathing pauses on the order
+// of a few seconds, nowhere near a quarter of a minute, and ordinary
+// SpeechRecognition interim-update gaps are shorter still. 15s therefore
+// leaves a wide, deliberate margin above any plausible natural pause or
+// recognizer buffering gap — it will not misfire on genuine continued
+// use — while still recovering a genuinely stalled session with most of
+// the 60s budget still intact, rather than silently burning nearly all
+// of it before anything reacts.
+export const RECOGNIZER_STALL_THRESHOLD_MS = INACTIVITY_TIMEOUT_MS / 4;
+
+const WATCHDOG_CHECK_INTERVAL_MS = 1_000;
+const JUST_MATCHED_PULSE_MS = 400;
+
+function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | null {
+  if (typeof window === "undefined") return null;
+  return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
 }
 
-// A short delay before restarting after the recognizer ends on its own —
-// Chrome/Safari both end a "continuous" session after a period of
-// silence (or certain transient errors) despite `continuous = true`;
-// restarting is what makes listening feel unbroken across a whole Voice
-// Tasbeeh session. Purely a lifecycle-stabilization delay (calling
-// start() immediately after end() can throw InvalidStateError if the
-// native session hasn't fully quiesced yet) — never read anywhere in the
-// matching/counting path.
-const RESTART_DELAY_MS = 300;
-
-// How long the "justMatched" flash stays true — purely cosmetic pacing,
-// unrelated to (and never gates) the actual counting logic.
-const MATCH_FLASH_MS = 650;
-
-// VOICE INACTIVITY TIMEOUT — a session-level concept, entirely separate
-// from matching: if there has been zero genuinely new recognized speech
-// for this long, stop SpeechRecognition and release the session rather
-// than listening indefinitely. Reset only by genuinely new recognized
-// content (see `isGenuinelyNewSegment` at the onresult call site) —
-// deliberately NOT reset by a bare onend/restart cycle, and deliberately
-// NOT touched anywhere in the counting path.
-const INACTIVITY_TIMEOUT_MS = 60000;
-
-export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onRollback }: UseVoiceTasbeehArgs) {
+// Owns the native SpeechRecognition lifecycle and the two watchdogs; feeds
+// every recognition result through a single VoiceTasbeehMatcher instance
+// (src/lib/voiceTasbeehMatch.ts), which does all the actual matching —
+// this hook's only job is adapting browser events into that engine's
+// small SegmentUpdate shape and reacting to its output.
+export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout }: UseVoiceTasbeehOptions): UseVoiceTasbeehResult {
   const [status, setStatus] = useState<VoiceTasbeehStatus>("idle");
   const [justMatched, setJustMatched] = useState(false);
 
-  const statusRef = useRef<VoiceTasbeehStatus>("idle");
-  const setVoiceStatus = (next: VoiceTasbeehStatus) => {
-    statusRef.current = next;
-    setStatus(next);
-  };
+  const matcherRef = useRef<VoiceTasbeehMatcher | null>(null);
+  if (matcherRef.current === null) {
+    matcherRef.current = new VoiceTasbeehMatcher(
+      isDevBuild ? (event: MatcherDebugEvent) => emitVoiceDebug("matcher:segment", event) : undefined,
+    );
+  }
 
-  // Always-fresh refs so the long-lived SpeechRecognition event handlers
-  // never act on a stale closure when the caller's target Dhikr or
-  // match/rollback handlers change mid-session.
+  // DEV-ONLY: always-current mirror of the latest targetPhrase, read from
+  // inside the recognition-lifecycle effect below (which intentionally
+  // depends only on `enabled`, never `targetPhrase` — target switching must
+  // never restart recognition) purely for log labeling. Kept current via
+  // its own effect (same established pattern as onMatchRef/onIdleTimeoutRef
+  // above) rather than a real dependency, which would defeat that guarantee.
+  const targetPhraseRef = useRef(targetPhrase);
+  useEffect(() => {
+    targetPhraseRef.current = targetPhrase;
+  }, [targetPhrase]);
+
+  // DEV-ONLY bookkeeping, purely for log context — never read by any
+  // matching/lifecycle decision.
+  const instanceIdRef = useRef(0);
+  const previousTargetPhraseRef = useRef<string | null>(null);
+  const lastResultIndexRef = useRef<number | null>(null);
+
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const intentionalStopRef = useRef(false);
+  const lastGenuineActivityAtRef = useRef(0);
+  // Whether the CURRENT instance has confirmed onstart and is therefore
+  // expected to be actively producing events. Deliberately a ref (not
+  // derived from `status`, which the health-check interval's closure
+  // would otherwise read as a stale snapshot from whenever the effect
+  // last ran) — false during the initial mic/engine startup handshake
+  // (so the health check never misfires on issue-#1-style startup
+  // latency, which is a separate, unfixable-by-us concern), true from
+  // onstart until the instance is torn down for any reason.
+  const isListeningRef = useRef(false);
+  const lastResultEventAtRef = useRef(0);
+  const justMatchedTimerRef = useRef<number | null>(null);
+
+  // Kept current via refs rather than effect dependencies, so a caller
+  // passing a fresh onMatch/onIdleTimeout closure every render never
+  // tears down and restarts the native recognition session.
   const onMatchRef = useRef(onMatch);
-  const onRollbackRef = useRef(onRollback);
+  const onIdleTimeoutRef = useRef(onIdleTimeout);
   useEffect(() => {
     onMatchRef.current = onMatch;
-    onRollbackRef.current = onRollback;
-  }, [onMatch, onRollback]);
-
-  const targetRef = useRef(targetPhrase);
-
-  // ---------------------------------------------------------------------
-  // STATE MODEL
-  //
-  // PER-TARGET SESSION state (reset ONLY when `targetPhrase` changes —
-  // never by a segment switch or a recognizer restart, so a long dhikr's
-  // genuine in-progress attempt survives both):
-  //   sessionStateRef    — the utterance's current match progress.
-  //   (there is no separate "committed total" — every completed
-  //   repetition is credited to the caller immediately via onMatch, so
-  //   nothing here needs to remember a running sum for its own sake.)
-  //
-  // PER-SEGMENT state (reset whenever a genuinely NEW result index
-  // starts being tracked):
-  //   segmentIndexRef      — which result index this state belongs to.
-  //   segmentTokensRef      — this segment's own full token list as of
-  //                           the last event (for detecting an exact
-  //                           duplicate re-emission).
-  //   consumedTokensRef     — the PREFIX of this segment's tokens that
-  //                           has already been dealt with — either
-  //                           because it completed one or more
-  //                           repetitions, or because it existed before
-  //                           the target last changed while this segment
-  //                           was still open. Never re-examined once
-  //                           recorded (see safePrefixMatchLength's own
-  //                           doc for why comparing actual content, not a
-  //                           stored count, is what makes this safe
-  //                           against a mid-segment revision).
-  //
-  // Every onresult event for the CURRENT segment does exactly this:
-  //   1. tokensSinceCheckpoint = segment's current tokens, minus
-  //      whatever safePrefixMatchLength confirms is still the same as
-  //      consumedTokensRef.
-  //   2. Feed ONLY those genuinely-new tokens into sessionStateRef via
-  //      matchNewTokens — never the whole segment, never a token twice.
-  //   3. Credit onMatch immediately for however many repetitions that
-  //      single call found, and advance consumedTokensRef to cover
-  //      everything just fed (whether or not it completed anything —
-  //      once looked at, a token is never looked at again for this
-  //      segment).
-  //
-  // This is the ENTIRE mechanism — there is no separate "commit" step,
-  // no deferred bookkeeping tied to isFinal, no settle/abandon timers.
-  // isFinal is honored ONLY to know when a segment is truly done (so the
-  // next different index is unambiguously a new segment); it never
-  // itself triggers or blocks a count (see requirement: "do not assume
-  // isFinal means a valid dhikr repetition" — nothing here does).
-  const sessionStateRef = useRef<MatchState>(INITIAL_MATCH_STATE);
-
-  const segmentIndexRef = useRef<number | null>(null);
-  const segmentTokensRef = useRef<string[]>([]);
-  const consumedTokensRef = useRef<string[]>([]);
-
-  // TARGET-SWITCH handling — see the `targetPhrase` effect below. A
-  // result index can remain open ACROSS a dhikr switch (confirmed on a
-  // real device: the browser kept extending the same index for many
-  // seconds after the target changed). Reusing the SAME consumed-
-  // boundary mechanism above (rather than a separate index-floor system)
-  // is what satisfies "old content must not satisfy the new target" and
-  // "the same segment must be able to continue counting for the new
-  // target" simultaneously: on a switch, whatever the currently-open
-  // segment's tokens are RIGHT NOW are marked fully consumed (excluded
-  // forever), and only tokens appended AFTER that moment are ever new.
+  }, [onMatch]);
   useEffect(() => {
-    targetRef.current = targetPhrase;
-    sessionStateRef.current = INITIAL_MATCH_STATE;
-    if (segmentIndexRef.current !== null) {
-      consumedTokensRef.current = segmentTokensRef.current;
+    onIdleTimeoutRef.current = onIdleTimeout;
+  }, [onIdleTimeout]);
+
+  // Target switching NEVER touches recognition — only the matcher's
+  // target-specific progress. See VoiceTasbeehMatcher.setTarget.
+  useEffect(() => {
+    if (isDevBuild) {
+      const recognition = recognitionRef.current as unknown as { __ditharInstanceId?: number } | null;
+      emitVoiceDebug("target-switch:before", {
+        oldTargetPhrase: previousTargetPhraseRef.current,
+        newTargetPhrase: targetPhrase,
+        snapshotBefore: matcherRef.current!.getDebugSnapshot(),
+        recognitionInstanceId: recognition?.__ditharInstanceId ?? null,
+        lastResultIndex: lastResultIndexRef.current,
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    matcherRef.current!.setTarget(targetPhrase);
+    if (isDevBuild) {
+      emitVoiceDebug("target-switch:after", {
+        newTargetPhrase: targetPhrase,
+        snapshotAfter: matcherRef.current!.getDebugSnapshot(),
+      });
+      previousTargetPhraseRef.current = targetPhrase;
+    }
   }, [targetPhrase]);
 
   useEffect(() => {
-    const flashTimer = { id: undefined as number | undefined };
     if (!enabled) {
-      setVoiceStatus("idle");
+      if (isDevBuild) emitVoiceDebug("abort", { reason: "disabled" });
+      intentionalStopRef.current = true;
+      isListeningRef.current = false;
+      recognitionRef.current?.abort();
+      recognitionRef.current = null;
+      matcherRef.current!.resetAll();
+      setStatus("idle");
+      if (isDevBuild) emitVoiceDebug("status", { status: "idle", reason: "disabled" });
       return;
     }
 
-    const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    if (!Ctor) {
-      setVoiceStatus("unsupported");
+    const RecognitionCtor = getSpeechRecognitionConstructor();
+    if (!RecognitionCtor) {
+      setStatus("unsupported");
+      if (isDevBuild) emitVoiceDebug("status", { status: "unsupported" });
       return;
     }
 
-    let stopped = false;
-    let restartTimer: number | undefined;
+    intentionalStopRef.current = false;
+    matcherRef.current!.resetAll();
+    lastGenuineActivityAtRef.current = Date.now();
+    setStatus("requesting");
+    if (isDevBuild) emitVoiceDebug("status", { status: "requesting", targetPhrase: targetPhraseRef.current });
 
-    // A fresh recognizer run renumbers result indices from 0 — the
-    // per-segment state above is scoped to ONE physical index within ONE
-    // run, so it must reset whenever a new run starts. The per-TARGET
-    // session state is deliberately NOT touched here, so genuine
-    // in-progress matching survives a restart.
-    const resetForNewRun = () => {
-      segmentIndexRef.current = null;
-      segmentTokensRef.current = [];
-      consumedTokensRef.current = [];
-    };
+    // A single entry point for both the initial start and every
+    // transparent restart — whether the browser dropped the session on
+    // its own, or our own recognizer-health check proactively aborted a
+    // silently stalled one (see the watchdog below). Always a brand-new
+    // instance (safer across browsers than reusing a stopped one),
+    // always reassigning recognitionRef so the
+    // `recognitionRef.current !== recognition` guard in every handler
+    // below can tell a stale/superseded instance's late events apart
+    // from the current one. No timers are involved in restarting itself:
+    // it is driven entirely by onend, so there is exactly one restart
+    // path and no possibility of overlapping sessions.
+    function startInstance(debugReason?: string) {
+      const recognition = new RecognitionCtor!();
+      recognition.lang = VOICE_TASBEEH_LOCALE;
+      recognition.continuous = true;
+      recognition.interimResults = true;
 
-    let inactivityTimer: number | undefined;
-    const clearInactivityTimer = () => {
-      window.clearTimeout(inactivityTimer);
-      inactivityTimer = undefined;
-    };
-    const armInactivityTimer = () => {
-      clearInactivityTimer();
-      inactivityTimer = window.setTimeout(handleInactivityTimeout, INACTIVITY_TIMEOUT_MS);
-    };
-    function handleInactivityTimeout() {
-      if (stopped) return;
-      stopped = true;
-      window.clearTimeout(restartTimer);
-      recognition.abort();
-      setVoiceStatus("idle");
-    }
-
-    const recognition = new Ctor();
-    const isAndroidPlatform = detectAndroidPlatform();
-    // Modern Standard Arabic — matches how every dhikr_ar string in
-    // src/data/tasbeeh-library.json is written.
-    recognition.lang = "ar-SA";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-      // A native session actually beginning — whether this is the very
-      // first start or a restart after onend — renumbers result indices
-      // from 0. Resetting per-segment state exactly here (rather than
-      // once at effect setup) is what stops a restarted session's own
-      // index 0 from being mistaken for a continuation of the PREVIOUS
-      // session's index 0 and having its genuinely new speech dropped as
-      // an "exact duplicate" of already-consumed content.
-      resetForNewRun();
-      if (!stopped) setVoiceStatus("listening");
-    };
-
-    const applyDelta = (matchedCount: number) => {
-      if (matchedCount > 0) {
-        onMatchRef.current(matchedCount);
-        setJustMatched(true);
-        window.clearTimeout(flashTimer.id);
-        flashTimer.id = window.setTimeout(() => setJustMatched(false), MATCH_FLASH_MS);
+      const instanceId = isDevBuild ? ++instanceIdRef.current : 0;
+      if (isDevBuild) {
+        (recognition as unknown as { __ditharInstanceId: number }).__ditharInstanceId = instanceId;
       }
-    };
 
-    recognition.onresult = (event) => {
-      const targetTokens = tokenize(targetRef.current);
+      recognition.onstart = () => {
+        if (recognitionRef.current !== recognition) return;
+        // A fresh native session (including any restart) means the
+        // browser's result indexing starts over — clear per-session
+        // transport bookkeeping. Target progress deliberately survives
+        // (see VoiceTasbeehMatcher.resetSession) — a health restart must
+        // never lose progress toward the current target.
+        matcherRef.current!.resetSession();
+        // Fresh grace period for the new instance: it hasn't produced a
+        // single event yet, which must not itself look like a stall.
+        lastResultEventAtRef.current = Date.now();
+        isListeningRef.current = true;
+        setStatus("listening");
+        if (isDevBuild) {
+          emitVoiceDebug("onstart", { instanceId, debugReason, snapshot: matcherRef.current!.getDebugSnapshot() });
+          emitVoiceDebug("status", { status: "listening", instanceId });
+        }
+      };
 
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        // Defensive only: per spec a finalized result index is never
-        // revisited and indices only ever increase. Never used to derive
-        // counting decisions on its own (see requirement: "do not assume
-        // resultIndex identifies a new user utterance").
-        if (segmentIndexRef.current !== null && i < segmentIndexRef.current) continue;
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        if (recognitionRef.current !== recognition) return;
+        // Recognizer-health signal: ANY result event, regardless of its
+        // content, proves the recognizer is still alive and talking to
+        // us. Updated unconditionally, before matching even runs.
+        lastResultEventAtRef.current = Date.now();
 
-        const result = event.results[i];
-        if (isSpuriousAndroidDuplicateFinal(isAndroidPlatform, { isFinal: result.isFinal, confidence: result[0]?.confidence })) {
-          continue;
+        if (isDevBuild) {
+          lastResultIndexRef.current = event.resultIndex;
+          emitVoiceDebug("onresult:event", {
+            instanceId,
+            resultIndex: event.resultIndex,
+            resultsLength: event.results.length,
+            allResults: Array.from({ length: event.results.length }, (_, i) => ({
+              i,
+              isFinal: event.results[i].isFinal,
+              rawTranscript: event.results[i][0]?.transcript ?? "",
+            })),
+            isListening: isListeningRef.current,
+            msSinceLastResultEvent: 0, // this event IS the last one, by definition
+            msSinceLastGenuineActivity: Date.now() - lastGenuineActivityAtRef.current,
+          });
         }
 
-        const transcript = result[0]?.transcript ?? "";
-        const currentTokens = expandFastSpeechMerges(contractWordSplits(tokenize(transcript), targetTokens), targetTokens);
-
-        const isNewSegment = segmentIndexRef.current !== i;
-        if (isNewSegment) {
-          segmentIndexRef.current = i;
-          segmentTokensRef.current = [];
-          consumedTokensRef.current = [];
+        let totalCompletions = 0;
+        let anyGenuineActivity = false;
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          const rawTranscript = result[0]?.transcript ?? "";
+          if (isDevBuild) {
+            emitVoiceDebug("onresult:raw", { instanceId, segmentId: i, isFinal: result.isFinal, rawTranscript });
+          }
+          const { completions, hadGenuineActivity } = matcherRef.current!.processSegment({
+            segmentId: i,
+            text: rawTranscript,
+            isFinal: result.isFinal,
+          });
+          totalCompletions += completions;
+          if (hadGenuineActivity) anyGenuineActivity = true;
         }
-
-        // Exact duplicate re-emission (interim repeated verbatim, or a
-        // final re-stating the same text just to mark completeness) —
-        // nothing changed, nothing to feed. isFinal carries no further
-        // meaning here either way (see requirement: "do not assume
-        // isFinal means a valid dhikr repetition") — there is no
-        // deferred commit step waiting on it.
-        if (!isNewSegment && currentTokens.length === segmentTokensRef.current.length && currentTokens.every((t, idx) => t === segmentTokensRef.current[idx])) {
-          continue;
+        // User/dhikr-activity signal — deliberately separate from the
+        // health signal above: this only moves when the matcher judges
+        // the new content as genuinely engaging the current target (see
+        // VoiceTasbeehMatcher.processSegment), which is what the
+        // 60-second "user stopped reciting" watchdog must key off.
+        if (anyGenuineActivity) {
+          lastGenuineActivityAtRef.current = Date.now();
         }
-
-        // GENUINE recognized content — the only thing that resets the
-        // inactivity timeout.
-        armInactivityTimer();
-
-        segmentTokensRef.current = currentTokens;
-
-        // How much of this segment's CURRENT tokens is still the exact
-        // same content already consumed (by a completed match, or by a
-        // target switch while this segment was open) — safe against a
-        // revision reshaping that span (see safePrefixMatchLength's own
-        // doc).
-        const consumedBoundary = safePrefixMatchLength(currentTokens, consumedTokensRef.current);
-        const newTokens = currentTokens.slice(consumedBoundary);
-
-        const { state, matchedCount } = matchNewTokens(sessionStateRef.current, newTokens, targetTokens);
-        sessionStateRef.current = state;
-        // Every genuinely-new token just fed is now permanently dealt
-        // with, whether or not it completed anything — never re-examine
-        // it for this segment again.
-        consumedTokensRef.current = currentTokens;
-
-        applyDelta(matchedCount);
-
-        if (result.isFinal) {
-          // The segment is done; the NEXT index (whenever it arrives) is
-          // unambiguously new. Nothing else to do — there is no deferred
-          // bookkeeping to flush, since every match was already credited
-          // the instant it completed.
+        if (totalCompletions > 0) {
+          onMatchRef.current(totalCompletions);
+          setJustMatched(true);
+          if (justMatchedTimerRef.current !== null) {
+            window.clearTimeout(justMatchedTimerRef.current);
+          }
+          justMatchedTimerRef.current = window.setTimeout(() => setJustMatched(false), JUST_MATCHED_PULSE_MS);
         }
+        if (isDevBuild) {
+          emitVoiceDebug("onresult:summary", {
+            instanceId,
+            totalCompletions,
+            anyGenuineActivity,
+            snapshotAfter: matcherRef.current!.getDebugSnapshot(),
+          });
+        }
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        if (recognitionRef.current !== recognition) return;
+        // An error event — any error — is still proof the recognizer is
+        // alive and communicating, so it counts toward recognizer health
+        // exactly like a result does; it never counts toward user/dhikr
+        // activity (that stays scoped to genuine matched speech only).
+        lastResultEventAtRef.current = Date.now();
+        if (isDevBuild) emitVoiceDebug("onerror", { instanceId, error: event.error });
+
+        if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+          intentionalStopRef.current = true;
+          isListeningRef.current = false;
+          setStatus("denied");
+          if (isDevBuild) emitVoiceDebug("status", { status: "denied", instanceId });
+        } else if (event.error === "audio-capture") {
+          intentionalStopRef.current = true;
+          isListeningRef.current = false;
+          setStatus("no-mic");
+          if (isDevBuild) emitVoiceDebug("status", { status: "no-mic", instanceId });
+        } else if (event.error === "no-speech") {
+          // Benign in continuous mode — onend decides whether to restart.
+        } else {
+          setStatus("error");
+          if (isDevBuild) emitVoiceDebug("status", { status: "error", instanceId });
+        }
+      };
+
+      recognition.onend = () => {
+        if (recognitionRef.current !== recognition) return;
+        if (intentionalStopRef.current) {
+          if (isDevBuild) emitVoiceDebug("onend", { instanceId, intentionalStop: true, willRestart: false });
+          recognitionRef.current = null;
+          return;
+        }
+        // Not our doing — either the browser dropped the session on its
+        // own, or the recognizer-health check below proactively aborted
+        // a silently stalled one. Both take the exact same, single
+        // restart path: transparent to the user, no distinction needed.
+        if (isDevBuild) emitVoiceDebug("onend", { instanceId, intentionalStop: false, willRestart: true });
+        startInstance("restart-after-onend");
+      };
+
+      recognitionRef.current = recognition;
+      if (isDevBuild) {
+        emitVoiceDebug("start", { instanceId, debugReason: debugReason ?? "initial", targetPhrase: targetPhraseRef.current });
       }
-    };
-
-    recognition.onerror = (event) => {
-      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        stopped = true;
-        clearInactivityTimer();
-        setVoiceStatus("denied");
-      } else if (event.error === "language-not-supported") {
-        stopped = true;
-        clearInactivityTimer();
-        setVoiceStatus("error");
-      }
-      // "audio-capture", "no-speech", "aborted", "network", and anything
-      // else are treated as transient: onend (below) decides whether to
-      // restart, using the SAME single retry loop as a natural end —
-      // deliberately not a separate recovery path (no devicechange
-      // listener in this design).
-    };
-
-    // ONE restart mechanism, reused for both a natural end and a start()
-    // that throws (a documented, real InvalidStateError race from
-    // calling start() before the previous native session has fully
-    // quiesced) — always clears any previously pending attempt first, so
-    // at most one retry is ever scheduled at a time. Bounded in practice
-    // by the inactivity timeout above: if start() never actually
-    // succeeds, no genuine speech ever reaches onresult to keep
-    // resetting it, so the session ends on its own on schedule rather
-    // than retrying forever.
-    const scheduleRestart = () => {
-      window.clearTimeout(restartTimer);
-      restartTimer = window.setTimeout(() => {
-        if (stopped) return;
-        try {
-          recognition.start();
-        } catch {
-          scheduleRestart();
-        }
-      }, RESTART_DELAY_MS);
-    };
-
-    recognition.onend = () => {
-      if (stopped) return;
-      scheduleRestart();
-    };
-
-    setVoiceStatus("requesting");
-    try {
       recognition.start();
-      armInactivityTimer();
-    } catch {
-      setVoiceStatus("error");
     }
+
+    startInstance("initial");
+
+    // Two independent signals, one shared interval. Order matters: a
+    // full 60s of true silence always wins and hard-stops, even if a
+    // health-stall condition also happens to be true at that instant —
+    // there's nothing left to "recover" for a session the user has
+    // genuinely abandoned.
+    const watchdog = window.setInterval(() => {
+      const now = Date.now();
+
+      if (now - lastGenuineActivityAtRef.current >= INACTIVITY_TIMEOUT_MS) {
+        // Fires exactly once: stop checking immediately, since the
+        // session is now over and lastGenuineActivityAtRef will never
+        // move again on its own — without this, the interval would keep
+        // re-firing (and re-aborting/re-notifying) every tick until the
+        // host reacts to onIdleTimeout by flipping `enabled` off. This
+        // is a full, deliberate shutdown — never a gate on counting
+        // speed, and unchanged in meaning from before this fix.
+        if (isDevBuild) {
+          emitVoiceDebug("abort", { reason: "60s-idle-timeout" });
+          emitVoiceDebug("status", { status: "idle", reason: "60s-idle-timeout" });
+        }
+        window.clearInterval(watchdog);
+        intentionalStopRef.current = true;
+        isListeningRef.current = false;
+        recognitionRef.current?.abort();
+        recognitionRef.current = null;
+        matcherRef.current!.resetAll();
+        setStatus("idle");
+        onIdleTimeoutRef.current();
+        return;
+      }
+
+      if (isListeningRef.current && now - lastResultEventAtRef.current >= RECOGNIZER_STALL_THRESHOLD_MS) {
+        // Recognizer-health recovery: the instance confirmed onstart but
+        // has produced NOTHING AT ALL — not even a benign error — for
+        // longer than any plausible natural pause. This is never true
+        // merely because the user is quietly reciting slowly, and it is
+        // never triggered by a target switch (switching never touches
+        // recognition at all — see VoiceTasbeehMatcher.setTarget).
+        //
+        // Proactively abort WITHOUT marking this an intentional stop, so
+        // onend above takes its already-tested restart branch. Nothing
+        // is counted by this abort itself (no SegmentUpdate is ever
+        // produced by calling abort()), matchProgress/targetTokens are
+        // untouched (only resetSession()-scoped transport bookkeeping
+        // clears, exactly as for any other restart), and the very next
+        // genuinely new spoken token — once the fresh instance is up —
+        // is processed completely normally.
+        //
+        // No restart storm is possible: isListeningRef is set false
+        // immediately (so this same tick, and any tick before the new
+        // instance's own onstart re-arms it, cannot re-trigger), and the
+        // new instance gets its own full RECOGNIZER_STALL_THRESHOLD_MS
+        // grace period from its own onstart — so even a recognizer that
+        // stalls again immediately every single time can restart at
+        // most once per threshold window, never faster.
+        if (isDevBuild) emitVoiceDebug("abort", { reason: "recognizer-health-stall" });
+        isListeningRef.current = false;
+        recognitionRef.current?.abort();
+      }
+    }, WATCHDOG_CHECK_INTERVAL_MS);
 
     return () => {
-      stopped = true;
-      window.clearTimeout(restartTimer);
-      window.clearTimeout(flashTimer.id);
-      clearInactivityTimer();
-      recognition.onstart = null;
-      recognition.onresult = null;
-      recognition.onerror = null;
-      recognition.onend = null;
-      recognition.abort();
+      if (isDevBuild) emitVoiceDebug("abort", { reason: "effect-cleanup" });
+      window.clearInterval(watchdog);
+      intentionalStopRef.current = true;
+      isListeningRef.current = false;
+      recognitionRef.current?.abort();
+      recognitionRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled]);
+
+  useEffect(() => {
+    return () => {
+      if (justMatchedTimerRef.current !== null) {
+        window.clearTimeout(justMatchedTimerRef.current);
+      }
+    };
+  }, []);
 
   return { status, justMatched };
 }

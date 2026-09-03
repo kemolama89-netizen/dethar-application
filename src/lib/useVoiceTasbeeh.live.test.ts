@@ -1,463 +1,525 @@
 // @vitest-environment jsdom
 //
-// NEW, focused behavioral regression suite for the rebuilt Voice Tasbeeh
-// engine (see useVoiceTasbeeh.ts's own "STATE MODEL" doc). Deliberately
-// NOT a port of the old 255-test suite — that suite tested the REMOVED
-// architecture's own internals (checkpoint boundaries, historical
-// overlap, structural commit, target-switch index floors) directly; this
-// suite tests only OBSERVABLE behavior through the real hook, driven by
-// a mock SpeechRecognition, matching real documented browser behavior
-// (cumulative/interim results, revisions, duplicate re-emissions,
-// onend/restart, result indices restarting from 0 on every recognition
-// run).
-import { describe, expect, it, vi } from "vitest";
+// Lifecycle tests for the useVoiceTasbeeh hook, driven through a small
+// fake SpeechRecognition (built fresh for this task — not reused from any
+// prior implementation). Mounts the REAL hook via plain react-dom/client +
+// act (this project has no testing-library installed), matching the
+// pattern already used by TasbeehScreen.test.tsx.
+//
+// Matching correctness itself is covered exhaustively by
+// voiceTasbeehMatch.test.ts against the pure engine; these tests are
+// scoped to what only the hook is responsible for: starting/restarting
+// native recognition, not restarting on target switch, error/lifecycle
+// status transitions, and the 60-second watchdog.
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as React from "react";
-import { act } from "react";
+import { act, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { useVoiceTasbeeh } from "./useVoiceTasbeeh";
+import { useVoiceTasbeeh, type VoiceTasbeehStatus, RECOGNIZER_STALL_THRESHOLD_MS } from "./useVoiceTasbeeh";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-class MockAlternative {
-  transcript: string;
-  confidence: number;
-  constructor(transcript: string, confidence: number) {
-    this.transcript = transcript;
-    this.confidence = confidence;
-  }
-}
-
-class MockResult extends Array<MockAlternative> {
+interface FakeResult extends Array<{ transcript: string }> {
   isFinal: boolean;
-  constructor(transcript: string, confidence: number, isFinal: boolean) {
-    super();
-    this.push(new MockAlternative(transcript, confidence));
-    this.isFinal = isFinal;
-  }
 }
 
-class MockSpeechRecognition {
-  static instances: MockSpeechRecognition[] = [];
+function makeResult(text: string, isFinal: boolean): FakeResult {
+  const arr = [{ transcript: text }] as FakeResult;
+  arr.isFinal = isFinal;
+  return arr;
+}
+
+class FakeSpeechRecognition extends EventTarget {
   lang = "";
   continuous = false;
   interimResults = false;
   maxAlternatives = 1;
-  onstart: ((ev: unknown) => void) | null = null;
-  onend: ((ev: unknown) => void) | null = null;
+  onstart: ((ev: Event) => void) | null = null;
+  onend: ((ev: Event) => void) | null = null;
   onresult: ((ev: unknown) => void) | null = null;
   onerror: ((ev: unknown) => void) | null = null;
+
   started = false;
-  sessionsStarted = 0;
-  private accumulatedResults: MockResult[] = [];
-  constructor() {
-    MockSpeechRecognition.instances.push(this);
-  }
+  aborted = false;
+
   start() {
     this.started = true;
-    this.sessionsStarted += 1;
-    this.accumulatedResults = []; // a fresh session renumbers indices from 0, like a real browser
-    queueMicrotask(() => this.onstart?.({}));
+    FakeSpeechRecognition.instances.push(this);
   }
+
   stop() {
-    this.started = false;
+    this.finish();
   }
+
   abort() {
+    this.aborted = true;
+    this.finish();
+  }
+
+  private finish() {
+    if (!this.started) return;
     this.started = false;
+    this.onend?.(new Event("end"));
   }
-  fireResult(index: number, result: MockResult) {
-    this.accumulatedResults[index] = result;
-    const resultsArray = this.accumulatedResults as unknown as { length: number; [i: number]: MockResult };
-    this.onresult?.({ resultIndex: index, results: resultsArray });
+
+  fireStart() {
+    this.onstart?.(new Event("start"));
   }
-  fireEnd() {
-    this.started = false;
-    this.onend?.({});
+
+  // segmentId mirrors SpeechRecognitionEvent.resultIndex — the array is
+  // padded with unread filler entries below it, matching the real API's
+  // "results is the full cumulative array, resultIndex is where the new
+  // content starts" shape, since useVoiceTasbeeh loops from resultIndex.
+  fireResult(segmentId: number, text: string, isFinal: boolean) {
+    const results: FakeResult[] = [];
+    for (let i = 0; i < segmentId; i++) results.push(makeResult("", true));
+    results.push(makeResult(text, isFinal));
+    this.onresult?.({ resultIndex: segmentId, results });
   }
+
   fireError(error: string) {
     this.onerror?.({ error });
   }
-}
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-// RESTART_DELAY_MS in useVoiceTasbeeh.ts is 300ms — this must exceed it.
-const PAST_RESTART_DELAY_MS = 360;
-
-interface Harness {
-  matches: number[];
-  rollbacks: number[];
-  recognition: MockSpeechRecognition;
-  root: ReturnType<typeof createRoot>;
-  container: HTMLDivElement;
-  net: () => number;
-  status: () => string;
-  setTarget: (target: string) => Promise<void>;
-  unmount: () => Promise<void>;
-}
-
-async function mountVoiceTasbeeh(targetPhrase: string): Promise<Harness> {
-  (globalThis as unknown as { window: { SpeechRecognition: unknown } }).window.SpeechRecognition = MockSpeechRecognition;
-  (globalThis as unknown as { SpeechRecognition: unknown }).SpeechRecognition = MockSpeechRecognition;
-  MockSpeechRecognition.instances = [];
-
-  const matches: number[] = [];
-  const rollbacks: number[] = [];
-  let currentTarget = targetPhrase;
-  let latestStatus = "idle";
-
-  function TestHarness({ target }: { target: string }) {
-    const { status } = useVoiceTasbeeh({
-      enabled: true,
-      targetPhrase: target,
-      onMatch: (times) => matches.push(times),
-      onRollback: (times) => rollbacks.push(times),
-    });
-    React.useEffect(() => {
-      latestStatus = status;
-    }, [status]);
-    return null;
+  // Simulates the browser ending the session on its own (NOT via our own
+  // stop()/abort()) — e.g. a natural continuous-mode session boundary.
+  fireBrowserForcedEnd() {
+    this.started = false;
+    this.onend?.(new Event("end"));
   }
 
+  static instances: FakeSpeechRecognition[] = [];
+  static reset() {
+    FakeSpeechRecognition.instances = [];
+  }
+}
+
+let latestResult: { status: VoiceTasbeehStatus; justMatched: boolean } | null = null;
+let matchLog: number[] = [];
+let idleTimeoutCount = 0;
+
+function Harness({ enabled, targetPhrase }: { enabled: boolean; targetPhrase: string }) {
+  const result = useVoiceTasbeeh({
+    enabled,
+    targetPhrase,
+    onMatch: (times) => {
+      matchLog.push(times);
+    },
+    onIdleTimeout: () => {
+      idleTimeoutCount += 1;
+    },
+  });
+  useEffect(() => {
+    latestResult = result;
+  });
+  return null;
+}
+
+async function mount(props: { enabled: boolean; targetPhrase: string }) {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
-
   await act(async () => {
-    root.render(React.createElement(TestHarness, { target: currentTarget }));
+    root.render(React.createElement(Harness, props));
   });
-  await act(async () => {
-    await sleep(10); // let the queued onstart microtask flush
-  });
-
-  const recognition = MockSpeechRecognition.instances[0];
   return {
-    matches,
-    rollbacks,
-    recognition,
-    root,
-    container,
-    net: () => matches.reduce((a, b) => a + b, 0) - rollbacks.reduce((a, b) => a + b, 0),
-    status: () => latestStatus,
-    setTarget: async (target: string) => {
-      currentTarget = target;
+    rerender: async (next: typeof props) => {
       await act(async () => {
-        root.render(React.createElement(TestHarness, { target: currentTarget }));
+        root.render(React.createElement(Harness, next));
       });
     },
     unmount: async () => {
       await act(async () => {
         root.unmount();
       });
-      document.body.removeChild(container);
     },
   };
 }
 
-async function restartSession(h: Harness) {
-  await act(async () => {
-    h.recognition.fireEnd();
-  });
-  await act(async () => {
-    await sleep(PAST_RESTART_DELAY_MS);
-  });
-}
+beforeEach(() => {
+  FakeSpeechRecognition.reset();
+  matchLog = [];
+  idleTimeoutCount = 0;
+  latestResult = null;
+  (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = FakeSpeechRecognition;
+  delete (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition;
+});
 
-describe("useVoiceTasbeeh (rebuilt engine)", () => {
-  const SHORT = "سبحان الله"; // 2 tokens
-  const LONG = "سبحان الله وبحمده سبحان الله العظيم"; // 6 tokens, target[3]===target[0]
+afterEach(() => {
+  delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
+});
 
-  // A -----------------------------------------------------------------
-  it("A: one correctly spoken short dhikr counts exactly once", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
+describe("useVoiceTasbeeh lifecycle", () => {
+  it("starts one recognition instance and transitions to listening", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    expect(latestResult?.status).toBe("requesting");
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false));
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    expect(latestResult?.status).toBe("listening");
+    await unmount();
+  });
+
+  it("calls onMatch and pulses justMatched when the engine reports a completion", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
     });
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult(SHORT, 0.9, true));
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله", true);
     });
-    expect(h.net()).toBe(1);
-    await h.unmount();
+    expect(matchLog).toEqual([1]);
+    expect(latestResult?.justMatched).toBe(true);
+    await unmount();
   });
 
-  // B -----------------------------------------------------------------
-  it("B: 20 genuine repetitions of 'سبحان الله' -> 20", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
-    const words: string[] = [];
-    for (let i = 0; i < 20; i++) {
-      words.push("سبحان");
+  it("switching target does not create a new recognition instance", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await rerender({ enabled: true, targetPhrase: "الله اكبر" });
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "الله اكبر", true);
+    });
+    expect(matchLog).toEqual([1]);
+    await unmount();
+  });
+
+  it("restarts transparently when the browser ends the session on its own", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireBrowserForcedEnd();
+    });
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+    await unmount();
+  });
+
+  it("does not restart after an explicit disable", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await rerender({ enabled: false, targetPhrase: "سبحان الله" });
+    expect(latestResult?.status).toBe("idle");
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await unmount();
+  });
+
+  it("reflects a permission-denied error and does not restart", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireError("not-allowed");
+      FakeSpeechRecognition.instances[0].fireBrowserForcedEnd();
+    });
+    expect(latestResult?.status).toBe("denied");
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await unmount();
+  });
+
+  it("reports unsupported when no SpeechRecognition constructor exists", async () => {
+    delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    expect(latestResult?.status).toBe("unsupported");
+    expect(FakeSpeechRecognition.instances.length).toBe(0);
+    await unmount();
+  });
+});
+
+describe("useVoiceTasbeeh 60s inactivity watchdog", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("stops and calls onIdleTimeout after 60s with no genuine activity", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(61_000);
+    });
+    expect(idleTimeoutCount).toBe(1);
+    expect(latestResult?.status).toBe("idle");
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
+    await unmount();
+  });
+
+  it("does not time out while genuine activity keeps occurring", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله وبحمده" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    // Gaps deliberately kept under RECOGNIZER_STALL_THRESHOLD_MS (see the
+    // dedicated recognizer-health describe block below) so this test
+    // exercises only the 60s user-inactivity signal in isolation — a
+    // 30s+ gap with zero events would also, correctly, trigger a health
+    // restart, which is a separate mechanism this test isn't about.
+    for (let i = 0; i < 7; i++) {
       await act(async () => {
-        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+        await vi.advanceTimersByTimeAsync(10_000);
       });
-      words.push("الله");
       await act(async () => {
-        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+        FakeSpeechRecognition.instances[0].fireResult(i, "سبحان", false);
       });
     }
-    expect(h.net()).toBe(20);
-    await h.unmount();
+    expect(idleTimeoutCount).toBe(0);
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await unmount();
   });
 
-  // C -----------------------------------------------------------------
-  it("C: 50 genuine repetitions of 'سبحان الله' -> 50", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
-    const words: string[] = [];
-    for (let i = 0; i < 50; i++) {
-      words.push("سبحان");
+  it("does not treat duplicate/replayed transcript output as activity that prevents the timeout", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله وبحمده" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان", false);
+    });
+    // repeatedly re-emit the SAME unchanged interim content, well past 60s
+    for (let i = 0; i < 4; i++) {
       await act(async () => {
-        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+        await vi.advanceTimersByTimeAsync(20_000);
       });
-      words.push("الله");
       await act(async () => {
-        h.recognition.fireResult(0, new MockResult(words.join(" "), 0.9, false));
+        FakeSpeechRecognition.instances[0].fireResult(0, "سبحان", false);
       });
     }
-    expect(h.net()).toBe(50);
-    await h.unmount();
+    expect(idleTimeoutCount).toBe(1);
+    await unmount();
+  });
+});
+
+describe("useVoiceTasbeeh end-to-end regressions (real device capture: RLM corruption + revision under switch)", () => {
+  const RLM = "‏";
+
+  it("completes a long target spanning three native resultIndex values, with a leading U+200F on a later segment's own first token", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله وبحمده الله اكبر" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله", true);
+    });
+    expect(matchLog).toEqual([]);
+    await act(async () => {
+      // A later native result's transcript, exactly as captured from the
+      // real device, glued directly onto its own first word.
+      FakeSpeechRecognition.instances[0].fireResult(1, `${RLM}وبحمده`, true);
+    });
+    expect(matchLog).toEqual([]);
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(2, `${RLM}الله اكبر`, true);
+    });
+    expect(matchLog).toEqual([1]);
+    await unmount();
   });
 
-  // D -----------------------------------------------------------------
-  it("D: a cumulative transcript containing exactly N complete repetitions in one event counts exactly N, never more", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
-    const threeReps = Array(3).fill(SHORT).join(" ");
+  it("does not lose genuinely new post-switch speech when the SAME live resultIndex is later revised", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله وبحمده" });
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult(threeReps, 0.9, true));
+      FakeSpeechRecognition.instances[0].fireStart();
     });
-    expect(h.net()).toBe(3);
-    await h.unmount();
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله", false); // partial old target, pre-switch
+    });
+    await rerender({ enabled: true, targetPhrase: "الحمد لله رب العالمين" });
+    await act(async () => {
+      // A revision of the SAME still-live result: the pre-switch words get
+      // re-segmented into one token while the new target's words follow.
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحانالله الحمد لله رب العالمين", true);
+    });
+    expect(matchLog).toEqual([1]);
+    await unmount();
+  });
+});
+
+describe("safer recovery model — hook-level: A -> B -> A never restarts the recognizer", () => {
+  it("stays on a single recognition instance across A -> B -> A and still counts a fresh recitation of A", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "واحد اثنان ثلاثة اربعة" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await rerender({ enabled: true, targetPhrase: "الحمد لله" });
+    await rerender({ enabled: true, targetPhrase: "واحد اثنان ثلاثة اربعة" });
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "واحد اثنان ثلاثة اربعة", true);
+    });
+    expect(matchLog).toEqual([1]);
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await unmount();
+  });
+});
+
+describe("useVoiceTasbeeh recognizer-health watchdog (separate from the 60s user-inactivity watchdog)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  // E -----------------------------------------------------------------
-  it("E: the same result re-emitted as final (identical content) does not count twice", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
+  // A. A normal long-dhikr pause, shorter than the health threshold, must
+  // never trigger a restart.
+  it("does not restart for a pause shorter than the health threshold", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله وبحمده" });
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult(SHORT, 0.9, false));
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان", false);
     });
-    expect(h.net()).toBe(1);
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult(SHORT, 0.95, true)); // identical text, just now final
+      await vi.advanceTimersByTimeAsync(RECOGNIZER_STALL_THRESHOLD_MS - 1_000);
     });
-    expect(h.net()).toBe(1);
-    await h.unmount();
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله وبحمده", true);
+    });
+    expect(matchLog).toEqual([1]);
+    await unmount();
   });
 
-  // F -----------------------------------------------------------------
-  it("F: an interim transcript revised from one form to another (not a clean append) does not double-count", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
+  // B. A true silent recognizer stall beyond the threshold triggers
+  // exactly one recovery restart.
+  it("recovers with exactly one restart after a true silent stall beyond the threshold", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false));
+      FakeSpeechRecognition.instances[0].fireStart();
     });
-    // Revision: the recognizer reshapes its own guess for the same word.
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult("سبحا", 0.9, false));
+      await vi.advanceTimersByTimeAsync(RECOGNIZER_STALL_THRESHOLD_MS + 1_000);
     });
-    // Then corrects itself and completes the phrase.
+
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
+
+    // Exactly one — a further short advance (well under another full
+    // threshold window) must not produce a second restart.
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult(SHORT, 0.9, true));
+      await vi.advanceTimersByTimeAsync(1_000);
     });
-    expect(h.net()).toBe(1);
-    await h.unmount();
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+    await unmount();
   });
 
-  // G -----------------------------------------------------------------
-  it("G: a wrong/unrelated phrase never counts", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
+  // C. Target switching never restarts recognition, independent of the
+  // health mechanism.
+  it("does not restart on a target switch", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult("كلام غريب تماما لا علاقة له", 0.9, true));
+      FakeSpeechRecognition.instances[0].fireStart();
     });
-    expect(h.net()).toBe(0);
-    await h.unmount();
+    await rerender({ enabled: true, targetPhrase: "الله اكبر" });
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    await unmount();
   });
 
-  // H -----------------------------------------------------------------
-  it("H: minor Arabic orthographic differences (tashkeel/hamza forms) between the stored target and the live transcript still count", async () => {
-    const h = await mountVoiceTasbeeh("سُبْحَانَ اللَّهِ"); // full tashkeel, as stored in the library
+  // D. 60s of genuine user inactivity is a normal, full shutdown — never
+  // the health-recovery restart path. Isolated from the health signal
+  // entirely: the recognizer keeps producing events throughout (so it is
+  // never "stalled" — no restart is ever warranted), but none of them
+  // engage the target, so genuine user/dhikr activity never occurs.
+  it("60s of user inactivity performs a normal shutdown, not a health recovery restart", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
     await act(async () => {
-      h.recognition.fireResult(0, new MockResult("سبحان الله", 0.9, true)); // bare transcript, as a recognizer actually reports it
+      FakeSpeechRecognition.instances[0].fireStart();
     });
-    expect(h.net()).toBe(1);
-    await h.unmount();
-  });
-
-  // I -----------------------------------------------------------------
-  it("I: a long dhikr with a natural pause mid-utterance (same still-open segment) still counts correctly", async () => {
-    const h = await mountVoiceTasbeeh(LONG);
-    const words = LONG.split(" ");
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(words.slice(0, 3).join(" "), 0.9, false)); // first half only
-    });
-    expect(h.net()).toBe(0);
-    // ... a realistic breathing pause, no events at all ...
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(LONG, 0.9, true)); // completes the same segment
-    });
-    expect(h.net()).toBe(1);
-    await h.unmount();
-  });
-
-  // J -----------------------------------------------------------------
-  it("J: a long dhikr with a normal recognition revision (a dropped 'و' prefix corrected on a later event) still counts correctly", async () => {
-    const h = await mountVoiceTasbeeh(LONG);
-    const words = LONG.split(" "); // [...,"سبحان","الله","العظيم"] with "وبحمده" at index 2
-    const dropped = [...words];
-    dropped[2] = "بحمده"; // "وبحمده" heard without its "و"
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(dropped.join(" "), 0.9, false));
-    });
-    // Recognizer revises and gets the "و" right this time.
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(LONG, 0.9, true));
-    });
-    expect(h.net()).toBe(1);
-    await h.unmount();
-  });
-
-  // K -----------------------------------------------------------------
-  it("K: switching target does not restart SpeechRecognition", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(SHORT, 0.9, true));
-    });
-    expect(h.net()).toBe(1);
-    await h.setTarget("سبحان الله وبحمده");
-    expect(h.recognition.sessionsStarted).toBe(1); // no restart happened
-    await act(async () => {
-      h.recognition.fireResult(1, new MockResult("سبحان الله وبحمده", 0.9, true));
-    });
-    expect(h.net()).toBe(2);
-    await h.unmount();
-  });
-
-  // L -----------------------------------------------------------------
-  it("L: switching between two dhikrs sharing 'سبحان الله' does not let old content contaminate the new target", async () => {
-    const A = SHORT;
-    const C = "سبحان الله وبحمده"; // shares A's own words as its own prefix
-    const h = await mountVoiceTasbeeh(A);
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(A, 0.9, true)); // A completes and this segment finalizes
-    });
-    expect(h.net()).toBe(1);
-
-    await h.setTarget(C);
-    // A fresh segment coincidentally starts with C's own opening words
-    // (because they're literally the same words as A) but never
-    // completes C.
-    await act(async () => {
-      h.recognition.fireResult(1, new MockResult(A, 0.9, true));
-    });
-    expect(h.net()).toBe(1); // must not satisfy C
-
-    await act(async () => {
-      h.recognition.fireResult(2, new MockResult(C, 0.9, true)); // genuinely complete C
-    });
-    expect(h.net()).toBe(2);
-    await h.unmount();
-  });
-
-  // M -----------------------------------------------------------------
-  it("M: the same open result index survives a target switch, and new speech for the new target still counts", async () => {
-    const A = SHORT;
-    const B = "الحمد لله";
-    const h = await mountVoiceTasbeeh(A);
-    // Index 0 left open (interim, not final) with a stray word.
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false));
-    });
-    expect(h.net()).toBe(0);
-
-    await h.setTarget(B);
-
-    // The SAME index continues (no restart), with the pre-switch stray
-    // word still present, plus B's own words genuinely appended after
-    // the switch.
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(`سبحان ${B}`, 0.9, true));
-    });
-    expect(h.net()).toBe(1); // only the genuine post-switch B counts
-    expect(h.recognition.sessionsStarted).toBe(1);
-    await h.unmount();
-  });
-
-  // N -----------------------------------------------------------------
-  it("N: onend followed by an automatic restart continues the session without duplicate counts", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(SHORT, 0.9, true));
-    });
-    expect(h.net()).toBe(1);
-
-    await restartSession(h);
-    expect(h.recognition.sessionsStarted).toBe(2); // confirms an actual restart happened
-
-    // New session's indices restart from 0.
-    await act(async () => {
-      h.recognition.fireResult(0, new MockResult(SHORT, 0.9, true));
-    });
-    expect(h.net()).toBe(2); // a genuine second recitation, not a duplicate of the first
-    await h.unmount();
-  });
-
-  it("N (retry): a start() that throws (InvalidStateError-shaped race) retries automatically and still resumes listening", async () => {
-    const h = await mountVoiceTasbeeh(SHORT);
-    const originalStart = h.recognition.start.bind(h.recognition);
-    let throwOnce = true;
-    h.recognition.start = () => {
-      if (throwOnce) {
-        throwOnce = false;
-        throw new Error("InvalidStateError");
-      }
-      originalStart();
-    };
-
-    await restartSession(h);
-    // The first retry attempt throws; the loop retries once more.
-    await act(async () => {
-      await sleep(PAST_RESTART_DELAY_MS);
-    });
-    expect(h.status()).toBe("listening");
-    await h.unmount();
-  });
-
-  // O -----------------------------------------------------------------
-  it("O: 60 seconds of genuine inactivity stops the session and returns to idle", async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    try {
-      const h = await mountVoiceTasbeeh(SHORT);
+    // Off-target speech, well within the health threshold each time —
+    // the recognizer is demonstrably alive and healthy the whole way
+    // through, yet still accumulates 60s of pure user inactivity.
+    for (let i = 0; i < 7; i++) {
       await act(async () => {
-        h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false));
+        await vi.advanceTimersByTimeAsync(10_000);
       });
-      expect(h.status()).toBe("listening");
-
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(60001);
+        FakeSpeechRecognition.instances[0].fireResult(i, "محمد رسول", true);
       });
-
-      expect(h.status()).toBe("idle");
-      expect(h.recognition.started).toBe(false);
-      await h.unmount();
-    } finally {
-      vi.useRealTimers();
     }
+    expect(idleTimeoutCount).toBe(1);
+    expect(latestResult?.status).toBe("idle");
+    // A full shutdown, not a restart: still exactly one instance
+    // throughout, aborted once by the shutdown path, never restarted —
+    // and nothing further happens afterward even if more time passes.
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(RECOGNIZER_STALL_THRESHOLD_MS + 1_000);
+    });
+    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    expect(idleTimeoutCount).toBe(1);
+    await unmount();
   });
 
-  it("O (reset): genuine new activity resets the 60-second timer, so the session survives past what would have been the timeout", async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    try {
-      const h = await mountVoiceTasbeeh(SHORT);
+  // E. A health recovery in the middle of a long dhikr preserves progress
+  // — the dhikr can still complete afterwards.
+  it("preserves matchProgress across a health restart mid-long-dhikr", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله وبحمده" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    // First two of three words, FINALIZED (isFinal: true) so progress is
+    // durably committed to matchProgress — not merely the transient,
+    // disposable progress a still-interim result would leave behind (see
+    // VoiceTasbeehMatcher.processSegment: only a completion or a
+    // finalized segment ever updates matchProgress durably).
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله", true);
+    });
+    expect(matchLog).toEqual([]);
+
+    // The recognizer then goes completely silent past the stall
+    // threshold — a health restart occurs.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(RECOGNIZER_STALL_THRESHOLD_MS + 1_000);
+    });
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+
+    // The fresh instance starts...
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    // ...and the FINAL word alone (a brand-new segment on the new
+    // instance) completes the dhikr — proving the first two words'
+    // progress survived the restart.
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireResult(0, "وبحمده", true);
+    });
+    expect(matchLog).toEqual([1]);
+    await unmount();
+  });
+
+  // F. A recognizer that keeps stalling, restart after restart, never
+  // produces a restart storm — each stall yields exactly one restart, at
+  // the threshold's own cadence, not faster.
+  it("does not produce a restart storm under repeated recognizer stalls", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+
+    for (let round = 0; round < 3; round++) {
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(50000);
+        FakeSpeechRecognition.instances[FakeSpeechRecognition.instances.length - 1].fireStart();
       });
+      const countBefore = FakeSpeechRecognition.instances.length;
       await act(async () => {
-        h.recognition.fireResult(0, new MockResult("سبحان", 0.9, false)); // genuine activity resets the clock
+        await vi.advanceTimersByTimeAsync(RECOGNIZER_STALL_THRESHOLD_MS + 1_000);
       });
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(50000); // 100s total, but only 50s since the last activity
-      });
-      expect(h.status()).toBe("listening");
-      await h.unmount();
-    } finally {
-      vi.useRealTimers();
+      expect(FakeSpeechRecognition.instances.length).toBe(countBefore + 1);
     }
+
+    expect(FakeSpeechRecognition.instances.length).toBe(4);
+    expect(idleTimeoutCount).toBe(0); // never escalated to a full shutdown
+    await unmount();
   });
 });

@@ -1,16 +1,11 @@
 // @vitest-environment jsdom
 //
 // Regression suite for the "Reset All" button added next to the existing
-// per-Dhikr Reset button. Mounts the REAL TasbeehScreen component (same
-// pattern as src/lib/useVoiceTasbeeh.live.test.ts: plain react-dom/client
-// + act, no testing-library — this project has none installed and these
-// tests don't need one) under the same provider nesting App.tsx itself
-// uses, so useLanguage()/useTheme()/usePalette() all resolve normally.
-//
-// Voice Tasbeeh stays OFF for these tests except the one that explicitly
-// checks it's untouched by Reset All — with it off, useVoiceTasbeeh's own
-// effect takes its very first `if (!enabled) return;` branch, so none of
-// this needs a SpeechRecognition mock.
+// per-Dhikr Reset button. Mounts the REAL TasbeehScreen component (plain
+// react-dom/client + act, no testing-library — this project has none
+// installed and these tests don't need one) under the same provider
+// nesting App.tsx itself uses, so useLanguage()/useTheme()/usePalette()
+// all resolve normally.
 import { describe, expect, it, beforeEach } from "vitest";
 import * as React from "react";
 import { act } from "react";
@@ -22,9 +17,8 @@ import { PaletteProvider } from "../theme/PaletteContext";
 import { dhikrItems, tasbeehLabels } from "../data/tasbeeh";
 import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
 
-// Silences React's benign "not configured for act()" warning — same
-// reasoning as useVoiceTasbeeh.live.test.ts: this file's environment IS
-// the test itself, driven entirely through act().
+// Silences React's benign "not configured for act()" warning — this
+// file's environment IS the test itself, driven entirely through act().
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 const t = tasbeehLabels.ar; // LanguageProvider's own initial language
