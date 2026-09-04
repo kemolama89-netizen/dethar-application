@@ -117,6 +117,21 @@ function singleLetterDiff(a: string, b: string): [string, string] | null {
 // by an unrelated inserted/removed consonant, or one differing only in the
 // middle, and it is verified (see the library-audit tests) to create no
 // cross-word collision anywhere in the real dhikr library.
+//
+// A GENERIC (not letter-set-restricted, any number of trailing characters,
+// any position in the phrase) tolerance for SpeechRecognition dropping the
+// end of a word it otherwise heard correctly deliberately does NOT live
+// here: a pure string-pair comparison has no way to tell "قدي" (a genuine
+// truncation of "قدير") apart from "الله" (a real, different, extremely
+// common word that ALSO happens to be a letter-for-letter prefix of
+// "اللهم", a real library token) — the same is-it-a-truncation-or-a-
+// different-word question, but with opposite right answers, and nothing
+// in these two bare strings distinguishes them. That decision needs the
+// surrounding target sequence as context (specifically: is the shorter
+// candidate ALSO a genuine, different word used elsewhere in this same
+// target's own vocabulary) — see isAsrTruncatedForm in voiceTasbeehMatch.ts,
+// which has that context and applies its own narrower, vocabulary-guarded
+// version of this idea from inside replay() instead.
 const WEAK_TRAILING_LETTERS: ReadonlySet<string> = new Set([
   "ي", // ي
   "و", // و

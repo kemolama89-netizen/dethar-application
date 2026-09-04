@@ -769,6 +769,339 @@ describe("generic Arabic clitic-segmentation tolerance (و split from its word b
   });
 });
 
+describe("generic ASR-truncation tolerance (any word, any position in the phrase — not fuzzy matching)", () => {
+  // Real device captures proved a SpeechRecognition failure mode that can
+  // happen anywhere in a phrase, not only its last word, and that the
+  // browser sometimes NEVER corrects in any later revision: it stops
+  // transcribing a word partway through even though the user pronounced
+  // it completely. These tests use the user's own reported shapes
+  // directly rather than a synthetic stand-in.
+
+  it("A) truncated token in the MIDDLE of the phrase still counts (وبحمده -> وبحمد)", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله وبحمده سبحان الله العظيم");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "سبحان الله وبحمد سبحان الله العظيم",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+
+  it("B) truncated token near the end still counts (ارحمني -> ارحمن)", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("اللهم ارحمني");
+    const r = m.processSegment({ segmentId: 1, text: "اللهم ارحمن", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("C) truncated token earlier in a long phrase, with every later token correct, still counts (وحده -> وحد)", () => {
+    const m = new VoiceTasbeehMatcher();
+    const target = "لا إله إلا الله وحده لا شريك له له الملك وله الحمد وهو على كل شيء قدير";
+    m.setTarget(target);
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "لا اله الا الله وحد لا شريك له له الملك وله الحمد وهو على كل شيء قدير",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+
+  it("still counts once the corrected form arrives instead, exactly as before this change", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله قدير");
+    const r = m.processSegment({ segmentId: 1, text: "الله قدير", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("D) a genuinely different word (same length, not a prefix) is rejected, not tolerated", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله اكبر كبيرا والحمد لله كثيرا وسبحان الله بكرة واصيلا");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "الله اكبر كبيرا والحمد لله كثيرا وسبحان الله وقال واصيلا",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(0);
+  });
+
+  it("E) a genuinely different word (قدير -> قديم) is rejected, not tolerated", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله قدير");
+    const r = m.processSegment({ segmentId: 1, text: "الله قديم", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("does not tolerate a materially SHORTER phrase (a genuinely missing word is still rejected, not treated as truncation)", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله وبحمده سبحان الله العظيم");
+    // "وبحمده" is entirely absent here, not merely truncated.
+    const r = m.processSegment({ segmentId: 1, text: "سبحان الله سبحان الله العظيم", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("does not treat a real, different word already used elsewhere in the SAME target as a truncation of a longer target word (اللهم -> الله)", () => {
+    const m = new VoiceTasbeehMatcher();
+    // "الله" already appears on its own, earlier in this exact target —
+    // accepting it as a truncation of "اللهم" here would let a genuine,
+    // different, real word silently satisfy the phrase.
+    m.setTarget("سبحان الله والحمد لله ولا اله الا الله اللهم اغفر لي");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "سبحان الله والحمد لله ولا اله الا الله الله اغفر لي",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(0);
+  });
+
+  it("F) a duplicate replay of an already-counted truncation-completed repetition never double counts", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله قدير");
+    let r = m.processSegment({ segmentId: 1, text: "الله قدي", isFinal: true });
+    expect(r.completions).toBe(1); // counted immediately — no waiting for a correction
+    // the browser resends the exact same already-committed final segment
+    r = m.processSegment({ segmentId: 1, text: "الله قدي", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("G) rapid genuine repetitions, one of them truncated, all still count with no throttle", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله قدير");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "الله قدير الله قدي الله قدير الله قدير",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(4);
+  });
+
+  it("H) target switch: a truncated form of the OLD target's own trailing word cannot satisfy the NEW target", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله قدير"); // old target
+    m.processSegment({ segmentId: 1, text: "الله قد", isFinal: false }); // partial/truncated old-target speech, pre-switch
+    m.setTarget("سبحان الله"); // switch to an unrelated new target
+    const r = m.processSegment({ segmentId: 1, text: "الله قد سبحان الله", isFinal: true });
+    expect(r.completions).toBe(1); // only the genuine post-switch "سبحان الله" counts
+  });
+
+  it("I) existing clitic-split behavior (و + الله for والله) is unaffected by the new tolerance", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("والله");
+    const r = m.processSegment({ segmentId: 1, text: "و الله", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+});
+
+describe("duplicate-completion guard (fallback replay must never re-emit already-delivered completions)", () => {
+  // Mirrors the exact real device capture shape: an irrelevant "filler"
+  // span precedes the real target's own repetitions (there: the OLD
+  // target's own content, locked in via setTarget's forced resolvedPrefix
+  // extension — see setTarget). Several genuine repetitions of the new
+  // target complete and are delivered via ordinary (non-fallback) interim
+  // events, each properly excluded from future replay via resolvedPrefix.
+  // A later isFinal event then revises a token STRICTLY INSIDE the filler
+  // span only — never touching any of the already-completed repetitions'
+  // own tokens — which is exactly enough to fail resolveReplayWindow's
+  // prefixIntact check and force the full-fallback replay path, without
+  // structurally destroying any repetition. That fallback re-derives the
+  // same repetitions from scratch; deliveredCompletionCount is what stops
+  // them from being reported a second time.
+
+  // Returns the SUM of `.completions` across all 3 interim calls it makes
+  // (not just the last one) — each repetition below is delivered by a
+  // SEPARATE processSegment call, so the caller must accumulate across
+  // all of them, exactly like useVoiceTasbeeh.ts's onresult handler does.
+  function primeThreeGenuineCompletions(m: VoiceTasbeehMatcher): number {
+    m.setTarget("مرحبا بالعالم"); // irrelevant filler target
+    m.processSegment({ segmentId: 1, text: "مرحبا بالعالم", isFinal: false }); // filler's own completion — irrelevant, must not leak into the real target's count
+    m.setTarget("سبحان الله"); // switch — matchProgress AND deliveredCompletionCount both reset here
+    let total = 0;
+    total += m.processSegment({ segmentId: 1, text: "مرحبا بالعالم سبحان الله", isFinal: false }).completions;
+    total += m.processSegment({ segmentId: 1, text: "مرحبا بالعالم سبحان الله سبحان الله", isFinal: false })
+      .completions;
+    total += m.processSegment({
+      segmentId: 1,
+      text: "مرحبا بالعالم سبحان الله سبحان الله سبحان الله",
+      isFinal: false,
+    }).completions;
+    return total;
+  }
+
+  it("A) three completions delivered via interim events, then a final revision inside the locked (filler) span => total stays 3, not 6", () => {
+    const m = new VoiceTasbeehMatcher();
+    let total = primeThreeGenuineCompletions(m);
+    expect(total).toBe(3); // the 3 interim deliveries alone, before any final event
+
+    // Revises ONLY the filler's first word ("مرحبا" -> "اهلا") — every one
+    // of the 3 real repetitions' own tokens is byte-identical to what was
+    // already delivered.
+    const rFinal = m.processSegment({
+      segmentId: 1,
+      text: "اهلا بالعالم سبحان الله سبحان الله سبحان الله",
+      isFinal: true,
+    });
+    total += rFinal.completions;
+    expect(rFinal.completions).toBe(0); // all 3 were already delivered — nothing new to emit
+    expect(total).toBe(3); // NOT 6
+  });
+
+  it("B) the same already-committed final segment resent a second time still contributes nothing further", () => {
+    const m = new VoiceTasbeehMatcher();
+    let total = primeThreeGenuineCompletions(m);
+    total += m.processSegment({
+      segmentId: 1,
+      text: "اهلا بالعالم سبحان الله سبحان الله سبحان الله",
+      isFinal: true,
+    }).completions;
+    // the browser resends the exact same already-committed final segment 1
+    total += m.processSegment({
+      segmentId: 1,
+      text: "اهلا بالعالم سبحان الله سبحان الله سبحان الله",
+      isFinal: true,
+    }).completions;
+    expect(total).toBe(3);
+  });
+
+  it("C) two old completions delivered via interim events, plus one genuinely new one appearing only in the final fallback replay => the final emits exactly the new one", () => {
+    const m = new VoiceTasbeehMatcher();
+    let total = 0;
+    m.setTarget("مرحبا بالعالم");
+    m.processSegment({ segmentId: 1, text: "مرحبا بالعالم", isFinal: false });
+    m.setTarget("سبحان الله");
+    total += m.processSegment({ segmentId: 1, text: "مرحبا بالعالم سبحان الله", isFinal: false }).completions;
+    total += m.processSegment({ segmentId: 1, text: "مرحبا بالعالم سبحان الله سبحان الله", isFinal: false })
+      .completions;
+    expect(total).toBe(2); // only 2 delivered so far — the 3rd repetition below has not been spoken/processed yet
+
+    // Final revision: same filler-token fix as before, but this time the
+    // ground-truth text ALSO contains a genuinely new 3rd repetition that
+    // was never processed by any prior event.
+    const rFinal = m.processSegment({
+      segmentId: 1,
+      text: "اهلا بالعالم سبحان الله سبحان الله سبحان الله",
+      isFinal: true,
+    });
+    expect(rFinal.completions).toBe(1); // exactly the new one — not the 2 already-delivered ones, not 3
+    total += rFinal.completions;
+    expect(total).toBe(3);
+  });
+
+  it("D) rapid genuine repetitions in one continuous run are all counted, with no throttle/cooldown suppressing them", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    // 50 repetitions spoken/recognized in a single burst — no fallback
+    // involved at all (nothing was ever locked yet), so this exercises the
+    // ordinary path and confirms the new bookkeeping adds no throttling of
+    // any kind to genuine rapid speech.
+    const phrase = Array(50).fill("سبحان الله").join(" ");
+    const r = m.processSegment({ segmentId: 1, text: phrase, isFinal: true });
+    expect(r.completions).toBe(50);
+  });
+
+  it("E) ordinary single-completion behavior is unaffected", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    const r = m.processSegment({ segmentId: 1, text: "سبحان الله", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("a target switch resets the delivered-completion count, so a stale count from the OLD target cannot suppress the NEW target's own first completion", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله وبحمده سبحان الله العظيم"); // 6-token target, one completion delivered
+    const r1 = m.processSegment({ segmentId: 1, text: "سبحان الله وبحمده سبحان الله العظيم", isFinal: false });
+    expect(r1.completions).toBe(1);
+    m.setTarget("سبحان الله"); // switch to a short new target on the SAME live segment
+    const r2 = m.processSegment({
+      segmentId: 1,
+      text: "سبحان الله وبحمده سبحان الله العظيم سبحان الله",
+      isFinal: true,
+    });
+    expect(r2.completions).toBe(1); // the new target's own single completion must not be swallowed
+  });
+});
+
+describe("postSwitchFloor: a target switch's own boundary survives a fallback replay", () => {
+  it("B) content spoken before the switch cannot, by itself, complete the new target", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله العظيم"); // old target, 3 tokens
+    // Partial old-target speech — "سبحان الله" happens to be the ENTIRE
+    // new target's own wording, verbatim.
+    m.processSegment({ segmentId: 1, text: "سبحان الله", isFinal: false });
+    m.setTarget("سبحان الله"); // switch — new target's own words already sit in resolvedPrefix/preSwitchSnapshot
+    const r = m.processSegment({ segmentId: 1, text: "سبحان الله", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("C) old transcript re-derived by a fallback replay after a switch contributes 0 new completions, while a genuinely new post-switch repetition still counts exactly once", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله العظيم"); // old target A
+    m.processSegment({ segmentId: 1, text: "سبحان الله", isFinal: false }); // partial A, pre-switch
+    m.setTarget("سبحان الله"); // switch to B — B's own words equal A's pre-switch prefix verbatim
+    // Genuinely NEW, post-switch content: "يا" (noise) then a full, clean
+    // repetition of B ("سبحان الله").
+    let r = m.processSegment({ segmentId: 1, text: "سبحان الله يا سبحان الله", isFinal: false });
+    expect(r.completions).toBe(1); // the one genuine post-switch repetition, delivered immediately
+    // A later revision DROPS "يا" entirely (ASR revising its own
+    // hypothesis) — this invalidates resolvedPrefix's byte-for-byte
+    // check (the token count shrinks), forcing a full fallback replay
+    // that re-walks the ENTIRE current transcript, INCLUDING the
+    // pre-switch "سبحان الله", from scratch.
+    r = m.processSegment({ segmentId: 1, text: "سبحان الله سبحان الله", isFinal: true });
+    // Without postSwitchFloor, this fallback would structurally find TWO
+    // completions (the pre-switch "سبحان الله" at the very start, plus
+    // the genuine post-switch one) and — even after the existing
+    // deliveredCompletionCount dedup guard — would wrongly emit the
+    // pre-switch one as if it were "the new one". With the fix, the
+    // pre-switch-derived completion is discarded at the source, so only
+    // the already-delivered genuine one remains, which the dedup guard
+    // correctly reports as already-seen: 0 further increments.
+    expect(r.completions).toBe(0);
+  });
+
+  it("a still-open (not yet complete) attempt that began on pre-switch content must not durably carry its progress into a later event", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله العظيم"); // old target
+    m.processSegment({ segmentId: 1, text: "سبحان", isFinal: false }); // partial old-target speech
+    m.setTarget("سبحان الله"); // switch — new target's own first word equals this pre-switch content
+    // Final event whose fallback replay walk would otherwise carry
+    // "سبحان" (pre-switch) as 1/2 progress toward the new target.
+    const r = m.processSegment({ segmentId: 1, text: "سبحان يا", isFinal: true });
+    expect(r.completions).toBe(0);
+    // The corrected word alone, on a fresh segment, must NOT complete
+    // the target — proving matchProgress was reset to 0, not carried in
+    // as 1 (tainted) from the pre-switch "سبحان".
+    const r2 = m.processSegment({ segmentId: 2, text: "الله", isFinal: true });
+    expect(r2.completions).toBe(0);
+  });
+
+  it("does not affect the ordinary (non-fallback) path at all — the existing exclusion test's shape still holds", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله وبحمده");
+    m.processSegment({ segmentId: 1, text: "سبحان الله", isFinal: false });
+    m.setTarget("سبحان الله");
+    const r = m.processSegment({ segmentId: 1, text: "سبحان الله وبحمده", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("does not lose new post-switch speech when a revision shrinks the pre-switch span's own token count (regression: an index-based floor failed this)", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله وبحمده"); // old target, 3 tokens
+    m.processSegment({ segmentId: 0, text: "سبحان الله", isFinal: false });
+    m.setTarget("الحمد لله رب العالمين"); // switch to a new, unrelated 4-token target
+    // The pre-switch span itself gets fused into a single re-segmented
+    // token ("سبحانالله") while the user has already spoken the entire
+    // new target — the post-switch floor must shrink right along with
+    // it, not swallow "الحمد" (the new target's own first word) as if it
+    // were still pre-switch content.
+    const r = m.processSegment({
+      segmentId: 0,
+      text: "سبحانالله الحمد لله رب العالمين",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+});
+
 describe("library audit — real dhikr data (regression guard for the curated fuzzy table)", () => {
   const items = (tasbeehLibraryJson as { items: { dhikr_ar: string }[] }).items;
 

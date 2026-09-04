@@ -934,7 +934,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
             border: "1px solid #0f0",
           }}
         >
-          voice log
+          View Voice Log
         </button>
       )}
 
@@ -970,7 +970,42 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
             border: "1px solid #f66",
           }}
         >
-          clear log
+          Clear Voice Log
+        </button>
+      )}
+
+      {/* TEMPORARY DEV DIAGNOSTIC (same session/removal note as above) —
+          same complete reset as "Clear Voice Log" above, but also pushes one
+          marker entry (tag "diagnostic-session-start") into the freshly
+          emptied array so an exported log makes the intended test boundary
+          visible without relying on wall-clock inference. Same no-reload,
+          no-stop/start, diagnostics-only guarantee as the clear button. */}
+      {isDevBuild && (
+        <button
+          type="button"
+          onClick={() => {
+            const w = window as unknown as { __ditharVoiceDebugLog?: { t: string; tag: string; data?: unknown }[] };
+            const previousCount = w.__ditharVoiceDebugLog?.length ?? 0;
+            const t = new Date().toISOString().slice(11, 23);
+            w.__ditharVoiceDebugLog = [{ t, tag: "diagnostic-session-start", data: { previousEntriesCleared: previousCount } }];
+            window.alert(`Fresh diagnostic session started (${previousCount} old entries cleared).`);
+          }}
+          style={{
+            position: "fixed",
+            bottom: 80,
+            left: 8,
+            zIndex: 99999,
+            padding: "6px 10px",
+            fontSize: 11,
+            lineHeight: 1.2,
+            background: "#332900",
+            color: "#ffd54a",
+            opacity: 0.75,
+            borderRadius: 6,
+            border: "1px solid #ffd54a",
+          }}
+        >
+          Start Fresh Voice Log
         </button>
       )}
 
@@ -1007,7 +1042,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
           }}
           style={{
             position: "fixed",
-            bottom: 80,
+            bottom: 116,
             left: 8,
             zIndex: 99999,
             padding: "6px 10px",
@@ -1020,7 +1055,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
             border: "1px solid #5ac8ff",
           }}
         >
-          تصدير Voice Log
+          Export Voice Log
         </button>
       )}
     </DeviceFrame>

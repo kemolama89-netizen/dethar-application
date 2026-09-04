@@ -1,0 +1,649 @@
+ַֽהַ ֽ״םהַ ָׁזדָםÊ זַֿ ֿׁ ßבזֿ Úבםהַ 
+ַֿ ֿׁו 
+הױ זַֽֿ דבױÞ (20260902-211009).txt
+ד׃Êהֿ
+ׂל דַַָםה Ýם ַבדׁÝÞ - ַהַ זױבÊ ב 24 ÊÞׁםַָ זוז זÞÝ הָײ ָ׃ ַßÊםÝ - ÝײבÊ ַהַ דßדב ׀ßׁ זוז בַ םÚֿ זבַ םהָײ ָÚֿוַ ָßַד ַֻהםֹ ַָֿ םÚֿ 
+הױ זַֽֿ דבױÞ (20260902-211252).txt
+ד׃Êהֿ
+ָױ Ýם ַבדבÝ ַבדׁÝÞ ַֿ ַבַזב -- ֿם ַ־ׁ ַֹּֽ ַהַ ָּׁÊוַ 
+ַל זַֹֽֿ דה ַבװדַב ¿
+ָּÊבß ßב ַבבם Ýם ַבדßַה ַֿ -- װזÝ ַהÊ דֽÊַּ ַםו דהוד ¿
+
+ֳםזו¡ ßֿו ַבױזֹׁ זַײֹֽ ּֿנַ. ַבֱּׂ ֿו ַÊהÝר׀ זַÊַּׁÚ ַָבÝÚב¡ זדװ דֽÊַּםה הּׁÚ הÚֿרב ַבßזֿ ַבֲה.
+
+דה ַבבזּ ַבבם ָÚÊו:
+
+? Issue 1: ֽדַםֹ ַבÜ stale results דזּזֹֿ.
+? Issue 2: inactivity timeout דזּזֿ.
+? RESTART_DELAY_MS ַÊÛםרׁ דה 200ms ֵבל 300ms.
+? ַבַ־ÊַַָׁÊ ßבוַ 246/246 Pass.
+? TypeScript הÙםÝ.
+? Lint הÙםÝ.
+? ַבדבÝַÊ ַבדÚֿבֹ ÝÞ״:
+src/lib/useVoiceTasbeeh.ts
+src/lib/useVoiceTasbeeh.live.test.ts
+ֿבזÞÊם ֳוד ־״זֹ
+
+ַ־Êָׁ ַבה׃־ֹ Úבל ַבּוַׂ ַבֽÞםÞם¡ בֳה ַבדװßבֹ ַבבם ָÊÞזב Úבםוַ:
+
+ָםÞÝ Ýם ַבהױ ßַד ַֻהםֹ זָÚֿםה םּׁÚ םװÊÛב
+
+ֿם Êֽֿםֿנַ בַ םדßה ֽ׃דוַ דה ַבÜ unit tests זֽֿוַ.
+
+ַÚדב ַ־Êַָׁ ָ׃ם״ ּֿנַ:
+
+ַÝÊֽ ַב׃ָֹֽ ַבױזÊםֹ.
+װÛרב ַבÜ Voice Tasbeeh.
+Þזב ַב׀ßׁ ָװßב דÊÊַָÚ בדֹֿ ֿÞםÞֹ ÊÞׁםָנַ.
+דַ Êבד׃װ ַבװַװֹ זבַ ÊÛםרׁ ַב׀ßׁ.
+בַֽÙ וב דַ ַׂב םֽױב ÊזÞÝ בÚֹֿ ֻזַהע ֻד םּׁÚ.
+בז ֽױב ַבÊזÞÝ¡ דַ ÊÚדבװ ֳם ַֹּֽ÷ ׃םָו םּׁÚ בזֽֿו.
+
+ַבדוד: בז ֽױב ַבÊזÞÝ¡ ַָÚÊבם ַבבזּ ַב׀ם םÙוׁ Ýם הÝ׃ ַבבֽÙֹ. ־ױזױנַ ֳם ׃״זׁ Ýםוַ:
+
+recognition error
+onend
+restart
+audio-capture
+InvalidStateError
+ֳז ֳם DIAG
+
+בֳה ַבÜ 300ms ÊÚֿםב זÞֶַם¡ בßה בז ַבּוַׂ דַ ַׂב םÚדב pause בÚֹֿ ֻזַהע¡ Ýדדßה םßזה Úהֿהַ ׃ָָ ד־ÊבÝ Ýם ֿזֹׁ SpeechRecognition הÝ׃וַ¡ ז׃ַÚÊוַ והד׃ß ַב׃ָָ דה ַבבזּ ָֿב דַ הÛםרׁ ַבßזֿ Úװזֶַםנַ.
+
+ֵ׀ה בַ ÊÚדב ֳם ÊÚֿםב ּֿםֿ ַבֲה. ַ־Êָׁ ַבה׃־ֹ ַבַֽבםֹ Úבל ַבּוַׂ ַבֽÞםÞם ֳזבנַ.
+
+״םָ ַÚדב ַםו זַהַ ָÚדב ָׁםÝםז Úבװַה ÊװזÝ בז Ýםו דװßבֹ - ַ׃ּבß Ýםֿםז ¿
+
+ֳםזו¡ ׃ּרב Ýםֿםז¡ זֿו וםßזה דÝםֿ ּֿנַ Ýם ַבַֽבֹ ֿם.
+
+ַÚדב ַבַ־Êַָׁ ַָבװßב ֿו ַָבײָ״:
+
+ַÝÊֽ Preview בבÊ״ָםÞ.
+ַֿ־ב Úבל Voice Tasbeeh.
+װÛרב ַבדםßׁזÝזה.
+ֳַָֿ Þזב ַב׀ßׁ ָױזֹׁ ״ָםÚםֹ¡ דה Ûםׁ ײÛ״ Úבל ַבװַװֹ.
+ַ׃Êדׁ ֽזַבם 30–60 ַֻהםֹ.
+בז ֽױב ַבזÞזÝ ַבבם ָÊÊßבד Úהו¡ דַ ÊÚדבװ ֳם ַֹּֽ÷ ־בםו םÞÝ זםּׁÚ םװÊÛב.
+ßדרב ַבßבַד ָÚֿ דַ םּׁÚ.
+בז ֽױבÊ ַבדװßבֹ ֳßֻׁ דה דֹׁ¡ ־בם ַבÝםֿםז ם׃ּבוַ ßבוַ.
+זַבֳוד Ýם ַבÝםֿםז
+
+ַֽזב םßזה Ùַוׁ:
+
+ַב׃ָֹֽ זַבÚַֿֿ.
+ַֽבֹ ַבÜ Voice Tasbeeh.
+ֳם דִװׁ םזײֽ ֵה ַבדםßׁזÝזה Listening.
+זבז ÊÞֿׁ¡ ־בם ֱּׂ דה ַבÜ DevTools Console/Terminal Ùַוׁ ֳֻהֱַ ַבַ־Êַָׁ.
+
+בßה בז Êױזםׁ ַבװַװֹ וםױÚרָ Úבםß ַבַ־Êַָׁ¡ ױזרׁ ַבÊ״ָםÞ ÝÞ״. ַבÝםֿםז הÝ׃ו ßÝַםֹ ßַָֿםֹ.
+
+ָÚֿוַ ַׁÝÚ ַבÝםֿםז והַ¡ זֳהַ וַּׁÚ בֽÙֹ ַבÊזÞÝ זַבּׁזÚ זֳÞזבß וב ַבÙַוׁ דה ַב׃בזß םÊזַÝÞ דÚ onend/restart¡ זבַ Ýםו דװßבֹ ֳ־ׁל.
+
+זבז ÊÞֿׁ ÊÚדב ַֹּֽ ֵײַÝםֹ: ׃ּרב זÞÊ ֽֿזֻ ֳזב ÊזÞÝ ÊÞׁםָנַ (דֻבַנ Úהֿ ַבַֻהםֹ 18)¡ ֿו ום׃ורב ּֿנַ ד״ַָÞֹ ַבבֽÙֹ דÚ ַבבזּ.
+
+הױ זַֽֿ דבױÞ (20260902-215745).txt
+ד׃Êהֿ
+ScreenRecording_09-03-2026 00-54-28_1.mp4
+ַבדבÝ
+וּםָבß ַבבזּ זוּםָבß ַבַ׃ßׁםה Ýםֿםז -- ָױ Ýם ַ־ׁ 10 ֻזַהם Ýם ַבÝםֿםז - זַ־ׁ ֱֽׂ דה ַבבזּ - בַהו ּו Ýם ַבַ־ׁ דַ ַװÊÛבװ 
+
+ֳםזו¡ װÝÊ ַבÝםֿםז + ֲ־ׁ ֱּׂ דה ַבבזּ דÚ ָÚײ¡ זÝÚבַנ Ýםו דװßבֹ זַײֹֽ Ýם ַבהוַםֹ.
+
+ַבבם ֽױב ַָבײָ״
+
+Ýם ֲ־ׁ ֽזַבם 10 ֻזַהם דה ַבÝםֿםז¡ ַבÚַֿֿ ַָֻÊ Úבל 27 ׁÛד ֵה ׁׂ ַבÊ׃ָםֽ ַבױזÊם דַ ַׂב Ùַוׁ ֵהו װÛַב.
+
+זַבבזּ םִßֿ ַֹּֽ דודֹ ּֿנַ:
+
+דה 21:55:09 ֵבל 21:55:20 ַבÜ Speech Recognition דַ ַׂב ָםּׁÚ הÊֶַּ.
+בßה ַבהÊֶַּ ßבוַ ÊÞׁםָנַ בהÝ׃ resultIndex = 1.
+ַבÜ transcript ָםׂםֿ Êֿׁםּםנַ:
+... 20 ? 21 ? 22 ? 23 ? 24 ? 25 ? 26
+זדÚ ׀בß:
+delta: 0
+זcommittedCount םÝײב 27.
+זÝם ַבהוַםֹ:
+21:55:21.568 duplicate ignored
+זָÚֿוַ בַ םזּֿ ֳם result ּֿםֿ זבַ onend זבַ onerror זבַ timeout.
+ֵ׀ה ַבדװßבֹ בם׃Ê ַבÜ 60 ַֻהםֹ
+
+ֿם הÞ״ֹ דודֹ.
+
+ַבÜ inactivity timer בם׃ וז ַב׀ם ֳזÞÝו. ַָבÚß׃¡ ַבבזּ םÞזב ַָ׃Êדַׁׁ:
+
+inactivity timer reset
+
+בֳה ַבהÙַד םÚÊָׁ ßב transcript דÊÛםׁ "הװַ״נַ".
+
+ַבדװßבֹ ַבֽÞםÞםֹ Ýם ו׀ו ַבÊָֹּׁ:
+
+SpeechRecognition Ùב Ýם ַֽבֹ listening Ùַוׁםנַ¡ בßהו בד םÚֿ םבÊÞ״/םץ־ּׁ ַבßבַד ַבּֿםֿ ָװßב ÝÚבם.
+
+םÚהם Úהֿהַ Silent Recognition Stall:
+ַבדםßׁזÝזה/זַּוֹ ַבÊÚׁÝ Êָֿז װÛַבֹ¡ בßה בַ םױבהַ result ּֿםֿ םדֻב ַבßבַד ַב׀ם ÞבÊו.
+
+זַבÝםֿםז דÊזַÝÞ ּֿנַ דÚ ַבבזּ: ַבÚַֿֿ םÙב 27 זבַ םֻֽֿ ÊÞֿד Ýם ַבהוַםֹ.
+
+זַבֳוד: ֳהַ בַ ֳהױֽהַ הבד׃ counting logic ַבֲה
+
+בֳה ַבבזּ םÞזב ֵה ַבÜ counting logic הÝ׃ו Ýם ֲ־ׁ ַבֱּׂ בד םׁÝײ ßבדֹ ױֽםֹֽ÷ וז ָָ׃ַ״ֹ בד ם׃Êבד הÊםֹּ ּֿםֹֿ ָÚֿ ֲ־ׁ הÊםֹּ דזּזֹֿ.
+
+Ýבז Úֿרבהַ delta ֳז commonPrefixLength ֳז commit ַבֲה¡ דדßה הָזרÙ ַבֽדַםֹ ַבבם Úדבהַוַ ײֿ ַבÊßַׁׁ.
+
+ַבֽב ַבדַָװׁ ַב׀ם ֳַׁו ַבֲה:
+
+הֽÊַּ Watchdog דהÝױב םÞזב:
+
+ֵ׀ַ Speech Recognition םÞזב ֵהו Listening¡ בßה בד םױב ÊÞֿד ֽÞםÞם Ýם ַבÊÚׁÝ בÝÊֹׁ דÚםהֹ¡ הÚÊָׁ ַבÜ recognition ÚַבÞנַ זהÞזד ָÚדב restart ֽÞםÞם בו.
+
+זבם׃ דּֿׁ inactivity timer ַבַֽבם.
+
+זוהַ בַׂד הֽֿֿ "ÊÞֿד ֽÞםÞם" ָװßב ֳֿÞ דה normalized transcript÷ בֳה ַבבזּ ֳָֻÊ ֳה transcript דדßה םÙב םÊÛםׁ ֲבםנַ ָםהדַ ַבד׃Ê־ֿד ÝÚבםנַ בַ ם׃Ê״םÚ ַבֽױזב Úבל count ּֿםֿ.
+
+ֳהַ װַםÝ ֵה ֿם ום ַבדװßבֹ ַבּֿםֹֿ ַבÊם Ê׃ÊֽÞ ַבֵױבַֽ ַבֲה¡ זבם׃ דװßבֹ ַבÚֿ הÝ׃וַ.
+
+זבז דזַÝÞ¡ ַב־״זֹ ַבÊַבםֹ Úהֿם זַײֹֽ: הײםÝ watchdog ױÛםׁ בבÜ recognition stall ÝÞ״¡ ָֿזה בד׃ דה״Þ ַֽÊ׃ַָ ַבÊßַַׁׁÊ ֳז ַבÜ stale-index protection.
+
+ַבÜ Watchdog ָָ׃ַ״ֹ םÚהם ַֽׁ׃/דַׁÞָ ַֿ־ב ַבßזֿ.
+
+Ýם דװßבÊß Êֽֿםֿנַ:
+
+ַבדםßׁזÝזה םßזה Ùַוׁ ֵהו Listening.
+בßה Ýם ַבֽÞםÞֹ ַבÊÚׁÝ ַבױזÊם םßזה ÚבÞ זדָÞַװ ם׃ÊÞָב/םץׁ׃ב הÊֶַּ ּֿםֹֿ.
+ַבÊ״ָםÞ ַֽבםנַ דדßה םÝײב ד׃Êהם ßֿו¡ זֿו ַבבם דדßה ם־בםß Êֽ׃ ֵהו זÞÝ ßַד ַֻהםֹ זָÚֿםה ּׁÚ ֳז Ýם ָÚײ ַבַֽבַÊ דַםּׁÚװ.
+
+ÝַבÜ Watchdog וםßזה Úַדב ׂם דִÞÊ דַׁÞָֹ:
+
+?? Listening ? Ýםו הÊֶַּ ּֿםֹֿ¿ ? הÚד ? הßדב זהױÝׁ ַבדִÞÊ
+
+?? Listening ? דÝםװ ÊÞֿד ֽÞםÞם בÝÊֹׁ דÚםהֹ ? Watchdog םÊֿ־ב ? םזÞÝ ַבÜ recognition ? ַבהÙַד ַבַֽבם םÚםֿ ÊװÛםבו ָ״ׁםÞֹ הÙםÝֹ.
+
+זַבֳוד Ýם ַֽבÊß: דװ זÙםÝÊו םÚֿר ַב׀ßׁ.
+וז ÝÞ״ םÚַבּ ַֽבֹ ֵה דֽׁß ַבÜ Speech Recognition הÝ׃ו םÚבÞ.
+
+בßה ־בםהם ֳױֽֽ הÞ״ֹ דודֹ
+
+ֳהַ Ýם ַבֿׁ ַב׃ַָÞ ÞבÊ בß הײםÝ Watchdog¡ בßה דװ Úַםׂß ÊהÝ׀ ַבÊÚֿםב ֿו ֿבזÞÊם Þָב דַ ֳװזÝ ַבÝםֿםז + ֲ־ׁ ֱּׂ דה ַבבזּ ַבבם ÞבÊ ֵהß וÊּםָו.
+
+בֳהß ÞבÊ ֵה ַבדװßבֹ ֽױבÊ Ýם ֲ־ׁ 10 ֻזַהם¡ זַבבזּ Ýם הÝ׃ ַבבֽÙֹ וז ַבבם וםֽֿֿ וב ÝÚבנַ Úהֿהַ recognition stall ֳד ֳה ַבÊזÞÝ ׃ָָו onend / InvalidStateError / ֵÚַֹֿ ÊװÛםב / דװßבֹ דה ַבדÊױÝֽ.
+
+וַÊ ַבÝםֿםז זַבבזּ ַבֳזב.
+זֳהַ ֳֽֿֿ בß ַָבײָ״: וב הֽÊַּ Watchdog ֳױבנַ¡ זֳםה ַבדװßבֹ¡ זֵםו ֳÞב ÊÚֿםב דדßה.
+
+םַָהם דַודַ ַבבם ÝזÞ ֿזב דַבß Ýם ַםו¿
+
+?? דÚַß ֽÞ¡ ֳהַ ב־ָ״Ê ַבדזײזÚ. ַבבם ÝזÞ וז ַבבם ßהÊ דֽÊַּו ÝÚבנַ¡ זֳהַ װַםÝ ַבױזׁ זַבßזֿ זַבÜ analysis ַבבם ״בÚ דה Claude.
+
+זדה ַבבם Ùַוׁ Þַֿדם¡ דװßבÊß ַבַֽבםֹ דװ דֽÊַֹּ ֵההַ הֳָֿ הײםÝ Watchdog Úװזֶַםנַ.
+
+ַבבם זַײֽ דה ַבßזֿ זַבבזּ וז ַבֲÊם:
+
+Úהֿß ַָבÝÚב inactivity timeout = 60 ַֻהםֹ.
+זÚהֿß auto-restart בבÜ Speech Recognition.
+זÊד ÊÚֿםב RESTART_DELAY_MS דה 200ms ֵבל 300ms.
+זַבַ־ÊַַָׁÊ ßבוַ 246/246 הַֹּֽ.
+זַבדװßבֹ ַבÊם זױÝÊוַ: ַבױזÊ םÞÝ ßַד ַֻהםֹ ֻד םּׁÚ םװÊÛב ? ֿם ֳÞָׁ ֵבל ֿזֹׁ onend ? restart ֳז Ýװב recognition.start() זֵÚַֹֿ ַבדַֽזבֹ¡ זבם׃ inactivity timeout.
+
+זַבֳוד: דה ַבױזׁ הÝ׃וַ זַײֽ ֵה ַבßזֿ Úהֿו ַָבÝÚב דה״Þ בבÊÚַדב דÚ:
+
+InvalidStateError
+onend
+audio-capture
+restartTimer
+RESTART_DELAY_MS
+
+ÝÜ דװ והײםÝ Watchdog ֿבזÞÊם Þָב דַ הֽֿֿ ַָבײָ״ ֳם זַֹֽֿ דה ֿזב ָÊ׃ָָ ַבזÞÝֹ.
+
+ַÚדב ַֹּֽ זַֹֽֿ ֿבזÞÊם
+
+װÛרב ַבÜ Preview ז׃ּרב ַבÝםֿםז ַבבם ÞבÊ Úבםו¡ ז־ֿ ַבבזּ Ýם הÝ׃ ַבÊָֹּׁ.
+
+זַָב׀ַÊ ֳהַ Úַםׂ ֲ־ׁ 10–15 ַֻהםֹ דה ַבÝםֿםז + ֲ־ׁ ֱּׂ דה ַבבזּ דה ַבבֽÙֹ ַבבם ֽױב Ýםוַ ַבÊזÞÝ.
+
+זָÚֿוַ ֳהַ וÞַׁה:
+
+בֽÙֹ ÊזÞÝ ַבױזÊ Ýם ַבÝםֿםז
+??
+ַבÜ timestamp ַבדÞַָב Ýם ַבבזּ
+??
+זֳÞזב בß ַָבײָ״:
+
+"ֲו¡ והַ ֽױב onend ? והַ ַבÜ restart ַÊֳ־ׁ ? והַ ׃ָָ ַבזÞÝֹ."
+
+ז׃ַÚÊוַ ֳֿםß ַבÊÚֿםב ַבדַָװׁ ÝÞ״¡ דה Ûםׁ דַ הÝÊֽ ÊֽÞםÞ ּֿםֿ זבַ הָזרÙ ַבÜ 246 ַ־Êַָׁ.
+
+וַÊ ַבÝםֿםז זַבבזּ.
+
+ß׃דß בß׃ד ַבבם Úדבß --- ָÞזבß ַםו ַהַ Úַזׂ ַזֿם ַבÝםֿםז זַבבזּ ַבַ־םׁ בßבזֿ םÝֽױוד - וַÊ ַבָׁזדָםÊ 
+
+Êדַד. ֿו ַבָׁזדָÊ ַבַּוׂ בÜ Claude Code. ַָÚÊו בו זדÚַו ַבÝםֿםז + ַבבזּ ַבֳ־םׁ:
+
+We are continuing the DITHAR app Voice Tasbeeh debugging.
+
+IMPORTANT:
+Do NOT modify any code yet.
+I am giving you:
+1. A screen-recording video of the latest Preview test.
+2. The complete/latest recognition log from that exact test.
+
+MAIN ISSUE:
+During voice tasbeeh, recognition sometimes appears to stop/freeze for several seconds and then resumes again. In the latest test, the problematic behavior happened near the END of the video.
+
+YOUR TASK:
+Analyze the VIDEO and the LOG TOGETHER and determine exactly what happened during the final ~10 seconds of the video.
+
+Do NOT restart the investigation from zero.
+Use the current implementation and previous debugging conclusions as the baseline.
+
+CURRENT KNOWN STATE:
+- Issue 1 stale-index protection is already implemented.
+- The current test suite is 246/246 passing.
+- TypeScript is clean.
+- Lint is clean.
+- `RESTART_DELAY_MS` was changed from 200ms to 300ms.
+- There is already an inactivity timeout mechanism.
+- There is already `onend` auto-restart logic.
+- There is already handling for `InvalidStateError`, `audio-capture`, and restart scheduling.
+- Existing counting/matching protection must NOT be assumed to be the cause unless the new log proves it.
+
+CRITICAL:
+Do not propose a Watchdog or any new code mechanism yet.
+First prove what is happening from the actual video + log.
+
+CORRELATE THE TWO SOURCES:
+1. Identify the exact timestamp in the video where recognition stops responding.
+2. Find the corresponding timestamps/events in the log.
+3. Trace the recognition lifecycle around that moment:
+   - onresult
+   - onstart
+   - onend
+   - onerror
+   - recognition.start()
+   - recognition.stop()
+   - recognition.abort()
+   - restartTimer / scheduled restart
+   - InvalidStateError
+   - audio-capture
+   - any other relevant lifecycle event
+4. Determine whether the pause is:
+   A) a normal SpeechRecognition session transition,
+   B) an `onend` ? restart delay,
+   C) repeated failed `recognition.start()` attempts,
+   D) an `InvalidStateError` race,
+   E) audio-capture recovery,
+   F) browser/Safari recognition behavior,
+   G) an actual application bug,
+   H) something else.
+
+VERY IMPORTANT:
+Calculate the ACTUAL duration of the apparent pause from the timestamps.
+Do not call something a "multi-second pause" unless the timestamps prove it.
+
+Also determine whether recognition actually stopped processing during the pause or whether only the UI/audio feedback appeared to stop while recognition was still producing events.
+
+CHECK THE LAST PART CAREFULLY:
+The final ~10 seconds of the video are the highest priority.
+Do not spend the response re-explaining old Issue 1 findings unless they are directly relevant to the new behavior.
+
+COUNTING SAFETY:
+Determine whether the pause caused:
+- an incorrect extra count,
+- a missed count,
+- a rollback,
+- a duplicate result,
+- or no counting problem at all.
+
+DO NOT CHANGE CODE.
+
+OUTPUT FORMAT:
+
+## 1. Verdict
+One clear sentence describing the actual cause.
+
+## 2. Video timeline
+List the important events from the final ~10 seconds with approximate video timestamps.
+
+## 3. Log correlation
+For each important video moment, show the corresponding log event/timestamp and explain the correlation.
+
+## 4. Exact pause duration
+Give the measured duration and the two timestamps used to calculate it.
+
+## 5. Recognition lifecycle
+Explain exactly what happened:
+onend ? restart ? error ? retry, etc.
+
+## 6. Counting impact
+State clearly whether the counter was affected and how.
+
+## 7. Root cause
+Distinguish between:
+- browser/platform behavior
+- current implementation behavior
+- actual bug
+
+## 8. Minimal fix
+ONLY AFTER proving the root cause, recommend the smallest possible code change.
+Do not implement it.
+
+## 9. Files that would need modification
+Name the exact files and relevant functions/areas.
+
+## 10. Confidence
+Give a confidence percentage and explain what evidence supports it.
+
+DO NOT:
+- modify files
+- commit anything
+- add a Watchdog
+- rewrite the recognition architecture
+- change counting logic
+- change Issue 1 protection
+- assume the cause without timestamp correlation
+
+The goal is diagnosis first, code second.
+
+זֿו דוד ּֿנַ: ־בםו םÝֽױ ַבÝםֿםז זַבבזּ בהÝ׃ ַבÊָֹּׁ דÚ ָÚײ¡ דװ םֽבב ßב זַֽֿ דהÝױב. בֳה ַבבם םודהַ והַ וז ֵההַ ה״ַָÞ בֽÙֹ ַבזÞÝֹ Ýם ַבÝםֿםז דÚ ַבÜ timestamp Ýם ַבבזּ זה״בÚ ַב׃ָָ ַבֽÞםÞם.
+
+21:54:37.824 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:38.283 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:38.283 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:38.283 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:38.283 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:38.283 repetition accepted {"i":0,"targetLength":2}
+21:54:39.017 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:39.017 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:39.017 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:39.017 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:39.477 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:39.477 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:39.477 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:39.477 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:39.477 repetition accepted {"i":0,"targetLength":2}
+21:54:39.957 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:39.958 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:39.958 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:39.958 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:40.693 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:40.694 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:40.694 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:40.694 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:40.694 repetition accepted {"i":0,"targetLength":2}
+21:54:41.183 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:41.183 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:41.183 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:41.183 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:41.892 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:41.892 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:41.892 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:41.892 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:41.892 repetition accepted {"i":0,"targetLength":2}
+21:54:42.373 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:42.373 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:42.373 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:42.373 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:42.835 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:42.835 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:42.835 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:42.835 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:42.835 repetition accepted {"i":0,"targetLength":2}
+21:54:43.577 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:43.577 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:43.578 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:43.578 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:44.053 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:44.053 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:44.053 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:44.053 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:44.053 repetition accepted {"i":0,"targetLength":2}
+21:54:44.767 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:44.768 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:44.768 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:44.768 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:45.247 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:45.247 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:45.247 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:45.247 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:45.247 repetition accepted {"i":0,"targetLength":2}
+21:54:45.708 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:45.708 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:45.708 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:45.708 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:46.443 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:46.443 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:46.444 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:46.444 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:46.444 repetition accepted {"i":0,"targetLength":2}
+21:54:46.927 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:46.927 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:46.927 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:46.927 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:47.391 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:47.391 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:47.392 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:47.392 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:47.392 repetition accepted {"i":0,"targetLength":2}
+21:54:48.126 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:48.126 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:48.126 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:48.126 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:48.609 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:48.609 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:48.609 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:48.609 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:48.609 repetition accepted {"i":0,"targetLength":2}
+21:54:49.070 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:49.070 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:49.070 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:49.070 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:49.575 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:49.575 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:49.575 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:49.575 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:49.575 repetition accepted {"i":0,"targetLength":2}
+21:54:50.294 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:50.294 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:50.294 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:50.294 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:50.774 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:50.774 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:50.774 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:50.774 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:50.774 repetition accepted {"i":0,"targetLength":2}
+21:54:51.483 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:51.484 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:51.484 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:51.484 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:51.990 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:51.990 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:51.991 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:51.991 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:51.991 repetition accepted {"i":0,"targetLength":2}
+21:54:52.450 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:52.450 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:52.451 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:52.452 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:52.936 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:52.937 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:52.937 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:52.937 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:52.937 repetition accepted {"i":0,"targetLength":2}
+21:54:53.642 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:53.643 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:53.643 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:53.643 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:54.125 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:54.125 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:54.125 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:54.125 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:54.126 repetition accepted {"i":0,"targetLength":2}
+21:54:54.612 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:54.612 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:54.612 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:54.612 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:55.322 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:55.322 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:55.322 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:55.323 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:55.323 repetition accepted {"i":0,"targetLength":2}
+21:54:55.806 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:55.806 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:55.807 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:55.807 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:56.291 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:56.291 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:56.291 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:56.291 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:56.292 repetition accepted {"i":0,"targetLength":2}
+21:54:57.006 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:57.007 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:57.007 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:57.007 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:57.488 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:57.488 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:57.488 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:57.488 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:57.488 repetition accepted {"i":0,"targetLength":2}
+21:54:57.971 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:57.971 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:57.971 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:57.971 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:58.684 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:58.684 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:58.684 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:58.684 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:58.684 repetition accepted {"i":0,"targetLength":2}
+21:54:59.170 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:54:59.170 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:59.170 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:54:59.170 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:54:59.901 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:54:59.901 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:54:59.901 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:54:59.902 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:54:59.902 repetition accepted {"i":0,"targetLength":2}
+21:55:00.360 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:00.360 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:00.361 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:55:00.361 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:55:00.842 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:00.843 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:00.843 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:55:00.843 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:55:00.843 repetition accepted {"i":0,"targetLength":2}
+21:55:01.326 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:01.326 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:01.326 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:55:01.326 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:55:01.811 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:01.811 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:01.811 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:55:01.811 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:55:01.811 repetition accepted {"i":0,"targetLength":2}
+21:55:02.522 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:02.522 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:02.522 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:55:02.522 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:55:03.034 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:03.034 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:03.034 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:55:03.034 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:55:03.034 repetition accepted {"i":0,"targetLength":2}
+21:55:03.722 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:03.722 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:03.725 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":0,"committedCount":0,"delta":0}
+21:55:03.725 progress changed {"i":0,"from":"valid:2","to":"pending:1"}
+21:55:04.205 normalized transcript {"i":0,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:04.205 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:04.205 DIAG single-dhikr {"resultIndex":0,"i":0,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":0,"delta":1}
+21:55:04.205 progress changed {"i":0,"from":"pending:1","to":"valid:2"}
+21:55:04.205 repetition accepted {"i":0,"targetLength":2}
+21:55:04.845 duplicate ignored {"i":0,"reason":"unchanged-transcript"}
+21:55:04.848 repetition committed {"reason":"isFinal-unchanged-transcript","index":0,"total":27}
+21:55:05.169 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו"]}
+21:55:05.169 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:05.169 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו"],"checkpointBoundary":0,"committedCount":27,"delta":1}
+21:55:05.169 progress changed {"i":1,"from":"pending:0","to":"valid:2"}
+21:55:05.169 repetition accepted {"i":1,"targetLength":2}
+21:55:05.922 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:05.923 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:05.923 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":3,"committedCount":27,"delta":-1}
+21:55:05.923 progress changed {"i":1,"from":"valid:2","to":"pending:0"}
+21:55:06.362 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:06.362 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:06.363 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":4,"committedCount":27,"delta":0}
+21:55:07.087 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:07.087 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:07.087 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":5,"committedCount":27,"delta":0}
+21:55:07.582 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:07.582 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:07.582 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":6,"committedCount":27,"delta":0}
+21:55:08.049 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:08.049 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:08.049 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":7,"committedCount":27,"delta":0}
+21:55:08.780 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:08.781 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:08.781 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":8,"committedCount":27,"delta":0}
+21:55:09.279 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:09.279 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:09.279 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":9,"committedCount":27,"delta":0}
+21:55:09.732 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:09.733 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:09.733 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":10,"committedCount":27,"delta":0}
+21:55:10.472 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:10.472 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:10.472 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":11,"committedCount":27,"delta":0}
+21:55:10.954 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:10.955 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:10.955 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":12,"committedCount":27,"delta":0}
+21:55:11.414 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:11.414 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:11.414 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":13,"committedCount":27,"delta":0}
+21:55:12.148 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:12.148 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:12.148 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":14,"committedCount":27,"delta":0}
+21:55:12.609 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:12.609 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:12.609 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":15,"committedCount":27,"delta":0}
+21:55:13.344 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:13.344 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:13.345 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":16,"committedCount":27,"delta":0}
+21:55:14.769 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:14.769 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:14.769 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":17,"committedCount":27,"delta":0}
+21:55:15.257 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:15.258 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:15.258 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":18,"committedCount":27,"delta":0}
+21:55:15.969 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:15.969 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:15.969 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":19,"committedCount":27,"delta":0}
+21:55:16.456 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:16.457 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:16.457 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":20,"committedCount":27,"delta":0}
+21:55:17.190 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:17.191 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:17.191 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":21,"committedCount":27,"delta":0}
+21:55:17.648 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:17.649 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:17.649 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":22,"committedCount":27,"delta":0}
+21:55:18.388 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:18.388 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:18.388 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":23,"committedCount":27,"delta":0}
+21:55:18.845 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:18.846 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:18.846 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":24,"committedCount":27,"delta":0}
+21:55:18.849 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","ַבבו"]}
+21:55:18.849 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:18.851 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","ַבבו"],"checkpointBoundary":24,"committedCount":27,"delta":0}
+21:55:18.851 progress changed {"i":1,"from":"pending:0","to":"invalid:0"}
+21:55:19.834 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"]}
+21:55:19.835 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:19.835 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה"],"checkpointBoundary":25,"committedCount":27,"delta":0}
+21:55:19.835 progress changed {"i":1,"from":"invalid:0","to":"pending:0"}
+21:55:20.064 normalized transcript {"i":1,"tokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"]}
+21:55:20.064 inactivity timer reset {"reason":"speech-activity","timeoutMs":60000}
+21:55:20.065 DIAG single-dhikr {"resultIndex":1,"i":1,"isFinal","rawTranscript":"‏׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו ׃ַָֽה ַבבו","normalizedTokens":["׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו","׃ַָֽה","ַבבו"],"checkpointBoundary":26,"committedCount":27,"delta":0}
+21:55:21.568 duplicate ignored {"i":1,"reason":"unchanged-transcript"}
+21:55:21.568 checkpoint carried forward {"reason":"isFinal-unchanged-transcript","index":1,"total":27}
+
+ֵÛבַÞ
