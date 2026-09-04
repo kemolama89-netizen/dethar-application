@@ -174,17 +174,67 @@ describe("useVoiceTasbeeh lifecycle", () => {
     await unmount();
   });
 
-  it("switching target does not create a new recognition instance", async () => {
+  it("switching target transparently refreshes to a fresh recognition instance for the new target", async () => {
     const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
     await act(async () => {
       FakeSpeechRecognition.instances[0].fireStart();
     });
     await rerender({ enabled: true, targetPhrase: "الله اكبر" });
-    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    // A brand-new native instance for the new target — the old one is
+    // aborted (superseded), not reused; the session itself never
+    // surfaces this as a user-visible restart (no UI change, no separate
+    // "idle" status in between).
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
     await act(async () => {
-      FakeSpeechRecognition.instances[0].fireResult(0, "الله اكبر", true);
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    expect(latestResult?.status).toBe("listening");
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireResult(0, "الله اكبر", true);
     });
     expect(matchLog).toEqual([1]);
+    await unmount();
+  });
+
+  it("a late event from the superseded (old) recognizer instance after a target switch is ignored — it cannot alter matcher state or increment the counter", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await rerender({ enabled: true, targetPhrase: "الله اكبر" });
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+    // The OLD, superseded instance fires late — as if it had somehow
+    // completed the OLD target, or is delivering a revision of content
+    // it saw before being aborted. Neither may reach the matcher/counter.
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله", true);
+    });
+    expect(matchLog).toEqual([]);
+    // The NEW instance's own, genuinely fresh phrase still counts normally.
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireResult(0, "الله اكبر", true);
+    });
+    expect(matchLog).toEqual([1]);
+    await unmount();
+  });
+
+  it("two complete new-target phrases spoken rapidly right after a switch both count, with no throttle", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await rerender({ enabled: true, targetPhrase: "الله اكبر" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireResult(0, "الله اكبر الله اكبر", true);
+    });
+    expect(matchLog).toEqual([2]);
     await unmount();
   });
 
@@ -327,7 +377,7 @@ describe("useVoiceTasbeeh end-to-end regressions (real device capture: RLM corru
     await unmount();
   });
 
-  it("does not lose genuinely new post-switch speech when the SAME live resultIndex is later revised", async () => {
+  it("a revision fired on the superseded instance after a switch is ignored; the fresh instance's own new target still completes", async () => {
     const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله وبحمده" });
     await act(async () => {
       FakeSpeechRecognition.instances[0].fireStart();
@@ -336,30 +386,47 @@ describe("useVoiceTasbeeh end-to-end regressions (real device capture: RLM corru
       FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله", false); // partial old target, pre-switch
     });
     await rerender({ enabled: true, targetPhrase: "الحمد لله رب العالمين" });
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
     await act(async () => {
-      // A revision of the SAME still-live result: the pre-switch words get
-      // re-segmented into one token while the new target's words follow.
+      // A late revision fired on the now-superseded OLD instance — as if
+      // the browser were still trying to re-segment content it saw
+      // before being aborted. This must be completely inert: the
+      // instance-identity guard rejects it before it ever reaches the
+      // matcher.
       FakeSpeechRecognition.instances[0].fireResult(0, "سبحانالله الحمد لله رب العالمين", true);
+    });
+    expect(matchLog).toEqual([]);
+    // The fresh instance's OWN result, for the new target, still
+    // completes normally — nothing about the refresh weakens matching.
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireResult(0, "الحمد لله رب العالمين", true);
     });
     expect(matchLog).toEqual([1]);
     await unmount();
   });
 });
 
-describe("safer recovery model — hook-level: A -> B -> A never restarts the recognizer", () => {
-  it("stays on a single recognition instance across A -> B -> A and still counts a fresh recitation of A", async () => {
+describe("safer recovery model — hook-level: A -> B -> A refreshes the recognizer each switch but never cross-contaminates progress", () => {
+  it("each switch gets its own fresh instance across A -> B -> A, and a genuine fresh recitation of A still counts exactly once", async () => {
     const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "واحد اثنان ثلاثة اربعة" });
     await act(async () => {
       FakeSpeechRecognition.instances[0].fireStart();
     });
     await rerender({ enabled: true, targetPhrase: "الحمد لله" });
     await rerender({ enabled: true, targetPhrase: "واحد اثنان ثلاثة اربعة" });
-    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    // Initial + 2 switches = 3 instances; each switch supersedes the last.
+    expect(FakeSpeechRecognition.instances.length).toBe(3);
     await act(async () => {
-      FakeSpeechRecognition.instances[0].fireResult(0, "واحد اثنان ثلاثة اربعة", true);
+      FakeSpeechRecognition.instances[2].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[2].fireResult(0, "واحد اثنان ثلاثة اربعة", true);
     });
     expect(matchLog).toEqual([1]);
-    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    expect(FakeSpeechRecognition.instances.length).toBe(3);
     await unmount();
   });
 });
@@ -415,15 +482,28 @@ describe("useVoiceTasbeeh recognizer-health watchdog (separate from the 60s user
     await unmount();
   });
 
-  // C. Target switching never restarts recognition, independent of the
-  // health mechanism.
-  it("does not restart on a target switch", async () => {
+  // C. A target-switch refresh is independent of, and never confused
+  // with, the health-restart mechanism: it produces exactly one fresh
+  // instance right away (not gated by the stall threshold), and the
+  // freshly-refreshed instance still gets its own full health grace
+  // period rather than immediately looking stalled.
+  it("refreshes exactly once on a target switch, independent of the health watchdog, and the fresh instance gets its own grace period", async () => {
     const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
     await act(async () => {
       FakeSpeechRecognition.instances[0].fireStart();
     });
     await rerender({ enabled: true, targetPhrase: "الله اكبر" });
-    expect(FakeSpeechRecognition.instances.length).toBe(1);
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    // A further switch shortly after must not ALSO trigger a spurious
+    // health-restart on top of its own refresh.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1_000);
+    });
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
     await unmount();
   });
 
