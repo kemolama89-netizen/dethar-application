@@ -78,3 +78,33 @@ describe("generic trailing weak-letter (حروف العلة) elision/retention t
     expect(tokensAreEquivalent("وبارك", "وسلم")).toBe(false);
   });
 });
+
+describe("curated ا/ه confusable pair (word-final tanween-fatha-as-alif vs taa-marbuta-as-ha)", () => {
+  it("real device capture: target 'كبيرا' recognized as 'كبيره' (taa marbuta folds to ه first)", () => {
+    // "كبيره" is exactly what ORTHOGRAPHIC_FOLD produces from an ASR
+    // transcript of "كبيرة" — the comparison the matcher actually performs.
+    expect(tokensAreEquivalent(tokenize("كبيرا")[0], tokenize("كبيره")[0])).toBe(true);
+  });
+
+  it("works in both directions", () => {
+    expect(tokensAreEquivalent("كبيره", "كبيرا")).toBe(true);
+    expect(tokensAreEquivalent("كبيرا", "كبيره")).toBe(true);
+  });
+
+  it("does not apply below the tier's own length-4 floor — short real library words stay distinct", () => {
+    // "إله" (god) vs "إلا" (except) and "له" (to/for him) vs "لا" (not) are
+    // real, semantically critical, adjacent words in the library (e.g. "لا
+    // إله إلا الله" and "لا شريك له، له الملك") that also happen to differ
+    // by exactly ا/ه — conflating them would be a severe regression. Both
+    // pairs are short enough (2-3 chars) to already fall under tier-2's
+    // pre-existing `length < 4` guard, before this specific letter pair is
+    // ever consulted.
+    expect(tokensAreEquivalent("اله", "الا")).toBe(false);
+    expect(tokensAreEquivalent("له", "لا")).toBe(false);
+    expect(tokensAreEquivalent("وله", "ولا")).toBe(false);
+  });
+
+  it("still requires every other letter to match exactly — not a general vowel-insensitive comparison", () => {
+    expect(tokensAreEquivalent("كثيرا", "كبيره")).toBe(false); // ث vs ب AND ا vs ه — two differences
+  });
+});

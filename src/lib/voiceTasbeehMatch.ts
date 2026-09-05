@@ -60,6 +60,42 @@ function isAsrTruncatedForm(spoken: string, expected: string): boolean {
   return spoken.length >= 3 && spoken.length < expected.length && expected.startsWith(spoken);
 }
 
+// True when `expected` is a و-prefixed word (e.g. "والله", "وسبحان") and
+// `spoken` is an exact match (same tolerance tier as any other comparison,
+// via tokensAreEquivalent) for `expected` with that leading "و" removed.
+// A distinct, generic SpeechRecognition failure mode from isCliticSplitMatch
+// above: there, the leading و survives as its OWN separate recognized
+// token ("و" + "الله"); here, it is dropped from the audio entirely — the
+// recognizer never produces it in any form, in any later revision, for
+// either token or word (observed live, on more than one و-prefixed word in
+// more than one dhikr — see voice-tasbeeh-validation-report.md). This is a
+// property of the EXPECTED TARGET TOKEN's own shape (does it start with
+// و?), not any specific dhikr's wording, and requires an exact match to
+// the remainder — never an approximate/fuzzy one.
+function isDroppedWaClitic(spoken: string, expected: string): boolean {
+  return expected.length > 1 && expected[0] === "و" && tokensAreEquivalent(spoken, expected.slice(1));
+}
+
+// The mirror image of isDroppedWaClitic: `spoken` carries a spurious LEADING
+// "و" that `expected` (the target token at this position) does not have at
+// all — e.g. target "بكرة" recognized as "وبكرة" (observed live — see
+// voice-tasbeeh-validation-report.md). A likely coarticulation/liaison
+// artifact from the preceding word's own ending, not a different word.
+// Deliberately NOT a general/context-free normalization equivalence (i.e.
+// does not live in tokensAreEquivalent): the real dhikr library contains
+// pairs of genuinely different, adjacent tokens with exactly this same
+// "و" + word shape and the same length delta (e.g. "الله" vs "والله" in
+// item 10/13's own "...الا الله والله اكبر") — a blanket string-level
+// equivalence would conflate them everywhere tokensAreEquivalent is
+// consulted (restart-detection, noise/truncation anti-collision), not just
+// at one intended position. Scoped here to replay()'s own per-position
+// walk instead — exactly like isDroppedWaClitic — so it only ever
+// substitutes for the ONE specific token currently expected, never
+// generally declares the two words interchangeable.
+function isInsertedWaClitic(spoken: string, expected: string): boolean {
+  return spoken.length > 1 && spoken[0] === "و" && tokensAreEquivalent(spoken.slice(1), expected);
+}
+
 // Pure, disposable walk through `tokens` against `targetTokens`, starting
 // from `startProgress`. This is re-run in FULL, from the last durable
 // checkpoint, every single time the live segment's text changes — never
@@ -119,6 +155,87 @@ function replay(
       progress += 1;
       noiseBudget = 1;
       consumed = 2;
+    } else if (
+      progress > 0 &&
+      progress < N &&
+      progress + 1 < N &&
+      targetTokens[progress] === targetTokens[progress - 1] &&
+      tokensAreEquivalent(w, targetTokens[progress + 1])
+    ) {
+      // Generic ASR degemination: the TARGET's own sequence repeats a
+      // token immediately (targetTokens[progress-1] === targetTokens[progress]
+      // — e.g. "... لا شريك له، له الملك ..." has "له" twice in a row) and
+      // the recognizer has been observed, live, to collapse the spoken
+      // repetition down to a single instance, going straight from the
+      // first occurrence into whatever word actually follows the SECOND
+      // one (observed live — see voice-tasbeeh-validation-report.md). This
+      // is a property of the TARGET'S OWN token sequence (any dhikr whose
+      // wording happens to repeat a word back-to-back is covered, not a
+      // curated word list) — not fuzzy matching, since `w` must still be
+      // an EXACT match (via tokensAreEquivalent) to the token that
+      // genuinely follows the duplicate. The single spoken instance
+      // already consumed by the PRIOR loop iteration (which is what put
+      // `progress` here, one past the duplicate's first occurrence) is
+      // treated as having satisfied both the duplicate slot and this new
+      // word, so progress jumps by 2 rather than 1. Checked BEFORE the
+      // restart branches below for the same reason the plain match/
+      // clitic-split branches are: continuing the CURRENT attempt must
+      // always be preferred over reinterpreting this token as a false
+      // start whenever both readings are structurally possible (proven
+      // necessary by an analogous collision on isDroppedWaClitic just
+      // below — see that one's own regression coverage).
+      outcome = "match";
+      progress += 2;
+      noiseBudget = 1;
+    } else if (progress > 0 && progress < N && isDroppedWaClitic(w, targetTokens[progress])) {
+      // Generic ASR leading-wa-clitic loss (see isDroppedWaClitic) — the
+      // recognizer dropped a target token's leading "و" entirely, rather
+      // than surfacing it as its own separate token (that case is already
+      // handled above by isCliticSplitMatch). Observed live on more than
+      // one و-prefixed word, in more than one dhikr, so this is keyed
+      // purely off the expected TARGET token's own shape (does it start
+      // with و?) — never a curated per-dhikr word list, and never an
+      // approximate match: `w` must exactly equal the token's own
+      // remainder after that leading و. Requires progress > 0 — i.e. this
+      // only continues an ATTEMPT ALREADY IN PROGRESS, never starts one
+      // cold: both real occurrences observed live happened well into an
+      // otherwise-matching attempt (see voice-tasbeeh-validation-report.md),
+      // and requiring that momentum is what keeps an isolated, unrelated
+      // bare word elsewhere in ordinary speech from spuriously satisfying
+      // a و-prefixed target token with no surrounding evidence at all
+      // (see the dedicated "unrelated word between و and the remainder
+      // must NOT match" regression test). Checked BEFORE the restart
+      // branches below — NOT after, like isAsrTruncatedForm is — because
+      // the dropped-و remainder can itself legitimately equal the
+      // target's own first token (e.g. target "... ولا قوة ..." drops its
+      // و to bare "لا", which is ALSO this target's literal first word);
+      // continuing the current attempt must win that reading, or a
+      // genuine mid-phrase drop gets misread as a false-start restart and
+      // the rest of the attempt is lost (proven live — see the dedicated
+      // library-wide regression test for this exact collision).
+      outcome = "match";
+      if (progress === 0) attemptTainted = tokenIsPreSwitch;
+      progress += 1;
+      noiseBudget = 1;
+    } else if (progress > 0 && progress < N && isInsertedWaClitic(w, targetTokens[progress])) {
+      // Generic ASR leading-wa-clitic INSERTION (see isInsertedWaClitic) —
+      // the mirror image of the dropped-و case just above: here the
+      // recognizer added a spurious leading "و" the target token doesn't
+      // have at all, most likely a coarticulation artifact from the
+      // preceding word's own ending rather than a different word (observed
+      // live — see voice-tasbeeh-validation-report.md). Same progress > 0
+      // requirement as the dropped-و case and for the same reason: this
+      // must only ever continue an attempt already underway, never start
+      // one cold, so an isolated و-prefixed word elsewhere in ordinary
+      // speech can never spuriously satisfy an unprefixed target token
+      // with no surrounding evidence. Checked BEFORE the restart branches
+      // below for the same collision reason as the dropped-و case: the
+      // inserted form could otherwise coincidentally read as a false-start
+      // restart instead of a continuation.
+      outcome = "match";
+      if (progress === 0) attemptTainted = tokenIsPreSwitch;
+      progress += 1;
+      noiseBudget = 1;
     } else if (progress > 0 && tokensAreEquivalent(w, targetTokens[0])) {
       // Doesn't continue the current attempt, but IS the target's own
       // first word — a false start/restart, not noise. The token is

@@ -88,6 +88,18 @@ const CONFUSABLE_LETTER_PAIRS: ReadonlySet<string> = new Set([
   "\u0637:\u062A", // ط:ت
   "\u0636:\u0638", // ض:ظ
   "\u0638:\u0636", // ظ:ض
+  // ا:ه — word-final tanween fatha spelled with ألف (e.g. "كبيرًا") vs a
+  // feminine ة ending, itself already folded to ه above (ORTHOGRAPHIC_FOLD)
+  // before this comparison ever runs. Phonetically close in rapid speech
+  // (observed live: target "كبيرا" transcribed as "كبيره" — see
+  // voiceTasbeehMatch.test.ts's dedicated live-trace regression), the same
+  // kind of same-word ASR mishearing this table already exists for. Safe
+  // at this tier's existing length >= 4 floor: the library's own short-word
+  // ا/ه collisions ("اله"/"الا" at 3 chars, "له"/"لا" at 2) are already
+  // excluded by that floor before this pair is ever consulted — re-verified
+  // via the library-audit test after adding this pair.
+  "\u0627:\u0647", // ا:ه
+  "\u0647:\u0627", // ه:ا
 ]);
 
 function singleLetterDiff(a: string, b: string): [string, string] | null {
