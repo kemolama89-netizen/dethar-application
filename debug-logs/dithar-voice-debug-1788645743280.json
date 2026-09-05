@@ -1,0 +1,6246 @@
+[
+  {
+    "t": "22:01:55.990",
+    "tag": "diagnostic-session-start",
+    "data": {
+      "previousEntriesCleared": 161
+    }
+  },
+  {
+    "t": "22:02:04.089",
+    "tag": "abort",
+    "data": {
+      "reason": "effect-cleanup"
+    }
+  },
+  {
+    "t": "22:02:04.090",
+    "tag": "abort",
+    "data": {
+      "reason": "disabled"
+    }
+  },
+  {
+    "t": "22:02:04.090",
+    "tag": "status",
+    "data": {
+      "status": "idle",
+      "reason": "disabled"
+    }
+  },
+  {
+    "t": "22:02:05.480",
+    "tag": "target-switch:requested",
+    "data": {
+      "oldTargetPhrase": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+      "newTargetPhrase": "سُبْحَانَ اللَّهِ",
+      "snapshotBefore": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 0
+      },
+      "recognitionInstanceId": null,
+      "lastResultIndex": 20
+    }
+  },
+  {
+    "t": "22:02:05.480",
+    "tag": "target-switch:applied",
+    "data": {
+      "newTargetPhrase": "سُبْحَانَ اللَّهِ",
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 0
+      }
+    }
+  },
+  {
+    "t": "22:02:10.952",
+    "tag": "status",
+    "data": {
+      "status": "requesting",
+      "targetPhrase": "سُبْحَانَ اللَّهِ"
+    }
+  },
+  {
+    "t": "22:02:10.952",
+    "tag": "start",
+    "data": {
+      "instanceId": 6,
+      "debugReason": "initial",
+      "targetPhrase": "سُبْحَانَ اللَّهِ"
+    }
+  },
+  {
+    "t": "22:02:10.975",
+    "tag": "onstart",
+    "data": {
+      "instanceId": 6,
+      "debugReason": "initial",
+      "snapshot": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 0
+      }
+    }
+  },
+  {
+    "t": "22:02:10.975",
+    "tag": "status",
+    "data": {
+      "status": "listening",
+      "instanceId": 6
+    }
+  },
+  {
+    "t": "22:02:13.449",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 0,
+      "resultsLength": 1,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 2497
+    }
+  },
+  {
+    "t": "22:02:13.450",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 0,
+      "isFinal": true,
+      "rawTranscript": ""
+    }
+  },
+  {
+    "t": "22:02:13.450",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 0,
+      "rawText": "",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [],
+      "resolvedPrefixBefore": [],
+      "toReplay": [],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": false
+    }
+  },
+  {
+    "t": "22:02:13.451",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 0,
+      "anyGenuineActivity": false,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 1
+      }
+    }
+  },
+  {
+    "t": "22:02:13.493",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 1,
+      "resultsLength": 2,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 2541
+    }
+  },
+  {
+    "t": "22:02:13.493",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 1,
+      "isFinal": true,
+      "rawTranscript": ""
+    }
+  },
+  {
+    "t": "22:02:13.493",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 1,
+      "rawText": "",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [],
+      "resolvedPrefixBefore": [],
+      "toReplay": [],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": false
+    }
+  },
+  {
+    "t": "22:02:13.493",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 0,
+      "anyGenuineActivity": false,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 2
+      }
+    }
+  },
+  {
+    "t": "22:02:13.923",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 2,
+      "resultsLength": 3,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 2971
+    }
+  },
+  {
+    "t": "22:02:13.924",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 2,
+      "isFinal": true,
+      "rawTranscript": "سبحان"
+    }
+  },
+  {
+    "t": "22:02:13.924",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 2,
+      "rawText": "سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match"
+      ],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:13.925",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 0,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 3
+      }
+    }
+  },
+  {
+    "t": "22:02:14.079",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 3,
+      "resultsLength": 4,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 154
+    }
+  },
+  {
+    "t": "22:02:14.079",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 3,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:14.079",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 3,
+      "rawText": "سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:14.083",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 4
+      }
+    }
+  },
+  {
+    "t": "22:02:14.395",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 4,
+      "resultsLength": 5,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 315
+    }
+  },
+  {
+    "t": "22:02:14.395",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 4,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:14.396",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 4,
+      "rawText": "سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:14.399",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 5
+      }
+    }
+  },
+  {
+    "t": "22:02:14.506",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 5,
+      "resultsLength": 6,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 110
+    }
+  },
+  {
+    "t": "22:02:14.506",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 5,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:14.506",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 5,
+      "rawText": "سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:14.508",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 6
+      }
+    }
+  },
+  {
+    "t": "22:02:14.975",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 6,
+      "resultsLength": 7,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 469
+    }
+  },
+  {
+    "t": "22:02:14.975",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 6,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان"
+    }
+  },
+  {
+    "t": "22:02:14.975",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 6,
+      "rawText": "سبحان الله سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:14.977",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 7
+      }
+    }
+  },
+  {
+    "t": "22:02:15.145",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 7,
+      "resultsLength": 8,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 169
+    }
+  },
+  {
+    "t": "22:02:15.145",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 7,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:15.145",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 7,
+      "rawText": "سبحان الله سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1,
+        3
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:15.150",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 8
+      }
+    }
+  },
+  {
+    "t": "22:02:15.375",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 8,
+      "resultsLength": 9,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 229
+    }
+  },
+  {
+    "t": "22:02:15.375",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 8,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:15.376",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 8,
+      "rawText": "سبحان الله سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1,
+        3
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:15.380",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 9
+      }
+    }
+  },
+  {
+    "t": "22:02:15.462",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 9,
+      "resultsLength": 10,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 86
+    }
+  },
+  {
+    "t": "22:02:15.462",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 9,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:15.462",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 9,
+      "rawText": "سبحان الله سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1,
+        3
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:15.465",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 10
+      }
+    }
+  },
+  {
+    "t": "22:02:16.076",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 10,
+      "resultsLength": 11,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 614
+    }
+  },
+  {
+    "t": "22:02:16.076",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 10,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان الله سبحان"
+    }
+  },
+  {
+    "t": "22:02:16.077",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 10,
+      "rawText": "سبحان الله سبحان الله سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1,
+        3
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:16.083",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 11
+      }
+    }
+  },
+  {
+    "t": "22:02:16.268",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 11,
+      "resultsLength": 12,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 191
+    }
+  },
+  {
+    "t": "22:02:16.268",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 11,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:16.269",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 11,
+      "rawText": "سبحان الله سبحان الله سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1,
+        3,
+        5
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:16.277",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 12
+      }
+    }
+  },
+  {
+    "t": "22:02:16.369",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 12,
+      "resultsLength": 13,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 100
+    }
+  },
+  {
+    "t": "22:02:16.369",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 12,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:16.370",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 12,
+      "rawText": "سبحان الله سبحان الله سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1,
+        3,
+        5
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:16.373",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 13
+      }
+    }
+  },
+  {
+    "t": "22:02:16.772",
+    "tag": "target-switch:requested",
+    "data": {
+      "oldTargetPhrase": "سُبْحَانَ اللَّهِ",
+      "newTargetPhrase": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+      "snapshotBefore": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 13
+      },
+      "recognitionInstanceId": 6,
+      "lastResultIndex": 12
+    }
+  },
+  {
+    "t": "22:02:16.772",
+    "tag": "stop",
+    "data": {
+      "reason": "target-switch-refresh"
+    }
+  },
+  {
+    "t": "22:02:17.008",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 13,
+      "resultsLength": 14,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": false,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله سبحان"
+        }
+      ],
+      "isListening": false,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 236
+    }
+  },
+  {
+    "t": "22:02:17.009",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 13,
+      "isFinal": false,
+      "rawTranscript": "سبحان الله سبحان الله سبحان الله سبحان"
+    }
+  },
+  {
+    "t": "22:02:17.009",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 13,
+      "rawText": "سبحان الله سبحان الله سبحان الله سبحان",
+      "isFinal": false,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1,
+        3,
+        5
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "committed": false,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:17.016",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": {
+          "id": 13,
+          "resolvedPrefix": [
+            "سبحان",
+            "الله",
+            "سبحان",
+            "الله",
+            "سبحان",
+            "الله"
+          ],
+          "lastTokens": [
+            "سبحان",
+            "الله",
+            "سبحان",
+            "الله",
+            "سبحان",
+            "الله",
+            "سبحان"
+          ],
+          "preSwitchSnapshot": []
+        },
+        "committedSegmentCount": 13
+      }
+    }
+  },
+  {
+    "t": "22:02:17.050",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 6,
+      "resultIndex": 13,
+      "resultsLength": 14,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله سبحان الله سبحان الله سبحان الله"
+        }
+      ],
+      "isListening": false,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 41
+    }
+  },
+  {
+    "t": "22:02:17.050",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 6,
+      "segmentId": 13,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله سبحان الله سبحان الله سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:17.050",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 13,
+      "rawText": "سبحان الله سبحان الله سبحان الله سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله",
+        "سبحان",
+        "الله"
+      ],
+      "toReplay": [
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 6,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        1
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:17.051",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 6,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 14
+      }
+    }
+  },
+  {
+    "t": "22:02:17.051",
+    "tag": "onend",
+    "data": {
+      "instanceId": 6,
+      "intentionalStop": true,
+      "willRestart": true,
+      "reason": "target-switch-refresh"
+    }
+  },
+  {
+    "t": "22:02:17.051",
+    "tag": "target-switch:applied",
+    "data": {
+      "newTargetPhrase": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 14
+      }
+    }
+  },
+  {
+    "t": "22:02:17.051",
+    "tag": "start",
+    "data": {
+      "instanceId": 7,
+      "debugReason": "refresh-after-target-switch",
+      "targetPhrase": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ"
+    }
+  },
+  {
+    "t": "22:02:17.077",
+    "tag": "onstart",
+    "data": {
+      "instanceId": 7,
+      "debugReason": "refresh-after-target-switch",
+      "snapshot": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 0
+      }
+    }
+  },
+  {
+    "t": "22:02:17.077",
+    "tag": "status",
+    "data": {
+      "status": "listening",
+      "instanceId": 7
+    }
+  },
+  {
+    "t": "22:02:18.616",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 0,
+      "resultsLength": 1,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 1566
+    }
+  },
+  {
+    "t": "22:02:18.617",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 0,
+      "isFinal": true,
+      "rawTranscript": ""
+    }
+  },
+  {
+    "t": "22:02:18.617",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 0,
+      "rawText": "",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [],
+      "resolvedPrefixBefore": [],
+      "toReplay": [],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": false
+    }
+  },
+  {
+    "t": "22:02:18.617",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 0,
+      "anyGenuineActivity": false,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 1
+      }
+    }
+  },
+  {
+    "t": "22:02:18.824",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 1,
+      "resultsLength": 2,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 1774
+    }
+  },
+  {
+    "t": "22:02:18.824",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 1,
+      "isFinal": true,
+      "rawTranscript": ""
+    }
+  },
+  {
+    "t": "22:02:18.824",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 1,
+      "rawText": "",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [],
+      "resolvedPrefixBefore": [],
+      "toReplay": [],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": false
+    }
+  },
+  {
+    "t": "22:02:18.825",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 0,
+      "anyGenuineActivity": false,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 2
+      }
+    }
+  },
+  {
+    "t": "22:02:19.199",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 2,
+      "resultsLength": 3,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 2149
+    }
+  },
+  {
+    "t": "22:02:19.199",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 2,
+      "isFinal": true,
+      "rawTranscript": ""
+    }
+  },
+  {
+    "t": "22:02:19.200",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 2,
+      "rawText": "",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [],
+      "resolvedPrefixBefore": [],
+      "toReplay": [],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": false
+    }
+  },
+  {
+    "t": "22:02:19.200",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 0,
+      "anyGenuineActivity": false,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 3
+      }
+    }
+  },
+  {
+    "t": "22:02:19.271",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 3,
+      "resultsLength": 4,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 2221
+    }
+  },
+  {
+    "t": "22:02:19.271",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 3,
+      "isFinal": true,
+      "rawTranscript": "سبحان"
+    }
+  },
+  {
+    "t": "22:02:19.272",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 3,
+      "rawText": "سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match"
+      ],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:19.272",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 0,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 4
+      }
+    }
+  },
+  {
+    "t": "22:02:19.444",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 4,
+      "resultsLength": 5,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 172
+    }
+  },
+  {
+    "t": "22:02:19.444",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 4,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:19.444",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 4,
+      "rawText": "سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match"
+      ],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:19.445",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 0,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 5
+      }
+    }
+  },
+  {
+    "t": "22:02:19.777",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 5,
+      "resultsLength": 6,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 332
+    }
+  },
+  {
+    "t": "22:02:19.777",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 5,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:19.777",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 5,
+      "rawText": "سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match"
+      ],
+      "completionLocalIndices": [],
+      "completionsEmitted": 0,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:19.777",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 0,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 6
+      }
+    }
+  },
+  {
+    "t": "22:02:19.841",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 6,
+      "resultsLength": 7,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 64
+    }
+  },
+  {
+    "t": "22:02:19.841",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 6,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:19.841",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 6,
+      "rawText": "سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:19.842",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 7
+      }
+    }
+  },
+  {
+    "t": "22:02:20.013",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 7,
+      "resultsLength": 8,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 172
+    }
+  },
+  {
+    "t": "22:02:20.013",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 7,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:20.013",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 7,
+      "rawText": "سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:20.014",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 8
+      }
+    }
+  },
+  {
+    "t": "22:02:20.448",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 8,
+      "resultsLength": 9,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 435
+    }
+  },
+  {
+    "t": "22:02:20.448",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 8,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:20.448",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 8,
+      "rawText": "سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:20.449",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 9
+      }
+    }
+  },
+  {
+    "t": "22:02:20.488",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 9,
+      "resultsLength": 10,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 40
+    }
+  },
+  {
+    "t": "22:02:20.488",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 9,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان"
+    }
+  },
+  {
+    "t": "22:02:20.488",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 9,
+      "rawText": "سبحان الله وبحمده سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:20.489",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 10
+      }
+    }
+  },
+  {
+    "t": "22:02:20.525",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 10,
+      "resultsLength": 11,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 37
+    }
+  },
+  {
+    "t": "22:02:20.525",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 10,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان"
+    }
+  },
+  {
+    "t": "22:02:20.525",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 10,
+      "rawText": "سبحان الله وبحمده سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:20.526",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 11
+      }
+    }
+  },
+  {
+    "t": "22:02:20.669",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 11,
+      "resultsLength": 12,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 144
+    }
+  },
+  {
+    "t": "22:02:20.669",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 11,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:20.670",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 11,
+      "rawText": "سبحان الله وبحمده سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:20.671",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 12
+      }
+    }
+  },
+  {
+    "t": "22:02:20.908",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 12,
+      "resultsLength": 13,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 238
+    }
+  },
+  {
+    "t": "22:02:20.908",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 12,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:20.908",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 12,
+      "rawText": "سبحان الله وبحمده سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2
+      ],
+      "completionsEmitted": 1,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:20.909",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 1,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 13
+      }
+    }
+  },
+  {
+    "t": "22:02:21.121",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 13,
+      "resultsLength": 14,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 213
+    }
+  },
+  {
+    "t": "22:02:21.122",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 13,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:21.122",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 13,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:21.124",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 14
+      }
+    }
+  },
+  {
+    "t": "22:02:21.382",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 14,
+      "resultsLength": 15,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 260
+    }
+  },
+  {
+    "t": "22:02:21.382",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 14,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:21.383",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 14,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:21.388",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 15
+      }
+    }
+  },
+  {
+    "t": "22:02:21.579",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 15,
+      "resultsLength": 16,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 196
+    }
+  },
+  {
+    "t": "22:02:21.580",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 15,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+    }
+  },
+  {
+    "t": "22:02:21.580",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 15,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:21.584",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 16
+      }
+    }
+  },
+  {
+    "t": "22:02:21.641",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 16,
+      "resultsLength": 17,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 61
+    }
+  },
+  {
+    "t": "22:02:21.641",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 16,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+    }
+  },
+  {
+    "t": "22:02:21.642",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 16,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:21.644",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 17
+      }
+    }
+  },
+  {
+    "t": "22:02:21.667",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 17,
+      "resultsLength": 18,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 25
+    }
+  },
+  {
+    "t": "22:02:21.667",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 17,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:21.667",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 17,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:21.669",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 18
+      }
+    }
+  },
+  {
+    "t": "22:02:21.991",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 18,
+      "resultsLength": 19,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 324
+    }
+  },
+  {
+    "t": "22:02:21.991",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 18,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:21.992",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 18,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:21.994",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 19
+      }
+    }
+  },
+  {
+    "t": "22:02:22.182",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 19,
+      "resultsLength": 20,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 19,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 190
+    }
+  },
+  {
+    "t": "22:02:22.182",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 19,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:22.183",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 19,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5
+      ],
+      "completionsEmitted": 2,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:22.185",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 2,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 20
+      }
+    }
+  },
+  {
+    "t": "22:02:22.216",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 20,
+      "resultsLength": 21,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 19,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 20,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 33
+    }
+  },
+  {
+    "t": "22:02:22.216",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 20,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:22.216",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 20,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5,
+        8
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:22.219",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 21
+      }
+    }
+  },
+  {
+    "t": "22:02:22.455",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 21,
+      "resultsLength": 22,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 19,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 20,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 21,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 239
+    }
+  },
+  {
+    "t": "22:02:22.455",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 21,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:22.456",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 21,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5,
+        8
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:22.463",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 22
+      }
+    }
+  },
+  {
+    "t": "22:02:22.527",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 22,
+      "resultsLength": 23,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 19,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 20,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 21,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 22,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 71
+    }
+  },
+  {
+    "t": "22:02:22.527",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 22,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+    }
+  },
+  {
+    "t": "22:02:22.527",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 22,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 0,
+      "tokenOutcomes": [
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5,
+        8
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:22.530",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 23
+      }
+    }
+  },
+  {
+    "t": "22:02:22.559",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 23,
+      "resultsLength": 24,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 19,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 20,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 21,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 22,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 23,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 32
+    }
+  },
+  {
+    "t": "22:02:22.559",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 23,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+    }
+  },
+  {
+    "t": "22:02:22.559",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 23,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5,
+        8
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 1,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:22.563",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 1,
+        "liveSegment": null,
+        "committedSegmentCount": 24
+      }
+    }
+  },
+  {
+    "t": "22:02:23.018",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 24,
+      "resultsLength": 25,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 19,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 20,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 21,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 22,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 23,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 24,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 459
+    }
+  },
+  {
+    "t": "22:02:23.018",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 24,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+    }
+  },
+  {
+    "t": "22:02:23.018",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 24,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 1,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5,
+        8
+      ],
+      "completionsEmitted": 3,
+      "matchProgressAfter": 2,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:23.022",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 3,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 2,
+        "liveSegment": null,
+        "committedSegmentCount": 25
+      }
+    }
+  },
+  {
+    "t": "22:02:23.047",
+    "tag": "onresult:event",
+    "data": {
+      "instanceId": 7,
+      "resultIndex": 25,
+      "resultsLength": 26,
+      "allResults": [
+        {
+          "i": 0,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 1,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 2,
+          "isFinal": true,
+          "rawTranscript": ""
+        },
+        {
+          "i": 3,
+          "isFinal": true,
+          "rawTranscript": "سبحان"
+        },
+        {
+          "i": 4,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 5,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله"
+        },
+        {
+          "i": 6,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 7,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 8,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده"
+        },
+        {
+          "i": 9,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 10,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 11,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 12,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 13,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 14,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 15,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 16,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 17,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 18,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 19,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 20,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 21,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        },
+        {
+          "i": 22,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 23,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان"
+        },
+        {
+          "i": 24,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله"
+        },
+        {
+          "i": 25,
+          "isFinal": true,
+          "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+        }
+      ],
+      "isListening": true,
+      "msSinceLastResultEvent": 0,
+      "msSinceLastGenuineActivity": 28
+    }
+  },
+  {
+    "t": "22:02:23.047",
+    "tag": "onresult:raw",
+    "data": {
+      "instanceId": 7,
+      "segmentId": 25,
+      "isFinal": true,
+      "rawTranscript": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده"
+    }
+  },
+  {
+    "t": "22:02:23.047",
+    "tag": "matcher:segment",
+    "data": {
+      "segmentId": 25,
+      "rawText": "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده",
+      "isFinal": true,
+      "targetTokens": [
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "tokens": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "resolvedPrefixBefore": [],
+      "toReplay": [
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده",
+        "سبحان",
+        "الله",
+        "وبحمده"
+      ],
+      "excludedCount": 0,
+      "postSwitchFloor": 0,
+      "matchProgressBefore": 2,
+      "tokenOutcomes": [
+        "restart",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match",
+        "match"
+      ],
+      "completionLocalIndices": [
+        2,
+        5,
+        8,
+        11
+      ],
+      "completionsEmitted": 4,
+      "matchProgressAfter": 0,
+      "resolvedPrefixAfter": null,
+      "committed": true,
+      "hadGenuineActivity": true
+    }
+  },
+  {
+    "t": "22:02:23.051",
+    "tag": "onresult:summary",
+    "data": {
+      "instanceId": 7,
+      "totalCompletions": 4,
+      "anyGenuineActivity": true,
+      "snapshotAfter": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 26
+      }
+    }
+  },
+  {
+    "t": "22:02:23.086",
+    "tag": "onend",
+    "data": {
+      "instanceId": 7,
+      "intentionalStop": false,
+      "willRestart": true
+    }
+  },
+  {
+    "t": "22:02:23.086",
+    "tag": "start",
+    "data": {
+      "instanceId": 8,
+      "debugReason": "restart-after-onend",
+      "targetPhrase": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ"
+    }
+  },
+  {
+    "t": "22:02:23.097",
+    "tag": "onstart",
+    "data": {
+      "instanceId": 8,
+      "debugReason": "restart-after-onend",
+      "snapshot": {
+        "targetTokens": [
+          "سبحان",
+          "الله",
+          "وبحمده"
+        ],
+        "matchProgress": 0,
+        "liveSegment": null,
+        "committedSegmentCount": 0
+      }
+    }
+  },
+  {
+    "t": "22:02:23.098",
+    "tag": "status",
+    "data": {
+      "status": "listening",
+      "instanceId": 8
+    }
+  }
+]

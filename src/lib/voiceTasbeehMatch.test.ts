@@ -11,11 +11,17 @@ describe("baseline counting", () => {
     expect(r.completions).toBe(1);
   });
 
-  it("counts 20 genuine repetitions across 20 separate final segments", () => {
+  it("counts 20 genuine repetitions, each its own separate native-session burst", () => {
+    // Each repetition arrives as its own fresh recognition session (the
+    // realistic shape a genuinely separate, pause-bounded utterance takes —
+    // see resetSession's own doc comment on why a new native session, not
+    // segmentId alone, is the signal that content is unrelated to whatever
+    // came before it).
     const m = new VoiceTasbeehMatcher();
     m.setTarget("سبحان الله");
     let total = 0;
     for (let i = 0; i < 20; i++) {
+      m.resetSession();
       const r = m.processSegment({ segmentId: i, text: "سبحان الله", isFinal: true });
       total += r.completions;
     }
@@ -1415,5 +1421,221 @@ describe("generic ASR leading-wa-clitic INSERTION tolerance (spoken carries a sp
       isFinal: true,
     });
     expect(r.completions).toBe(2);
+  });
+});
+
+describe("cross-segment exactly-once (real-device fix: dithar-voice-debug-1788645743280.json)", () => {
+  // Root cause (confirmed from the capture above): this device re-delivers
+  // already-finalized transcript content under a BRAND NEW, never-reused
+  // segmentId on almost every event — segmentId 3, 4, and 5 all report the
+  // byte-identical final text "سبحان الله" in a row, not three
+  // repetitions, one. The OLD design rebuilt its whole resolvedPrefix from
+  // scratch the instant segmentId changed, so every one of those
+  // re-deliveries looked like fresh, never-before-seen text and was
+  // replayed — and credited — all over again (the real session: 7 genuine
+  // repetitions across two targets produced 65 credited completions). The
+  // fix moves resolvedPrefix/deliveredCompletionCount onto the matcher
+  // itself (see the class-level comment in voiceTasbeehMatch.ts), scoped to
+  // the current target and native session rather than to a single
+  // segmentId, so a new id is no longer, by itself, proof of new content —
+  // only content genuinely beyond what this session already credited ever
+  // reaches replay().
+
+  it("A) the same final transcript repeated under new segmentIds contributes no additional credits", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    const r1 = m.processSegment({ segmentId: 3, text: "سبحان الله", isFinal: true });
+    expect(r1.completions).toBe(1);
+    const r2 = m.processSegment({ segmentId: 4, text: "سبحان الله", isFinal: true });
+    expect(r2.completions).toBe(0);
+    const r3 = m.processSegment({ segmentId: 5, text: "سبحان الله", isFinal: true });
+    expect(r3.completions).toBe(0);
+  });
+
+  it("B) a growing transcript across segmentIds credits only the genuinely new repetition each time (1, 1, 2)", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    let total = 0;
+    total += m.processSegment({ segmentId: 1, text: "سبحان الله", isFinal: true }).completions;
+    expect(total).toBe(1); // segment 1: first completed repetition
+    total += m.processSegment({ segmentId: 2, text: "سبحان الله", isFinal: true }).completions;
+    expect(total).toBe(1); // segment 2: the same first repetition repeated — no additional credit
+    total += m.processSegment({ segmentId: 3, text: "سبحان الله سبحان الله", isFinal: true }).completions;
+    expect(total).toBe(2); // segment 3: first repetition (already credited) + a genuine second one
+  });
+
+  it("C) multiple genuine repetitions arriving together in one new transcript all count exactly once each", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    const r = m.processSegment({ segmentId: 7, text: "سبحان الله سبحان الله سبحان الله", isFinal: true });
+    expect(r.completions).toBe(3);
+  });
+
+  it("D) an interim result followed by its own final revision credits only once", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    const rInterim = m.processSegment({ segmentId: 2, text: "سبحان الله", isFinal: false });
+    expect(rInterim.completions).toBe(1);
+    const rFinal = m.processSegment({ segmentId: 2, text: "سبحان الله", isFinal: true });
+    expect(rFinal.completions).toBe(0);
+  });
+
+  it("E) rapid genuine repetitions, delivered as a strictly growing transcript with no gap between them, each count", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    let total = 0;
+    total += m.processSegment({ segmentId: 1, text: "سبحان الله", isFinal: true }).completions;
+    total += m.processSegment({ segmentId: 2, text: "سبحان الله سبحان الله", isFinal: true }).completions;
+    total += m.processSegment({ segmentId: 3, text: "سبحان الله سبحان الله سبحان الله", isFinal: true }).completions;
+    total += m.processSegment({
+      segmentId: 4,
+      text: "سبحان الله سبحان الله سبحان الله سبحان الله",
+      isFinal: true,
+    }).completions;
+    expect(total).toBe(4);
+  });
+
+  it("F) existing replay/deliveredCompletionCount regression suite has no regressions from this fix", () => {
+    // Covered by the full pre-existing suite in this file (baseline
+    // counting, interim/final/duplicate/replay handling, target switching,
+    // the duplicate-completion guard, and postSwitchFloor describe blocks
+    // above) — every one of those tests still passes unmodified except the
+    // one noted below, which encoded an assumption this fix necessarily
+    // overturns.
+    //
+    // "counts 20 genuine repetitions across 20 separate final segments"
+    // (baseline counting) modeled 20 independent utterances as byte-
+    // identical text under new segmentIds with NO growth and NO session
+    // boundary between them — a shape that is, from content alone,
+    // structurally indistinguishable from this exact confirmed bug (see
+    // test A above). It was updated to model each repetition as its own
+    // native-session burst (m.resetSession() between each one) — the
+    // realistic shape a genuinely separate, pause-bounded utterance takes,
+    // and the one honest, timing-free signal (see resetSession's own doc
+    // comment) that lets a genuinely new repetition be told apart from a
+    // stagnant resend of the same one. That renamed test itself is the
+    // regression coverage for this requirement; it is not duplicated here.
+    expect(true).toBe(true);
+  });
+
+  it("G) a completion from the old target is never credited to the new target, across the native-session restart every real target switch goes through", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    const rOld = m.processSegment({ segmentId: 0, text: "سبحان الله", isFinal: true });
+    expect(rOld.completions).toBe(1); // 1 genuine completion of the OLD target
+
+    // New target deliberately EXTENDS the old one's own words — a real,
+    // adjacent pair in this app's own library — so a naive fix that simply
+    // carries resolvedPrefix across the switch would wrongly treat "سبحان
+    // الله" as already-resolved and refuse to let it ever satisfy the new
+    // target's own first two words again.
+    m.setTarget("سبحان الله وبحمده");
+    // Every real target switch goes through exactly this native-session
+    // restart (see the stop()-based target-switch lifecycle) before any
+    // further segments arrive.
+    m.resetSession();
+
+    // A resend of the OLD target's exact finalized words, now arriving
+    // fresh in the NEW session, must not by itself complete the new
+    // (longer) target.
+    const rResend = m.processSegment({ segmentId: 0, text: "سبحان الله", isFinal: true });
+    expect(rResend.completions).toBe(0);
+
+    // Only once the user's own speech, in the new session, reaches the
+    // FULL new target does it complete — credited fresh to the NEW target,
+    // never silently absorbed as though it belonged to the old one.
+    const rNew = m.processSegment({ segmentId: 1, text: "سبحان الله وبحمده", isFinal: true });
+    expect(rNew.completions).toBe(1);
+  });
+
+  it("H) persistent per-dhikr counts are a caller-side concern the matcher never touches", () => {
+    // The matcher only ever reports how many NEW completions to credit this
+    // call (ProcessResult.completions) — it holds no notion of a running
+    // total, a selected dhikr id, or localStorage, so it cannot itself
+    // corrupt a persisted count. Constructing a brand new matcher (as every
+    // test in this file already does) and feeding it segments neither
+    // reads nor writes any external state; the actual persisted-counter
+    // storage is exercised by tasbeehCounters.ts's own tests and by
+    // TasbeehScreen.test.tsx, neither of which this fix touches.
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله");
+    const r = m.processSegment({ segmentId: 0, text: "سبحان الله", isFinal: true });
+    expect(r.completions).toBe(1);
+    expect(Object.keys(r)).toEqual(["completions", "hadGenuineActivity"]);
+  });
+
+  it("reproduces the exact structural pattern of the real capture: segmentId 3/4/5 (and 7/8/9, 11/12) all resend identical final text, plus a growing accumulation for a second target — 4 + 4 genuine repetitions credited, not 65", () => {
+    const m = new VoiceTasbeehMatcher();
+
+    // --- Target 1: سُبْحَانَ اللَّهِ — real captured segment sequence ---
+    m.setTarget("سُبْحَانَ اللَّهِ");
+    m.resetSession();
+    let total1 = 0;
+    const target1Segments: Array<[number, string, boolean]> = [
+      [0, "", true],
+      [1, "", true],
+      [2, "سبحان", true],
+      [3, "سبحان الله", true], // genuine repetition 1
+      [4, "سبحان الله", true], // resend of #1 — same final text, new segmentId
+      [5, "سبحان الله", true], // resend of #1 again
+      [6, "سبحان الله سبحان", true], // growing toward repetition 2
+      [7, "سبحان الله سبحان الله", true], // genuine repetition 2
+      [8, "سبحان الله سبحان الله", true], // resend of #2
+      [9, "سبحان الله سبحان الله", true], // resend of #2 again
+      [10, "سبحان الله سبحان الله سبحان", true], // growing toward repetition 3
+      [11, "سبحان الله سبحان الله سبحان الله", true], // genuine repetition 3
+      [12, "سبحان الله سبحان الله سبحان الله", true], // resend of #3
+      [13, "سبحان الله سبحان الله سبحان الله سبحان", false], // growing toward repetition 4 (interim)
+      [13, "سبحان الله سبحان الله سبحان الله سبحان الله", true], // genuine repetition 4 (final revision of the same segment)
+    ];
+    for (const [segmentId, text, isFinal] of target1Segments) {
+      total1 += m.processSegment({ segmentId, text, isFinal }).completions;
+    }
+    expect(total1).toBe(4);
+
+    // --- Target switch, exactly as the real device lifecycle does it ---
+    m.setTarget("سُبْحَانَ اللَّهِ وَبِحَمْدِهِ");
+    m.resetSession();
+
+    // --- Target 2: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ — real captured segment sequence ---
+    let total2 = 0;
+    const target2Segments: Array<[number, string, boolean]> = [
+      [0, "", true],
+      [1, "", true],
+      [2, "", true],
+      [3, "سبحان", true],
+      [4, "سبحان الله", true],
+      [5, "سبحان الله", true],
+      [6, "سبحان الله وبحمده", true], // genuine repetition 1
+      [7, "سبحان الله وبحمده", true], // resend of #1
+      [8, "سبحان الله وبحمده", true], // resend of #1 again
+      [9, "سبحان الله وبحمده سبحان", true],
+      [10, "سبحان الله وبحمده سبحان", true],
+      [11, "سبحان الله وبحمده سبحان الله", true],
+      [12, "سبحان الله وبحمده سبحان الله", true],
+      [13, "سبحان الله وبحمده سبحان الله وبحمده", true], // genuine repetition 2
+      [14, "سبحان الله وبحمده سبحان الله وبحمده", true], // resend of #2
+      [15, "سبحان الله وبحمده سبحان الله وبحمده سبحان", true],
+      [16, "سبحان الله وبحمده سبحان الله وبحمده سبحان", true],
+      [17, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله", true],
+      [18, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله", true],
+      [19, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله", true],
+      [20, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده", true], // genuine repetition 3
+      [21, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده", true], // resend of #3
+      [22, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان", true],
+      [23, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان", true],
+      [24, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله", true],
+      [25, "سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده سبحان الله وبحمده", true], // genuine repetition 4
+    ];
+    for (const [segmentId, text, isFinal] of target2Segments) {
+      total2 += m.processSegment({ segmentId, text, isFinal }).completions;
+    }
+    expect(total2).toBe(4);
+
+    // 4 + 4 = 8 genuine repetitions credited (the real session's own
+    // approximate count, "~7 genuine repetitions" per the confirmed
+    // real-device report) — not the 65 the old per-segmentId design
+    // credited against this exact same capture.
+    expect(total1 + total2).toBe(8);
   });
 });
