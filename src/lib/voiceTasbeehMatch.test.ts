@@ -187,6 +187,42 @@ describe("curated fuzzy tolerance", () => {
     const r = m.processSegment({ segmentId: 1, text: "اله", isFinal: true });
     expect(r.completions).toBe(0);
   });
+
+  it("tolerates the curated ا/ه substitution: target 'كبيرا' recognized as 'كبيره'", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("كبيرا");
+    const r = m.processSegment({ segmentId: 1, text: "كبيره", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("LIVE TRACE regression: real device capture — target #15's 'كبيرا' recognized as 'كبيره'", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("اللَّهُ أَكْبَرُ كَبِيرًا ، وَالْحَمْدُ لِلَّهِ كَثِيرًا ، وَسُبْحَانَ اللَّهِ بُكْرَةً وَأَصِيلاً.");
+    // Exact normalized token sequence from the captured iPad trace, first
+    // repetition: "كبيرا" transcribed as "كبيره" — the ASR mishearing that
+    // previously lost this entire repetition (it fell through to the
+    // ordinary reject-cascade, unrelated to either the adjacent-duplicate
+    // or dropped-و tolerances).
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "الله اكبر كبيره والحمد لله كثيرا وسبحان الله بكرة واصيلا",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+
+  it("still rejects a genuinely different same-length word sharing only the ا/ه position (بكرة example)", () => {
+    // Guards against this new pair silently rescuing an unrelated wrong-word
+    // substitution just because it happens to also differ in a trailing
+    // ا/ه — the target word here is short enough (< 4 chars after folding)
+    // to already fall outside this tier entirely, and the ASR's actual
+    // wrong words for "بكرة" observed live ("بخة", "وقال") don't even share
+    // the letter-pair shape, but this documents the boundary explicitly.
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("بكرة");
+    const r = m.processSegment({ segmentId: 1, text: "بخة", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
 });
 
 describe("interim/final/duplicate/replay handling", () => {
@@ -1133,5 +1169,251 @@ describe("library audit — real dhikr data (regression guard for the curated fu
       const r = m.processSegment({ segmentId: 1, text: item.dhikr_ar, isFinal: true });
       expect(r.completions).toBe(1);
     }
+  });
+});
+
+describe("generic adjacent-duplicate-token collapse tolerance (target repeats a word back-to-back; ASR produces it once)", () => {
+  it("1. a doubled target word collapsed to one instance still completes", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("لا شريك له له الملك");
+    const r = m.processSegment({ segmentId: 1, text: "لا شريك له الملك", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("2. LIVE TRACE regression: real device capture — target #5, 'له له' collapsed to one 'له'", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("لَا إلَه إلّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلُّ شَيْءِ قَدِيرِ.");
+    // Exact normalized token sequence from the captured iPad trace: ASR
+    // produced only one "له" where the target has two in a row, then
+    // continued correctly into "الملك" and the rest of the phrase.
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "لا اله الا الله وحده لا شريك له الملك وله الحمد وهو علي كل شيء قدير",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+
+  it("3. rapid repeated completion via duplicate collapse — exactly one count per genuine repetition", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("لا شريك له له الملك");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "لا شريك له الملك لا شريك له الملك",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(2);
+  });
+
+  it("4. genuinely uncollapsed (both instances spoken) still completes exactly once — this is additive, not a replacement", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("لا شريك له له الملك");
+    const r = m.processSegment({ segmentId: 1, text: "لا شريك له له الملك", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("5. does not weaken content validation: a genuinely wrong word after the single instance still yields 0", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("لا شريك له له الملك");
+    // Collapsed to one "له", but what follows is not "الملك" at all — a
+    // real content error, not a duplicate-collapse artifact, must still
+    // reject exactly as before this fix.
+    const r = m.processSegment({ segmentId: 1, text: "لا شريك له بيت", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("6. a target with no repeated token is completely unaffected (still requires every word)", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله والحمد لله");
+    const r = m.processSegment({ segmentId: 1, text: "سبحان الله لله", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("7. the collapse tolerance also applies when the duplicate is the target's own first pair of tokens", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله الله اكبر");
+    // The single spoken "الله" first satisfies the ordinary match at
+    // progress 0 (an exact match, not the collapse rule itself); only
+    // once progress is already > 0 does the collapse rule become
+    // eligible to skip the immediately-following duplicate slot — the
+    // same progress > 0 requirement that gates every other use of this
+    // rule, not a special case for "start of target" vs. "middle of
+    // target".
+    const r = m.processSegment({ segmentId: 1, text: "الله اكبر", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("7b. but a fresh attempt genuinely starting at progress 0 is still never granted the collapse for free — the target's OWN first token must still be matched normally first", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الله الله اكبر");
+    // "اكبر" alone, with no leading "الله" at all, must not somehow be
+    // interpreted as if the (never-spoken) duplicate pair had occurred.
+    const r = m.processSegment({ segmentId: 1, text: "اكبر", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("library-wide: every library item containing an adjacent duplicate token still completes when ASR collapses it to one instance", () => {
+    const items = (tasbeehLibraryJson as { items: { dhikr_ar: string }[] }).items;
+    let coveredAtLeastOne = false;
+    for (const item of items) {
+      const tokens = tokenize(item.dhikr_ar);
+      for (let i = 1; i < tokens.length; i++) {
+        if (tokens[i] !== tokens[i - 1]) continue;
+        coveredAtLeastOne = true;
+        const spokenTokens = [...tokens.slice(0, i), ...tokens.slice(i + 1)];
+        const m = new VoiceTasbeehMatcher();
+        m.setTarget(item.dhikr_ar);
+        const r = m.processSegment({ segmentId: 1, text: spokenTokens.join(" "), isFinal: true });
+        expect(r.completions).toBe(1);
+      }
+    }
+    // Guards against this test silently doing nothing if the library's
+    // wording ever changes to remove every repeated-token dhikr.
+    expect(coveredAtLeastOne).toBe(true);
+  });
+});
+
+describe("generic ASR leading-wa-clitic-loss tolerance (و dropped from a target word entirely, not merely split)", () => {
+  it("1. a leading و dropped mid-attempt still completes", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الا الله والله اكبر");
+    const r = m.processSegment({ segmentId: 1, text: "الا الله الله اكبر", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("2. LIVE TRACE regression: real device capture — target #11, 'والله' dropped to bare 'الله'", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سُبْحَانَ الْلَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا الْلَّهُ، وَالْلَّهُ أَكْبَرُ");
+    // Exact normalized token sequence from the captured iPad trace: the
+    // recognizer dropped the leading و of والله entirely (no separate "و"
+    // token at all, unlike the clitic-split case).
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "سبحان الله والحمد لله ولا اله الا الله الله اكبر",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+
+  it("3. LIVE TRACE regression: real device capture — target #15, 'وسبحان' dropped to bare 'سبحان'", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("اللَّهُ أَكْبَرُ كَبِيرًا ، وَالْحَمْدُ لِلَّهِ كَثِيرًا ، وَسُبْحَانَ اللَّهِ بُكْرَةً وَأَصِيلاً.");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "الله اكبر كبيرا والحمد لله كثيرا سبحان الله بكرة واصيلا",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+
+  it("4. does not fire at the very start of an attempt (progress 0) — an isolated bare word elsewhere in speech must not spuriously satisfy a و-prefixed target with no preceding context", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("والله");
+    const r = m.processSegment({ segmentId: 1, text: "الله", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("5. rapid repeated completion via dropped clitic — exactly one count per genuine repetition", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الا الله والله اكبر");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "الا الله الله اكبر الا الله الله اكبر",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(2);
+  });
+
+  it("6. does not weaken content validation: a genuinely missing later word still yields 0 even with a dropped و present", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("الا الله والله اكبر عظيم");
+    // "عظيم" is entirely missing, not merely a dropped و.
+    const r = m.processSegment({ segmentId: 1, text: "الا الله الله اكبر", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("library-wide: every mid-phrase و-prefixed token still completes when ASR drops its leading و entirely", () => {
+    const items = (tasbeehLibraryJson as { items: { dhikr_ar: string }[] }).items;
+    let coveredAtLeastOne = false;
+    for (const item of items) {
+      const tokens = tokenize(item.dhikr_ar);
+      for (let i = 1; i < tokens.length; i++) {
+        if (tokens[i][0] !== "و" || tokens[i].length < 2) continue;
+        coveredAtLeastOne = true;
+        const spokenTokens = [...tokens.slice(0, i), tokens[i].slice(1), ...tokens.slice(i + 1)];
+        const m = new VoiceTasbeehMatcher();
+        m.setTarget(item.dhikr_ar);
+        const r = m.processSegment({ segmentId: 1, text: spokenTokens.join(" "), isFinal: true });
+        expect(r.completions).toBe(1);
+      }
+    }
+    expect(coveredAtLeastOne).toBe(true);
+  });
+});
+
+describe("generic ASR leading-wa-clitic INSERTION tolerance (spoken carries a spurious leading و the target token does not have)", () => {
+  it("1. LIVE TRACE regression: real device capture — target #15, 'بكرة' recognized with a spurious leading و as 'وبكرة'", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("اللَّهُ أَكْبَرُ كَبِيرًا ، وَالْحَمْدُ لِلَّهِ كَثِيرًا ، وَسُبْحَانَ اللَّهِ بُكْرَةً وَأَصِيلاً.");
+    // Exact normalized token sequence from the captured iPad trace
+    // (dithar-voice-debug-1788643474727.json, 21:24:30.988-21:24:33.361):
+    // "بكرة" was recognized as "وبكره" — a coarticulation-style spurious
+    // leading و, not a different word — and the repetition was lost.
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "الله اكبر كبيرا والحمد لله كثيرا وسبحان الله وبكره واصيلا",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(1);
+  });
+
+  it("2. a simple mid-attempt case, target token has no leading و at all", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله بكرة واصيلا");
+    const r = m.processSegment({ segmentId: 1, text: "سبحان الله وبكرة واصيلا", isFinal: true });
+    expect(r.completions).toBe(1);
+  });
+
+  it("3. does not fire at the very start of an attempt (progress 0) — mirrors the dropped-و case's own cold-start guard", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("بكرة");
+    const r = m.processSegment({ segmentId: 1, text: "وبكرة", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("4. NEGATIVE: does not produce a false completion on the exact collision shape this tolerance is scoped to avoid (الله vs والله)", () => {
+    // The concrete collision that rules out a general/context-free
+    // normalization-layer version of this tolerance: "الله" and "والله"
+    // are genuinely different, adjacent target tokens (see item 10/13,
+    // "...الا الله والله اكبر"). This rule DOES still fire here — "والله"
+    // is accepted in place of the bare "الله" at that position, exactly as
+    // designed — but that only consumes the ONE spoken token for the ONE
+    // position currently expected; it never invents or duplicates content.
+    // The genuinely required "والله" immediately after is never separately
+    // supplied, so the attempt correctly fails to complete rather than
+    // silently succeeding by reusing the same word twice.
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("لا اله الا الله والله اكبر");
+    const r = m.processSegment({ segmentId: 1, text: "لا اله الا والله اكبر", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("5. NEGATIVE: does not weaken content validation — a genuinely missing later word still yields 0 even with an inserted و present", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله بكرة واصيلا عظيم");
+    // "عظيم" is entirely missing, not merely an inserted و on "بكرة".
+    const r = m.processSegment({ segmentId: 1, text: "سبحان الله وبكرة واصيلا", isFinal: true });
+    expect(r.completions).toBe(0);
+  });
+
+  it("6. rapid repeated completion via inserted clitic — exactly one count per genuine repetition", () => {
+    const m = new VoiceTasbeehMatcher();
+    m.setTarget("سبحان الله بكرة واصيلا");
+    const r = m.processSegment({
+      segmentId: 1,
+      text: "سبحان الله وبكرة واصيلا سبحان الله وبكرة واصيلا",
+      isFinal: true,
+    });
+    expect(r.completions).toBe(2);
   });
 });

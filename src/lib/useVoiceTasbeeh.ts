@@ -58,7 +58,18 @@ export type VoiceTasbeehStatus = "idle" | "requesting" | "listening" | "denied" 
 interface UseVoiceTasbeehOptions {
   enabled: boolean;
   targetPhrase: string;
-  onMatch: (times: number) => void;
+  // `matchedTargetPhrase` is the target the completion was ACTUALLY matched
+  // against — read from inside this hook at the moment the matcher produced
+  // it, never inferred by the caller from its own current state. This is
+  // deliberately NOT always equal to the `targetPhrase` most recently passed
+  // in: a target switch's superseded native instance can still deliver one
+  // last, fully valid trailing completion (see the stop()-based lifecycle
+  // fix below) for the OLD target after the caller has already moved its
+  // own selection on to a new one. Callers MUST credit whatever this
+  // parameter says, not whatever they currently consider "selected" —
+  // otherwise a real, correctly-isolated completion for the old target can
+  // end up credited to the new one.
+  onMatch: (times: number, matchedTargetPhrase: string) => void;
   // Called when the 60-second inactivity watchdog fires, so the host can
   // flip its own enabled/toggle state off — the feature must genuinely
   // return to OFF, not just an internal status flag, requiring a fresh,
@@ -142,6 +153,23 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
     targetPhraseRef.current = targetPhrase;
   }, [targetPhrase]);
 
+  // The target the MATCHER actually currently has loaded — i.e. whatever
+  // was last passed to `matcherRef.current!.setTarget(...)`. Deliberately
+  // NOT the same thing as `targetPhraseRef` above: that mirrors the PROP
+  // (the caller's current selection) the instant it changes, via a
+  // `targetPhrase`-dependent effect — exactly the value a target switch's
+  // trailing completion must NOT be attributed to, since the prop can (and
+  // during a switch, always does) change before the superseded native
+  // instance's own last result has been processed. This ref instead only
+  // ever moves at the two places `setTarget` itself is called (immediately
+  // below, and inside `apply` further down), so it always reflects reality
+  // one matching call behind the prop when a switch is in flight — which is
+  // exactly the OLD target, for exactly as long as the old instance can
+  // still legitimately report against it. Read once, synchronously, at the
+  // moment `onMatch` is invoked inside `onresult` — nothing else can call
+  // `setTarget` in between, since JS execution of that handler is atomic.
+  const activeTargetPhraseRef = useRef(targetPhrase);
+
   // DEV-ONLY bookkeeping, purely for log context — never read by any
   // matching/lifecycle decision.
   const instanceIdRef = useRef(0);
@@ -172,7 +200,14 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
   // native recognition object. Null whenever no recognizer is running
   // (not yet enabled, or torn down) — calling it is then simply a no-op,
   // which is exactly correct: nothing to refresh.
-  const refreshRecognitionRef = useRef<((debugReason?: string) => void) | null>(null);
+  const refreshRecognitionRef = useRef<((newTargetPhrase: string) => void) | null>(null);
+  // Set only while a target-switch refresh is waiting for the SUPERSEDED
+  // native instance to finish gracefully (see refreshRecognitionRef below):
+  // holds the continuation that applies the new target and starts the
+  // fresh instance, invoked from that old instance's own onend once it
+  // actually stops (never a fixed delay — purely event-driven). Null the
+  // rest of the time, including whenever no target switch is in flight.
+  const pendingTargetSwitchRef = useRef<(() => void) | null>(null);
 
   // Kept current via refs rather than effect dependencies, so a caller
   // passing a fresh onMatch/onIdleTimeout closure every render never
@@ -186,31 +221,30 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
     onIdleTimeoutRef.current = onIdleTimeout;
   }, [onIdleTimeout]);
 
-  // Target switching establishes the new logical matching boundary FIRST
-  // (setTarget — see VoiceTasbeehMatcher.setTarget and, for the
-  // fallback-replay case specifically, its postSwitchFloor/
-  // preSwitchSnapshot mechanism), THEN transparently refreshes the native
-  // recognizer for whatever target is now active. The refresh exists
-  // because keeping the SAME long-running native session across a switch
-  // has been observed, on a real device, to leave the recognizer silent
-  // for several seconds with no onresult events at all and no error —
-  // the user would otherwise have to wait out however long that
-  // particular session happens to take before their first word of the
-  // NEW dhikr is even heard. This is never a user-visible restart: status
-  // stays "listening" (refreshRecognitionRef's own startInstance call
-  // re-derives it from scratch, same as any transparent restart already
-  // does), no UI change, and any late event from the SUPERSEDED instance
-  // is inert by construction (every recognition.onstart/onresult/onerror/
-  // onend handler already guards on `recognitionRef.current !== recognition`
-  // — a plain object-identity check that a brand-new instance
-  // automatically defeats, with no separate generation counter needed).
-  // refreshRecognitionRef is null until the OTHER (enabled-driven) effect
-  // has actually started a first recognizer, so the very first target
-  // application (before anything is listening yet) safely no-ops here.
+  // Target switching refreshes the native recognizer for whatever target
+  // is now active (see refreshRecognitionRef below for why a refresh
+  // happens at all). The new logical matching boundary (setTarget — see
+  // VoiceTasbeehMatcher.setTarget and, for the fallback-replay case
+  // specifically, its postSwitchFloor/preSwitchSnapshot mechanism) is
+  // applied by that same refresh, NOT here directly — see refreshRecognitionRef's
+  // own comment for why that matters (it must stay behind, not ahead of,
+  // whatever the superseded instance still has left to report). This is
+  // never a user-visible restart: status stays "listening"
+  // (refreshRecognitionRef's own startInstance call re-derives it from
+  // scratch, same as any transparent restart already does), no UI change,
+  // and any late event from the SUPERSEDED instance that arrives after ITS
+  // OWN teardown is inert by construction (every recognition.onstart/
+  // onresult/onerror/onend handler already guards on
+  // `recognitionRef.current !== recognition` — a plain object-identity
+  // check that a brand-new instance automatically defeats, with no
+  // separate generation counter needed). refreshRecognitionRef is null
+  // until the OTHER (enabled-driven) effect has actually started a first
+  // recognizer, so the very first target application (before anything is
+  // listening yet) safely no-ops here.
   useEffect(() => {
     if (isDevBuild) {
       const recognition = recognitionRef.current as unknown as { __ditharInstanceId?: number } | null;
-      emitVoiceDebug("target-switch:before", {
+      emitVoiceDebug("target-switch:requested", {
         oldTargetPhrase: previousTargetPhraseRef.current,
         newTargetPhrase: targetPhrase,
         snapshotBefore: matcherRef.current!.getDebugSnapshot(),
@@ -218,15 +252,25 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
         lastResultIndex: lastResultIndexRef.current,
       });
     }
-    matcherRef.current!.setTarget(targetPhrase);
-    if (isDevBuild) {
-      emitVoiceDebug("target-switch:after", {
-        newTargetPhrase: targetPhrase,
-        snapshotAfter: matcherRef.current!.getDebugSnapshot(),
-      });
-      previousTargetPhraseRef.current = targetPhrase;
+    if (refreshRecognitionRef.current) {
+      refreshRecognitionRef.current(targetPhrase);
+    } else {
+      // No recognizer subsystem running yet to hand off gracefully — this
+      // is the very first target application, on initial mount, before
+      // the enabled-driven effect below has populated refreshRecognitionRef.
+      // There is nothing to preserve/stop, so apply directly; the
+      // enabled-driven effect's own startInstance("initial") call (later
+      // in this same commit) picks up whatever target is already set.
+      matcherRef.current!.setTarget(targetPhrase);
+      activeTargetPhraseRef.current = targetPhrase;
+      if (isDevBuild) {
+        emitVoiceDebug("target-switch:applied", {
+          newTargetPhrase: targetPhrase,
+          snapshotAfter: matcherRef.current!.getDebugSnapshot(),
+        });
+        previousTargetPhraseRef.current = targetPhrase;
+      }
     }
-    refreshRecognitionRef.current?.("refresh-after-target-switch");
   }, [targetPhrase]);
 
   useEffect(() => {
@@ -237,6 +281,10 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
       recognitionRef.current?.abort();
       recognitionRef.current = null;
       refreshRecognitionRef.current = null;
+      // A pending target-switch continuation (see refreshRecognitionRef)
+      // would otherwise survive this teardown and wrongly fire on some
+      // unrelated future instance's onend after a later re-enable.
+      pendingTargetSwitchRef.current = null;
       matcherRef.current!.resetAll();
       setStatus("idle");
       if (isDevBuild) emitVoiceDebug("status", { status: "idle", reason: "disabled" });
@@ -346,7 +394,13 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
           lastGenuineActivityAtRef.current = Date.now();
         }
         if (totalCompletions > 0) {
-          onMatchRef.current(totalCompletions);
+          // activeTargetPhraseRef, never targetPhraseRef/the `targetPhrase`
+          // prop: this must credit whatever target the matcher ACTUALLY had
+          // loaded for the processSegment calls above, which — during a
+          // target switch's trailing-completion window — is still the OLD
+          // target, even though the prop (and targetPhraseRef, and the
+          // caller's own "selected" state) may have already moved on.
+          onMatchRef.current(totalCompletions, activeTargetPhraseRef.current);
           setJustMatched(true);
           if (justMatchedTimerRef.current !== null) {
             window.clearTimeout(justMatchedTimerRef.current);
@@ -392,6 +446,22 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
 
       recognition.onend = () => {
         if (recognitionRef.current !== recognition) return;
+        // A target-switch refresh is waiting on THIS instance specifically
+        // (see refreshRecognitionRef below) — stop() has now finished
+        // flushing whatever was already captured (any trailing onresult
+        // for it has already fired above, using the OLD target, before
+        // this), so it's safe to apply the new target and start fresh.
+        // Checked before intentionalStopRef below because a target-switch
+        // stop is a distinct case from a plain intentional full stop: it
+        // must restart (for the new target), not just tear down.
+        const pending = pendingTargetSwitchRef.current;
+        if (pending !== null) {
+          pendingTargetSwitchRef.current = null;
+          recognitionRef.current = null;
+          if (isDevBuild) emitVoiceDebug("onend", { instanceId, intentionalStop: true, willRestart: true, reason: "target-switch-refresh" });
+          pending();
+          return;
+        }
         if (intentionalStopRef.current) {
           if (isDevBuild) emitVoiceDebug("onend", { instanceId, intentionalStop: true, willRestart: false });
           recognitionRef.current = null;
@@ -415,32 +485,69 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
     startInstance("initial");
 
     // See refreshRecognitionRef's own declaration above — the ONLY caller
-    // is the separate target-switching effect, which invokes this AFTER
-    // matcherRef.current!.setTarget(targetPhrase) has already run, so the
-    // new logical boundary is always established before the old native
-    // session is torn down. Marking the old instance's stop as
-    // intentional (so its onend takes the "no restart" branch — see
-    // above) and then immediately starting a fresh one via the SAME
-    // startInstance entry point used for every other restart means the
-    // new instance's own onstart naturally calls
-    // matcherRef.current!.resetSession() exactly as it already does for
-    // any restart, giving the new target genuinely clean transport state
-    // (liveSegment/committedIndices) with no extra code needed for that.
-    // intentionalStopRef is flipped back to false right after issuing the
-    // abort (before startInstance runs) so the freshly-started instance's
-    // own eventual onend is still treated as an ordinary transparent
-    // restart, not swallowed as if it were the intentional one.
-    refreshRecognitionRef.current = (debugReason) => {
-      if (isDevBuild) emitVoiceDebug("abort", { reason: "target-switch-refresh" });
-      intentionalStopRef.current = true;
-      isListeningRef.current = false;
-      recognitionRef.current?.abort();
-      intentionalStopRef.current = false;
+    // is the separate target-switching effect. Uses recognition.stop(),
+    // never abort(): abort() cancels immediately and discards whatever
+    // audio the browser had already captured for the CURRENT, not-yet-
+    // finalized recitation but hadn't transcribed yet — on a real device,
+    // that silently ate a genuine, already-spoken final repetition right
+    // at the moment the user switched dhikr (proven on a real-device
+    // capture — see voice-tasbeeh-validation-report.md). stop() instead
+    // lets the engine finish processing already-captured audio (firing
+    // any trailing onresult first) before onend fires.
+    //
+    // That trailing onresult, if it comes, MUST be scored against the OLD
+    // target, never the new one — so, unlike before, setTarget is
+    // deliberately NOT called here up front. It's deferred into `apply`
+    // below, which only runs from the superseded instance's OWN onend
+    // handler (see above) once that instance has fully finished — by
+    // construction, any onresult this instance still fires arrives before
+    // that, while the matcher still has the OLD target loaded, so it's
+    // matched and counted exactly like any other mid-recitation result.
+    // Only once `apply` actually runs does the new logical boundary get
+    // established and the fresh native session start — mirroring the
+    // ordering the original synchronous version had, just resolved by an
+    // event instead of happening unconditionally in the same tick.
+    //
+    // A rapid second target switch before the first has finished simply
+    // overwrites pendingTargetSwitchRef with the newer closure (`apply`
+    // captures its own `newTargetPhrase`) — the superseded instance's
+    // eventual onend then applies whichever target is newest, which is
+    // exactly correct: the intermediate target was already abandoned by
+    // the user's own next switch.
+    refreshRecognitionRef.current = (newTargetPhrase) => {
       // A target switch is itself genuine user engagement — it must
       // never be allowed to silently eat into the 60s inactivity budget
       // while the fresh instance's own first result is still pending.
       lastGenuineActivityAtRef.current = Date.now();
-      startInstance(debugReason ?? "refresh-after-target-switch");
+
+      const apply = () => {
+        matcherRef.current!.setTarget(newTargetPhrase);
+        activeTargetPhraseRef.current = newTargetPhrase;
+        if (isDevBuild) {
+          emitVoiceDebug("target-switch:applied", {
+            newTargetPhrase,
+            snapshotAfter: matcherRef.current!.getDebugSnapshot(),
+          });
+          previousTargetPhraseRef.current = newTargetPhrase;
+        }
+        intentionalStopRef.current = false;
+        startInstance("refresh-after-target-switch");
+      };
+
+      if (recognitionRef.current === null) {
+        // Nothing currently listening (e.g. the very first target
+        // application before startup finished) — nothing to gracefully
+        // stop, so apply immediately, exactly as the old synchronous
+        // version did.
+        apply();
+        return;
+      }
+
+      if (isDevBuild) emitVoiceDebug("stop", { reason: "target-switch-refresh" });
+      pendingTargetSwitchRef.current = apply;
+      intentionalStopRef.current = true;
+      isListeningRef.current = false;
+      recognitionRef.current.stop();
     };
 
     // Two independent signals, one shared interval. Order matters: a

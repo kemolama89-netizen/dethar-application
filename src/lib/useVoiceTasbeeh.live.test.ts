@@ -41,13 +41,35 @@ class FakeSpeechRecognition extends EventTarget {
 
   started = false;
   aborted = false;
+  stopped = false;
+  // Test-only: a final result this instance should deliver as part of its
+  // OWN stop() — modeling the real-world behavior the stop()-based target-
+  // switch fix depends on: stop() lets the engine finish processing
+  // already-captured audio (firing a trailing onresult) BEFORE onend, unlike
+  // abort()'s immediate, lossy teardown. Armed via queueFinalResultOnStop()
+  // below; consumed (fired, then cleared) the moment stop() runs. Never
+  // touched by abort() — an aborted instance never gets this chance, by
+  // design.
+  private queuedFinalResult: string | null = null;
 
   start() {
     this.started = true;
     FakeSpeechRecognition.instances.push(this);
   }
 
+  // Arms a final result to be delivered synchronously by THIS instance's
+  // own next stop() call, before its onend fires — see queuedFinalResult.
+  queueFinalResultOnStop(text: string) {
+    this.queuedFinalResult = text;
+  }
+
   stop() {
+    this.stopped = true;
+    if (this.queuedFinalResult !== null) {
+      const text = this.queuedFinalResult;
+      this.queuedFinalResult = null;
+      this.fireResult(0, text, true);
+    }
     this.finish();
   }
 
@@ -96,14 +118,21 @@ class FakeSpeechRecognition extends EventTarget {
 
 let latestResult: { status: VoiceTasbeehStatus; justMatched: boolean } | null = null;
 let matchLog: number[] = [];
+// Records exactly what onMatch's own `matchedTargetPhrase` argument said,
+// alongside `times` — kept separate from `matchLog` (which only ever
+// records `times`, unchanged) so every existing `matchLog` assertion in
+// this file stays valid untouched; the credit-attribution regression tests
+// below use this one instead.
+let matchCreditLog: { times: number; targetPhrase: string }[] = [];
 let idleTimeoutCount = 0;
 
 function Harness({ enabled, targetPhrase }: { enabled: boolean; targetPhrase: string }) {
   const result = useVoiceTasbeeh({
     enabled,
     targetPhrase,
-    onMatch: (times) => {
+    onMatch: (times, matchedTargetPhrase) => {
       matchLog.push(times);
+      matchCreditLog.push({ times, targetPhrase: matchedTargetPhrase });
     },
     onIdleTimeout: () => {
       idleTimeoutCount += 1;
@@ -139,6 +168,7 @@ async function mount(props: { enabled: boolean; targetPhrase: string }) {
 beforeEach(() => {
   FakeSpeechRecognition.reset();
   matchLog = [];
+  matchCreditLog = [];
   idleTimeoutCount = 0;
   latestResult = null;
   (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = FakeSpeechRecognition;
@@ -181,11 +211,14 @@ describe("useVoiceTasbeeh lifecycle", () => {
     });
     await rerender({ enabled: true, targetPhrase: "الله اكبر" });
     // A brand-new native instance for the new target — the old one is
-    // aborted (superseded), not reused; the session itself never
-    // surfaces this as a user-visible restart (no UI change, no separate
-    // "idle" status in between).
+    // stopped (superseded), not aborted and not reused: stop() (rather
+    // than abort()) lets it finish processing whatever audio it already
+    // captured before the switch, instead of discarding it. The session
+    // itself never surfaces this as a user-visible restart (no UI change,
+    // no separate "idle" status in between).
     expect(FakeSpeechRecognition.instances.length).toBe(2);
-    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
+    expect(FakeSpeechRecognition.instances[0].stopped).toBe(true);
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(false);
     await act(async () => {
       FakeSpeechRecognition.instances[1].fireStart();
     });
@@ -494,7 +527,8 @@ describe("useVoiceTasbeeh recognizer-health watchdog (separate from the 60s user
     });
     await rerender({ enabled: true, targetPhrase: "الله اكبر" });
     expect(FakeSpeechRecognition.instances.length).toBe(2);
-    expect(FakeSpeechRecognition.instances[0].aborted).toBe(true);
+    expect(FakeSpeechRecognition.instances[0].stopped).toBe(true);
+    expect(FakeSpeechRecognition.instances[0].aborted).toBe(false);
     await act(async () => {
       FakeSpeechRecognition.instances[1].fireStart();
     });
@@ -600,6 +634,91 @@ describe("useVoiceTasbeeh recognizer-health watchdog (separate from the 60s user
 
     expect(FakeSpeechRecognition.instances.length).toBe(4);
     expect(idleTimeoutCount).toBe(0); // never escalated to a full shutdown
+    await unmount();
+  });
+});
+
+// Regression coverage for the target-switch completion-CREDITING bug (as
+// opposed to the earlier target-switch TRUNCATION bug these same
+// mechanics were originally built to fix): a real, correctly-isolated
+// trailing completion for the OLD target — delivered by its own stop(),
+// exactly as designed — must be reported with the OLD target's own
+// phrase, never whatever target the caller has most recently requested.
+// `matchCreditLog` (unlike `matchLog`) records onMatch's own
+// `matchedTargetPhrase` argument, which is what a consumer (e.g.
+// TasbeehScreen) is expected to key its credit off instead of its own
+// current selection.
+describe("target-switch completion crediting (must credit the target the matcher actually matched, never whatever the caller currently considers selected)", () => {
+  it("A. a trailing completion delivered by the OLD instance's own stop() is credited to the OLD target — the NEW target is untouched", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    // Arms the OLD instance to deliver one last, fully valid completion of
+    // the OLD target as part of its OWN stop() — before onend — exactly
+    // mirroring the real-device trace that motivated this fix (dhikr #0's
+    // 5th "سبحان الله" completed right as the switch to dhikr #1 began).
+    FakeSpeechRecognition.instances[0].queueFinalResultOnStop("سبحان الله");
+    await rerender({ enabled: true, targetPhrase: "الله اكبر" });
+
+    expect(matchCreditLog).toEqual([{ times: 1, targetPhrase: "سبحان الله" }]);
+
+    // The NEW target's own count must not have moved — nothing has been
+    // said for it yet.
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    expect(matchCreditLog).toEqual([{ times: 1, targetPhrase: "سبحان الله" }]);
+    await unmount();
+  });
+
+  it("B. an ordinary completion while staying on the same target credits that same target — existing behavior unchanged", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله", true);
+    });
+    expect(matchCreditLog).toEqual([{ times: 1, targetPhrase: "سبحان الله" }]);
+    await unmount();
+  });
+
+  it("C. multiple completions produced by a single result/replay are all credited to the one target that produced them — exactly-once unchanged", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireResult(0, "سبحان الله سبحان الله سبحان الله", true);
+    });
+    expect(matchCreditLog).toEqual([{ times: 3, targetPhrase: "سبحان الله" }]);
+    await unmount();
+  });
+
+  it("D. rapid consecutive target switches never let a trailing completion cross into a non-adjacent target", async () => {
+    const { rerender, unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+    await rerender({ enabled: true, targetPhrase: "الله اكبر" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+    });
+    // Arm the SECOND target's own trailing completion, then immediately
+    // switch to a THIRD target before it's ever delivered — it must land
+    // on the second target, never the third.
+    FakeSpeechRecognition.instances[1].queueFinalResultOnStop("الله اكبر");
+    await rerender({ enabled: true, targetPhrase: "أستغفر الله" });
+
+    expect(matchCreditLog).toEqual([{ times: 1, targetPhrase: "الله اكبر" }]);
+    expect(FakeSpeechRecognition.instances.length).toBe(3);
+
+    // The third target starts clean.
+    await act(async () => {
+      FakeSpeechRecognition.instances[2].fireStart();
+    });
+    expect(matchCreditLog).toEqual([{ times: 1, targetPhrase: "الله اكبر" }]);
     await unmount();
   });
 });

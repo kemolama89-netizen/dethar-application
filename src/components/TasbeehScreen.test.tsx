@@ -6,7 +6,7 @@
 // installed and these tests don't need one) under the same provider
 // nesting App.tsx itself uses, so useLanguage()/useTheme()/usePalette()
 // all resolve normally.
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { TasbeehScreen } from "./TasbeehScreen";
@@ -195,6 +195,113 @@ describe("TasbeehScreen — Reset All", () => {
     // The target preference (not "progress/counts") is untouched.
     expect(targetInput.value).toBe("33");
     expect(displayedCount(container)).toBe("0");
+    await unmount();
+  });
+});
+
+// Minimal fake SpeechRecognition — just enough to drive one target-switch
+// completion-crediting scenario end-to-end through the REAL useVoiceTasbeeh
+// hook and the REAL TasbeehScreen consumer. Deliberately not shared with
+// useVoiceTasbeeh.live.test.ts's own (more elaborate) fixture — a much
+// smaller, purpose-built one for this file's own narrower need.
+interface FakeVoiceResult extends Array<{ transcript: string }> {
+  isFinal: boolean;
+}
+class FakeVoiceRecognition extends EventTarget {
+  lang = "";
+  continuous = false;
+  interimResults = false;
+  maxAlternatives = 1;
+  onstart: ((ev: Event) => void) | null = null;
+  onend: ((ev: Event) => void) | null = null;
+  onresult: ((ev: unknown) => void) | null = null;
+  onerror: ((ev: unknown) => void) | null = null;
+  started = false;
+  private queuedFinalResult: string | null = null;
+
+  start() {
+    this.started = true;
+    FakeVoiceRecognition.instances.push(this);
+  }
+
+  // Arms a final result this instance delivers as part of its OWN stop() —
+  // before onend — mirroring the real stop()-based target-switch fix this
+  // scenario exercises (a trailing, fully valid completion for the OLD
+  // target, delivered right as the switch to a new one begins).
+  queueFinalResultOnStop(text: string) {
+    this.queuedFinalResult = text;
+  }
+
+  stop() {
+    if (this.queuedFinalResult !== null) {
+      const text = this.queuedFinalResult;
+      this.queuedFinalResult = null;
+      const results: FakeVoiceResult[] = [Object.assign([{ transcript: text }], { isFinal: true })];
+      this.onresult?.({ resultIndex: 0, results });
+    }
+    this.finish();
+  }
+
+  abort() {
+    this.finish();
+  }
+
+  private finish() {
+    if (!this.started) return;
+    this.started = false;
+    this.onend?.(new Event("end"));
+  }
+
+  fireStart() {
+    this.onstart?.(new Event("start"));
+  }
+
+  static instances: FakeVoiceRecognition[] = [];
+  static reset() {
+    FakeVoiceRecognition.instances = [];
+  }
+}
+
+describe("TasbeehScreen — Voice Tasbeeh completion crediting (target-switch trailing completion)", () => {
+  beforeEach(() => {
+    FakeVoiceRecognition.reset();
+    (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = FakeVoiceRecognition;
+  });
+
+  afterEach(() => {
+    delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
+  });
+
+  it("E. a trailing completion delivered while switching dhikr is credited to the OLD dhikr's persisted count, leaves the NEW dhikr's count untouched, and preserves every other dhikr's existing saved count", async () => {
+    const oldItem = dhikrItems[0];
+    const newItem = dhikrItems[1];
+    const untouchedItem = dhikrItems[2];
+    saveTasbeehCounters({ [oldItem.id]: 3, [untouchedItem.id]: 7 });
+
+    const { container, unmount } = await mountTasbeehScreen();
+    // oldItem is selected by default (dhikrItems[0]).
+    await click(findButtonByText(container, t.voiceTasbeeh));
+    await act(async () => {
+      FakeVoiceRecognition.instances[0].fireStart();
+    });
+    // A fully valid trailing completion of the OLD (currently selected)
+    // dhikr, armed to be delivered by ITS OWN stop() — i.e. exactly when
+    // the upcoming switch tears it down.
+    FakeVoiceRecognition.instances[0].queueFinalResultOnStop(oldItem.dhikr_ar);
+
+    // Switch to a different dhikr BEFORE the trailing completion above has
+    // been delivered — this is what triggers instance[0].stop().
+    await selectDhikr(container, newItem.dhikr_ar);
+
+    const counters = loadTasbeehCounters();
+    expect(counters[oldItem.id]).toBe(4); // 3 + the trailing completion
+    expect(counters[newItem.id] ?? 0).toBe(0); // must NOT have inherited the +1
+    expect(counters[untouchedItem.id]).toBe(7); // unrelated saved count, untouched
+
+    // The screen is now showing the NEW dhikr — its displayed count must
+    // be 0, not a premature 1 from the old dhikr's trailing completion.
+    expect(displayedCount(container)).toBe("0");
+
     await unmount();
   });
 });

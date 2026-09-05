@@ -374,31 +374,51 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // rather than the render's `counts` closure, and deliberately bypasses
   // the manual "calm counting" pacing gate: that gate paces deliberate
   // TAPPING, not natural recited speech, and every `times` passed here
-  // already represents a genuinely completed repetition of the currently
-  // selected dhikr (the matching engine never emits a count for a partial
-  // or different dhikr — see voiceTasbeehMatch.ts), so there is nothing
-  // speculative left to correct or roll back once this runs.
-  function applyVoiceRepetitions(times: number) {
+  // already represents a genuinely completed repetition of `matchedTargetPhrase`
+  // (the matching engine never emits a count for a partial or different
+  // dhikr — see voiceTasbeehMatch.ts), so there is nothing speculative
+  // left to correct or roll back once this runs.
+  //
+  // CREDITING: deliberately resolved from `matchedTargetPhrase` — the
+  // target useVoiceTasbeeh's matcher actually matched this completion
+  // against — never from `selectedId`/`selected`. A target switch's
+  // superseded native recognizer instance can still deliver one last,
+  // fully valid trailing completion (see useVoiceTasbeeh's own stop()-based
+  // lifecycle fix) for the OLD dhikr AFTER the user has already tapped a
+  // new one, i.e. after `selectedId` has already moved on. Crediting via
+  // `selectedId` at that point would silently add the old dhikr's last
+  // repetition to the NEW dhikr's count instead — a real completion,
+  // landing on the wrong entry. Every dhikr's `dhikr_ar` is unique (see
+  // the library audit in voiceTasbeehMatch.test.ts), so resolving the
+  // phrase back to its own item is unambiguous.
+  function applyVoiceRepetitions(times: number, matchedTargetPhrase: string) {
     if (times <= 0) return;
+    const creditedItem = dhikrItems.find((d) => d.dhikr_ar === matchedTargetPhrase);
+    // Defensive only — useVoiceTasbeeh always echoes back a phrase it was
+    // itself given, which always originates from a real dhikrItems entry.
+    if (!creditedItem) return;
+    const creditedId = creditedItem.id;
+    const creditedTargetInput = targetInputs[creditedId] ?? "";
+    const creditedTargetNum = /^[1-9]\d*$/.test(creditedTargetInput) ? Number(creditedTargetInput) : null;
 
     setCounts((prev) => {
-      const nextCount = (prev[selectedId] ?? 0) + times;
-      const updated = { ...prev, [selectedId]: nextCount };
+      const nextCount = (prev[creditedId] ?? 0) + times;
+      const updated = { ...prev, [creditedId]: nextCount };
       saveTasbeehCounters(updated);
-      if (targetNum !== null && nextCount >= targetNum && celebratedFor[selectedId] !== targetNum) {
-        setCelebratedFor((prevCel) => ({ ...prevCel, [selectedId]: targetNum }));
+      if (creditedTargetNum !== null && nextCount >= creditedTargetNum && celebratedFor[creditedId] !== creditedTargetNum) {
+        setCelebratedFor((prevCel) => ({ ...prevCel, [creditedId]: creditedTargetNum }));
         spawnCelebration();
       }
       return updated;
     });
 
     for (let rep = 0; rep < times; rep++) {
-      recordTasbeehRepetition(selectedId);
+      recordTasbeehRepetition(creditedId);
       const id = bubbleIdRef.current++;
       const drift = Math.round(Math.random() * 48 - 24);
       const rotate = Math.round(Math.random() * 16 - 8);
       const size = Math.round(52 + Math.random() * 20);
-      setBubbles((prev) => [...prev.slice(-(MAX_VISIBLE_BUBBLES - 1)), { id, text: selected!.dhikr_ar, drift, rotate, size }]);
+      setBubbles((prev) => [...prev.slice(-(MAX_VISIBLE_BUBBLES - 1)), { id, text: matchedTargetPhrase, drift, rotate, size }]);
       setTimeout(() => {
         setBubbles((prev) => prev.filter((b) => b.id !== id));
       }, BUBBLE_LIFETIME_MS);
