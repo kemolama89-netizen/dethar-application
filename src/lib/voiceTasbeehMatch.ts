@@ -308,7 +308,8 @@ function replay(
       // began on pre-switch content must never be allowed to satisfy the
       // CURRENT target, no matter how many legitimately post-switch
       // tokens it went on to consume afterward (see computePreSwitchFloor
-      // and LiveSegmentState.preSwitchSnapshot) — so a tainted completion
+      // and VoiceTasbeehMatcher's own preSwitchSnapshot field below) — so a
+      // tainted completion
       // is silently dropped here rather than pushed. Progress still resets
       // normally either way: dropping a tainted completion must never
       // corrupt the walk's ability to recognize the NEXT, genuinely
@@ -337,68 +338,49 @@ function replay(
   return { endProgress: progress, completions, tokenOutcomes };
 }
 
-interface LiveSegmentState {
-  id: number;
-  // The actual tokens (content, not merely a count) of this segment
-  // already spent on an EMITTED completion or excluded by a target switch
-  // — permanently excluded from future replay of this segment. Verified
-  // against the live transcript's own current tokens on every event (see
-  // resolveReplayWindow below) rather than trusted as a fixed offset: real
-  // SpeechRecognition interim results can revise/re-segment an already-
-  // reported span (observed on the real device capture shrinking a single
-  // still-live result from 37 tokens to 1), so a plain token-COUNT offset
-  // can silently misalign and either drop genuinely new post-switch/post-
-  // completion speech or evaluate it against the wrong slice. Content-based
-  // verification makes that misalignment self-correcting instead.
-  resolvedPrefix: string[];
-  // The full tokenization of this segment's text as of the last event —
-  // used to (a) detect genuinely new content for the inactivity-watchdog
-  // signal, never for counting, and (b) let a target switch lock out
-  // "everything observed so far" as real content (see setTarget).
-  lastTokens: string[];
-  // How many completions have already been returned to the caller for the
-  // CURRENT target, within this live segment (reset to 0 in setTarget —
-  // see there). This is the authoritative "already delivered" boundary
-  // for the resolveReplayWindow FALLBACK case: when a late ASR revision
-  // changes a token inside the already-locked resolvedPrefix, replay() is
-  // re-run over the segment's ENTIRE current tokens from progress 0 (see
-  // ReplayWindow's own doc comment) — which necessarily re-derives every
-  // completion ever found in that span, including ones an earlier event
-  // already reported. Without this counter that structurally-correct
-  // re-derivation would be handed to the caller a second time, double-
-  // counting a repetition the user only said once (proven on a real
-  // device capture: 3 genuine completions delivered via interim events,
-  // then re-derived and re-reported a second time when the final event's
-  // fallback replay ran). It never influences matching itself — replay()'s
-  // strict rules are completely untouched — only how many of a replay
-  // pass's completions are genuinely new versus already-reported.
-  deliveredCompletionCount: number;
-  // Frozen snapshot of lastTokens taken at the moment of the most recent
-  // target switch (see setTarget) — empty for a brand-new live segment
-  // (a segment that's never been seen before is chronologically all
-  // post-switch by construction, so there's nothing to snapshot). Used
-  // ONLY via computePreSwitchFloor below, every event, to derive how much
-  // of the CURRENT tokens still plausibly represents that pre-switch
-  // content — a plain stored INDEX would not survive a later revision
-  // reshaping/re-segmenting that exact span (proven necessary by this
-  // file's own "does not lose new post-switch speech when a revision
-  // shrinks the pre-switch prefix's own token count" regression test —
-  // an index-based first attempt at this exact guard failed it). Storing
-  // the content itself and re-deriving the boundary fresh each time,
-  // the same way resolveReplayWindow re-verifies resolvedPrefix, makes a
-  // revision of the pre-switch span self-correcting instead of stale.
-  // resolvedPrefix's own exclusion already keeps pre-switch content out
-  // of the ORDINARY (non-fallback) replay path; this closes the SAME
-  // guarantee for the FALLBACK path (see ReplayWindow), which replays
-  // the segment's entire token history from scratch and would otherwise
-  // have no way to tell pre-switch tokens apart from genuinely new ones
-  // (proven exposure on a real device capture: a fallback replay
-  // re-walked content from three targets ago against the current one —
-  // it happened to find no false completion only because the words
-  // didn't spell out the current target, not because anything prevented
-  // it structurally).
-  preSwitchSnapshot: string[];
-}
+// CROSS-SEGMENT DURABILITY (the exactly-once fix): resolvedPrefix,
+// deliveredCompletionCount, and preSwitchSnapshot below all live directly on
+// VoiceTasbeehMatcher itself — scoped to the CURRENT TARGET *and current
+// native session* (see resetSession below), exactly like matchProgress
+// already was scoped to the current target — rather than nested inside a
+// per-segmentId object that got discarded the instant `update.segmentId`
+// changed. That per-segmentId reset was the actual bug: a real device
+// capture proved a SpeechRecognition implementation that re-delivers
+// already-finalized content under a BRAND NEW, never-reused segmentId on
+// almost every event, all within one unbroken native session (e.g.
+// segmentId 3, 4, and 5 all reporting the byte-identical final text
+// "سبحان الله" in a row, with no restart between them — not three
+// repetitions, one). Because the old per-segment object was rebuilt from
+// scratch on every new id, each of those re-deliveries looked like fresh,
+// never-before-seen text and was replayed — and credited — all over again
+// (a real session: ~7 genuine repetitions produced ~65 credited
+// completions). Moving this state onto the matcher itself makes the exact
+// same prefix-verify-then-replay-only-the-tail strategy that already worked
+// WITHIN one segment's own interim revisions (see resolveReplayWindow just
+// below) survive a segmentId change too, AS LONG AS the native session
+// hasn't changed — a new id, by itself, is no longer treated as proof of
+// new content; only content genuinely beyond resolvedPrefix ever reaches
+// replay(). Content-for-content matches (the same tolerant comparison used
+// everywhere else) against what THIS target has already had credited THIS
+// SESSION are excluded; the moment new text extends past that point (as any
+// additional genuine repetition must, in every real capture examined),
+// replay() sees it and scores it normally. A genuinely independent
+// repetition that happens to arrive byte-identical to already-credited text
+// with no session boundary and no extension in between is — by
+// construction — indistinguishable from the confirmed bug pattern from
+// content alone; resetSession (see below) is what keeps that from being a
+// permanent trap, by scoping the resend-memory to one native session rather
+// than the whole target's lifetime, so a genuinely new recognition burst
+// (a new native session) always gets a clean slate.
+//
+// A lightweight, genuinely PER-segmentId pair — currentSegmentId/lastTokens
+// below — remains: it exists only to compute `hadGenuineActivity` (has
+// speech continued since we last looked, for the 60s watchdog) freshly for
+// whatever native segment is presently arriving, which is a different
+// question from "how much of this target has been credited" and must reset
+// on a genuinely new segmentId — an actual new segment starting short (a
+// single fresh word) must never be compared against a much longer prior
+// segment's own length and wrongly read as "no new activity".
 
 // How much of `tokens`' own prefix still plausibly represents
 // `preSwitchSnapshot`'s content — the longest run, starting at index 0,
@@ -429,8 +411,8 @@ interface ReplayWindow {
   // already-resolved content. The cost: the fallback can re-derive
   // completions an earlier event already reported (proven on a real
   // device capture, not merely theoretical) — see
-  // LiveSegmentState.deliveredCompletionCount, which is what keeps that
-  // re-derivation from being reported to the caller twice.
+  // VoiceTasbeehMatcher's own deliveredCompletionCount field, which is what
+  // keeps that re-derivation from being reported to the caller twice.
   toReplay: string[];
   // How many of the segment's current tokens were excluded from toReplay
   // (0 in the fallback case) — needed to translate a local completion
@@ -493,12 +475,12 @@ export interface MatcherDebugEvent {
   completionLocalIndices: readonly number[];
   // How many of completionLocalIndices were actually returned to the
   // caller this event — differs from completionLocalIndices.length only
-  // when a fallback replay re-derived completions an earlier event for
-  // this same live segment already reported (see
-  // LiveSegmentState.deliveredCompletionCount).
+  // when a fallback replay re-derived completions an earlier event already
+  // reported for this same target (see VoiceTasbeehMatcher's own
+  // deliveredCompletionCount field).
   completionsEmitted: number;
   matchProgressAfter: number;
-  resolvedPrefixAfter: readonly string[] | null;
+  resolvedPrefixAfter: readonly string[];
   committed: boolean;
   hadGenuineActivity: boolean;
 }
@@ -509,12 +491,10 @@ export interface MatcherDebugEvent {
 export interface MatcherSnapshot {
   targetTokens: readonly string[];
   matchProgress: number;
-  liveSegment: {
-    id: number;
-    resolvedPrefix: readonly string[];
-    lastTokens: readonly string[];
-    preSwitchSnapshot: readonly string[];
-  } | null;
+  resolvedPrefix: readonly string[];
+  preSwitchSnapshot: readonly string[];
+  currentSegmentId: number | null;
+  lastTokens: readonly string[];
   committedSegmentCount: number;
 }
 
@@ -525,7 +505,18 @@ export interface MatcherSnapshot {
 export class VoiceTasbeehMatcher {
   private targetTokens: string[] = [];
   private matchProgress = 0;
-  private liveSegment: LiveSegmentState | null = null;
+  // Cross-segment, target-scoped durable state — see the large comment
+  // above this class for why these three exist and why they must NOT be
+  // reset merely because `SegmentUpdate.segmentId` changes (that reset was
+  // the exactly-once bug this file was rewritten to fix).
+  private resolvedPrefix: string[] = [];
+  private deliveredCompletionCount = 0;
+  private preSwitchSnapshot: string[] = [];
+  // Per-segmentId bookkeeping — see the same comment above for why this
+  // pair is deliberately kept SEPARATE from the three fields above and
+  // does reset on a genuinely new segmentId.
+  private currentSegmentId: number | null = null;
+  private lastTokens: string[] = [];
   private committedIndices = new Set<number>();
   private onDebug?: (event: MatcherDebugEvent) => void;
 
@@ -540,14 +531,10 @@ export class VoiceTasbeehMatcher {
     return {
       targetTokens: this.targetTokens,
       matchProgress: this.matchProgress,
-      liveSegment: this.liveSegment
-        ? {
-            id: this.liveSegment.id,
-            resolvedPrefix: this.liveSegment.resolvedPrefix,
-            lastTokens: this.liveSegment.lastTokens,
-            preSwitchSnapshot: this.liveSegment.preSwitchSnapshot,
-          }
-        : null,
+      resolvedPrefix: this.resolvedPrefix,
+      preSwitchSnapshot: this.preSwitchSnapshot,
+      currentSegmentId: this.currentSegmentId,
+      lastTokens: this.lastTokens,
       committedSegmentCount: this.committedIndices.size,
     };
   }
@@ -555,23 +542,27 @@ export class VoiceTasbeehMatcher {
   setTarget(phrase: string): void {
     this.targetTokens = tokenize(phrase);
     this.matchProgress = 0;
-    // liveSegment.id / committedIndices are deliberately left untouched:
+    // currentSegmentId/committedIndices are deliberately left untouched:
     // switching targets must not restart recognition or discard raw
-    // transport-dedup bookkeeping. But everything OBSERVED so far in the
-    // current live segment — even the part that never completed anything
-    // and was therefore still transient/replayable — must be locked out
-    // of any future replay right now. Without this, a still-in-progress
-    // (non-completing) attempt against the OLD target would remain in the
-    // replay window and could get silently re-walked against the NEW
-    // target on the next event, letting words spoken before the switch
-    // satisfy it. Extending resolvedPrefix to the segment's last observed
-    // tokens (real content, not just a count — see resolveReplayWindow)
-    // closes that gap: only content that arrives AFTER this point is ever
-    // evaluated against the new target, and that boundary self-corrects on
-    // the next event even if the browser later revises this exact span.
-    if (this.liveSegment !== null && this.liveSegment.lastTokens.length > this.liveSegment.resolvedPrefix.length) {
-      this.liveSegment.resolvedPrefix = this.liveSegment.lastTokens.slice();
-    }
+    // transport-dedup bookkeeping.
+    //
+    // resolvedPrefix is unconditionally CLEARED (not extended to the last
+    // observed tokens, as an earlier version of this method did) — it is
+    // scoped to "content already credited toward THIS target" (see the
+    // class-level comment above), and once the target itself changes that
+    // scope is gone: nothing has ever been credited toward the new target
+    // yet. Extending it to old content was actively harmful whenever the
+    // new target happens to share a literal leading prefix with words
+    // already credited to the OLD target (a real, adjacent pair in this
+    // app's own library: "سبحان الله" -> "سبحان الله وبحمده") — it made
+    // resolveReplayWindow's prefixIntact check falsely succeed against that
+    // stale content, silently excluding the new target's own first word(s)
+    // from ever being replayed against it at all. Isolation from
+    // genuinely pre-switch content is instead handled precisely, per-token,
+    // by preSwitchSnapshot/computePreSwitchFloor/attemptTainted below and
+    // in replay() — a still-open (non-completing) OLD attempt is already
+    // fully covered there and needs no help from resolvedPrefix.
+    this.resolvedPrefix = [];
     // deliveredCompletionCount is scoped to the CURRENT target (replay()
     // is always run against this.targetTokens, so a fallback replay's
     // completions count only ever reflects the target active right now) —
@@ -581,34 +572,77 @@ export class VoiceTasbeehMatcher {
     // target either wrongly suppress a genuinely new completion of the
     // NEW target (if the old count happened to be larger) or, more
     // rarely, let one slip through uncounted.
+    this.deliveredCompletionCount = 0;
     // preSwitchSnapshot captures the boundary itself: everything observed
-    // in this live segment UP TO this exact instant predates the target
-    // now active, so it may never, by itself, satisfy that target — see
-    // computePreSwitchFloor and LiveSegmentState's doc comment. Content
-    // (not a count), captured fresh at every switch, so a later revision
-    // that reshapes this exact span is self-correcting rather than stale.
-    if (this.liveSegment !== null) {
-      this.liveSegment.deliveredCompletionCount = 0;
-      this.liveSegment.preSwitchSnapshot = this.liveSegment.lastTokens.slice();
-    }
+    // UP TO this exact instant predates the target now active, so it may
+    // never, by itself, satisfy that target — see computePreSwitchFloor and
+    // the class-level comment above. Content (not a count), captured fresh
+    // at every switch, so a later revision that reshapes this exact span
+    // (or a segmentId change carrying it forward, per the same fix) is
+    // self-correcting rather than stale.
+    this.preSwitchSnapshot = this.lastTokens.slice();
   }
 
   // Call when a NEW native SpeechRecognition session starts, including a
   // transparent restart after the browser drops the session on its own.
-  // Clears per-native-session transport bookkeeping only. matchProgress is
-  // deliberately left untouched — partial progress toward the current
-  // target must survive an invisible restart.
+  //
+  // matchProgress survives untouched, as it always has: partial progress
+  // toward the current target must survive an invisible restart.
+  //
+  // resolvedPrefix/deliveredCompletionCount are, since this fix, DELIBERATELY
+  // cleared here — this is what keeps the cross-segment fix general rather
+  // than indistinguishable from suppressing a legitimate fresh repetition.
+  // resolvedPrefix's whole purpose is catching a resend of content already
+  // seen in THIS NATIVE SESSION's own growing result stream (the confirmed
+  // real-device bug: segment 3/4/5 all resending "سبحان الله" — all inside
+  // ONE unbroken session, no restart between them). A brand new native
+  // session means the browser's result-array numbering AND content starts
+  // over from nothing, unrelated to the old stream — so old resolvedPrefix
+  // content can no longer mean "already resend-checked", only "coincidence
+  // if it ever matches again". Clearing it here is what lets a genuinely
+  // separate repetition — one that happens to arrive as its own freshly
+  // finalized result in a new session, with byte-identical text to a
+  // previous repetition, exactly the shape a real repeated dhikr takes —
+  // still be credited, instead of forever silently swallowed by a match
+  // against long-past, session-unrelated content (seeing the difference
+  // between those two cases is impossible from content alone; a new native
+  // session is the one honest, timing-free, non-fuzzy signal available that
+  // "this is a new recognition stream", so it is what this reset keys off).
+  //
+  // preSwitchSnapshot is cleared here too, for the identical reason: it
+  // exists to isolate a genuinely still-open OLD-target attempt from a NEW
+  // target's segments while both are still arriving within the SAME native
+  // session (the window between calling setTarget and the browser actually
+  // finishing its stop()/restart) — see the "target switching" and
+  // "postSwitchFloor" test suites, which all exercise exactly that window
+  // (setTarget followed immediately by more segments, same session, no
+  // resetSession call). Once a native session genuinely ends and a new one
+  // starts, that window has definitively closed: the new session's own
+  // audio buffer starts capturing fresh from this instant, so nothing it
+  // reports can possibly be pre-switch content by construction — carrying
+  // preSwitchSnapshot forward past this point would only risk the mirror
+  // problem resolvedPrefix's own carry-forward caused above, tainting a
+  // new target's genuine completion just because it happens to restate
+  // words the old target also used.
   resetSession(): void {
-    this.liveSegment = null;
+    this.resolvedPrefix = [];
+    this.deliveredCompletionCount = 0;
+    this.preSwitchSnapshot = [];
+    this.currentSegmentId = null;
+    this.lastTokens = [];
     this.committedIndices = new Set();
   }
 
   // Full reset for an explicit disable or a 60-second inactivity timeout —
-  // every session-scoped piece of matching state is cleared, so the next
-  // activation starts genuinely fresh.
+  // every piece of matching state is cleared, so the next activation
+  // starts genuinely fresh.
   resetAll(): void {
     this.matchProgress = 0;
-    this.liveSegment = null;
+    this.resolvedPrefix = [];
+    this.deliveredCompletionCount = 0;
+    this.preSwitchSnapshot = [];
+    this.currentSegmentId = null;
+    this.lastTokens = [];
     this.committedIndices = new Set();
   }
 
@@ -617,80 +651,96 @@ export class VoiceTasbeehMatcher {
       return { completions: 0, hadGenuineActivity: false };
     }
     if (this.committedIndices.has(update.segmentId)) {
-      // Already finalized and locked — a resend of old/duplicate final
-      // content is ignored outright.
+      // Already finalized and locked — a resend of the SAME exact
+      // segmentId is ignored outright. (A resend of its CONTENT under a
+      // DIFFERENT segmentId — the actual bug this file now fixes — is
+      // instead handled below via resolvedPrefix, which is not keyed to
+      // segmentId at all.)
       return { completions: 0, hadGenuineActivity: false };
     }
 
-    if (this.liveSegment === null || this.liveSegment.id !== update.segmentId) {
-      this.liveSegment = { id: update.segmentId, resolvedPrefix: [], lastTokens: [], deliveredCompletionCount: 0, preSwitchSnapshot: [] };
+    // Purely for hadGenuineActivity below — see the class-level comment on
+    // why this pair is kept separate from resolvedPrefix/etc. and DOES
+    // reset on a genuinely new segmentId.
+    if (this.currentSegmentId !== update.segmentId) {
+      this.currentSegmentId = update.segmentId;
+      this.lastTokens = [];
     }
-    const state = this.liveSegment;
-    const observedLengthBefore = state.lastTokens.length;
+    const observedLengthBefore = this.lastTokens.length;
 
     const tokens = tokenize(update.text);
-    const { toReplay, excludedCount } = resolveReplayWindow(tokens, state.resolvedPrefix);
-    const resolvedPrefixBefore = state.resolvedPrefix;
+    const { toReplay, excludedCount } = resolveReplayWindow(tokens, this.resolvedPrefix);
+    const resolvedPrefixBefore = this.resolvedPrefix;
     const matchProgressBefore = this.matchProgress;
     // Re-derived fresh from the frozen snapshot every event (not stored),
     // for exactly the reason resolveReplayWindow re-verifies resolvedPrefix
     // rather than trusting a stale offset — see computePreSwitchFloor.
-    const postSwitchFloor = computePreSwitchFloor(tokens, state.preSwitchSnapshot);
+    const postSwitchFloor = computePreSwitchFloor(tokens, this.preSwitchSnapshot);
     const result = replay(toReplay, this.targetTokens, this.matchProgress, excludedCount, postSwitchFloor);
 
     // Genuine activity: content beyond what's ever been observed before
-    // for this segment, AND at least one of those newly-observed tokens
-    // engaged the current target attempt (anything but reject). A pure
-    // duplicate/replayed/unchanged event never reaches the length check;
-    // continuous but clearly off-target speech reaches it but never
-    // passes the outcome check.
+    // for THIS segmentId (see currentSegmentId/lastTokens above), AND at
+    // least one of those newly-observed tokens engaged the current target
+    // attempt (anything but reject). A pure duplicate/replayed/unchanged
+    // event never reaches the length check; continuous but clearly
+    // off-target speech reaches it but never passes the outcome check.
     const newSinceObservedLocalIndex = Math.max(0, observedLengthBefore - excludedCount);
     const hadGenuineActivity =
       tokens.length > observedLengthBefore &&
       result.tokenOutcomes.slice(newSinceObservedLocalIndex).some((o) => o !== "reject");
 
-    // Duplicate-completion guard (see LiveSegmentState.deliveredCompletionCount
-    // above). `excludedCount < resolvedPrefixBefore.length` is exactly the
-    // resolveReplayWindow FALLBACK signature — the only case where
-    // `toReplay` can include territory an earlier event already replayed
-    // and reported completions from. The ordinary (non-fallback) path's
-    // `toReplay` never includes anything behind the lock boundary, so
-    // every completion it finds is unconditionally new.
+    // Duplicate-completion guard (see deliveredCompletionCount's own field
+    // comment above). `excludedCount < resolvedPrefixBefore.length` is
+    // exactly the resolveReplayWindow FALLBACK signature — the only case
+    // where `toReplay` can include territory an earlier event already
+    // replayed and reported completions from. The ordinary (non-fallback)
+    // path's `toReplay` never includes anything behind the lock boundary,
+    // so every completion it finds is unconditionally new.
     const usedFallbackReplay = excludedCount < resolvedPrefixBefore.length;
     const completionsToEmit = usedFallbackReplay
-      ? Math.max(0, result.completions.length - state.deliveredCompletionCount)
+      ? Math.max(0, result.completions.length - this.deliveredCompletionCount)
       : result.completions.length;
-    state.deliveredCompletionCount = usedFallbackReplay
-      ? Math.max(state.deliveredCompletionCount, result.completions.length)
-      : state.deliveredCompletionCount + completionsToEmit;
+    this.deliveredCompletionCount = usedFallbackReplay
+      ? Math.max(this.deliveredCompletionCount, result.completions.length)
+      : this.deliveredCompletionCount + completionsToEmit;
 
-    let committed = false;
-    if (update.isFinal) {
-      // Finalized text can never change again — persist its ending
-      // progress durably and lock the whole segment out of any future
-      // replay.
-      this.matchProgress = result.endProgress;
-      this.committedIndices.add(update.segmentId);
-      this.liveSegment = null;
-      committed = true;
-    } else if (result.completions.length > 0) {
-      // At least one repetition was emitted from this (still-interim)
-      // text. Lock only up to the last completion — anything after it is
-      // transient trailing progress toward the NEXT repetition and stays
-      // replayable, not yet durable. Expressed as actual token CONTENT
-      // (a slice of the current, just-tokenized text), not a count, so a
-      // later revision of this exact span can be detected rather than
-      // blindly trusted.
+    if (result.completions.length > 0) {
+      // At least one repetition was found in this replay. Lock resolvedPrefix
+      // only up to the LAST completion — anything after it is transient
+      // trailing progress toward the NEXT repetition and stays replayable,
+      // not yet durable, exactly like matchProgress resetting to 0 just
+      // below (see the "no completion" branch's own comment for how that
+      // trailing content still gets replayed correctly later, whether the
+      // next event carries the same segmentId or — the fix — a different
+      // one). Expressed as actual token CONTENT (a slice of the current,
+      // just-tokenized text), not a count, so a later revision — or a
+      // completely different segmentId restating this same content, see
+      // the class-level comment — can be detected rather than blindly
+      // trusted.
       const lastLocalIndex = result.completions[result.completions.length - 1];
-      state.resolvedPrefix = tokens.slice(0, excludedCount + lastLocalIndex + 1);
-      state.lastTokens = tokens;
+      this.resolvedPrefix = tokens.slice(0, excludedCount + lastLocalIndex + 1);
       this.matchProgress = 0;
-    } else {
-      // No completion — this entire replay result is transient and is
-      // discarded; matchProgress is left untouched so the same
-      // not-yet-resolved tail is replayed fresh, from its current text,
-      // on the next event.
-      state.lastTokens = tokens;
+    } else if (update.isFinal) {
+      // Finalized with no completion this time — persist the trailing
+      // progress durably (matchProgress), exactly as before. resolvedPrefix
+      // is deliberately NOT extended to cover this trailing content: it
+      // stays replayable (via toReplay) on the next event, whatever
+      // segmentId that event carries, and replay()'s own idempotent
+      // restart/match handling (matchProgress and the still-unresolved
+      // tail agreeing on the same content) makes re-walking it safe rather
+      // than a double-count — proven by this file's own regression tests
+      // reproducing the exact real-device sequence this fix targets.
+      this.matchProgress = result.endProgress;
+    }
+    // else: no completion, not final — matchProgress and resolvedPrefix are
+    // both left untouched, so the same not-yet-resolved tail is replayed
+    // fresh, from its current text, on the next event — unchanged from
+    // before this fix.
+
+    this.lastTokens = tokens;
+    const committed = update.isFinal;
+    if (committed) {
+      this.committedIndices.add(update.segmentId);
     }
 
     this.onDebug?.({
@@ -708,7 +758,7 @@ export class VoiceTasbeehMatcher {
       completionLocalIndices: result.completions,
       completionsEmitted: completionsToEmit,
       matchProgressAfter: this.matchProgress,
-      resolvedPrefixAfter: committed ? null : state.resolvedPrefix,
+      resolvedPrefixAfter: this.resolvedPrefix,
       committed,
       hadGenuineActivity,
     });
