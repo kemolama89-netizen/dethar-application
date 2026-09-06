@@ -8,7 +8,7 @@ import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { navLabels } from "../data/content";
 import { dhikrItems, sourceAr, tasbeehLabels } from "../data/tasbeeh";
-import { recordTasbeehRepetition } from "../lib/stats";
+import { recordTasbeehRepetition, recordTasbeehRepetitions } from "../lib/stats";
 import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
 import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
@@ -412,8 +412,13 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
       return updated;
     });
 
+    // Latency: a SINGLE batched write of all `times` repetitions (see
+    // recordTasbeehRepetitions's own doc comment) instead of one full
+    // event-log persist() per repetition inside the loop below — this is
+    // pure app-side I/O elimination, not a change to the matching/counting
+    // engine: identical events, identical order, identical durability.
+    recordTasbeehRepetitions(creditedId, times);
     for (let rep = 0; rep < times; rep++) {
-      recordTasbeehRepetition(creditedId);
       const id = bubbleIdRef.current++;
       const drift = Math.round(Math.random() * 48 - 24);
       const rotate = Math.round(Math.random() * 16 - 8);
