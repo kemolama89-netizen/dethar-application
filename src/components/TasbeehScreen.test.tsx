@@ -15,6 +15,7 @@ import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
 import { dhikrItems, tasbeehLabels } from "../data/tasbeeh";
 import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
+import { getTasbeehStats, clearAllStats } from "../lib/stats";
 
 // Silences React's benign "not configured for act()" warning — this
 // file's environment IS the test itself, driven entirely through act().
@@ -76,6 +77,9 @@ function displayedCount(container: HTMLElement): string | null {
 
 beforeEach(() => {
   localStorage.clear();
+  // stats.ts keeps a module-level in-memory cache that localStorage.clear()
+  // alone doesn't reset — see stats.test.ts's own note on this.
+  clearAllStats();
 });
 
 describe("TasbeehScreen — Reset All", () => {
@@ -301,6 +305,105 @@ describe("TasbeehScreen — Voice Tasbeeh completion crediting (target-switch tr
     // The screen is now showing the NEW dhikr — its displayed count must
     // be 0, not a premature 1 from the old dhikr's trailing completion.
     expect(displayedCount(container)).toBe("0");
+
+    await unmount();
+  });
+});
+
+// Regression coverage for the stats-persistence latency optimization
+// (recordTasbeehRepetitions batching a burst's writes into one — see
+// applyVoiceRepetitions in TasbeehScreen.tsx and recordTasbeehRepetitions's
+// own doc comment in stats.ts). None of these change the matching engine —
+// they exercise the REAL useVoiceTasbeeh hook + REAL matcher through
+// TasbeehScreen, same as the crediting suite above, and assert both the
+// displayed/persisted COUNT and the persisted STATS LOG stay correct.
+const ALL_TIME = { kind: "all" } as const;
+
+function fireFinalResult(instance: FakeVoiceRecognition, resultIndex: number, text: string) {
+  const results = [Object.assign([{ transcript: text }], { isFinal: true })];
+  instance.onresult?.({ resultIndex, results });
+}
+
+describe("TasbeehScreen — Voice Tasbeeh latency optimization (stats write batching)", () => {
+  beforeEach(() => {
+    FakeVoiceRecognition.reset();
+    (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = FakeVoiceRecognition;
+  });
+
+  afterEach(() => {
+    delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
+  });
+
+  it("rapid genuine repetitions delivered in a single recognition result all count, and are all recorded to stats", async () => {
+    const item = dhikrItems[0]; // "سُبْحَانَ اللَّهِ" — a plain 2-token dhikr
+    const { container, unmount } = await mountTasbeehScreen();
+    await click(findButtonByText(container, t.voiceTasbeeh));
+    await act(async () => {
+      FakeVoiceRecognition.instances[0].fireStart();
+    });
+
+    // One final result whose transcript is the dhikr recited three times in
+    // a row, unbroken — the shape a fast reciter's single continuous
+    // native segment takes. The matcher must find all three completions
+    // (see voiceTasbeehMatch.ts's replay()), and applyVoiceRepetitions must
+    // credit and record all three, not just one.
+    const burstText = `${item.dhikr_ar} ${item.dhikr_ar} ${item.dhikr_ar}`;
+    await act(async () => {
+      fireFinalResult(FakeVoiceRecognition.instances[0], 0, burstText);
+    });
+
+    expect(displayedCount(container)).toBe("3");
+    expect(loadTasbeehCounters()[item.id]).toBe(3);
+    const stats = getTasbeehStats(ALL_TIME);
+    expect(stats.total).toBe(3);
+    expect(stats.perDhikr).toEqual([{ dhikrId: String(item.id), total: 3 }]);
+
+    await unmount();
+  });
+
+  it("a replayed/resent final result for the same recognition segment never double-counts (exactly-once) or double-records to stats", async () => {
+    const item = dhikrItems[0];
+    const { container, unmount } = await mountTasbeehScreen();
+    await click(findButtonByText(container, t.voiceTasbeeh));
+    await act(async () => {
+      FakeVoiceRecognition.instances[0].fireStart();
+    });
+
+    await act(async () => {
+      fireFinalResult(FakeVoiceRecognition.instances[0], 0, item.dhikr_ar);
+    });
+    expect(displayedCount(container)).toBe("1");
+
+    // The exact same segmentId (0) resending the exact same already-final
+    // content — a real, observed SpeechRecognition replay pattern (see
+    // voiceTasbeehMatch.ts's class-level comment). Must be a pure no-op.
+    await act(async () => {
+      fireFinalResult(FakeVoiceRecognition.instances[0], 0, item.dhikr_ar);
+    });
+
+    expect(displayedCount(container)).toBe("1");
+    expect(loadTasbeehCounters()[item.id]).toBe(1);
+    const stats = getTasbeehStats(ALL_TIME);
+    expect(stats.total).toBe(1);
+
+    await unmount();
+  });
+
+  it("target switching still records stats to the dhikr the matcher actually credited, never the newly-selected one", async () => {
+    const oldItem = dhikrItems[0];
+    const newItem = dhikrItems[1];
+    const { container, unmount } = await mountTasbeehScreen();
+    await click(findButtonByText(container, t.voiceTasbeeh));
+    await act(async () => {
+      FakeVoiceRecognition.instances[0].fireStart();
+    });
+    FakeVoiceRecognition.instances[0].queueFinalResultOnStop(oldItem.dhikr_ar);
+
+    await selectDhikr(container, newItem.dhikr_ar);
+
+    const stats = getTasbeehStats(ALL_TIME);
+    expect(stats.total).toBe(1);
+    expect(stats.perDhikr).toEqual([{ dhikrId: String(oldItem.id), total: 1 }]);
 
     await unmount();
   });

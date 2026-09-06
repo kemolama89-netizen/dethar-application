@@ -186,6 +186,27 @@ export function recordTasbeehRepetition(dhikrId: number) {
   append({ ...nowStamp(), kind: "repetition", source: "tasbeeh", dhikrId: String(dhikrId) });
 }
 
+// Same events, same order, same content as calling recordTasbeehRepetition()
+// `times` times in a row — the only difference is a SINGLE persist() (one
+// synchronous localStorage write of the whole event log) instead of one per
+// repetition. This matters because persist() re-serializes the ENTIRE,
+// ever-growing event history on every call (localStorage has no incremental
+// append), and Voice Tasbeeh can credit more than one completed repetition
+// from a single recognition result (rapid genuine repetitions, or a
+// burst replayed after a recognizer restart) — see applyVoiceRepetitions in
+// TasbeehScreen.tsx, the only caller. Doing that redundant full-log
+// serialization/write `times` times in the same synchronous call, right
+// before the UI can paint the updated count, is pure unnecessary work: the
+// data recorded and its durability are byte-for-byte identical either way.
+export function recordTasbeehRepetitions(dhikrId: number, times: number) {
+  if (times <= 0) return;
+  const events = load();
+  for (let i = 0; i < times; i++) {
+    events.push({ ...nowStamp(), kind: "repetition", source: "tasbeeh", dhikrId: String(dhikrId) });
+  }
+  persist();
+}
+
 // Legacy events recorded before this file tracked explicit local
 // date/time/timezone only had `ts` — this derives the same local date from
 // it (using the device's CURRENT timezone, the best available fallback) so
