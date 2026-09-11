@@ -8,6 +8,8 @@ interface ContentModalProps {
   icon: ReactNode;
   title: string;
   attribution?: string;
+  verse?: string;
+  verseReference?: string;
   body: string;
   citation: string;
 }
@@ -27,6 +29,8 @@ export function ContentModal({
   icon,
   title,
   attribution,
+  verse,
+  verseReference,
   body,
   citation,
 }: ContentModalProps) {
@@ -81,8 +85,23 @@ export function ContentModal({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          {verse && (
+            <p
+              className="text-[16px] leading-[1.75]"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
+            >
+              {verse}
+            </p>
+          )}
+
+          {verseReference && (
+            <p className="mt-1 text-[13px]" style={{ color: "var(--color-text-muted)" }}>
+              {verseReference}
+            </p>
+          )}
+
           <p
-            className="text-[16px] leading-[1.75]"
+            className={`text-[16px] leading-[1.75] ${verse ? "mt-3" : ""}`}
             style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
           >
             {body}

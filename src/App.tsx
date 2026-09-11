@@ -12,10 +12,12 @@ import { BottomNav } from "./components/BottomNav";
 import { ContentModal } from "./components/ContentModal";
 import { BookOpen } from "lucide-react";
 import { MosqueDomeIcon } from "./icons/CustomIcons";
-import { labels, insightCardContent, hadithCardContent } from "./data/content";
+import { labels, hadithCardContent } from "./data/content";
+import { TAFSIR_FLASHES } from "./data/tafsirFlashes";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
+import { startFloatingTasbeehSync } from "./lib/floatingTasbeehSync";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -110,12 +112,41 @@ function HomeScreen({
 }) {
   const { language } = useLanguage();
   const t = labels[language];
-  const insight = insightCardContent[language];
   const hadith = hadithCardContent[language];
 
   // Local state for the "Read more" full-content modal — not global,
   // just which (if any) card's full content is currently open.
   const [openCard, setOpenCard] = useState<OpenCard>(null);
+
+  // The Quranic Insight card (لطيفة قرآنية) is DITHAR's "Tafsir Flash"
+  // card. Production always shows one deterministic flash per calendar
+  // day — days-since-epoch modulo the flash count — so every user sees
+  // the same flash on a given day with no stored state needed, and the
+  // cycle continues seamlessly past day 373 back to flash #1.
+  const dayFlashIndex = Math.floor(Date.now() / 86_400_000) % TAFSIR_FLASHES.length;
+
+  // DEV-only manual test rig for stepping through all 373 flashes on the
+  // web preview before the final one-per-day behavior ships. Plain React
+  // state, so normal re-renders never advance it — only the button below
+  // does, by exactly one step, wrapping from #373 back to #1. Starts at
+  // #1 on every fresh mount. `import.meta.env.DEV` is statically false in
+  // a production build, so Vite strips this branch and the button below
+  // entirely — none of this reaches the shipped app.
+  const [previewFlashIndex, setPreviewFlashIndex] = useState(0);
+
+  const flashIndex = import.meta.env.DEV ? previewFlashIndex : dayFlashIndex;
+  const flash = TAFSIR_FLASHES[flashIndex];
+  // Display order requested for the card: verse, then its surah/ayah
+  // reference, then the Tafsir Flash insight itself, then the tafsir
+  // source — all four sourced verbatim from this one flash record, so
+  // Refresh (preview) / the new day (production) always swaps them
+  // together, never independently.
+  const insight = {
+    verse: flash.verse,
+    verseReference: flash.reference,
+    body: language === "ar" ? flash.textAr : flash.textEn,
+    citation: flash.source,
+  };
 
   return (
     <DeviceFrame scrollLocked={openCard !== null}>
@@ -127,12 +158,25 @@ function HomeScreen({
           variant="quran"
           icon={<BookOpen size={19} strokeWidth={1.7} />}
           title={t.insightTitle}
+          verse={insight.verse}
+          verseReference={insight.verseReference}
           body={insight.body}
           citation={insight.citation}
           readMoreLabel={t.readMore}
           onReadMore={() => setOpenCard("quran")}
           className="mt-1"
         />
+
+        {import.meta.env.DEV && (
+          <button
+            type="button"
+            onClick={() => setPreviewFlashIndex((i) => (i + 1) % TAFSIR_FLASHES.length)}
+            className="mt-1 self-start text-[11px] underline underline-offset-2"
+            style={{ color: "var(--color-gold)" }}
+          >
+            [dev] Refresh Tafsir Flash preview ({flashIndex + 1}/{TAFSIR_FLASHES.length})
+          </button>
+        )}
 
         <InsightCard
           variant="hadith"
@@ -164,6 +208,8 @@ function HomeScreen({
         closeLabel={t.close}
         icon={<BookOpen size={19} strokeWidth={1.7} />}
         title={t.insightTitle}
+        verse={insight.verse}
+        verseReference={insight.verseReference}
         body={insight.body}
         citation={insight.citation}
       />
@@ -385,6 +431,15 @@ function AppRouter() {
 }
 
 export default function App() {
+  // A safe no-op everywhere except the native Android build (see
+  // isFloatingTasbeehAvailable in floatingTasbeehSync.ts) — this is the
+  // one place in the whole app that starts Floating Tasbeeh reconciliation,
+  // so it runs exactly once per app launch regardless of which screen the
+  // user lands on first.
+  useEffect(() => {
+    startFloatingTasbeehSync();
+  }, []);
+
   return (
     <LanguageProvider>
       <ThemeProvider>
