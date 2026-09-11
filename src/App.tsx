@@ -17,7 +17,6 @@ import { TAFSIR_FLASHES } from "./data/tafsirFlashes";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
-import { startFloatingTasbeehSync } from "./lib/floatingTasbeehSync";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -431,15 +430,6 @@ function AppRouter() {
 }
 
 export default function App() {
-  // A safe no-op everywhere except the native Android build (see
-  // isFloatingTasbeehAvailable in floatingTasbeehSync.ts) — this is the
-  // one place in the whole app that starts Floating Tasbeeh reconciliation,
-  // so it runs exactly once per app launch regardless of which screen the
-  // user lands on first.
-  useEffect(() => {
-    startFloatingTasbeehSync();
-  }, []);
-
   return (
     <LanguageProvider>
       <ThemeProvider>
