@@ -12,7 +12,8 @@ import { BottomNav } from "./components/BottomNav";
 import { ContentModal } from "./components/ContentModal";
 import { BookOpen } from "lucide-react";
 import { MosqueDomeIcon } from "./icons/CustomIcons";
-import { labels, insightCardContent, hadithCardContent } from "./data/content";
+import { labels, hadithCardContent } from "./data/content";
+import { getPreviewTafsirFlash } from "./lib/tafsirFlashPreview";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
@@ -110,7 +111,17 @@ function HomeScreen({
 }) {
   const { language } = useLanguage();
   const t = labels[language];
-  const insight = insightCardContent[language];
+  // getPreviewTafsirFlash() is memoized per real page load (see
+  // tafsirFlashPreview.ts) — calling it here on every render/remount is
+  // safe, it never advances the pointer itself. The card's `citation` slot
+  // carries the interpretation source (same role hadithCardContent.citation
+  // plays for the hadith card below), since a Tafsir Flash record has no
+  // separate ayah-reference field.
+  const flash = getPreviewTafsirFlash();
+  const insight = {
+    body: language === "ar" ? flash.arabic : flash.english,
+    citation: flash.source,
+  };
   const hadith = hadithCardContent[language];
 
   // Local state for the "Read more" full-content modal — not global,
