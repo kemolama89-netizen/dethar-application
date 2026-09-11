@@ -10,8 +10,8 @@ import { InsightCard } from "./components/InsightCard";
 import { PrayerTimesPanel } from "./components/PrayerTimesPanel";
 import { BottomNav } from "./components/BottomNav";
 import { ContentModal } from "./components/ContentModal";
-import { BookOpen } from "lucide-react";
-import { MosqueDomeIcon } from "./icons/CustomIcons";
+import { BookOpen, RefreshCw } from "lucide-react";
+import { MosqueDomeIcon, TasbihBeadsIcon } from "./icons/CustomIcons";
 import { labels, hadithCardContent } from "./data/content";
 import { TAFSIR_FLASHES } from "./data/tafsirFlashes";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
@@ -118,22 +118,29 @@ function HomeScreen({
   const [openCard, setOpenCard] = useState<OpenCard>(null);
 
   // The Quranic Insight card (لطيفة قرآنية) is DITHAR's "Tafsir Flash"
-  // card. Production always shows one deterministic flash per calendar
-  // day — days-since-epoch modulo the flash count — so every user sees
-  // the same flash on a given day with no stored state needed, and the
-  // cycle continues seamlessly past day 373 back to flash #1.
+  // card. FINAL production behavior: one deterministic flash per
+  // calendar day — days-since-epoch modulo the flash count — so every
+  // user sees the same flash on a given day with no stored state
+  // needed, and the cycle continues seamlessly past day 373 back to
+  // flash #1. This logic is complete and untouched by the temporary
+  // toggle below.
   const dayFlashIndex = Math.floor(Date.now() / 86_400_000) % TAFSIR_FLASHES.length;
 
-  // DEV-only manual test rig for stepping through all 373 flashes on the
-  // web preview before the final one-per-day behavior ships. Plain React
-  // state, so normal re-renders never advance it — only the button below
-  // does, by exactly one step, wrapping from #373 back to #1. Starts at
-  // #1 on every fresh mount. `import.meta.env.DEV` is statically false in
-  // a production build, so Vite strips this branch and the button below
-  // entirely — none of this reaches the shipped app.
+  // TEMPORARY, web-only testing phase: while true, the card is driven by
+  // the manual Refresh control below (sequential, wraps 373 -> 1) instead
+  // of dayFlashIndex above, so every one of the 373 flashes can be
+  // clicked through and verified in the browser. Set this to `false`
+  // (or delete this flag, `previewFlashIndex`, and the button below) once
+  // the mobile app ships and only the day-based rotation is needed —
+  // dayFlashIndex requires no change at that point.
+  const IS_TAFSIR_PREVIEW_TESTING = true;
+
+  // Plain React state: normal re-renders never advance it — only the
+  // button's onClick does, by exactly one step, wrapping from #373 back
+  // to #1. Starts at #1 (index 0) on every fresh mount.
   const [previewFlashIndex, setPreviewFlashIndex] = useState(0);
 
-  const flashIndex = import.meta.env.DEV ? previewFlashIndex : dayFlashIndex;
+  const flashIndex = IS_TAFSIR_PREVIEW_TESTING ? previewFlashIndex : dayFlashIndex;
   const flash = TAFSIR_FLASHES[flashIndex];
   // Display order requested for the card: verse, then its surah/ayah
   // reference, then the Tafsir Flash insight itself, then the tafsir
@@ -166,14 +173,15 @@ function HomeScreen({
           className="mt-1"
         />
 
-        {import.meta.env.DEV && (
+        {IS_TAFSIR_PREVIEW_TESTING && (
           <button
             type="button"
             onClick={() => setPreviewFlashIndex((i) => (i + 1) % TAFSIR_FLASHES.length)}
-            className="mt-1 self-start text-[11px] underline underline-offset-2"
+            className="mt-1 flex items-center gap-1 self-start text-[11px] font-medium underline underline-offset-2"
             style={{ color: "var(--color-gold)" }}
           >
-            [dev] Refresh Tafsir Flash preview ({flashIndex + 1}/{TAFSIR_FLASHES.length})
+            <RefreshCw size={12} strokeWidth={2} />
+            Refresh Tafsir Flash (preview test) — {flashIndex + 1}/{TAFSIR_FLASHES.length}
           </button>
         )}
 
@@ -190,6 +198,36 @@ function HomeScreen({
         />
 
         <PrayerTimesPanel className="mt-1" />
+
+        {/* Floating Tasbeeh placeholder — the real feature (a native Android
+            overlay bubble; see src/lib/floatingTasbeehSync.ts) isn't wired
+            up on web yet, so this is a non-interactive "coming soon"
+            stand-in only. It reuses the exact circle treatment BottomNav
+            already uses for its own Tasbeeh tab (h-11 w-11 rounded-full,
+            --color-primary/--color-gold, same TasbihBeadsIcon) plus a
+            shadow for a "floating" read, sitting in its own row right
+            above the nav's Tasbeeh tab rather than as an overlay, so it can
+            never cover any existing card/text on any viewport. */}
+        <div className="mt-1 flex justify-end" aria-hidden="true">
+          <div
+            className="flex items-center gap-1.5 rounded-full border py-1 ps-1 pe-2.5"
+            style={{
+              background: "var(--color-surface)",
+              borderColor: "var(--color-gold-soft)",
+              boxShadow: "0 8px 16px -4px rgba(var(--color-shadow-rgb), 0.5)",
+            }}
+          >
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-full"
+              style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
+            >
+              <TasbihBeadsIcon size={15} />
+            </span>
+            <span className="text-[11px] font-medium" style={{ color: "var(--color-primary)" }}>
+              قريبًا
+            </span>
+          </div>
+        </div>
 
         <BottomNav
           className="mt-1"
