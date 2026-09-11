@@ -7,6 +7,8 @@ interface InsightCardProps {
   icon: ReactNode;
   title: string;
   attribution?: string;
+  verse?: string;
+  verseReference?: string;
   body: string;
   citation: string;
   readMoreLabel: string;
@@ -33,6 +35,8 @@ export function InsightCard({
   icon,
   title,
   attribution,
+  verse,
+  verseReference,
   body,
   citation,
   readMoreLabel,
@@ -74,6 +78,21 @@ export function InsightCard({
           {attribution && (
             <p className="mt-px text-[13px]" style={{ color: "var(--color-text-muted)" }}>
               {attribution}
+            </p>
+          )}
+
+          {verse && (
+            <p
+              className="mt-px text-[15px] leading-[1.25]"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
+            >
+              {verse}
+            </p>
+          )}
+
+          {verseReference && (
+            <p className="mt-px text-[12.5px]" style={{ color: "var(--color-text-muted)" }}>
+              {verseReference}
             </p>
           )}
 
