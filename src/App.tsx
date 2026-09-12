@@ -10,10 +10,10 @@ import { InsightCard } from "./components/InsightCard";
 import { PrayerTimesPanel } from "./components/PrayerTimesPanel";
 import { BottomNav } from "./components/BottomNav";
 import { ContentModal } from "./components/ContentModal";
-import { BookOpen, RefreshCw } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { MosqueDomeIcon, TasbihBeadsIcon } from "./icons/CustomIcons";
 import { labels, hadithCardContent } from "./data/content";
-import { TAFSIR_FLASHES } from "./data/tafsirFlashes";
+import { WAMDAT, getWamdaVerseText, getWamdaVerseReference } from "./data/wamdat";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
@@ -109,7 +109,7 @@ function HomeScreen({
   onNavigateToWritten: () => void;
   onNavigateToSettings: () => void;
 }) {
-  const { language } = useLanguage();
+  const { language, dir } = useLanguage();
   const t = labels[language];
   const hadith = hadithCardContent[language];
 
@@ -117,18 +117,18 @@ function HomeScreen({
   // just which (if any) card's full content is currently open.
   const [openCard, setOpenCard] = useState<OpenCard>(null);
 
-  // The Quranic Insight card (لطيفة قرآنية) is DITHAR's "Tafsir Flash"
-  // card. FINAL production behavior: one deterministic flash per
+  // The Quranic Insight card (لطيفة قرآنية) is DITHAR's "Wamda" (Tafsir
+  // Flash) card. FINAL production behavior: one deterministic flash per
   // calendar day — days-since-epoch modulo the flash count — so every
   // user sees the same flash on a given day with no stored state
-  // needed, and the cycle continues seamlessly past day 373 back to
-  // flash #1. This logic is complete and untouched by the temporary
+  // needed, and the cycle continues seamlessly past the last flash back
+  // to flash #1. This logic is complete and untouched by the temporary
   // toggle below.
-  const dayFlashIndex = Math.floor(Date.now() / 86_400_000) % TAFSIR_FLASHES.length;
+  const dayFlashIndex = Math.floor(Date.now() / 86_400_000) % WAMDAT.length;
 
   // TEMPORARY, web-only testing phase: while true, the card is driven by
-  // the manual Refresh control below (sequential, wraps 373 -> 1) instead
-  // of dayFlashIndex above, so every one of the 373 flashes can be
+  // the manual Refresh control below (sequential, wraps back to the
+  // start) instead of dayFlashIndex above, so every flash can be
   // clicked through and verified in the browser. Set this to `false`
   // (or delete this flag, `previewFlashIndex`, and the button below) once
   // the mobile app ships and only the day-based rotation is needed —
@@ -136,21 +136,47 @@ function HomeScreen({
   const IS_TAFSIR_PREVIEW_TESTING = true;
 
   // Plain React state: normal re-renders never advance it — only the
-  // button's onClick does, by exactly one step, wrapping from #373 back
-  // to #1. Starts at #1 (index 0) on every fresh mount.
+  // button's onClick does, by exactly one step, wrapping from the last
+  // flash back to #1. Starts at #1 (index 0) on every fresh mount.
   const [previewFlashIndex, setPreviewFlashIndex] = useState(0);
 
+  // Browsing history of the flashes actually shown by Refresh (not a
+  // numerical id/index walk) — the stack's top always equals
+  // `previewFlashIndex`. Previous pops the top and reveals what's under
+  // it, without pushing anything, so it retraces exactly what the user
+  // saw. Refresh always pushes forward from wherever the stack currently
+  // sits, so going back and then refreshing starts a new path from that
+  // point (the old "future" entries were never kept in the first place).
+  const [flashHistory, setFlashHistory] = useState<number[]>([0]);
+  const canGoToPreviousFlash = flashHistory.length > 1;
+
+  function handleRefreshFlash() {
+    const next = (previewFlashIndex + 1) % WAMDAT.length;
+    setPreviewFlashIndex(next);
+    setFlashHistory((history) => (next === history[history.length - 1] ? history : [...history, next]));
+  }
+
+  function handlePreviousFlash() {
+    if (flashHistory.length <= 1) return;
+    const newHistory = flashHistory.slice(0, -1);
+    setFlashHistory(newHistory);
+    setPreviewFlashIndex(newHistory[newHistory.length - 1]);
+  }
+
   const flashIndex = IS_TAFSIR_PREVIEW_TESTING ? previewFlashIndex : dayFlashIndex;
-  const flash = TAFSIR_FLASHES[flashIndex];
+  const flash = WAMDAT[flashIndex];
   // Display order requested for the card: verse, then its surah/ayah
-  // reference, then the Tafsir Flash insight itself, then the tafsir
-  // source — all four sourced verbatim from this one flash record, so
-  // Refresh (preview) / the new day (production) always swaps them
-  // together, never independently.
+  // reference, then the Wamda insight itself, then the tafsir source —
+  // all four sourced verbatim from this one flash record, so Refresh
+  // (preview) / the new day (production) always swap them together,
+  // never independently. verse/verseReference are derived from the raw
+  // `ayah` field (see getWamdaVerseText/getWamdaVerseReference) since the
+  // dataset stores them combined, unlike the old dataset's separate
+  // fields.
   const insight = {
-    verse: flash.verse,
-    verseReference: flash.reference,
-    body: language === "ar" ? flash.textAr : flash.textEn,
+    verse: getWamdaVerseText(flash),
+    verseReference: getWamdaVerseReference(flash),
+    body: language === "ar" ? flash.insightAr : flash.insightEn,
     citation: flash.source,
   };
 
@@ -174,15 +200,31 @@ function HomeScreen({
         />
 
         {IS_TAFSIR_PREVIEW_TESTING && (
-          <button
-            type="button"
-            onClick={() => setPreviewFlashIndex((i) => (i + 1) % TAFSIR_FLASHES.length)}
-            className="mt-1 flex items-center gap-1 self-start text-[11px] font-medium underline underline-offset-2"
-            style={{ color: "var(--color-gold)" }}
-          >
-            <RefreshCw size={12} strokeWidth={2} />
-            Refresh Tafsir Flash (preview test) — {flashIndex + 1}/{TAFSIR_FLASHES.length}
-          </button>
+          <div className="mt-1 flex items-center gap-3 self-start">
+            <button
+              type="button"
+              onClick={handlePreviousFlash}
+              disabled={!canGoToPreviousFlash}
+              aria-label="Previous Tafsir Flash"
+              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+              style={{
+                color: canGoToPreviousFlash ? "var(--color-gold)" : "var(--color-text-muted)",
+                opacity: canGoToPreviousFlash ? 1 : 0.45,
+              }}
+            >
+              {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
+              Previous Tafsir Flash (preview test)
+            </button>
+            <button
+              type="button"
+              onClick={handleRefreshFlash}
+              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+              style={{ color: "var(--color-gold)" }}
+            >
+              <RefreshCw size={12} strokeWidth={2} />
+              Refresh Tafsir Flash (preview test) — {flashIndex + 1}/{WAMDAT.length}
+            </button>
+          </div>
         )}
 
         <InsightCard
