@@ -1,10 +1,16 @@
-import { useMemo, useState } from "react";
-import { BarChart3, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Palette, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { BarChart3, Bell, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, Compass, MapPin, Palette, Trash2 } from "lucide-react";
+import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
+import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
+import { loadNotificationSettings, saveNotificationSettings } from "../lib/notificationSettings";
+import { isNotificationsAvailable, requestNotificationPermission, scheduleReminders, cancelReminders } from "../lib/notificationService";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { AppearanceSettings } from "./AppearanceSettings";
+import { LocationSettingsView } from "./LocationSettingsView";
+import { CalculationSettingsView } from "./CalculationSettingsView";
 import { useLanguage } from "../theme/LanguageContext";
 import { navLabels } from "../data/content";
 import { settingsLabels } from "../data/settings";
@@ -30,7 +36,7 @@ interface SettingsScreenProps {
   onNavigateToWritten: () => void;
 }
 
-type SettingsView = "menu" | "statistics" | "appearance";
+type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "notifications" | "location" | "calculation";
 
 type PeriodKind = "daily" | "weekly" | "monthly" | "yearly" | "custom" | "all";
 
@@ -550,6 +556,267 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
   );
 }
 
+// Floating Tasbeeh's Settings entry. On the native Android build (see
+// isFloatingTasbeehAvailable) this is a REAL enable/disable toggle wired to
+// FloatingTasbeehPlugin — Phase 2's native bridge. On every other platform
+// (iOS, plain web/browser, this app's own dev server) there is no bridge
+// to wire to at all, so it falls back to Phase 1's truthful "coming soon"
+// status card rather than presenting a toggle that would silently do
+// nothing. Same header/back-button pattern as StatisticsView above.
+function FloatingTasbeehView({ onBack }: { onBack: () => void }) {
+  const { language, dir } = useLanguage();
+  const t = settingsLabels[language];
+  const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
+
+  // Computed once — the platform doesn't change during the component's
+  // lifetime.
+  const [available] = useState(() => isFloatingTasbeehAvailable());
+  const [loading, setLoading] = useState(available);
+  const [enabled, setEnabled] = useState(false);
+  const [permissionGranted, setPermissionGranted] = useState(false);
+
+  useEffect(() => {
+    if (!available) return;
+    let cancelled = false;
+    Promise.all([FloatingTasbeeh.isEnabled(), FloatingTasbeeh.isOverlayPermissionGranted()]).then(
+      ([enabledResult, permissionResult]) => {
+        if (cancelled) return;
+        setEnabled(enabledResult.enabled);
+        setPermissionGranted(permissionResult.granted);
+        setLoading(false);
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [available]);
+
+  async function handleToggle() {
+    if (!available || loading) return;
+    if (enabled) {
+      await FloatingTasbeeh.setEnabled({ enabled: false });
+      setEnabled(false);
+      return;
+    }
+    let granted = permissionGranted;
+    if (!granted) {
+      granted = (await FloatingTasbeeh.requestOverlayPermission()).granted;
+      setPermissionGranted(granted);
+    }
+    // The user declined the system permission dialog — stay off rather
+    // than calling setEnabled(true) into a state where the overlay can't
+    // actually be drawn.
+    if (!granted) return;
+    await FloatingTasbeeh.setEnabled({ enabled: true });
+    setEnabled(true);
+  }
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="mt-1 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label={t.back}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+          style={{ boxShadow: "inset 0 0 0 1.5px var(--color-gold)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
+        >
+          <BackIcon size={18} strokeWidth={1.8} />
+        </button>
+        <h1 className="min-w-0 flex-1 truncate text-center text-[17px] font-bold" style={{ color: "var(--color-text-primary)" }}>
+          {t.floatingTasbeehPageTitle}
+        </h1>
+        <div className="h-9 w-9 shrink-0" aria-hidden="true" />
+      </div>
+
+      {!available ? (
+        <div
+          className="mt-4 flex flex-col items-center gap-3 rounded-2xl border px-5 py-8 text-center"
+          style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+        >
+          <span
+            className="flex h-14 w-14 items-center justify-center rounded-full"
+            style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+          >
+            <Circle size={24} strokeWidth={1.8} />
+          </span>
+          <p className="text-[13px] font-bold" style={{ color: "var(--color-gold)" }}>
+            {t.floatingTasbeehComingSoonTitle}
+          </p>
+          <p className="max-w-[260px] text-[12.5px] leading-[1.7]" style={{ color: "var(--color-text-muted)" }}>
+            {t.floatingTasbeehComingSoonBody}
+          </p>
+        </div>
+      ) : (
+        <div
+          className="mt-4 flex flex-col gap-3 rounded-2xl border p-4"
+          style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                {t.floatingTasbeehRow}
+              </p>
+              <p className="mt-0.5 text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                {enabled ? t.floatingTasbeehEnabledStatus : t.floatingTasbeehDisabledStatus}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleToggle}
+              disabled={loading}
+              aria-pressed={enabled}
+              aria-label={enabled ? t.floatingTasbeehDisableLabel : t.floatingTasbeehEnableLabel}
+              className="shrink-0 rounded-full border px-4 py-1.5 text-[12.5px] font-medium"
+              style={{
+                borderColor: enabled ? "var(--color-gold)" : "var(--color-gold-soft)",
+                background: enabled ? "var(--color-primary)" : "var(--color-surface)",
+                color: enabled ? "var(--color-gold)" : "var(--color-text-primary)",
+                opacity: loading ? 0.6 : 1,
+              }}
+            >
+              {enabled ? t.floatingTasbeehDisableLabel : t.floatingTasbeehEnableLabel}
+            </button>
+          </div>
+
+          {!permissionGranted && !enabled && (
+            <p className="text-[11.5px] leading-[1.6]" style={{ color: "var(--color-text-muted)" }}>
+              {t.floatingTasbeehPermissionNeeded}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Reminders' Settings entry. Entirely separate from Tasbeeh/Floating
+// Tasbeeh state — this only ever reads/writes notificationSettings.ts and
+// calls notificationService.ts, neither of which either counting system
+// touches. The enable/time preference itself is real and persists
+// regardless of platform (see notificationSettings.ts); only the actual
+// OS-level scheduling (notificationService.ts) is a no-op until a native
+// notification plugin exists — see isNotificationsAvailable's own doc
+// comment for what flips that on with no code change needed here.
+function NotificationsView({ onBack }: { onBack: () => void }) {
+  const { language, dir } = useLanguage();
+  const t = settingsLabels[language];
+  const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
+
+  const [settings, setSettings] = useState(() => loadNotificationSettings());
+  const [available] = useState(() => isNotificationsAvailable());
+
+  function reminderContent() {
+    return { title: t.notificationsReminderTitle, body: t.notificationsReminderBody };
+  }
+
+  // Called once per explicit tap on this toggle — never automatically,
+  // never in a loop — so a permission the user already answered is never
+  // re-prompted.
+  async function handleToggle() {
+    const enabling = !settings.enabled;
+    if (enabling) {
+      await requestNotificationPermission();
+    }
+    const updated = { ...settings, enabled: enabling };
+    setSettings(updated);
+    saveNotificationSettings(updated);
+    if (enabling && updated.times.length > 0) {
+      await scheduleReminders(
+        "dhikr",
+        updated.times.map((time) => ({ time, content: reminderContent() })),
+      );
+    } else {
+      await cancelReminders("dhikr");
+    }
+  }
+
+  async function handleTimeChange(value: string) {
+    const updated = { ...settings, times: value ? [value] : [] };
+    setSettings(updated);
+    saveNotificationSettings(updated);
+    if (settings.enabled) {
+      if (updated.times.length > 0) {
+        await scheduleReminders(
+          "dhikr",
+          updated.times.map((time) => ({ time, content: reminderContent() })),
+        );
+      } else {
+        await cancelReminders("dhikr");
+      }
+    }
+  }
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="mt-1 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label={t.back}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+          style={{ boxShadow: "inset 0 0 0 1.5px var(--color-gold)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
+        >
+          <BackIcon size={18} strokeWidth={1.8} />
+        </button>
+        <h1 className="min-w-0 flex-1 truncate text-center text-[17px] font-bold" style={{ color: "var(--color-text-primary)" }}>
+          {t.notificationsPageTitle}
+        </h1>
+        <div className="h-9 w-9 shrink-0" aria-hidden="true" />
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 rounded-2xl border p-4" style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              {t.notificationsRow}
+            </p>
+            <p className="mt-0.5 text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+              {settings.enabled ? t.notificationsEnabledStatus : t.notificationsDisabledStatus}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void handleToggle()}
+            aria-pressed={settings.enabled}
+            aria-label={settings.enabled ? t.notificationsDisableLabel : t.notificationsEnableLabel}
+            className="shrink-0 rounded-full border px-4 py-1.5 text-[12.5px] font-medium"
+            style={{
+              borderColor: settings.enabled ? "var(--color-gold)" : "var(--color-gold-soft)",
+              background: settings.enabled ? "var(--color-primary)" : "var(--color-surface)",
+              color: settings.enabled ? "var(--color-gold)" : "var(--color-text-primary)",
+            }}
+          >
+            {settings.enabled ? t.notificationsDisableLabel : t.notificationsEnableLabel}
+          </button>
+        </div>
+
+        {settings.enabled && (
+          <div className="flex items-center justify-between gap-3">
+            <label htmlFor="notification-reminder-time" className="text-[13px]" style={{ color: "var(--color-text-primary)" }}>
+              {t.notificationsTimeLabel}
+            </label>
+            <input
+              id="notification-reminder-time"
+              type="time"
+              value={settings.times[0] ?? ""}
+              onChange={(e) => void handleTimeChange(e.target.value)}
+              className="rounded-lg border px-2 py-1 text-[13px]"
+              style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
+            />
+          </div>
+        )}
+
+        {!available && (
+          <p className="text-[11.5px] leading-[1.6]" style={{ color: "var(--color-text-muted)" }}>
+            {t.notificationsUnavailableNote}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Settings is otherwise empty today — Statistics is its first (and only)
 // section, reached as a sub-view rather than a new main navigation item,
 // per spec. BottomNav's own "settings" nav item is what lands here; this
@@ -570,6 +837,14 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
           <StatisticsView onBack={() => setView("menu")} />
         ) : view === "appearance" ? (
           <AppearanceSettings onBack={() => setView("menu")} />
+        ) : view === "floating-tasbeeh" ? (
+          <FloatingTasbeehView onBack={() => setView("menu")} />
+        ) : view === "notifications" ? (
+          <NotificationsView onBack={() => setView("menu")} />
+        ) : view === "location" ? (
+          <LocationSettingsView onBack={() => setView("menu")} />
+        ) : view === "calculation" ? (
+          <CalculationSettingsView onBack={() => setView("menu")} />
         ) : (
           <div className="flex flex-1 flex-col">
             <h1 className="mt-2 text-center text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}>
@@ -618,6 +893,98 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                   </span>
                   <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
                     {t.appearanceRowHint}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("floating-tasbeeh")}
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <Circle size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {t.floatingTasbeehRow}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {t.floatingTasbeehRowHint}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("notifications")}
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <Bell size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {t.notificationsRow}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {t.notificationsRowHint}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("location")}
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <MapPin size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {t.locationRow}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {t.locationRowHint}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("calculation")}
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <Compass size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {t.calculationRow}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {t.calculationRowHint}
                   </span>
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />

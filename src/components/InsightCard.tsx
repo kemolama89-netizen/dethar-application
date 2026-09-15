@@ -2,6 +2,11 @@ import { useLayoutEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { CardMotif } from "./CardMotif";
 
+export interface InsightCardDetail {
+  label: string;
+  value: string;
+}
+
 interface InsightCardProps {
   variant: "quran" | "hadith";
   icon: ReactNode;
@@ -10,9 +15,28 @@ interface InsightCardProps {
   verse?: string;
   verseReference?: string;
   body: string;
-  citation: string;
-  readMoreLabel: string;
-  onReadMore: () => void;
+  /** Quranic Insight card only: a single-line citation, shown as-is when
+   *  present. Only pass a value that's actually in the current interface
+   *  language — omit it when no localized value exists rather than
+   *  passing a different language's text (see App.tsx). */
+  citation?: string;
+  /** Hadith card only: structured takhrij/details rows (Source, Hadith
+   *  No., Grade, Grading Source, Narrator). Not rendered by this
+   *  component — ContentModal renders them, once the full-content overlay
+   *  is open (see App.tsx). Passed here only so its presence/length can
+   *  gate the "Show More" button's visibility: `hasDetails || isTruncated`
+   *  — i.e. governed by whether there's something to reveal, never by
+   *  Hadith text length alone (a short Hadith with full takhrij data must
+   *  still show the button). */
+  details?: InsightCardDetail[];
+  /** Label for the bottom-row button, shown whenever there's a citation to
+   *  show (Quran: "Read more"/"اقرأ المزيد") or `details`/overflow exist
+   *  (Hadith: "Show More"/"إظهار المزيد"). */
+  readMoreLabel?: string;
+  /** Opens the shared full-content overlay (ContentModal) for this card —
+   *  same dim-backdrop / centered-card / X-close presentation for both the
+   *  Quranic Insight and Hadith cards (see App.tsx). */
+  onReadMore?: () => void;
   className?: string;
 }
 
@@ -21,15 +45,15 @@ interface InsightCardProps {
 // gone, it's preserved as an exported helper (see src/lib/share.ts) ready
 // to be reattached to a future control.
 //
-// The body text is clamped to 2 lines (`line-clamp-2`) so the card's
-// height is predictable regardless of content length — a longer English
-// translation never grows the card, it just clips further, same as a
-// short Arabic sentence would. Whether the "Read more" button appears is
-// determined by actually measuring overflow (scrollHeight > clientHeight)
-// after render, not by guessing from character count, so it only shows up
-// when the clamp genuinely cut something off. It sits inline with the
-// citation (not on its own line) specifically so showing it never adds
-// any height to the card — no spacing changes were needed anywhere.
+// Both cards (Quranic Insight and Hadith) render the same way: a
+// 2-line-clamped body, an optional citation line, and — whenever there's
+// more to see (the clamp actually overflows, OR `details` exist even if
+// the clamp doesn't overflow) — a single button that opens the SAME
+// full-content overlay (ContentModal), never an inline expansion. Hadith
+// passes `details` (so its button also appears for a short Hadith with
+// full takhrij data) and no `citation`; Quranic Insight passes `citation`
+// and no `details`. Neither card renders `details`' rows itself — that's
+// ContentModal's job once open.
 export function InsightCard({
   variant,
   icon,
@@ -39,18 +63,22 @@ export function InsightCard({
   verseReference,
   body,
   citation,
+  details,
   readMoreLabel,
   onReadMore,
   className = "",
 }: InsightCardProps) {
   const bodyRef = useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
+  const hasDetails = Boolean(details && details.length > 0);
 
   useLayoutEffect(() => {
     const el = bodyRef.current;
     if (!el) return;
     setIsTruncated(el.scrollHeight > el.clientHeight + 1);
   }, [body]);
+
+  const hasBottomRow = Boolean(citation) || hasDetails || isTruncated;
 
   return (
     <div
@@ -104,24 +132,33 @@ export function InsightCard({
             {body}
           </p>
 
-          <div className="mt-px flex items-center justify-between gap-2">
-            <p className="min-w-0 truncate text-[12.5px]" style={{ color: "var(--color-text-muted)" }}>
-              {citation}
-            </p>
-
-            {isTruncated && (
-              <button
-                type="button"
-                onClick={onReadMore}
-                className="shrink-0 text-[12.5px] font-medium underline underline-offset-2"
-                style={{ color: "var(--color-gold)" }}
-              >
-                {readMoreLabel}
-              </button>
-            )}
-          </div>
+          {hasBottomRow && (
+            <div className="mt-px flex items-center justify-between gap-2">
+              {citation && (
+                <p className="min-w-0 truncate text-[12.5px]" style={{ color: "var(--color-text-muted)" }}>
+                  {citation}
+                </p>
+              )}
+              {(hasDetails || isTruncated) && (
+                <button
+                  type="button"
+                  onClick={onReadMore}
+                  className="shrink-0 text-[12.5px] font-medium underline underline-offset-2"
+                  style={{ color: "var(--color-gold)" }}
+                >
+                  {readMoreLabel}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
+        {/* The decorative side illustration stays on the collapsed card for
+            BOTH variants (this is the card's normal, unchanged visual
+            design). It's deliberately absent only from the expanded
+            full-content overlay (ContentModal) — a complete Hadith plus
+            five metadata rows next to that same image would read as busy —
+            never from this collapsed card. */}
         <CardMotif variant={variant} />
       </div>
     </div>

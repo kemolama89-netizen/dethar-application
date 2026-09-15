@@ -2,6 +2,9 @@
 // interface terminology only. Kept alongside the other per-feature label
 // files (writtenAdhkarLabels, tasbeehLabels) rather than content.ts, which
 // is Home-Screen-specific.
+import type { CalculationMethodId } from "../lib/calculationMethods";
+import type { MadhabId } from "../lib/resolveCalculationSettings";
+
 export const settingsLabels = {
   ar: {
     screenTitle: "الإعدادات",
@@ -43,6 +46,45 @@ export const settingsLabels = {
     colorsRowHint: "اختر تركيبة الألوان",
     colorsPageTitle: "الألوان",
     selectedPalette: "المُختار",
+    floatingTasbeehRow: "السبحة العائمة",
+    floatingTasbeehRowHint: "عداد سريع خارج التطبيق",
+    floatingTasbeehPageTitle: "السبحة العائمة",
+    floatingTasbeehComingSoonTitle: "قريبًا",
+    floatingTasbeehComingSoonBody:
+      "ستتيح لك هذه الميزة التسبيح بضغطة واحدة من خارج تطبيق دِثار، مع مزامنة كاملة مع إحصائياتك الحالية. نعمل على إتاحتها قريبًا.",
+    floatingTasbeehEnableLabel: "تفعيل",
+    floatingTasbeehDisableLabel: "إيقاف",
+    floatingTasbeehEnabledStatus: "مفعّلة — تظهر فوق التطبيقات الأخرى",
+    floatingTasbeehDisabledStatus: "متوقفة",
+    floatingTasbeehPermissionNeeded: "يلزم إذن \"الظهور فوق التطبيقات الأخرى\" لتفعيل هذه الميزة. سيُطلب منك هذا الإذن عند التفعيل.",
+    notificationsRow: "التذكيرات",
+    notificationsRowHint: "تذكير بالذكر في وقت تختاره",
+    notificationsPageTitle: "التذكيرات",
+    notificationsEnableLabel: "تفعيل",
+    notificationsDisableLabel: "إيقاف",
+    notificationsEnabledStatus: "مفعّلة",
+    notificationsDisabledStatus: "متوقفة",
+    notificationsTimeLabel: "وقت التذكير",
+    notificationsUnavailableNote: "سيتم تفعيل التذكيرات الفعلية عند توفرها في هذا الإصدار من التطبيق. يمكنك ضبط تفضيلك الآن.",
+    notificationsReminderTitle: "حان وقت الذكر",
+    notificationsReminderBody: "لا تنسَ وردك من التسبيح اليوم",
+    locationRow: "الموقع",
+    locationRowHint: "لحساب مواقيت الصلاة بدقة",
+    locationPageTitle: "الموقع",
+    locationCurrentLabel: "الموقع الحالي",
+    locationSourceManual: "مُحدَّد يدويًا",
+    locationSourceDevice: "عبر تحديد موقع الجهاز",
+    locationSourceFallback: "الموقع الافتراضي",
+    locationUseAutomatic: "استخدام الموقع التلقائي",
+    locationSearchPlaceholder: "ابحث عن مدينة أو دولة",
+    locationNoResults: "لا توجد نتائج مطابقة",
+    calculationRow: "طريقة الحساب والمذهب",
+    calculationRowHint: "اختر طريقة حساب المواقيت والمذهب الفقهي",
+    calculationPageTitle: "طريقة الحساب والمذهب",
+    calculationMethodSectionTitle: "طريقة الحساب",
+    calculationMadhabSectionTitle: "المذهب الفقهي",
+    calculationAutomaticLabel: "تلقائي (حسب الدولة)",
+    calculationAutomaticResolvedHint: (name: string) => `يُستخدم حاليًا: ${name}`,
   },
   en: {
     screenTitle: "Settings",
@@ -84,5 +126,74 @@ export const settingsLabels = {
     colorsRowHint: "Choose a color palette",
     colorsPageTitle: "Colors",
     selectedPalette: "Selected",
+    floatingTasbeehRow: "Floating Tasbeeh",
+    floatingTasbeehRowHint: "Quick counting outside the app",
+    floatingTasbeehPageTitle: "Floating Tasbeeh",
+    floatingTasbeehComingSoonTitle: "Coming soon",
+    floatingTasbeehComingSoonBody:
+      "This feature will let you count Tasbeeh with a single tap from outside DITHAR, fully synced with your existing statistics. We're working on bringing it to you soon.",
+    floatingTasbeehEnableLabel: "Enable",
+    floatingTasbeehDisableLabel: "Disable",
+    floatingTasbeehEnabledStatus: "Enabled — showing over other apps",
+    floatingTasbeehDisabledStatus: "Disabled",
+    floatingTasbeehPermissionNeeded: 'This feature needs the "Display over other apps" permission. You\'ll be asked for it when you enable it.',
+    notificationsRow: "Reminders",
+    notificationsRowHint: "A dhikr reminder at a time you choose",
+    notificationsPageTitle: "Reminders",
+    notificationsEnableLabel: "Enable",
+    notificationsDisableLabel: "Disable",
+    notificationsEnabledStatus: "Enabled",
+    notificationsDisabledStatus: "Disabled",
+    notificationsTimeLabel: "Reminder time",
+    notificationsUnavailableNote: "Actual reminders will activate once available in this build. You can set your preference now.",
+    notificationsReminderTitle: "Time to remember Allah",
+    notificationsReminderBody: "Don't forget your Tasbeeh wird today",
+    locationRow: "Location",
+    locationRowHint: "For accurate prayer-time calculation",
+    locationPageTitle: "Location",
+    locationCurrentLabel: "Current location",
+    locationSourceManual: "Manually selected",
+    locationSourceDevice: "Via device location",
+    locationSourceFallback: "Default location",
+    locationUseAutomatic: "Use automatic location",
+    locationSearchPlaceholder: "Search for a city or country",
+    locationNoResults: "No matching results",
+    calculationRow: "Calculation Method & Madhab",
+    calculationRowHint: "Choose the calculation method and madhab",
+    calculationPageTitle: "Calculation Method & Madhab",
+    calculationMethodSectionTitle: "Calculation Method",
+    calculationMadhabSectionTitle: "Madhab",
+    calculationAutomaticLabel: "Automatic (by country)",
+    calculationAutomaticResolvedHint: (name: string) => `Currently using: ${name}`,
   },
+};
+
+// Localized display names for every calculation method the registry
+// supports (see calculationMethods.ts's own SUPPORTED_CALCULATION_METHODS)
+// — kept here, not in the lib file, since lib/ is deliberately UI-string-free
+// (same separation the rest of this file already follows for settingsLabels
+// itself). English names follow each method's own commonly-used name;
+// Arabic names are the corresponding standard translation, not an official
+// religious-authority ruling — same "reasonable, widely-used" disclaimer
+// countryCalculationMethod.ts's own table already documents.
+export const calculationMethodLabels: Record<CalculationMethodId, { ar: string; en: string }> = {
+  MuslimWorldLeague: { ar: "رابطة العالم الإسلامي", en: "Muslim World League" },
+  Egyptian: { ar: "الهيئة المصرية العامة للمساحة", en: "Egyptian General Authority of Survey" },
+  Karachi: { ar: "جامعة العلوم الإسلامية - كراتشي", en: "University of Islamic Sciences, Karachi" },
+  UmmAlQura: { ar: "جامعة أم القرى - مكة المكرمة", en: "Umm Al-Qura University, Makkah" },
+  Dubai: { ar: "دبي (الإمارات)", en: "Dubai (UAE)" },
+  MoonsightingCommittee: { ar: "لجنة رؤية الهلال العالمية", en: "Moonsighting Committee Worldwide" },
+  NorthAmerica: { ar: "الجمعية الإسلامية لأمريكا الشمالية (ISNA)", en: "Islamic Society of North America (ISNA)" },
+  Kuwait: { ar: "الكويت", en: "Kuwait" },
+  Qatar: { ar: "قطر", en: "Qatar" },
+  Singapore: { ar: "سنغافورة (MUIS)", en: "Singapore (MUIS)" },
+  Tehran: { ar: "طهران (معهد الجيوفيزياء)", en: "Tehran (Institute of Geophysics)" },
+  Turkey: { ar: "تركيا (ديانت)", en: "Turkey (Diyanet)" },
+};
+
+// Localized display names for the two madhabs resolveCalculationSettings.ts
+// supports (see its own MadhabId type).
+export const madhabLabels: Record<MadhabId, { ar: string; en: string }> = {
+  shafi: { ar: "الشافعي (وغالبية المذاهب)", en: "Shafi'i (and most schools)" },
+  hanafi: { ar: "الحنفي", en: "Hanafi" },
 };

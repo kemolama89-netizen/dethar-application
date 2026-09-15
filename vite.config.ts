@@ -14,7 +14,7 @@ export default defineConfig(({ command, isPreview }) => ({
   // path — the exact "MIME type text/html instead of text/css" symptom).
   // Only the real dev server (Codespaces port forwarding, etc.), served
   // from the domain root, needs base '/'.
-  base: command === 'build' || isPreview ? '/dethar-application/' : '/',
+  base: command === 'build' || isPreview ? './' : '/',
   plugins: [react(), tailwindcss()],
   // Without this, `vite`/`vite preview` bind to localhost only (its own
   // startup log even says "Network: use --host to expose") — a listener

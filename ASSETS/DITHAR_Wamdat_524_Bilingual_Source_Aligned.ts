@@ -1,0 +1,4198 @@
+// DITHAR — Qur’anic Reflections / ومضات القرآن
+// 524 entries. Arabic is the revised source-aligned working version.
+// English is the corresponding working rendering. Entry 405 remains blank because its Arabic reflection is blank in the reviewed source.
+
+export const DITHAR_WAMDAt_524_BILINGUAL = [
+  {
+    "id": 1,
+    "surah": "الفاتحة",
+    "ayah": "{الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ * الرَّحْمَنِ الرَّحِيمِ * مَالِكِ يَوْمِ الدِّينِ * إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ}",
+    "insightAr": "سر التفات الخطاب؛ ابتدأت السورة بأسلوب الغيبة ({الْحمدُ لله}) تعظيماً بذكر صفات الجلال والجمال، فلما أقر العبد بربوبية ربه وتأهلت نفسه للمناجاة، خاطبه مباشرة بضمير الحاضر فقال: {إِيَّاكَ نَعْبُدُ} لبيان شدة القرب والاتصال الباطن.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The subtle shift in address: the surah begins in the third person, mentioning Allah through His attributes of majesty and beauty. Once the servant acknowledges his Lord’s lordship and becomes ready for intimate supplication, he is addressed directly: “You alone we worship,” conveying profound closeness and inward connection."
+  },
+  {
+    "id": 2,
+    "surah": "الفاتحة",
+    "ayah": "{إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ}",
+    "insightAr": "قُدِّمت العبادة على الاستعانة لأن العبادة هي الغاية الأسمى التي خُلق الخلق لأجلها، والاستعانة هي الوسيلة والطلب للمدد البشري إليها. وتقديم الغايات على الوسائل هو الأصل في البلاغة ونظم الكلام.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Worship is placed before seeking help because worship is the highest purpose for which creation was made, while seeking help is the means by which that purpose is pursued. In eloquent expression, the ultimate aims are normally presented before the means that serve them."
+  },
+  {
+    "id": 3,
+    "surah": "البقرة",
+    "ayah": "{وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ} [الآية 186]",
+    "insightAr": "بيان قرب الله من عباده وإجابته دعاء من دعاه، مع أمرهم بالاستجابة له والإيمان به رجاءَ الرشد والهداية.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "This verse shows Allah’s nearness to His servants and His answering the supplication of whoever calls upon Him, while commanding them to respond to Him and believe in Him so that they may attain right guidance."
+  },
+  {
+    "id": 4,
+    "surah": "البقرة",
+    "ayah": "{الشَّيْطَانُ يَعِدُكُمُ الْفَقْرَ وَيَأْمُرُكُم بِالْفَحْشَاءِ وَاللَّهُ يَعِدُكُم مَّغْفِرَةً مِّنْهُ وَفَضْلًا} [الآية 268]",
+    "insightAr": "يخوّف الشيطان من الفقر ليصدّ عن الصدقة، ويعد الله بالمغفرة والفضل، ويخلف على المنفق من صدقته ويوسع عليه في رزقه.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Satan frightens people with poverty to deter them from charity, while Allah promises forgiveness and bounty, and replaces what the giver spends with provision and increase."
+  },
+  {
+    "id": 5,
+    "surah": "البقرة",
+    "ayah": "{وَانظُرْ إِلَى الْعِظَامِ كَيْفَ نُنشِزُهَا ثُمَّ نَكْسُوهَا لَحْمًا} [الآية 259]",
+    "insightAr": "عبّر القرآن بلفظ {نَكْسُوهَا}؛ لأن اللحم يحيط بالعظم ويستره ويجمّله تماماً كالثوب والكسوة الفاخرة للجسد البشري، وهي دلالة على دقة النظم ولطيف التشبيه الحسي ال",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The Qur’an uses the expression “We clothe them with flesh,” because flesh surrounds and covers the bones much like clothing covers and adorns the human body. The wording reflects the precision of Qur’anic composition and its vivid sensory analogy."
+  },
+  {
+    "id": 6,
+    "surah": "البقرة",
+    "ayah": "{الَّذِينَ يُنفِقُونَ أَمْوَالَهُم بِاللَّيْلِ وَالنَّهَارِ سِرًّا وَعَلَانِيَةً فَلَهُمْ أَجْرُهُمْ عِندَ رَبِّهِمْ} [الآية 274]",
+    "insightAr": "ذكر الإنفاق في الليل والنهار، سرًّا وعلانيةً، ليشمل أحوال الإنفاق وأوقاته كلها، وللمؤمن أجره عند ربه.",
+    "source": "البحر المحيط في التفسير - أبو حيان الأندلسي.",
+    "insightEn": "Allah mentions spending at night and by day, secretly and openly, encompassing the different times and circumstances of giving; for them is their reward with their Lord."
+  },
+  {
+    "id": 7,
+    "surah": "البقرة",
+    "ayah": "{فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ} [الآية 152]",
+    "insightAr": "ما رتب الله جزاءً أعظم من هذا الجزاء؛ أن يكون جزاء ذكرك لله، هو ذكر ملك الملوك لك في ملأ خير من ملئك البشري الضعيف. وبدأ بالذكر لأنه سبب الشكر وقيد النعم وثبات السكينة.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "Allah has not arranged a greater reward than this: the reward for remembering Allah is that the King of kings remembers you in an assembly better than any human gathering. Dhikr is mentioned first because it leads to gratitude, preserves blessings, and establishes tranquility."
+  },
+  {
+    "id": 8,
+    "surah": "البقرة",
+    "ayah": "{وَلَنَبْلُوَنَّكُم بِشَيْءٍ مِّنَ الْخَوْفِ وَالْجُوعِ وَنَقْصٍ مِّنَ الْأَمْوَالِ وَالْأَنفُسِ وَالثَّمَرَاتِ وَبَشِّرِ الصَّابِرِينَ}[الآية 155]",
+    "insightAr": "إخبار بابتلاء أتباع الرسول بشدائد من الخوف والجوع ونقص الأموال والأنفس والثمرات، ثم بشارة الصابرين.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Allah informs the believers that they will be tested with hardships such as fear, hunger, and loss of wealth, lives, and fruits, then gives glad tidings to those who remain patient."
+  },
+  {
+    "id": 9,
+    "surah": "البقرة",
+    "ayah": "{كُتِبَ عَلَيْكُمُ الْقِتَالُ وَهُوَ كُرْهٌ لَّكُمْ وَعَسَى أَن تَكْرَهُوا شَيْئًا وَهو خَيْرٌ لَّكُمْ} [الآية 216]",
+    "insightAr": "الاعتراف بالفطرة والتسليم للتدبير الخفي؛ لم ينكر الله الوجع البشري ال. لكنه وضع القاعدة الكبرى ل",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "Acknowledging human nature while submitting to Allah’s hidden wisdom: Allah does not deny the natural pain of hardship, saying, “It is hateful to you.” The human soul recoils from pain and death, yet the verse establishes the great principle for facing crises: limited human knowledge cannot see what lies beyond the veil, and many trials contain gifts that transform the course of life."
+  },
+  {
+    "id": 10,
+    "surah": "البقرة",
+    "ayah": "{اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ} [الآية 255]",
+    "insightAr": "نفى الله عن نفسه السِّنة والنوم، وفي ذلك بيان كمال حياته وقيوميته؛ فلا يعتريه نعاس ولا نوم.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Allah denies from Himself both drowsiness and sleep, showing the perfection of His life and His sustaining care; neither drowsiness nor sleep overtakes Him."
+  },
+  {
+    "id": 11,
+    "surah": "البقرة",
+    "ayah": "{وَمِنَ النَّاسِ مَن يَشْرِي نَفْسَهُ ابْتِغَاءَ مَرْضَاتِ اللَّهِ وَاللَّهُ رَءُوفٌ بِالْعِبَادِ} [الآية 207]",
+    "insightAr": "دقة لفظ الشراء؛ {يَشْرِي} في لغة العرب تعني \"يبيع\"؛ أي يبيع نفسه وروحه بالكامل ويتخلى عن حظوظه الدنيوية في مقابل نيل مرضاة الله الخالصة، فكان الجزاء اقتران الأمر برأفة الله بالعباد ثباتاً وتكريماً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The precision of the word “yashrī”: in Arabic it can mean “to sell.” Thus the person sells himself and his soul completely, giving up worldly interests in exchange for seeking Allah’s pleasure. The passage then joins this sacrifice with Allah’s gentleness toward His servants, as steadfastness and honor."
+  },
+  {
+    "id": 12,
+    "surah": "البقرة",
+    "ayah": "{يَمْحَقُ اللَّهُ الرِّبَا وَيُرْبِي الصَّدَقَاتِ وَاللَّهُ لَا يُحِبُّ كُلَّ كَفَّارٍ أَثِيمٍ} [الآية 276]",
+    "insightAr": "يمحق الله الربا بإذهاب المال أو بحرمانه من البركة، وإن كثر ظاهره فمآله إلى القلة؛ وينمي الصدقات ويكثرها.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Allah causes usury to lose its wealth or its blessing; even when it appears abundant, its end is diminution. He increases and multiplies charitable giving."
+  },
+  {
+    "id": 13,
+    "surah": "البقرة",
+    "ayah": "{لَا إِكْرَاهَ فِي الدِّينِ قَد تَّبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ} [الآية 256]",
+    "insightAr": "احترام حرية الإرادة البشرية؛ جعل الله الإيمان مبنياً على القناعة القلبية التامة والوعي وليس القسر والإجبار الحسي؛ لأن الإكراه ينتج نفاقاً باطناً، والدين يطلب صدق السريرة وتطابقها مع العلانية أولاً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Respect for freedom of human choice: Allah makes faith rest upon full conviction of the heart and awareness, not physical coercion. Coercion produces inward hypocrisy, whereas religion calls for sincerity within and consistency between the inner state and outward conduct."
+  },
+  {
+    "id": 14,
+    "surah": "البقرة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَذَرُوا مَا بَقِيَ مِنَ الرِّبَا إِن كُنتُم مُّؤْمِنِينَ} [الآية 278]",
+    "insightAr": "أمر الله المؤمنين بترك ما بقي من الربا، وربط ذلك بالتقوى والإيمان، ونهى عن الاستمرار في المعاملة الربوية.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Allah commands believers to give up what remains of usury, linking this command to piety and faith, and forbids continuing in usurious dealings."
+  },
+  {
+    "id": 15,
+    "surah": "البقرة",
+    "ayah": "{وَاتَّقُوا يَوْمًا تُرْجَعُونَ فِيهِ إِلَى اللَّهِ ثُمَّ تُوَفَّى كُلُّ نَفْسٍ مَّا كَسَبَتْ وَهُمْ لَا يُظْلَمُونَ} [الآية 281]",
+    "insightAr": "تذكير بالرجوع إلى الله وبتوفية كل نفس ما كسبت، مع تقرير العدل وأن الناس لا يُظلمون.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A reminder to return to Allah and that every soul will be fully repaid for what it has earned, affirming Allah’s justice and that no one will be wronged."
+  },
+  {
+    "id": 16,
+    "surah": "آل عمران",
+    "ayah": "{قَالَتْ رَبِّ أَنَّى يَكُونُ لِي غُلَامٌ وَقَدْ بَلَغَنِيَ الْكِبَرُ وَامْرَأَتِي عَاقِرٌ} [الآية 40]",
+    "insightAr": "في قصة زكريا وامرأته وُصفت بأنها {عَاقِرٌ}، بينما في سورة الذاريات وُصفت سارة امرأة إبرهيم بأنها {عَقِيمٌ}. والفرق اللغوي الدقيق: أن \"العاقر\" هي المرأة التي لا تلد في أول أمرها لكن قد يزول المانع وتلد بمعجزة، أما \"العقيم\" فهي التي انقطع رجاء ولادتها تماماً ليأسها.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "In the story of Zakariyya and his wife, she is described as “ʿāqir,” whereas Sarah, Abraham’s wife, is described elsewhere as “ʿaqīm.” The linguistic distinction presented here is that “ʿāqir” describes a woman who does not give birth at first but whose impediment may be removed and who may bear a child miraculously, whereas “ʿaqīm” denotes one for whom the hope of childbirth has been completely cut off."
+  },
+  {
+    "id": 17,
+    "surah": "آل عمران",
+    "ayah": "{كُلَّمَا دَخَلَ عَلَيْهَا زَكَرِيَّا الْمِحْرَابَ وَجَدَ عِندَهَا رِزْقًا} [الآية 37]",
+    "insightAr": "دلّت الآية بياناً وتربية على أن ملازمة المحراب (مكان العبادة، والانقطاع التام لله، ومحاربة شواغل الدنيا) من أعظم جالبات الرزق الحسي والمعنوي من حيث لا يحتسب العبد وبخرق الموازين ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The verse conveys, as guidance and spiritual training, that remaining devoted to the prayer chamber—the place of worship, complete dedication to Allah, and resistance to worldly distractions—is among the greatest means of receiving both material and spiritual provision from unexpected sources, beyond the servant’s usual calculations."
+  },
+  {
+    "id": 18,
+    "surah": "آل عمران",
+    "ayah": "{قُلِ اللَّهُمَّ مَالِكُ الْمُلْكِ تُؤْتِي الْمُلْكَ مَن تَشَاءُ وَتَنزِعُ الْمُلْكَ مِمَّن تَشَاءُ} [الآية 26]",
+    "insightAr": "استخدم القرآن لفظ {تُؤْتِي} مع المنح ولفظ {وَتَنزِعُ} مع الأخذ. والنزع في اللغة يكون للشيء المتجذر المثبت بقوة (كنزع السن أو قلع الشجرة). وفي هذا دلالة بلاغية و.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The Qur’an uses “You grant” when mentioning the giving of authority and “You wrest” when mentioning its removal. In Arabic, wresting suggests pulling away something deeply rooted and firmly held, such as extracting a tooth or uprooting a tree. This gives a rhetorical and psychological picture: people cling strongly to positions of power, but when Allah decrees their removal, He takes them away despite every worldly precaution."
+  },
+  {
+    "id": 19,
+    "surah": "آل عمران",
+    "ayah": "{إِذْ قَالَتِ امْرَأَتُ عِمْرَانَ رَبِّ إِنِّي نَذَرْتُ لَكَ مَا فِي بَطْنِي مُحَرَّرًا فَتَقَبَّلْ مِنِّي} [الآية 35]",
+    "insightAr": "تجريد النية قبل الولادة؛ امرأة عمران جردت النية وجعلت جنينها خالصاً لخدمة دين الله والمسجد {مُحَرَّرًا} (أي معتقاً من شواغل الدنيا).",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Purifying intention before birth: the wife of ʿImran dedicated her unborn child sincerely to the service of Allah and His sanctuary, describing the child as “freed” from worldly preoccupation. The reflection reminds parents to rectify their intentions concerning their children rather than raising them solely for worldly competition and material advancement."
+  },
+  {
+    "id": 20,
+    "surah": "آل عمران",
+    "ayah": "{فَبِمَا رَحْمَةٍ مِّنَ اللَّهِ لِنتَ لَهُمْ وَلَوْ كُنتَ فَظًّا غَلِيظَ الْقَلْبِ لَانفَضُّوا مِنْ حَوْلِكَ} [الآية 159]",
+    "insightAr": "يحلل القرآن أسباب التفاف الناس حول القائد أو المربي والوالد؛ فـ {الِّلين} والرفق هما محض رحمة إلهية. وحذر الله نبيه المعصوم والمؤيد بالوحي أن فظاظة اللسان وجفاء وغلظة القلب كفيلان بنسف التلاحم وهرب الأتباع وانفضاضهم من حوله.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "A principle for attractive leadership and a warning against emotional harshness: the Qur’an explains why people gather around a leader, teacher, or parent. Gentleness and kindness are a manifestation of divine mercy, while harsh speech and a hard heart can destroy cohesion and drive followers away."
+  },
+  {
+    "id": 21,
+    "surah": "آل عمران",
+    "ayah": "{شَهِدَ اللَّهُ أَنَّهُ لَا إِلَهَ إِلَّا هُوَ وَالْمَلَائِكَةُ وَأُولُو الْعِلْمِ قَائِمًا بِالْقِسْطِ} [الآية 18]",
+    "insightAr": "شرف العلم وأهله بالاقتران الإلهي؛ في هذه الآية تعديل وتزكية وعلو رتبة لأهل العلم؛ حيث قرن الله شهادتهم بشهادته سبحانه وشهادة الملائكة المقربين على أعظم مشهود وهو التوحيد وعدالة الملك وقائم القسط.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The honor of knowledge and its people through divine association: the verse elevates the status of people of knowledge by mentioning their testimony alongside Allah’s testimony and that of the angels concerning the greatest truth testified to—the oneness of Allah and His establishment of justice."
+  },
+  {
+    "id": 22,
+    "surah": "آل عمران",
+    "ayah": "{فَتَقَبَّلَهَا رَبُّهَا بِقَبُولٍ حَسَنٍ وَأَنبَتَهَا نَبَاتًا حَسَنًا وَكَفَّلَهَا زَكَرِيَّا} [الآية 37]",
+    "insightAr": "استعارة \"الإنبات\" للنمو البشري؛ شبّه الله نمو مريم عليها السلام الأخلاقي والجسدي وال؛ والنبات الحسن يحتاج إلى بذرة طيبة، وتربة خصبة، وسقاية مستمرة، ورعاية من الآفات. فكذلك الطفل البشري يحتاج إلى بيئة صالحة ورعاية مستمرة لتثمر فطرته خيراً نقياً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The metaphor of “growth” for human development: Allah describes Maryam’s moral, physical, and psychological growth as “good growth.” Good growth requires a sound seed, fertile soil, continuous watering, and protection from harm. Likewise, a child needs a righteous environment and sustained care for his innate nature to flourish in goodness."
+  },
+  {
+    "id": 23,
+    "surah": "آل عمران",
+    "ayah": "{وَمَا مُحَمَّدٌ إِلَّا رَسُولٌ قَدْ خَلَتْ مِن قَبْلِهِ الرُّسُلُ أَفَإِن مَّاتَ أَوْ قُتِلَ انقَلَبْتُمْ عَلَى أَعْقَابِكُمْ} [الآية 144]",
+    "insightAr": "الارتباط بالمبادئ لا بالأشخاص؛ نزلت هذه الصدمة القرآنية التثبيتية أثناء شائعة مقتل النبي في غزوة أحد واضطراب نفوس الصحابة. فوضع الله القاعدة التاريخية وال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Commitment to principles rather than personalities: this powerful Qur’anic reminder was revealed amid the shock and confusion caused by the rumor of the Prophet’s death at Uhud. It establishes a lasting principle: great causes, messages, and principles remain, while people depart. A Muslim’s loyalty should therefore be to truth, not to individuals, lest the absence of a symbol cause him to turn back."
+  },
+  {
+    "id": 24,
+    "surah": "آل عمران",
+    "ayah": "{لَن تَنَالُوا الْبِرَّ حَتَّى تُنفِقُوا مِمَّا تُحِبُّونَ وَمَا تُنفِقُوا مِن شَيْءٍ فَإِنَّ اللَّهَ بِهِ عَلِيمٌ} [الآية 92]",
+    "insightAr": "معيار العطاء الفاضل الكاسر لشح النفس؛ لم يقل أنفقوا فقط بل قيدها بشرط {مِمَّا تُحِبُّونَ}؛ لأن الإنفاق من فواضل الأموال أو الرديء سهل لا يوجع النفس البشريّة، أما التضحية بما تحبه وتتعلق به الروح فهو المحك الحقيقي لبلوغ حقيقة البر والسكينة والارتقاء الإيماني.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The standard of excellent giving that breaks the soul’s attachment to wealth: the command is not simply to spend, but to spend “from what you love.” Giving surplus or inferior possessions is easy and may not challenge the human soul; sacrificing something one truly loves is the real test of attaining the reality of righteousness, tranquility, and spiritual growth."
+  },
+  {
+    "id": 25,
+    "surah": "آل عمران",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا اصْبِرُوا وَصَابِرُوا وَرَابِطُوا وَاتَّقُوا اللَّهَ لَعَلَّكُمْ تُفْلَحُونَ} [الآية 200]",
+    "insightAr": "التدرج والترقي في مشاق مجاهدة النفس؛ ختام آل عمران يضع درجات الثبات الإيماني متصاعدة: {اصْبِرُوا} على طاعة الله ونفسك، {وَصَابِرُوا} خصومكم وأعداء الحق في الميدان الفكري والعسكري، {وَرَابِطُوا} أثبتوا والزموا ثغور الثبات واليقين دون تزحزح، والعلة الكبرى الحامية هي التقوى.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "A progression in the struggle against the self: the close of Āl ʿImrān presents ascending levels of steadfastness—“Be patient” in obeying Allah and restraining yourself; “outdo others in patience” in facing opponents and enemies of truth; and “remain steadfast” at the posts of faith and certainty without retreat. The protecting principle behind all of this is taqwā."
+  },
+  {
+    "id": 26,
+    "surah": "النساء",
+    "ayah": "{يُرِيدُ اللَّهُ أَن يُخَفِّفَ عَنكُمْ وَخُلِقَ الْإِنسَانُ ضَعِيفًا} [الآية 28]",
+    "insightAr": "جاءت آية التخفيف والرحمة مباشرة بعد آيات تفصيل الأحكام والمحرمات في النكاح والأسر؛ لتبين أن التكاليف الشرعية لم تأتِ لإعنات البشر أو التضييق الحسي عليهم، وإنما لمراعاة ضعفهم البشري الفطري الجبلي وحفظ استقرار طاقتهم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The verse of easing and mercy comes directly after detailed rulings and prohibitions concerning marriage and family matters, showing that the sacred laws were not revealed to burden or physically constrain people. Rather, they take account of innate human weakness and protect the stability of human capacity."
+  },
+  {
+    "id": 27,
+    "surah": "النساء",
+    "ayah": "{وَلْيَخْشَ الَّذِينَ لَوْ تَرَكُوا مِنْ خَلْفِمْ ذُرِّيَّةً ضِعَافًا خَافُوا عَلَيْهِمْ فَلْيَتَّقُوا اللَّهَ وَلْيَقُولُوا قَوْلًا سَدِيدًا} [الآية 9]",
+    "insightAr": "تأمين مستقبل الذرية بالتقوى الباطنة؛ الخوف ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Securing the future of one’s children through inward taqwā: natural concern for vulnerable children is not solved by accumulating wealth or relying on material means alone. The true safeguard by which Allah may preserve one’s children after one’s departure is one’s own commitment to taqwā and truthful, upright speech. Righteousness becomes security extending across generations."
+  },
+  {
+    "id": 28,
+    "surah": "النساء",
+    "ayah": "{إِنَّمَا التَّوْبَةُ عَلَى اللَّهِ لِلَّذِينَ يَعْمَلُونَ السُّوءَ بِجَهَالَةٍ ثُمَّ يَتُوبُونَ مِن قَرِيبٍ} [الآية 17]",
+    "insightAr": "معنى \"الجهالة\" في ارتكاب الذنوب؛ قال الصحابة: \"كل من عصى الله فهو جاهل\". فالجهالة هنا لا تعني عدم معرفة بالحرمة الشرعية، بل تعني غلبة الشهوة على العقل وسفه النفس وقت فعل المعصية، وفتح الله باب الأمل بقيد {ثُمَّ يَتُوبُونَ مِن قَرِيبٍ}؛ وكل وقت قبل معاينة الموت وسكراته يسمى قريباً في كرم الله السابغ.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The meaning of “ignorance” when committing sins: the Companions said that everyone who disobeys Allah is ignorant. Here ignorance does not necessarily mean being unaware that something is forbidden; it refers to desire overpowering reason and the soul acting foolishly at the moment of sin. The door of hope remains open through repentance soon after the sin—indeed, every time before death is “soon” in Allah’s vast mercy."
+  },
+  {
+    "id": 29,
+    "surah": "النساء",
+    "ayah": "{وَمَن يُهَاجِرْ فِي سَبِيلِ اللَّهِ يَجِدْ فِي الْأَرْضِ مُرَاغَمًا كَثِيرًا وَسَعَةً} [الآية 100]",
+    "insightAr": "الأثر الدنيوي لترك بيئة السوء والمشقة؛ \"المراغم\" هو المكان الذي يجد فيه الإنسان فرصة لإرغام أنوف الأعداء والمثبطين بنجاحه وتفوقه. تعد الآية كل من يملك شجاعة التغيير وترك بيئات السوء، أو العمل الفاسد، أو أرض الاضطهاد إبتغاء مرضاة الله، بأن الله سيفتح له مساحات رحبة من الرزق والحرية والراحة ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The worldly effect of leaving a harmful environment: “murāgham” refers to a place where a person can frustrate his enemies and detractors through success. The verse promises that whoever has the courage to change, leave corrupt environments or oppressive circumstances, and seek Allah’s pleasure will find wider opportunities for provision, freedom, and inner peace."
+  },
+  {
+    "id": 30,
+    "surah": "النساء",
+    "ayah": "{مَّا يَفْعَلُ اللَّهُ بِعَذَابِكُمْ إِن شَكَرْتُمْ وَآمَنتُمْ وَكَانُ اللَّهُ شَاكِرًا عَلِيمًا} [الآية 147]",
+    "insightAr": "انتفاء رغبة التعذيب والتودد الإلهي البديع؛ استفهام إنكاري يقدم دلالة عقدية و.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The negation of any desire to punish and the beauty of divine graciousness: the rhetorical question carries an important theological and psychological meaning—Allah is independent of human beings’ punishment and does not delight in their suffering. Duties and punishments are not meant to torment; gratitude in speech and action together with faith in the heart can lift affliction, while describing Allah as “Grateful” conveys gracious appreciation of the servant’s effort."
+  },
+  {
+    "id": 31,
+    "surah": "المائدة",
+    "ayah": "{فَتَطَوَّعَتْ لَهُ نَفْسُهُ قَتْلَ أَخِيهِ فَقَتَلَهُ فَأَصْبَحَ مِنَ الْخَاسِرِينَ} [الآية 30]",
+    "insightAr": "استخدام لفظ {فَتَطَوَّعَتْ}؛ يشير بياناً وتشخيصاً إلى أن الجريمة لم تكن سهلة على النفس البشري في البداية لردع الفطرة، بل تطلبت دحرجة، وتزييناً، ومراودة مستمرة من النفس الأمارة بالسوء حتى انقادت وطاعت في النهاية لفعل الشنيع.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The use of “it became willing for him”: the expression portrays the crime as something the human soul did not readily accept at first. It required gradual manipulation, beautification, and repeated urging from the soul inclined to evil until it finally submitted to the horrific act."
+  },
+  {
+    "id": 32,
+    "surah": "المائدة",
+    "ayah": "{قُل لَّا يَسْتَوِي الْخَبِيثُ وَالطَّيِّبُ وَلَوْ أَعْجَبَكَ كَثْرَةُ الْخَبِيثِ} [الآية 100]",
+    "insightAr": "وهم الكثرة وضغط المجتمع؛ تصحح الآية معياراً. ويؤكد القرآن أن القيمة للنوعية والنقاء وليس للكمية، ودعا العقلاء للثبات على الطيب وإن قل أتباعه.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The illusion of numbers and social pressure: the verse corrects a psychological and social error. Human beings naturally tend to follow widespread behavior even when it is wrong. The Qur’an affirms that value lies in quality and purity, not quantity, and calls people of sound judgment to remain committed to what is good even when its followers are few."
+  },
+  {
+    "id": 33,
+    "surah": "المائدة",
+    "ayah": "{وَلَا يَجْرِمَنَّكُمْ شَنَآنُ قَوْمٍ عَلَى أَلَّا تَعْدِلُوا اعْدِلُوا هُوَ أَقْرَبُ لِلتَّقْوَى } [الآية 8]",
+    "insightAr": "\"الشنآن\" هو شدة البغض والعداوة. يضع القرآن دستوراً أخلاقياً صارماً: لا يجوز للمسلم أن يدفعه كرهه الشديد لشخص، أو طائفة، أو خصم سياسي إلى ظلمه أو بخسه حقه. وجعل الله العدل مع الأعداء والخصوم هو البوابة الأقرب لتحقيق حقيقة التقوى الباطنة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The highest level of impartial justice: “shanāʾān” means intense hatred and hostility. The Qur’an establishes a strict ethical principle: hatred of a person, group, or political opponent must never drive a Muslim to wrong them or deny them their rights. Justice even toward enemies is presented as one of the closest paths to genuine taqwā."
+  },
+  {
+    "id": 34,
+    "surah": "المائدة",
+    "ayah": "{لَئِن بَسَطتَ إِلَيَّ يَدَكَ لِتَقْتُلَنِي مَا أَنَا بِبَاسِطٍ يَدِيَ إِلَيْكَ لِأَقْتُلَكَ إِنِّي أَخَافُ اللَّهَ رَبَّ الْعَالَمِينَ} [الآية 28]",
+    "insightAr": "كبح جماح الانتقام بالخوف الإلهي؛ في حوار ابني آدم، ضرب الأخ الصالح",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Restraining revenge through fear of Allah: in the dialogue between Adam’s two sons, the righteous brother gives a powerful example of inner peace and piety amid conflict. He does not answer a threat and aggression with the same aggression; instead, he restrains his instinct for violent retaliation and explains that his restraint is motivated by reverence for Allah."
+  },
+  {
+    "id": 35,
+    "surah": "المائدة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا لَا تَسْأَلُوا عَنْ أَشْيَاءَ إِن تُبْدَ لَكُمْ تَسُؤْكُمْ} [الآية 101]",
+    "insightAr": "نهى الله عن كثرة السؤال عما يسوءهم أو يشق عليهم، وبيّن أن السؤال عما لم ينزل به حكم قد يكون سببًا في التشديد عليهم.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Allah forbids excessive questioning about matters that may cause hardship, and explains that asking about matters for which no ruling has been revealed may become a cause of imposing further difficulty."
+  },
+  {
+    "id": 36,
+    "surah": "الأنعام",
+    "ayah": "{قُلْ سِيرُوا فِي الْأَرْضِ ثُمَّ انظُرُوا كَيْفَ كَانَ عَاقِبَةُ الْمُكَذِّبِينَ} [الآية 11]",
+    "insightAr": "التعبير بـ {ثُمَّ انظُرُوا} تفيد التراخي البلاغي؛ لأن النظر المذكور هنا هو نظر تفكر، واعتبار، وعقل عميق يتطلب وقتاً وتأمل بعد السير، وليس مجرد رؤية بصرية خاطفة عابرة.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The expression “then look” conveys rhetorical delay: the intended looking is not a fleeting visual glance, but reflection, consideration, and deep thought that requires time and contemplation after traveling through the land."
+  },
+  {
+    "id": 37,
+    "surah": "الأنعام",
+    "ayah": "{وَهُ الَّذِي يَتَوَفَّاكُم بِاللَّيْلِ وَيَعْلَمُ مَا جَرَحْتُم بِالنَّهَارِ} [الآية 60]",
+    "insightAr": "عبر عن الذنوب والمعاصي والسيئات بلفظ {جَرَحْتُم}؛ وهي مأخوذة لغة من الجوارح وعملها؛ وفيها إشارة لطيفة إلى أن المعصية بمثابة \"جرح حقيقي نازف\" يجرجه الإنسان العاصي في جدار دينه ونقاء قلبه الباطن فيستنزف طاقته الإيمانية.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "Sins and wrong actions are expressed with the word “you have committed,” from the language of the bodily faculties and their actions. The expression subtly suggests that disobedience is like a real wound that a sinner inflicts upon the integrity of his faith and the purity of his inner heart, draining his spiritual strength."
+  },
+  {
+    "id": 38,
+    "surah": "الأنعام",
+    "ayah": "{وَإِن يَمْسَسْكَ اللَّهُ بِضُرٍّ فَلَا كَاشِفَ لَهُ إِلَّا هُوَ وَإِن يَمْسَسْكَ بِخَيْرٍ فَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ} [الآية 17]",
+    "insightAr": "الله هو المالك للضر والنفع؛ فإذا أصاب العبد ضرٌّ فلا كاشف له إلا هو، وإذا أراد به خيرًا فلا راد لفضله.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Allah alone possesses harm and benefit. If harm touches a servant, none can remove it except Him; and if He intends good for him, none can withhold His bounty."
+  },
+  {
+    "id": 39,
+    "surah": "الأنعام",
+    "ayah": "{أَوَمَن كَانَ مَيْتًا فَأَحْيَيْنَاهُ وَجَعَلْنَا لَهُ نُورًا يَمْشِي بِهِ فِي النَّاسِ كَمَن مَّثَلُهُ فِي الظُّلُمَاتِ} [الآية 122]",
+    "insightAr": "استعارة الحياة للنور والضلال للموت؛ صوّرت الآية الإنسان قبل الهداية بالميت الجثة الهامدة، فلما دخل الإيمان قلبه دبت فيه الحياة الحقيقية، ورُزق بـ {نُورًا} (القرآن والبصيرة) يعبر به مسالك الحياة والتعاملات الإنسانية بثبات، بينما يتخبط الجاهل في ظلمات الشبهات والشهوات بلا بوصلة.",
+    "source": "إغاثة اللهفان - ابن القيم.",
+    "insightEn": "Life is used as a metaphor for light and misguidance as death. Before guidance, a person is portrayed like a lifeless body; when faith enters the heart, true life begins and he is given “light”—the Qur’an and insight—with which he moves through life and human dealings with steadiness, while the ignorant wander through the darkness of doubts and desires without direction."
+  },
+  {
+    "id": 40,
+    "surah": "الأنعام",
+    "ayah": "{فَمَن يُرِدِ اللَّهُ أَن يَهْدِيَهُ يَشْرَحْ صَدْرَهُ لِلْإِسْلَامِ وَمَن يُرِدْ أَن يُضِلَّهُ يَجْعَلْ صَدْرَهُ ضَيِّقًا حَرَجًا كَأَنَّمَا يَصَّعَّدُ فِي السَّمَاءِ} [الآية 125]",
+    "insightAr": "يشرح الله صدر من يريد هدايته للإسلام، ويجعل صدر من يريد إضلاله ضيقًا حرجًا؛ فالمثل يبين شدة ضيق صدر المعرض عن الهدى.",
+    "source": "تفسير ابن كثير / الإعجاز العلمي في القرآن.",
+    "insightEn": "Allah opens the heart of whoever He wills to guide to Islam, while making the heart of whoever He wills to misguide narrow and constricted; the example illustrates the severity of turning away from guidance."
+  },
+  {
+    "id": 41,
+    "surah": "الأعراف",
+    "ayah": "{قَالَا رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسرِينَ} [الآية 23]",
+    "insightAr": "أدب التوبة والاعتراف الصادق بالذنب عند آدم وحواء، وهو النقيض التام لكبر وغرور إبليس الذي علل ذنبه بالقدر وقارن بأفضليته الجسدية ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The etiquette of repentance and sincere admission of wrongdoing: Adam and Hawwaʾ openly attributed the wrong to themselves, in complete contrast to Iblis, who justified his disobedience through claims of superiority. Acknowledging one’s own fault becomes the key to salvation, repentance, and mercy."
+  },
+  {
+    "id": 42,
+    "surah": "الأعراف",
+    "ayah": "{وَإِذَا قُرِئَ الْقُرْآنُ فَاسْتَمِعُوا لَهُ وَأَنصِتُوا لَعَلَّكُمْ تُرْحَمُونَ} [الآية 204]",
+    "insightAr": "رتّب الله نيل الرحمة الإلهية الغامرة على أمرين متلازمين: الاستماع (بالأذن وجارحة البدن) والإنصات (بالقلب والسكوت والتدبر الباطن)، فمن ألقى سمعه وحضر وعي قلبه كان أقرب الناس إلى رحمة الله وخلاصه الإيماني.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Allah connects receiving His abundant mercy with two complementary responses: listening with the ear and bodily attention, and attentive silence with the heart and inward reflection. Whoever listens attentively while bringing his heart present is among those closest to Allah’s mercy and spiritual deliverance."
+  },
+  {
+    "id": 43,
+    "surah": "الأعراف",
+    "ayah": "{كِتَابٌ أُنزِلَ إِلَيْكَ فَلَا يَكُن فِي صَدْرِكَ حَرَجٌ مِّنْهُ لِتُنذِرَ بِهِ} [الآية 2]",
+    "insightAr": "إزالة الهيبة والتخوف ال؛ يواسي الله نبيه وكل مصلح، بأنه عند استقبال التكاليف أو مواجهة المجتمع بالحق، قد يقع في النفس خوف من الصد أو التكذيب يسبب ضيقاً ({حَرَجٌ}). فجاء التوجيه {فَلَا يَكُن فِي صَدْرِكَ حَرَجٌ مِّنْهُ} ليزرع الثقة المطلقة بنقاء الرسالة وقوتها الذاتية.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Removing psychological fear from conveying truth: Allah consoles His Prophet and every reformer that receiving difficult responsibilities or confronting society with truth can produce fear of rejection and denial. The command not to let the message cause constriction in the chest plants confidence in the purity and inherent strength of the message."
+  },
+  {
+    "id": 44,
+    "surah": "الأعراف",
+    "ayah": "{خُذِ الْعَفْوَ وَأْمُرْ بِالْعُرْفِ وَأَعْرِضْ عَنِ الْجَاهِلِينَ} [الآية 199]",
+    "insightAr": "جمعت الآية أصول التعامل ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "A three-part ethical framework for relationships: “Take what is easy” means accept from people what they naturally offer and overlook their mistakes without excessive scrutiny; “command what is recognized as good” means spread goodness; and “turn away from the ignorant” means protect your inner peace by refusing to enter pointless conflicts with foolish people."
+  },
+  {
+    "id": 45,
+    "surah": "الأعراف",
+    "ayah": "{إِنَّ الَّذِينَ اتَّقَوْا إِذَا مَسَّهُمْ طَائِفٌ مِّنَ الشَّيْطَانِ تَذَكَّرُوا فَإِذَا هُم مُّبْصِرُونَ} [الآية 201]",
+    "insightAr": "طائف الشيطان والبصيرة الارتدادية؛ عبر بلفظ {مَسَّهُمْ طَائِفٌ} والطائف هو الشيء الذي يدور حول الإنسان من الخارج ولا يدخل فيه. فالشيطان يطوف حول قلب المتقي يفتش عن ثغرة شهوة أو غضب، فإذا كاد يقع، لمع في قلبه نور الذكر {تَذَكَّرُوا}، فانقشع ظلام السهو وعادت له بصيرته فوراً {فَإِذَا هُم مُّبْصِرُونَ}.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The passing touch of Satan and the recovery of insight: the word used for Satan’s “visitation” evokes something that circles around a person from outside. Satan searches for an opening through desire or anger; when a believer is close to falling, remembrance flashes in the heart, the darkness of heedlessness clears, and insight returns."
+  },
+  {
+    "id": 46,
+    "surah": "الأنفال",
+    "ayah": "{إِنَّمَا الْمُؤْمِنُونَ الَّذِينَ إِذَا ذُكِرَ اللَّهُ وَجِلَتْ قُلُوبُهُمْ وَإِذَا تُلِيَتْ عَلَيْهِمْ آيَاتُهُ زَادَتْهُمْ إِيمَانًا} [الآية 2]",
+    "insightAr": "",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The emotional and intellectual signs of sound faith: the verse gives a real measure of spiritual health. “Their hearts tremble” describes the immediate awe and reverence felt when Allah is mentioned, while hearing the Qur’an increases certainty and reassurance. Whoever finds these responses should thank Allah for the life of his heart."
+  },
+  {
+    "id": 47,
+    "surah": "الأنفال",
+    "ayah": "{إِذْ يُغَشِّيكُمُ النُّعَاسَ أَمَنَةً مِّمنْهُ وَيُنَزِّلُ عَلَيْكُم مِّنَ السَّمَاءِ مَاءً لِّيُطَهِّرَكُم بِهِ} [الآية 11]",
+    "insightAr": "كان النعاس أمنةً من الله على المؤمنين في بدر، وأنزل عليهم من السماء ماءً ليطهرهم به ويثبت أقدامهم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The drowsiness was a security from Allah for the believers at Badr, and He sent down water from the sky to purify them and strengthen their footing."
+  },
+  {
+    "id": 48,
+    "surah": "الأنفال",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَجِيبُوا لِلَّهِ وَلِلرَّسُولِ إِذَا دَعَاكُمْ لِمَا يُحْيِيكُمْ} [الآية 24]",
+    "insightAr": "الحياة الحقيقية في الاستجابة للأوامر؛ تنبه الآية إلى أن قوام وجود الإنسان، وسعادته، ونقاء روحه يكمن في ت. فالحياة بلا دين هي مجرد حياة بهيمية.",
+    "source": "الفوائد - ابن القيم.",
+    "insightEn": "True life lies in responding to divine commands: the verse points to obedience to revelation and implementation of sacred guidance as the foundation of human existence, happiness, and spiritual purity. Life without faith becomes merely biological existence—eating, drinking, and sleeping—whereas elevated human life is nourished by obedience to divine guidance."
+  },
+  {
+    "id": 49,
+    "surah": "الأنفال",
+    "ayah": "{وَاعْلَمُوا أَنَّ اللَّهَ يَحُولُ بَيْنَ الْمَرْءِ وَقَلْبِهِ وَأَنَّهُ إِلَيْهِ تُحْشَرُونَ} [الآية 24]",
+    "insightAr": "خطورة التقلب وحيلولة القلب الخفية؛ تحذير مرعب لقلب العبد؛ فالقلب سريّ التقلب لدرجة أن الله تبارك وتعالى بقدرته قد يحول بين الإنسان وبين إرادته ونواياه إذا تمادى في الغي، فيسلب منه التوفيق أو يثبته على الحق بفضله. وكان كثر دعاء النبي : \"يا مقلب القلوب ثبت قلبي على دينك\" حذراً من هذه الحيلولة القدرية.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "The danger of the heart’s constant fluctuation: the verse warns that the heart can change so subtly that Allah may place a barrier between a person and his own intentions when he persists in misguidance, withholding guidance or, by His grace, keeping him firm upon truth. This explains the Prophet’s frequent supplication: “O Turner of hearts, keep my heart firm upon Your religion.”"
+  },
+  {
+    "id": 50,
+    "surah": "الأنفال",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا إِن تَتَّقُوا اللَّهَ يَجْعَل لَّكُمْ فُرْقَانًا وَيُكَفِّرْ عَنكُمْ سَيِّئَاتِكُمْ} [الآية 29]",
+    "insightAr": "\"الفرقان\" كأداة ذكاء وبصيرة عقلية؛ جُعلت جائزة التقوى الباطنة منح العبد وصف {فُرْقَانًا}. والفرقان هو نور داخلي، وبصيرة، وعقل حاد يمنحه الله للمتقي يفرق به بوضوح بين الحق والباطل، والمصلحة والمفسدة، والصديق والعدو في الأوقات الضبابية والفتن الملتوية التي يتوه فيها كبار المفكرين.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "“Furqān” as an instrument of insight and discernment: one of the rewards of inward taqwā is being granted furqān—a light, inner insight, and sharp understanding by which a person can distinguish truth from falsehood, benefit from harm, and friend from enemy during confusing times and difficult trials."
+  },
+  {
+    "id": 51,
+    "surah": "التوبة",
+    "ayah": "{وَعَلَى الثَّلَاثَةِ الَّذِينَ خُلِّفُوا حَتَّى إِذَا ضَاقَتْ عَلَيْهِمُ الْأَرْضُ بِمَا رَحُبَتْ وَضَاقَتْ عَلَيْهِمْ أَنفُسُهُمْ}[الآية 118]",
+    "insightAr": "تصوير؛ تضيق الأرض الواسعة وتضيق النفس الداخليّة، حتى لا يجد الإنسان ملجأً إلا بالفرار إلى الله والصدق معه، وهو ما حقق لهم قبول التوبة.",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "A striking psychological portrayal of the effects of sin: the spacious earth seems to constrict, and the person’s own inner self becomes constricted, until he finds no refuge except in turning sincerely to Allah. This sincere return became the path through which the three men received acceptance of their repentance."
+  },
+  {
+    "id": 52,
+    "surah": "التوبة",
+    "ayah": "{إِلَّا تَنصُرُوهُ فَقَدْ نَصَرَهُ اللَّهُ إِذْ أَخْرَجَهُ الَّذِينَ كَفَرُوا ثَانِيَ اثْنَيْنِ إِذْ هُمَا فِي الْغَارِ} [الآية 40]",
+    "insightAr": "نصرة الغار وانقطاع الأسباب؛ في مشهد الغار الضيق، كان النبي وأبو بكر بلا جيش وبلا سلاح، والأعداء فوق رؤوسهم. لكن القرآن سمى هذه اللحظة الحرجة لأن النصر الحقيقي ينبع من طمأنينة القلب بمعية الله الخفية الثابتة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The victory of the cave and the collapse of worldly means: in the narrow cave, the Prophet and Abu Bakr had no army or weapons while their enemies were above them. Yet the Qur’an presents this critical moment as a peak of victory, because true victory springs from the heart’s tranquility through the unseen and steadfast companionship of Allah."
+  },
+  {
+    "id": 53,
+    "surah": "التوبة",
+    "ayah": "{قُل لَّن يُصِيبَنَا إِلَّا مَا كَتَبَ اللَّهُ لَنَا هُوَ مَوْلَانَا وَعَلَى اللَّهِ فَلْيَتَوَكَّلِ الْمُؤْمِنُونَ} [الآية 51]",
+    "insightAr": "دقة حرف الجر \"لنا\" بدلاً من \"علينا\"؛ لم يقل القرآن \"ما كتب الله علينا\" (فهي تفيد الضرر والعبء)، بل قال {كَتَبَ اللَّهُ لَنَا} (وحرف اللام يفيد الملكية والنفع والمنفعة). وفي هذا حسن ظن بالله؛ فكل أقدار الله للمؤمن—حتى المؤلمة منها—هي لصالح وتطهير قلبه في مآلها.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The precision of the preposition in “what Allah has written for us”: the wording does not say “what Allah has written against us,” which would suggest burden or harm. Instead, it says “for us,” conveying possession and benefit. It teaches good expectations of Allah: even painful decrees for a believer ultimately carry benefit and purification."
+  },
+  {
+    "id": 54,
+    "surah": "التوبة",
+    "ayah": "{فَلَا تُعْجِبْكَ أَمْوَالُهُمْ وَلَا أَوْلَادُهُمْ إِنَّمَا يُرِيدُ اللَّهُ لِيُعَذِّبَهُم بِهَا فِي الْحَيَاةِ الدُّنْيَا} [الآية 55]",
+    "insightAr": "العقوبة بالنعم والشقاء المقنع؛ تكشف الآية عن قانون إلهي خفي؛ فقد يتحول المال الوفير والذرية الكثيرة من نعمة إلى أداة \"تعذيب؛ حيث يعيش خائفاً عليها، لاهثاً وراء زيادتها، مستعبداً لها، فتنقطع روحه عن السكينة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Being punished through blessings and hidden misery: wealth and numerous children can change from blessings into a form of silent psychological and physical punishment when a person becomes heedless of Allah—living in fear of losing them, constantly chasing their increase, and becoming enslaved to them until inner tranquility disappears."
+  },
+  {
+    "id": 55,
+    "surah": "التوبة",
+    "ayah": "{رَضُوا بِأَن يَكُونُوا مَعَ الْخَوَالِفِ وَطُبِعَ عَلَى قُلُوبِهِمْ فَهُمْ لَا يَفْقَهُونُ} [الآية 87]",
+    "insightAr": "شؤم الرضا بالدون والقعود ال؛ \"الخوالف\" هن النساء والأطفال المقيدون في البيوت لعجزهم الفطري. وعابت الآية بشدة على المنافقين الذين يملكون القوة والبدن ورغم ذلك رَضُوا بالقعود والكسل، فالرضا بالدون هو أول خطوات موت الهمة وطبع القلوب.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The misery of accepting a lower state and withdrawing from life: “al-khawālif” refers to those who remain behind in their homes, including women and children who were not required to go out. The reflection criticizes those who possessed strength yet willingly chose passivity and idleness, because accepting a low state is an early step toward the death of aspiration and the hardening of the heart."
+  },
+  {
+    "id": 56,
+    "surah": "التوبة",
+    "ayah": "{خُذْ مِنْ أَمْوَالِهِمْ صَدَقَةً تُطَهِّرُهُمْ وَتُزَكِّيهِم بِهَا وَصَلِّ عَلَيْهِمْ إِنَّ صَلَاتَكَ سَكَنٌ لَّهُمْ} [الآية 103]",
+    "insightAr": "الأثر ال؛ لم يقل خذ أموالهم بل قال {مِنْ أَمْوَالِهِمْ} لمراعاة الشح البشري. وجعل غاية الصدقة. والأجمل بيان الأثر ال؛ أي تورثهم طمأنينة وسلاماً داخلياً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The psychological effect of charity and supplication: the verse says “take from their wealth,” acknowledging the human tendency to cling to possessions. Charity purifies the soul from stinginess and brings growth and blessing, while the supplication of the spiritual guide brings inner reassurance and peace to those who repent."
+  },
+  {
+    "id": 57,
+    "surah": "التوبة",
+    "ayah": "{وَآخَرُونَ اعْتَرَفُوا بِذُنُوبِهِمْ خَلَطُوا عَمَلًا صَالِحًا وَآخَرَ سَيِّئًا عَسَى اللَّهُ أَن يَتُوبَ عَلَيْهِمْ} [الآية 102]",
+    "insightAr": "تشخيص النفس المتذبذبة وبوابة الأمل؛ تصف الآية بدقة. ووضعت الآية مفتاح النجاة الأول: وهو {اعْتَرَفُوا بِذُنُوبِهِمْ}؛ فالاعتراف الصادق بلا تبجح كفيل بفتح أبواب التوبة الشاملة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "A portrait of the wavering soul and a door of hope: the verse accurately describes many sincere Muslims who struggle between acts of obedience and recurring sins. It identifies the first key to salvation as “they acknowledged their sins”: honest admission without pride opens the door to comprehensive repentance."
+  },
+  {
+    "id": 58,
+    "surah": "التوبة",
+    "ayah": "{أَفَمَنْ أَسَّسَ بُنْيَانَهُ عَلَى تَقْوَى مِنَ اللَّهِ وَرِضْوَانٍ خَرٌ أَم مَّنْ أَسَّسَ بُنْيَانَهُ عَلَى شَفَا جُرُفٍ هَارٍ فَانْهَارَ بِهِ} [الآية 109]",
+    "insightAr": "بلاغة التشبيه الهندسي للمبادئ والقرارات؛ صوّرت الآية بناء حياة الإنسان بمشروع هندسي معمار؛ فمن بنى أفكاره على الإخلاص والتقوى فأساسه راسخ متين، ومن بناها على النفاق والمصالح المؤقتة فمثله كمن بنى برجاً ضخماً على حافة خندق ترابي متآكل تذروه المياه فيسقط فجأة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The architectural metaphor for principles and decisions: the verse portrays a person’s life as a construction project. Whoever builds upon sincerity and taqwā has a firm foundation; whoever builds upon hypocrisy and temporary interests is like someone constructing a great structure on the edge of an eroding precipice that suddenly collapses."
+  },
+  {
+    "id": 59,
+    "surah": "التوبة",
+    "ayah": "{لَقَدْ جَاءَكُمْ رَسُولٌ مِّنْ أَنفُسِكُمْ عَزِيزٌ عَلَيْهِ مَا عَنِتُّمْ حَرِيصٌ عَلَيْكُم بِالْمُؤْمِنِينَ رَءُوفٌ رَّحِيمٌ} [الآية 128]",
+    "insightAr": "ملامح التعاطف النبوي الأعلى؛ تتودد الآية لقلوب البشر ببيان صفات النبي؛ {عَزِيزٌ عَلَيْهِ مَا عَنِتُّمْ} أي يتألم.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The highest form of Prophetic compassion: the verse touches human hearts by describing the Prophet’s qualities. “Grievous to him is what you suffer” means that the hardship and suffering of his community weighed heavily upon him, while “concerned for you” conveys his sincere desire for their welfare and salvation."
+  },
+  {
+    "id": 60,
+    "surah": "التوبة",
+    "ayah": "{فَإِن تَوَلَّوْا فَقُلْ حَسْبِيَ اللهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ} [الآية 129]",
+    "insightAr": "درع الكفاية ال؛ تضع ترياقاً؛ العلاج هو اللجوء الفوري لحصن {حَسْبِيَ اللَّهُ} (أي كافيني وملاذي وحده)، فالتعلق بالرزاق يغني عن تقلب وجفاء الخلائق الضعفاء.",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "A psychological shield when people let you down: the verse gives every teacher or reformer a remedy when faced with rejection or ingratitude from those he seeks to help. The immediate refuge is “Allah is sufficient for me”—He alone is enough and is the true shelter. Dependence upon the Provider frees the heart from the instability and harshness of creation."
+  },
+  {
+    "id": 61,
+    "surah": "يونس",
+    "ayah": "{أَكَانَ لِلنَّاسِ عَجَبًا أَنْ أَوْحَيْنَا إِلَى رَجُلٍ مِّنْهُمْ أَنْ أَنذِرِ النَّاسَ} [الآية 2]",
+    "insightAr": "كسر تنكر الآية استعجابهم ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Breaking social arrogance and elevating human dignity: the verse addresses their psychological and social objection to receiving revelation through a human being from among themselves. Sending a human messenger to human beings is part of divine mercy and wisdom, making the message practical and applicable within real human life."
+  },
+  {
+    "id": 62,
+    "surah": "يونس",
+    "ayah": "{هُوَ الَّذِي جَعَلَ الشَّمْسَ ضِيَاءً وَالْقَمَرَ نُورًا} [الآية 5]",
+    "insightAr": "عبّر عن الشمس بالضياء وعن القمر بالنور، وجمع بينهما في وصف أثرهما في إنارة العالم وانتظام سيرهما بحسب تقدير الله.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The sun is described with the word for radiance and the moon with the word for light, bringing both together in describing their role in illuminating the world and their ordered courses by Allah’s decree."
+  },
+  {
+    "id": 63,
+    "surah": "يونس",
+    "ayah": "{قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَلِكَ فَلْيَفْرَحُوا هُوَ خَيْرٌ مِّمَّا يَجْمَعُونَ} [الآية 58]",
+    "insightAr": "توجيه البوصلة ال؛ فالفرح بفضل الله (الإسلام والقرآن) هو الفرح الباقي الممتد للآخرة، بينما الفرح بمتاع الدنيا وحطامها الفاني زائل، بل إن الفرح بالدين خير وأنفع للقلب من كل ما يجمعه البشر من أموال ومناصب.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "Reorienting the heart toward true joy: rejoicing in Allah’s grace—Islam and the Qur’an—is lasting joy that extends to the Hereafter, whereas rejoicing in worldly possessions is temporary and fleeting. Joy in faith is therefore better and more beneficial to the heart than everything people accumulate of wealth and status."
+  },
+  {
+    "id": 64,
+    "surah": "يونس",
+    "ayah": "{وَلَوْ يُعَجِّلُ اللَّهُ لِلنَّاسِ الشَّرَّ اسْتِعْجَالَهُم بِالْخَيْرِ لَقُضِيَ إِلَيْهِمْ أَجَلُهُمْ} [الآية 11]",
+    "insightAr": "رحمة الحلم الإلهي وقت الغضب البشري؛ من لطائف الآية بيان شفقة الله بعباده عند فوران غضبهم؛ فالإنسان في لحظات الضيق قد يدعو على نفسه أو أولاده بالخراب بذات السرعة التي يطلب بها الخير. فلو استجاب الله هذه الدعوات المنفعلة لهلك البشر، لكن حلمه يمنع نفاذ دعاء الغضب.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The mercy of divine forbearance in moments of human anger: one subtle point of the verse is Allah’s compassion when people’s anger boils over. In distress, a person may impulsively pray for harm to come upon himself or his children just as quickly as he asks for good. If such prayers were immediately answered, people would perish; Allah’s forbearance prevents the angry supplication from taking effect."
+  },
+  {
+    "id": 65,
+    "surah": "يونس",
+    "ayah": "{وَإِذَا مَسَّ الْإِنسَانَ الضُّرُّ دَعَانَا لِجَنبِهِ أَوْ قَاعِدًا أَوْ قَائِمًا فَلَمَّا كَشَفْنَا عَنْهُ ضُرَّهُ مَرَّ كَأَن لَّمْ يَدْعُنَا} [الآية 12]",
+    "insightAr": "تقلب المزاج البشري وسر اللفظ {مَرَّ}؛ تلخص الآية حال الإنسان وقت المحنة؛ فهو يلتجئ بجميع أحواله البدنية بالدعاء. فإذا انفرجت أزمته، عبّر القرآن عن جحوده بلفظ {مَرَّ}؛ وهي تفيد السرعة واللامبالاة، كأنه عابر طريق لم يعرف الانكسار يوماً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The fluctuation of human temperament and the significance of the word “passed on”: during hardship, a person turns to Allah in every bodily state through supplication. Once the crisis ends, the Qur’an describes his ingratitude with a word conveying speed and indifference—as though he simply passed by, as if he had never experienced brokenness."
+  },
+  {
+    "id": 66,
+    "surah": "يونس",
+    "ayah": "{أَلَا إِنَّ أَوْلِيَاءَ اللَّهِ لَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ * الَّذِينَ آمَنُوا وَكَانُوا يَتَّقُونَ} [الآية 62-63]",
+    "insightAr": "نفت الآية عن أولياء الله أمرين يمزقان استقرار البشر: {الْخَوْفُ} (وهو القلق ال. ووضعت شرطاً ميسراً للولاية: مجرد إيمان باطن مستقر وتقوى سلوكية ظاهرة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Complete psychological freedom for Allah’s devoted servants: the verse removes two things that undermine human stability—fear, which is anxiety about the future and the unknown, and grief, which is pain over what has passed. It then gives an accessible condition for this state: established faith inwardly and observable taqwā in conduct."
+  },
+  {
+    "id": 67,
+    "surah": "يونس",
+    "ayah": "{وَقَالَ مُوسَى رَبَّنَا إِنَّكَ آتَيْتَ فِرْعَوْنَ وَمَلَأَهُ زِينَةً وَأَمْوَالًا فِي الْحَيَاةِ الدُّنْيَا رَبَّنَا لِيُضِلُّوا عَن سَبِيلِكَ} [الآية 88]",
+    "insightAr": "سر لام العاقبة والفتنة بالمال; اللام في قوله {لِيُضِلُّوا} هي \"لام العاقبة الصيرورية\" وليست لام التعليل؛ أي أن الله لم يعطهم المال ليضلوا، ولكن كانت عاقبة انشغالهم بهذا الترف ال. الآية تحذر من تحول النعم الاقتصادية إلى حجب تمنع النفس من رؤية المنعم.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The purpose of the “lam” in the phrase “so that they may lead astray”: it is understood here as a lam of consequence, not purpose. Allah did not give them wealth so that they would mislead others; rather, the consequence of their absorption in material luxury was tyranny and turning people away from truth. The verse warns that economic blessings can become barriers that prevent the soul from seeing the One who gave them."
+  },
+  {
+    "id": 68,
+    "surah": "يونس",
+    "ayah": "{آلْآنَ وَقَدْ عَصَيْتَ قَبْلُ وَكُنتَ مِنَ الْمُفْسِدِينَ * فَالْيَوْمَ نُنَجِّيكَ بِبَدَنِكَ لِتَكُونَ لِمَنْ خَلْفَكَ آيَةً} [الآية 91-92]",
+    "insightAr": "لما أدرك فرعون الغرق آمن حين عاين العذاب، فقيل له: آلآن؟ وأنجى الله بدنه ليكون آية لمن بعده.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "When drowning overtook Pharaoh, he believed after seeing the punishment, but he was told, “Now?” Allah preserved his body as a sign for those who would come after him."
+  },
+  {
+    "id": 69,
+    "surah": "هود",
+    "ayah": "{وَأَقِمِ الصَّلَاةَ طَرَفَيِ النَّهَارِ وَزُلَفًا مِّنَ اللَّيْلِ إِنَّ الْحَسَنَاتِ يُذْهِبْنَ السَّيِّئَاتِ} [الآية 114]",
+    "insightAr": "علاج تربوي و؛ لم يقل الله \"لا تذنب\"، بل قال {إِنَّ الْحَسَنَاتِ يُذْهِبْنَ السَّيِّئَاتِ}. وفي هذا دلالة على أن انشغال النفس بالطاعات والعمل الصالح هو أفضل وسيلة لمحو أثر الذنوب وطرد العادات السيئة تلقائياً من حياة المسلم.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A spiritual and psychological remedy for the sinner: Allah does not merely say, “Do not sin”; He says that good deeds remove bad deeds. This indicates that filling the soul with acts of obedience and righteous work is among the best ways to erase the traces of sin and gradually drive harmful habits out of a Muslim’s life."
+  },
+  {
+    "id": 70,
+    "surah": "هود",
+    "ayah": "{وَمَا مِن دَابَّةٍ فِي الْأَرْضِ إِلَّا عَلَى اللَّهِ رِزْقُهَا وَيَعْلَمُ مُسْتَقَرَّهَا وَمُسْتَوْدَعَهَا} [الآية 6]",
+    "insightAr": "الالتزام الإلهي المطلق بالأقوات؛ استخدام حرف الجر {عَلَى} المفيد للوجوب (وجوب كرم تفضل به سبحانه) يقطع أي قلق معيشي في نفس المسلم؛ فكل كائن يتحرك على الأرض مضمون القوت، ويعلم الله موضع استقراره حياً وحركته ميتاً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The certainty of divine provision; the use of the preposition {عَلَى} conveys an assured commitment—an obligation arising from Allah’s gracious promise. This removes livelihood anxiety from the believer’s heart: every creature that moves on earth has its provision assured, and Allah knows where it lives and where it will rest after death."
+  },
+  {
+    "id": 71,
+    "surah": "هود",
+    "ayah": "{وَنَادَى نُوحٌ ابْنَهُ وَكَانَ فِي مَعْزِلٍ يَا بُنَيَّ ارْكَب مَّعَنَا وَلَا تَكُن مَّعَ الْكَافِرِينَ} [الآية 42]",
+    "insightAr": "عاطفة الأبوة الحانية وسط طوفان العقاب؛ في ذروة هلاك الأرض، لم تنقطع مشاعر حنان نبي الله نوح تجاه ولده العاصي؛ فناداه بنداء التلطف {يَا بُنَيَّ} بصيغة التحبيب، داعياً إياه لترك بيئة العزلة ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Tender fatherly compassion amid the flood of punishment; even at the height of the destruction, Prophet Noah’s compassion for his disobedient son did not cease. He addressed him tenderly as the Qur’anic expression, urging him to leave his isolated environment the Qur’anic expression and seek the ark of salvation—an example of profound patient parenting."
+  },
+  {
+    "id": 72,
+    "surah": "هود",
+    "ayah": "{قِيلَ يَا نُوحُ اهْبِطْ بِسَلَامٍ مِّنَّا وَبَرَكَاتٍ عَلَيْكَ وَعَلَى أُمَمٍ مِّمَّن مَّعَكَ} [الآية 48]",
+    "insightAr": "إحلال السلام الكوني بعد الأزمة الشاملة؛ بعد دمار الأرض بالطوفان ورسو السفينة، جاء الأمر الإلهي بالهبوط مقترناً بـ {بِسَلَامٍ} و{وَبَرَكَاتٍ}، وفي هذا دلالة تربوية و.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Restoration of peace after overwhelming crisis; after the earth was devastated by the flood and the ark came to rest, the divine command to descend was joined with the Qur’anic expression and the Qur’anic expression. This carries a deep moral and psychological lesson: severe crises in the lives of peoples or individuals may be followed by blessings and calm that compensate the soul for what it endured."
+  },
+  {
+    "id": 73,
+    "surah": "هود",
+    "ayah": "{قَالُوا يَا شُعَيْبُ أَصَلَاتُكَ تَأْمُرُكَ أَن نَّتْرُكَ مَا يَعْبُدُ آبَاؤُنَا أَوْ أَن نَّفْعَلَ فِي أَمْوَالِنَا مَا نَشَاءُ} [الآية 87]",
+    "insightAr": "علمانية الفكر القديم وأثر العبادة في المال؛ تهكم قوم شعيب عليه مستغربين؛ كيف تتدخل \"الصلاة\" (وهي شعيرة روحية صامتة في نظرهم) في شؤون الاقتصاد، وحرية التصرف المالي، ومنع الغش والطفيف؟ واللطيفة أنهم أدركوا بلا قصد حقيقة الدين: الصلاة الحقيقية ليست معزولة عن الواقع بل هي سلطة تربوية توجه أخلاق المال والمعاملات.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The secular mindset of the past and the effect of worship on wealth; Shuʿayb’s people mockingly wondered how prayer—a spiritual practice they viewed as separate from worldly life—could govern economics, financial freedom, and the prohibition of fraud and short measure. Unintentionally, they recognized a central truth: genuine prayer is not isolated from reality; it shapes the ethics of wealth and transactions."
+  },
+  {
+    "id": 74,
+    "surah": "هود",
+    "ayah": "{قَالَ يَا قَوْمِ أَرَعَيْتُمْ إِن كُنتُ عَلَى بَيِّنَةٍ مِّن رَّبِّي وَرَزَقَنِي مِنْهُ رِزْقًا حَسَنًا وَمَا أُرِيدُ أَنْ أُخَالِفَكُمْ إِلَى مَا أَنْهَاكُمْ عَنْهُ} [الآية 88]",
+    "insightAr": "مصداقية المصلح وخطورة التناقض السلوكي؛ يضع نبي الله شعيب قاعدة ذهبية في {وَمَا أُرِيدُ أَنْ أُخَالِفَكُمْ إِلَى مَا أَنْهَاكُمْ عَنْهُ}؛ فالناس ينظرون إلى أفعال المصلح وقراراته الشخصية والمالية قبل أن يستمعوا لمواعظه اللسانية، والتطابق بين الخطاب والفعل هو سر القبول ال.",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "The reformer’s credibility and the danger of behavioral contradiction; Prophet Shuʿayb states a golden principle of influence: the Qur’anic expression. People observe a reformer’s personal and financial conduct before listening to his words. Alignment between message and action is a key to genuine acceptance."
+  },
+  {
+    "id": 75,
+    "surah": "يوسف",
+    "ayah": "{وَأَوْحَيْنَا إِلَيْهِ لَتُنَبِّئَنَّهُم بِأَمْرِهِمْ هَذَا وَهُمْ لَا يَشْعُرُونَ} [الآية 15]",
+    "insightAr": "لطيفة جبر الخواطر الإلهية؛ جاء الوحي ليوسف وهو طفل صغير في قاع البئر المظلم ليؤنس وحشته ويطمئن قلبه الخائف، ويبشره بالمستقبل والتمكين وهو في أشد لحظات الضعف والانكسار.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "A divine gesture of reassurance; revelation came to Joseph as a young child at the bottom of the dark well, comforting his loneliness, calming his frightened heart, and promising him a future of authority and security while he was at the height of weakness and distress."
+  },
+  {
+    "id": 76,
+    "surah": "يوسف",
+    "ayah": "{قَالَ إِنَّمَا أَشْكُو بَثِّي وَحُزْنِي إِلَى اللَّهِ وَأَعْلَمُ مِنَ اللَّهِ مَا لَا تَعْلَمُونَ} [الآية 86]",
+    "insightAr": "الفرق ال؛ \"البث\" هو أشد الحزن الذي لا يطيق صاحبه كتمانه فيفيض منه ويبثه للآخرين، أما \"الحزن\" فهو ما يضمره المرء في قلبه وينطوي عليه. فسكب يعقوب عليه السلام ما ظهر من ألمه وما بطن في شكواه لله وحده، ليعلمنا أدب الشكوى للخالق لا المخلوق.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The subtle psychological distinction between deep anguish and sorrow; the Qur’anic expression denotes an overwhelming grief that a person can no longer contain and therefore pours out, while sorrow may remain hidden within the heart. Jacob brought both his outward and inward pain to Allah alone, teaching the etiquette of turning one’s complaint to the Creator rather than to creation."
+  },
+  {
+    "id": 77,
+    "surah": "يوسف",
+    "ayah": "{وَمَا أُبَرِّئُ نَفْسِي إِنَّ النَّفْسَ لَأَمَّارَةٌ بِالسُّوءِ إِلَّا مَا رَحِمَ رَبِّي} [الآية 53]",
+    "insightAr": "صدق المحاسبة ال؛ اعتراف صريح ب.",
+    "source": "إغاثة اللهفان - ابن القيم.",
+    "insightEn": "Honest self-accountability; this is an explicit acknowledgment of the human soul’s inclination toward desire and error. Safety from trials does not come from a servant’s intelligence or strength alone, but from Allah’s mercy, guidance, and protection."
+  },
+  {
+    "id": 78,
+    "surah": "يوسف",
+    "ayah": "{اقْتُلُوا يُوسُفَ أَوِ اطْرَحُوهُ أَرْضًا يَخْلُ لَكُمْ وَجْهُ أَبِيكُمْ وَتَكُونُوا مِن بَعْدِهِ قَوْمًا صَالِحِينَ} [الآية 9]",
+    "insightAr": "حيلة \"التوبة المؤجلة\" وخطورة المكر؛ خطط إخوة يوسف للجريمة ووضعوا لأنفسهم مخرجاً. وهذه هي أعظم حيل الشيطان ال؛ تزيين الذنب الحاضر بوعد التوبة المستقبليّة، مما يجرئ النفس على ارتكاب العظائم.",
+    "source": "إغاثة اللهفان - ابن القيم.",
+    "insightEn": "The trap of ‘deferred repentance’ and the danger of scheming; Joseph’s brothers created a deceptive psychological escape for themselves: the Qur’anic expression—as if they would simply repent after committing the deed. This is among Satan’s most dangerous strategies: beautifying a present sin with the promise of future repentance."
+  },
+  {
+    "id": 79,
+    "surah": "يوسف",
+    "ayah": "{وَجَاءُوا عَلَى قَمِيصِهِ بِدَمٍ كَذِبٍ قَالَ بَلْ سَوَّلَتْ لَكُمْ أَنفُسُكُمْ أَمْرًا فَصَبْرٌ جَمِيلٌ} [الآية 18]",
+    "insightAr": "حقيقة \"الصبر الجميل\" وفراسة الأبوة؛ تيقن يعقوب من كذبهم لأن القميص كان سليماً غير ممزق (فالذئب لا يأكل يوسف دون تمزيق ثيابه). ومواجهة للمأساة أعلن التزامه بـ {فَصَبْرٌ جَمِيلٌ}؛ والصبر الجميل في اللغة والتفسير هو الصبر الذي لا شكوى فيه للمخلوقين، بل تُرفع خطوطه لخالق القوى وحده.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The reality of ‘beautiful patience’ and a father’s insight; Jacob recognized their lie because the shirt was intact rather than torn. In facing the tragedy, he declared the Qur’anic expression. Beautiful patience is patience without complaint to people, directing one’s distress to the Creator alone."
+  },
+  {
+    "id": 80,
+    "surah": "يوسف",
+    "ayah": "{وَرَاوَدَتْهُ الَّتِي هُوَ فِي بَيْتِهَا عَن نَّفْسِهِ وَغَلَّقَتِ الْأَبْوَابَ وَقَالَتْ هَيْتَ لَكَ قَالَ مَعَاذَ اللَّهِ} [الآية 23]",
+    "insightAr": "تفكيك الفتنة والفرار العاصم بـ \"معاذ الله\"؛ اجتمعت ليوسف كل مقومات المعصية السهلة (هو شاب غريب، عبد في بيتها لا يخاف الفضيحة ال. ومع هذا الضغط ال.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Disarming temptation through ‘I seek refuge in Allah’; Joseph faced every circumstance that could have made sin easy, yet under intense pressure he did not debate the temptation. He immediately sought Allah’s protection with the decisive words the Qur’anic expression, cutting off the path to temptation at once."
+  },
+  {
+    "id": 81,
+    "surah": "يوسف",
+    "ayah": "{قَالَ رَبِّ السِّجْنُ أَحَبُّ إِلَيَّ مِمَّا يَدْعُونَنِي إِلَيْهِ وَإِلَّا تَصْرِفْ عَنِّي كَيْدَهُنَّ أَصْبُ إِلَيْهِنَّ} [الآية 33]",
+    "insightAr": "تفضيل سلب الحرية البدنية على سلب الحرية الروحية؛ اختار يوسف السجن الضيق حساً على سجن المعصية الضيق روحاً. واللطيفة البلاغية اعترافه بضعفه البشري الذاتي {أَصْبُ إِلَيْهِنَّ} إن لم يتول الله حمايته، فلا يغتر مؤمن بقوته أمام الفتن البصرية بل يسأل الله الثبات دائماً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Choosing physical confinement over spiritual captivity; Joseph preferred the narrowness of prison to the spiritual confinement of sin. His statement the Qur’anic expression also acknowledges his human weakness if Allah did not protect him, teaching believers not to rely on their own strength before temptation but to continually ask Allah for steadfastness."
+  },
+  {
+    "id": 82,
+    "surah": "يوسف",
+    "ayah": "{وَقَالَ لِلَّذِي ظَنَّ أَنَّهُ نَاجٍ مِّنْهُمَا اذْكُرْنِي عِندَ رَبِّكَ فَأَنسَاهُ الشَّيْطَانُ ذِكْرَ رَبِّهِ فَلَبِثَ فِي السِّجْنِ بِضْعَ سِنِينَ} [الآية 42]",
+    "insightAr": "حكمة تأخير الفرج وعقوبة التعلق بالأسباب؛ لما بذل يوسف سبباً بشرياً مع الساقي ليذكره عند الملك، أنسى الشيطان ذلك الساقي، فامتد سجن يوسف بضع سنين أخرى. واللطيفة التربوية: أراد الله ألا يخرج يوسف بوساطة ساقٍ بل يخرج مكرماً معززاً كحلال لأزمة دولة كاملة، فتأخير الفرج هو إعداد لمكانة أرقى.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The wisdom behind delayed relief and the danger of relying on means; Joseph took a human means by asking the cupbearer to mention him to the king, but the reminder was forgotten and his imprisonment continued. The lesson presented here is that delayed relief may be preparation for a greater position and a wider purpose."
+  },
+  {
+    "id": 83,
+    "surah": "يوسف",
+    "ayah": "{قَالَ اجْعَلْنِي عَلَى خَزَائِنِ الْأَرْضِ إِنِّي حَفِيظٌ عَلِيمٌ} [الآية 55]",
+    "insightAr": "جواز طلب المسؤولية للمصلحة الكفاءة؛ تقدم يوسف لطلب إدارة اقتصاد مصر وقت الأزمة ولم يكن ذلك حباً في الوجاهة، بل ثقة بكفاءته ال. وحدد مقومات الإداري الناجح في ركيزتين: الأمانة وصيانة المال ({حَفِيظٌ})، والخبرة العلمية التخطيطية ({عَلِيمٌ})، فإحداهما لا تكفي بلا أخرى.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The permissibility of seeking responsibility for the sake of competence and public benefit; Joseph sought to manage Egypt’s economy during crisis, not out of vanity, but because he trusted his ability to face famine. He identified two foundations of successful administration: trustworthiness and protection of resources (the Qur’anic expression), and knowledge and planning ability (the Qur’anic expression). Neither is sufficient without the other."
+  },
+  {
+    "id": 84,
+    "surah": "يوسف",
+    "ayah": "{وَتَوَلَّى عَنْهُمْ وَقَالَ يَا أَسَفَى عَلَى يُوسُفَ وَابْيَضَّتْ عَيْنَاهُ مِنَ الْحُزْنِ فَهُوَ كَظِيمٌ} [الآية 84]",
+    "insightAr": "سر اللفظ {كَظِيمٌ} والأثر الجسدي للحزن؛ كتمان يعقوب لألمه الشديد دون سخط عبّر عنه بـ {كَظِيمٌ} (وهو الوعاء الممتلئ ماءً ومغلق بإحكام فلا يفيض). ونتج عن هذا الضغط الحزني الداخلي فقدانه للبصر الحسي {وَابْيَضَّتْ عَيْنَاهُ}، وفي هذا دلالة على دقة الوصف القرآني للأثر ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The significance of the Qur’anic expression and the bodily effect of grief; Jacob contained his intense pain without rebellion, described by the Qur’anic expression, like a vessel filled and tightly sealed so that nothing spills out. His eyes then lost their normal sight, and the passage highlights the profound connection between grief and the human body."
+  },
+  {
+    "id": 85,
+    "surah": "يوسف",
+    "ayah": "{يَا بَنِيَّ اذْهَبُوا فَتَحَسَّسُوا مِن يُوسُفَ وَأَخِيهِ وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ} [الآية 87]",
+    "insightAr": "التمييز البلاغي بين التحسس والتجسس وعمق الأمل؛ أرسلهم يعقوب قائلاً {فَتَحَسَّسُوا} بالـ حاء؛ والتحسس هو تتبع أخبار الخير والبحث عن المفقود برفق، أما \"التجسس\" بالـ جيم فهو تتبع عورات الناس وسقطاتهم في خفاء. وحذر حذراً صارماً من اليأس الروحي؛ فالأمل في الفرج هو عصب العبادة الباطنة.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني / تفسير ابن كثير.",
+    "insightEn": "The rhetorical distinction between seeking information and spying, and the depth of hope; Jacob said the Qur’anic expression with ḥāʾ: seeking news and searching gently for what is lost. Spying, by contrast, concerns secretly pursuing people’s faults. The passage also gives a firm warning against spiritual despair: hope for relief is a vital part of inward worship."
+  },
+  {
+    "id": 86,
+    "surah": "يوسف",
+    "ayah": "{قَالُوا أَإِنَّكَ لَأَنتَ يُوسُفُ قَالَ أَنَا يُوسُفُ وَهَذَا أَخِي قَدْ مَنَّ اللَّهُ عَلَيْنَا إِنَّهُ مَن يَتَّقِ وَيَصْبِرْ} [الآية 90]",
+    "insightAr": "قانون النهاية السعيدة الملخص للقصة؛ لخص يوسف معادلة تمكينه ونجاحه بعد سنوات البئر، والعبودية، والسجن والافتراء في كلمتين متلازمتين: {مَن يَتَّقِ وَيَصْبِرْ}. فالتقوى تحمي العبد من الوقوع في فتن المعاصي وقت الرخاء، والصبر يحميه من الانهيار والجزع وقت الشدة، والنتيجة الحتمية هي عدم ضياع الأجر.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The story’s concise law of a good ending; Joseph summarized the path to empowerment after years of the well, slavery, imprisonment, and false accusation in two qualities: the Qur’anic expression. Taqwā protects a person from sinful trials in ease, while patience protects against collapse in hardship; the reward is not lost."
+  },
+  {
+    "id": 87,
+    "surah": "يوسف",
+    "ayah": "{قَالَ لَا تَثْرِيبَ عَلَيْكُمُ الْيَوْمَ يَغْفِرُ اللَّهُ لَكُمْ وَهُوَ أَرْحَمُ الرَّاحِمِينَ} [الآية 92]",
+    "insightAr": "ذروة التسامح ال؛ في لحظة انتصاره الكامل وتمكينه المطلق وقدرته على الانتقام من إخوته الذين ألقوه في البئر، قال فوراً: {لَا تَثْرِيبَ عَلَيْكُمُ الْيَوْمَ}؛ والتثريب هو اللوم والتقريع وتذكير المخطئ بذنب الغابر. فعفى عفوًا شاملاً ومحا الماضي كلياً وجبر خاطرهم الخائف، مسنداً الأمر لرحمة الله.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The peak of forgiveness and emotional healing; at the moment of complete victory and power over the brothers who had thrown him into the well, Joseph immediately said the Qur’anic expression. He abandoned blame, reproach, and reminders of past wrongdoing, erased the past, and reassured their frightened hearts, entrusting the matter to Allah’s mercy."
+  },
+  {
+    "id": 88,
+    "surah": "الرعد",
+    "ayah": "{الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ} [الآية 28]",
+    "insightAr": "حصر الطمأنينة الحقيقية بذكر الله وحده؛ فالنفس البشريّة فيها فقر ذاتي وفجوة لا يسدها مال ولا جاه ولا سلطان، ولا تجد غذاءها وسكينتها إلا بالاتصال بخالقها عبر الذكر والقرآن، وجاءت أداة الحصر {أَلَا} لتأكيد هذا المعنى ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "True tranquility is found in the remembrance of Allah; the human soul has an inherent need and a gap that wealth, status, or power cannot fill. It finds nourishment and serenity through connection with its Creator by remembrance and the Qur’an. The opening the Qur’anic expression reinforces this emphatic meaning."
+  },
+  {
+    "id": 89,
+    "surah": "الرعد",
+    "ayah": "{اللَّهُ يَعْلَمُ مَا تَحْمِلُ كُلُّ أُنثَى وَمَا تَغِيضُ الْأَرْحَامُ وَمَا تَزْدَادُ وَكُلُّ شَيْءٍ عِندَهُ بِمِقْدَارٍ} [الآية 8]",
+    "insightAr": "يعلم الله ما تحمل كل أنثى، وما تغيض الأرحام وما تزداد، وكل شيء عنده بمقدار.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Allah knows what every female carries, what the wombs decrease and what they increase, and everything with Him is by precise measure."
+  },
+  {
+    "id": 90,
+    "surah": "الرعد",
+    "ayah": "{لَهُ مُعَقِّبَاتٌ مِّن بَيْنِ يَدَيْهِ وَمِنْ خَلْفِهِ يَحْفَظُونَهُ مِنْ أَمْرِ اللَّهِ} [الآية 11]",
+    "insightAr": "الحراسة الأمنية الإلهية المحيطة بالإنسان؛ \"المعقبات\" هم ملائكة الحفظ الذين يتناوبون ويعقب بعضهم بعضاً لحراسة جسد الإنسان البشري من الحوادث، والآفات، والشرور الخارجية التي لم يقدرها الله عليه. فإذا جاء القدر الحتمي الخالص تخلوا عنه لينفذ أمر الله، مما يبرز حجم الرعاية السابغة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Divine protection surrounding the human being; the the Qur’anic expression are the angels who succeed one another in guarding a person from harms that Allah has not decreed for him. When the inevitable decree arrives, they withdraw so that Allah’s command is carried out, highlighting the extent of divine care."
+  },
+  {
+    "id": 91,
+    "surah": "الرعد",
+    "ayah": "{إِنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّى يُغَيِّرُوا مَا بِأَنفُسِهِمْ} [الآية 11]",
+    "insightAr": "وضعت الآية قاعدة صارمة في السنن ال. والتغيير الفعلي يبدأ من الداخل أولاً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "A conditional law of social and civilizational change; the verse establishes a firm principle: the outward conditions of communities and individuals—poverty, decline, prosperity, or empowerment—reflect what exists within them in values, conduct, and integrity. Real change begins from within."
+  },
+  {
+    "id": 92,
+    "surah": "الرعد",
+    "ayah": "{أَنزَلَ مِنَ السَّمَاءِ مَاءً فَسَالَتْ أَوْدِيَةٌ بِقَدَرِهَا فَاحْتَمَلَ السَّيْلُ زَبَدًا رَّابِيًا} [الآية 17]",
+    "insightAr": "بلاغة تشبيه القلوب بالأودية وحقيقة الحق والباطل؛ صوّر الله الوحي بالماء الطهور، وصوّر القلوب بالأودية ومجاري المياه؛ فالوادي الكبير يستوعب ماءً كثيراً (كالقلب عظيم الإيمان)، والوادي الصغير بقدره. والباطل شبّه بـ {زَبَدًا رَّابِيًا} (وهو الرغوة الطافية فوق السيل لا نفع فيها وتذهب جفاء)، بينما يبقى الماء النافع مستقراً في الأرض، فالانتفاش الظاهري للباطل عابر.",
+    "source": "الفوائد - ابن القيم.",
+    "insightEn": "The eloquence of comparing hearts to valleys and truth to pure water; revelation is likened to pure rainwater and hearts to valleys that receive according to their capacity. Falsehood is like the Qur’anic expression, foam that rises above the flood but has no lasting benefit, while useful water remains. The apparent prominence of falsehood is temporary."
+  },
+  {
+    "id": 93,
+    "surah": "إبراهيم",
+    "ayah": "{لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِي لَشَدِيدٌ} [الآية 7]",
+    "insightAr": "قانون النماء الإلهي؛ ربط الله الزيادة بالشكر ربطاً شرطياً لا يتخلف، فالشكر قيد للنعم الموجودة وصيد للنعم المفقودة، وبالمقابل فإن كفران النعمة وتناسيها هو أول خطوات زوالها وحلول العذاب والضيق.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The law of divine increase; Allah links increase to gratitude as a condition. Gratitude preserves existing blessings and becomes a means of gaining further good, while ingratitude and forgetting blessings are among the first steps toward their loss and the arrival of hardship."
+  },
+  {
+    "id": 94,
+    "surah": "إبراهيم",
+    "ayah": "{كِتَابٌ أَنزَلْنَاهُ إِلَيْكَ لِتُخْرِجَ النَّاسَ مِنَ الظُّلُمَاتِ إِلَى النُّورِ بِإِذْنِ رَبِّهِمْ} [الآية 1]",
+    "insightAr": "إفراد النور وجمع الظلمات إيماناً؛ جاء لفظ {الظُّلُمَاتِ} بالجمع ولفظ {النُّورِ} بالمفرد؛ ليدل بيانياً على أن طرق الباطل والجاهلية الفكرية وال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The singularity of light and plurality of darkness; the Qur’anic expression is plural while the Qur’anic expression is singular, suggesting that paths of falsehood and intellectual or spiritual ignorance are numerous and branching, whereas the path of truth and revelation is one, clear, and straight."
+  },
+  {
+    "id": 95,
+    "surah": "إبراهيم",
+    "ayah": "{أَلَمْ تَرَ كَيْفَ ضَرَبَ اللَّهُ مَثَلًا كَلِمَةً طَيِّبَةً كَشَجَرَةٍ طَيِّبَةٍ أَصْلُهَا ثَابِتٌ وَفَرْعُهَا فِي السَّمَاءِ} [الآية 24]",
+    "insightAr": "تشبيه الكلمة بالشجرة وامتداد الأثر النقي؛ صوّر القرآن الكلمة الطيبة وعقيدة التوحيد بشجرة نخل رصينة؛ جذورها ممتدة متجذرة باطناً في الأرض فلا تقتلعها الرياح ({أَصْلُهَا ثَابِتٌ})، وأغصانها ممتدة للأعلى شموخاً، وتؤتي ثمارها الحلوة كل حين. والكلمة الصالحة تترك أثراً.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "The word as a tree and the endurance of a wholesome influence; the Qur’an portrays the good word and belief in divine oneness as a firmly rooted palm tree. Its roots are established, its branches rise upward, and it continually bears fruit. A good word can likewise leave a lasting psychological and social influence across generations."
+  },
+  {
+    "id": 96,
+    "surah": "إبراهيم",
+    "ayah": "{وَمَثَلُ كَلِمَةٍ خَبِيثَةٍ كَشَجَرَةٍ خَبِيثَةٍ اجْتُثَّتْ مِن فَوْقِ الْأَرْضِ مَا لَهَا مِن قَرَارٍ} [الآية 26]",
+    "insightAr": "وهن الباطل وسر اللفظ {اجْتُثَّتْ}؛ صوّر الكلمة الخبيثة بشجرة حنظل خبيثة المذاق، واستخدم لفظ {اجْتُثَّتْ} والاجتثاث هو القلع من الجذور بقطع كلي؛ فليس لها عروق باطنة ثابتة تثبتها، بل هي طافية فوق السطح، والباطل مهما انتفش إعلامياً و.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The weakness of falsehood and the significance of the Qur’anic expression; the evil word is compared to a tree uprooted completely from its roots, with no stable foundation. However much falsehood may appear socially or through media to flourish, it remains weak when it lacks a sound intellectual or spiritual foundation."
+  },
+  {
+    "id": 97,
+    "surah": "إبراهيم",
+    "ayah": "{وَلَا تَحْسَبَنَّ اللَّهَ غَافِلًا عَمَّا يَعْمَلُ الظَّالِمُونَ إِنَّمَا يُؤَخِّرُهُمْ لِيَوْمٍ تَشْخَصُ فِيهِ الْأَبْصَارُ} [الآية 42]",
+    "insightAr": "بلسم المظلومين والوعيد الصامت؛ أسلوب النهي المؤكد {وَلَا تَحْسَبَنَّ} ليس لشك في النبي بل ليزرع طمأنينة قاطعة في قلب كل مظلوم ومنكسر؛ صمت القدر وتأخر العقاب عن الظالم ليس إهمالاً أو غفلة إلهية حاشا لله، بل هو \"تأخير لحكمة وتدبير\" ليوم تخرج فيه العيون من مواضعها ذعراً وهيبة من جلال العدالة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A balm for the oppressed and a quiet warning; the emphatic prohibition the Qur’anic expression is not because the Prophet was doubtful, but to place certainty in the heart of every oppressed person. Delay in punishment is not divine neglect; it is delay governed by wisdom until the Day when justice is fully manifested."
+  },
+  {
+    "id": 98,
+    "surah": "إبراهيم",
+    "ayah": "{رَّبَّنَا إِنِّي أَسْكَنْتُ مِن ذُرِّيَّتِي بِوَادٍ غَيْرِ ذِي زَرْعٍ عِندَ بَيْتِكَ الْمُحَرَّمِ رَبَّنَا لِيُقِيمُوا الصَّلَاةَ} [الآية 37]",
+    "insightAr": "تقديم البناء الروحي للأبناء على البناء ال؛ ترك إبراهيم زوجته ورضيعه في صحراء قاحلة موحشة وصفها بـ {بِوَادٍ غَيْرِ ذِي زَرْعٍ}، وجعل الغاية والعلة من هذه التضحية الجغرافية الصعبة هي {رَبَّنَا لِيُقِيمُوا الصَّلَاةَ}. الآية تلهم المربين تقديم سلامة دين وأخلاق ذرياتهم على رفاهيتهم ال.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Putting the spiritual foundation of children before material comfort; Abraham left his wife and infant in a barren, desolate valley described as the Qur’anic expression, and identified the purpose of this difficult sacrifice as the Qur’anic expression. The passage encourages parents to prioritize their children’s faith and character over temporary material comfort."
+  },
+  {
+    "id": 99,
+    "surah": "الحجر",
+    "ayah": "{وَلَقَدْ نَعْلَمُ أَنَّكَ يَضِيقُ صَدْرُكَ بِمَا يَقُولُونَ * فَسَبِّحْ بِحَمْدِ رَبِّكَ وَكُن مِّنَ السَّاجِدِينَ} [الآية 97-98]",
+    "insightAr": "الوصفة الربانية لعلاج ضيق الصدر والآلام ال؛ وجّه الله نبيه فوراً إلى التسبيح وبحمد والالتجاء إلى الصلاة والسجود، فالحركات البدنية التعبدية والذكر اللساني ينعكسان سكينة وطمأنينة على الصدر الضيق.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "A divine prescription for easing distress caused by people’s words; Allah directed His Prophet toward glorifying Him and turning to prayer and prostration. Worship, remembrance, and bodily acts of devotion can bring serenity and reassurance to a troubled heart."
+  },
+  {
+    "id": 100,
+    "surah": "الحجر",
+    "ayah": "{نَبِّئْ عِبَادِي أَنِّي أَنَا الْغَفُورُ الرَّحِيمُ * وَأَنَّ عَذَابِي هُوَ الْعَذَابُ الْأَلِيمُ} [الآية 49-50]",
+    "insightAr": "التوازن التربوي بين الخوف والرجاء؛ أضاف الله صفات المغفرة والرحمة لنفسه فقال {أَنِّي أَنَا الْغَفُورُ الرَّحِيمُ} بينما في العذاب لم يقل \"وأني أنا المعذب\" بل قال {وَأَنَّ عَذَابِي} لتسبق رحمته غضبه، وليتعلم العبد السير إلى الله بجناحي الرجاء في المغفرة والخوف من العذاب دون قنوط أو تجرؤ.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "A balanced education between fear and hope; Allah describes Himself as the Qur’anic expression, while referring to punishment as the Qur’anic expression. The lesson is to approach Allah with two wings: hope in forgiveness and fear of punishment, without despair and without becoming heedless."
+  },
+  {
+    "id": 101,
+    "surah": "الحجر",
+    "ayah": "{وَمَا خَلَقْنَا السَّمَاوَاتِ وَالْأَرْضَ وَمَا بَيْنَهُمَا إِلَّا بِالْحَقِّ وَإِنَّ السَّاعَةَ لَآتِيَةٌ فَاصْفَحِ الصَّفْحَ الْجَمِيلَ} [الآية 85]",
+    "insightAr": "الربط بين عدالة الكون وعفو النفس بـ \"الصفح الجميل\"؛ ربط الله عظمة خلق الكون بالحق بحتمية مجيء القيامة، وأتبعها فوراً بـ {فَاصْفَحِ الصَّفْحَ الْجَمِيلَ}؛ والصفح الجميل هو العفو الذي لا عتاب فيه، ولا تذكير بالخطأ، ولا إحراج باطن؛ لأن بقاء الضغائن يمزق طاقة العبد، وتذكر الآخرة يُهون زلات البشر العابرة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Connecting the order of the universe with inner forgiveness through ‘beautiful pardon’; the certainty of resurrection is followed by the Qur’anic expression. Beautiful pardon is forgiveness without reproach, reminders of past mistakes, or humiliation. Remembering the Hereafter makes transient human faults easier to overlook."
+  },
+  {
+    "id": 102,
+    "surah": "الحجر",
+    "ayah": "{وَلَقَدْ آتَيْنَاكَ سَبْعًا مِّنَ الْمَثَانِي وَالْقُرْآنَ الْعَظِيمَ * لَا تَمُدَّنَّ عَيْنَيْكَ إِلَى مَا مَتَّعْنَا بِهِ أَزْوَاجًا مِّنْهُمْ} [الآية 87-88]",
+    "insightAr": "الاستغناء بالقرآن عن زينة المترفين؛ \"السبع المثاني\" هي سورة الفاتحة. امتن الله بها على نبيه وعقّبها بالنهي عن النظر بنهم أو حسرة لنعيم المترفين ال؛ وفي هذا توجيه.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Finding sufficiency in the Qur’an rather than the adornments of the wealthy; the ‘seven oft-repeated’ are identified here as al-Fātiḥah. Whoever is granted understanding of the Qur’an and connection to revelation possesses an inward wealth greater than the fleeting riches of the world, so he should not become preoccupied with what is lesser."
+  },
+  {
+    "id": 103,
+    "surah": "النحل",
+    "ayah": "{أَتَى أَمْرُ اللَّهِ فَلَا تَسْتَعْجِلُوهُ سُبْحَانَهُ وَتَعَالَى عَمَّا يُشْرِكُونَ} [الآية 1]",
+    "insightAr": "التعبير عن المستقبل بصيغة الماضي لليقين الحتمي؛ افتتحت السورة بلفظ {أَتَى } وهو فعل ماضٍ، بينما الأمر يتحدث عن القيامة والوعيد المستقبلي. واللطيفة البلاغية وال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Using the past tense for a future event to express certainty; the surah begins with the Qur’anic expression, a past-tense verb, while referring to the future Day and its warning. The rhetorical effect is that what Allah promises is certain, as though it has already occurred. the Qur’anic expression also teaches patience with waiting."
+  },
+  {
+    "id": 104,
+    "surah": "النحل",
+    "ayah": "{وَالْخَيْلَ وَالْبِغَالَ وَالْحَمِيرَ لِتَرْكَبُوهَا وَزِينَةً وَيَخْلُقُ مَا لَا تَعْلَمُونَ} [الآية 8]",
+    "insightAr": "ذكر الله الخيل والبغال والحمير لما فيها من الركوب والزينة، ثم قال: {وَيَخْلُقُ مَا لَا تَعْلَمُونَ}، فدل على سعة خلقه وما لا يحيط به علم الناس.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Allah mentions horses, mules, and donkeys for riding and adornment, then says, “And He creates what you do not know,” showing the vastness of His creation beyond the limits of human knowledge."
+  },
+  {
+    "id": 105,
+    "surah": "النحل",
+    "ayah": "{وَضَرَبَ اللَّهُ مَثَلًا قَرْيَةً كَانَتْ آمِنَةً مُّطْمَئِنَّةً يَأْتِيهَا رِزْقُهَا رَغَدًا مِّن كُلِّ مَكَانٍ فَكَفَرَتْ بِأَنْعُمِ اللَّهِ فَأَذَاقَهَا اللَّهُ لِبَاسَ الْجُوعِ وَالْخَوْفِ} [الآية 112]",
+    "insightAr": "بلاغة \"لباس الجوع والخوف\" وأثر كفران النعم؛ لم يقل القرآن \"فأصابها الجوع\"، بل قال {لِبَاسَ الْجُوعِ وَالْخَوْفِ}؛ واستعارة اللباس هنا غاية في الروعة؛ لأن الثوب واللباس يلتصق بالبدن بالكامل ويحيط به من كل جانب ولا ينفك عنه؛ فكذلك الخوف والأزمة الاقتصادية والفقر إذا حل بالمجتمعات نتيجة جحودهم أحاط بصدورهم كالحصار.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The eloquence of ‘the garment of hunger and fear’ and the consequence of ingratitude; rather than simply saying that hunger afflicted the people, the Qur’an uses the Qur’anic expression. Clothing surrounds the body from every side, and the image conveys how fear, poverty, and economic hardship can envelop a society."
+  },
+  {
+    "id": 106,
+    "surah": "النحل",
+    "ayah": "{مَنْ عَمِلَ صَالِحًا مِّن ذَكَرٍ أَوْ أُنثَى وَهُوَ مُؤْمِنٌ فَلَنُحْيِيَنَّهُ مَعِيشَةً طَيِّبَةً وَلَنَجْزِيَنَّهُمْ أَجْرَهُم بِأَحْسَنِ مَا كَانُوا يَعْمَلُونَ} [الآية 97]",
+    "insightAr": "معادلة \"المعيشة الطيبة\"؛ وضعت الآية قانوناً حاسماً للسعادة ال؛ والمشروط بالعمل الصالح القائم على الإيمان. والمعيشة الطيبة لا تعني بالضرورة الثراء الفاحش، بل تعني رزق القناعة الباطنة، والرضا بالقدر، والسكينة داخل الصدر التي يعجز المال عن شرائها.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The equation of a ‘good life’; the verse presents righteous action grounded in faith as the path to wholesome living. A good life does not necessarily mean great wealth; it includes inner contentment, acceptance of Allah’s decree, and tranquility that money cannot purchase."
+  },
+  {
+    "id": 107,
+    "surah": "النحل",
+    "ayah": "{إِنَّ إِبْرَاهِيمَ كَانَ أُمَّةً قَانِتًا لِّلَّهِ حَنِيفًا وَلَمْ يَكُ مِنَ الْمُشْرِكِينَ} [الآية 120]",
+    "insightAr": "عظمة الفرد الإيجابي الصالح بوزن أمة؛ سمّى الله إبراهيم عليه السلام {أُمَّةً} وهو رجل فرد؛ ليدل بياناً وتربية على أن العبد إذا تكاملت فيه صفات الخير، والصدق، والثبات العقدي، وتجرد لله، صار يزن في ميزان الأثر والنفع والقدوة مجتمعاً كاملاً، وهي دعوة لمحاربة التبعية والسلبية.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The greatness of a righteous individual whose influence can equal that of a community; Allah called Abraham the Qur’anic expression although he was one man. When a servant combines goodness, truthfulness, steadfast faith, and devotion to Allah, his positive influence and example can become immense—an invitation to resist passivity and blind conformity."
+  },
+  {
+    "id": 108,
+    "surah": "الإسراء",
+    "ayah": "{وَيَدْعُ الْإِنسَانُ بِالشَّرِّ دُعَاءَهُ بِالْخَيْرِ وَكَانَ الْإِنسَانُ عَجُولًا} [الآية 11]",
+    "insightAr": "التسرع الانفعالي والرحمة بحجب الإجابة؛ ترسم الآية؛ فالعجلة {عَجُولًا} تدفع الإنسان للدعاء بالسوء أو الهلاك على نفسه أو ممتلكاته، فمن تمام رحمة الله به وبفطرته أنه يحجب إجابة دعاء الشر حماية له من طيش لحظته.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Emotional haste and mercy in withholding harmful supplications; the verse portrays the human tendency, especially in anger and distress, to rush into harmful prayers against oneself or one’s possessions. Part of Allah’s mercy is that such impulsive prayers are not simply granted, protecting the person from the consequences of a moment of agitation."
+  },
+  {
+    "id": 109,
+    "surah": "الإسراء",
+    "ayah": "{مَّن كَانَ يُرِيدُ الْعَاجِلَةَ عَجَّلْنَا لَهُ فِيهَا مَا نَشَاءُ لِمَن نُّرِيدُ ثُمَّ جَعَلْنَا لَهُ جَهَنَّمَ يَصْلَاهَا مَذْمُومًا مَّدْحُورًا} [الآية 18]",
+    "insightAr": "تسمية الدنيا بـ \"العاجلة\" وفخ النفعية القريبة؛ دقة التسمية بـ {الْعَاجِلَةَ} لتصف. واللطيفة أن العطاء ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Calling the world ‘the immediate’ and the trap of short-term gain; the Qur’anic expression captures the fleeting nature of worldly pleasures. Even worldly provision is granted according to Allah’s will, the Qur’anic expression; therefore, sacrificing faith and the self for something transient is a losing bargain."
+  },
+  {
+    "id": 110,
+    "surah": "الإسراء",
+    "ayah": "{وَمَنْ أَرَادَ الْآخِرَةَ وَسَعَى لَهَا سَعْيَهَا وَهُوَ مُؤْمِنٌ فَأُولَ ئِكَ كَانَ سَعْيُهُم مَّشْكُورًا} [الآية 19]",
+    "insightAr": "قانون السعي المشروط وقبول الجهد؛ رتب الله شكر والقبول الأخروي الشامل على ثلاثة أركان متلازمة: الإرادة الحرة للآخرة، وبذل السعي المناسب والجهد العملي لها حساً {وَسَعَى لَهَا سَعْيَهَا}، وأن يكون المحرك هو الإيمان الباطن، فالأمنيات المجردة بلا عمل هي بضاعة المفلسين.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The law of purposeful striving and accepted effort; the passage presents three connected foundations for success in the Hereafter: freely choosing the Hereafter, striving for it with appropriate practical effort the Qur’anic expression, and acting from genuine faith. Mere wishes without action are the possession of the bankrupt."
+  },
+  {
+    "id": 111,
+    "surah": "الإسراء",
+    "ayah": "{كُلًّا نُّمِدُّ هَؤُلَاءِ وَهَؤُلَاءِ مِنْ عَطَاءِ رَبِّكَ وَمَا كَانَ عَطَاءُ رَبِّكَ مَحْظُورًا} [الآية 20]",
+    "insightAr": "سنة الإمداد العام وسعة الرزق الكوني؛ تضع الآية قاعدة كبرى في الربوبية: عطاء الله ال؛ فيمد الله المؤمن بطاعته، ويمد الكافر في كفره وسعيه الدنيوي جرياً مع سنن الأسباب.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The general provision granted to humanity; the verse establishes that Allah’s worldly gifts—health, wealth, knowledge, technology, and other means—are available across humanity, the Qur’anic expression. People may receive worldly provision while following different paths, according to the established causes of worldly life."
+  },
+  {
+    "id": 112,
+    "surah": "الإسراء",
+    "ayah": "{وَقَضَى رَبُّكَ أَلَّا تَعْبُدُوا إِلَّا إِيَّاهُ وَبِالْوَالِدَيْنِ إِحْسَانًا إِمَّا يَبْلُغَنَّ عِندَكَ الْكِبَرَ أَحَدُهُمَا أَوْ كِلَاهُمَا فَلَا تَقُل لَّهُمَا أُفٍّ} [الآية 23]",
+    "insightAr": "اقتران التوحيد ببر الوالدين دلالة على عظم الحق. واستخدام ظرف الحيازة {عِنْدَكَ} يشير تربوياً و؛ فبعد أن كان الطفل في كنفهم، صار الآباء الكبار في كنف وحيازة ودار الابن، وحظر القرآن أدنى مراتب التبرم والضيق اللفظي: لفظ {أُفٍّ}.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The architecture of honoring parents in old age and the significance of ‘with you’; linking monotheism with kindness to parents shows the magnitude of their right. the Qur’anic expression reflects the reversal of roles: parents who once cared for their child may later become dependent on their grown child. Even the slightest expression of irritation, the Qur’anic expression, is prohibited."
+  },
+  {
+    "id": 113,
+    "surah": "الإسراء",
+    "ayah": "{وَاخْفِضْ لَهُمَا جَنَاحَ الذُّلِّ مِنَ الرَّحْمَةِ وَقُل رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا} [الآية 24]",
+    "insightAr": "بلاغة استعارة \"جناح الذل\" وميزان المعاملة الارتدادية؛ استعارة طائرة في غاية الرقة؛ صوّر الابن بالطائر الذي يملك جناحاً، لكنه يعكس حركته ويخفض جناحه ذلاً وتواضعاً وحناناً تحت أقدام والديه؛ وعقبها بالدعاء بـ {كَمَا رَبَّيَانِي صَغِيرًا} تذكيراً بنعمة الرعاية الغابرة التي لا يدفع كفايتها مال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The eloquence of ‘the wing of humility’ and reciprocal care; the child is portrayed like a bird lowering its wing in humility and tenderness before its parents. The prayer the Qur’anic expression recalls their earlier care and the immeasurable favor of raising the child."
+  },
+  {
+    "id": 114,
+    "surah": "الإسراء",
+    "ayah": "{إِنَّ الْمُبَذِّرِينَ كَانُوا إِخْوَانَ الشَّيَاطِينِ وَكَانَ الشَّيْطَانُ لِرَبِّهِ كَفُورًا} [الآية 27]",
+    "insightAr": "الأخوة الفكرية والسلوكية للتفريط بالمال؛ صاغت الآية حكماً أخلاقياً واقتصادياً حازماً؛ فالتبذير هو إنفاق المال والموارد في معاصي الله أو في وجوه العبث بلا نفع. وجعل الله فاعل ذلك شريكاً ومقترناً بـ {إِخْوَانَ الشَّيَاطِينِ} لاتحاد طريقتهم في الإفساد وكفران النعم.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The intellectual and behavioral kinship between wastefulness and the way of devils; the verse establishes a firm ethical and economic judgment. Squandering means wasting wealth and resources in disobedience or useless pursuits, and the squanderer is associated with the Qur’anic expression because of their shared pattern of corruption and ingratitude."
+  },
+  {
+    "id": 115,
+    "surah": "الإسراء",
+    "ayah": "{وَلَا تَجْعَلْ يَدَكَ مَغْلُولَةً إِلَى عُنُقِكَ وَلَا تَبْسُطْهَا كُلَّ الْبَسْطِ فَتَقْعُدَ مَلُومًا مَّحْسُورًا} [الآية 29]",
+    "insightAr": "التوازن المالي الحركي و صوّرت الآية حال البخيل الشحيح بمن غُلّت وقُيدت يده لعنقه فلا تمتد لعطاء، وصوّرت المسرف بالمفرط الذي يبسط يده كلياً بلا وعي. وضعت الآية المنهج الوسطي لتفادي السقوط في مرارة الدين والفقر والندم والملامة ال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Financial balance and the architecture of spending; the miser is portrayed as one whose hand is chained to his neck, while the spendthrift is one who opens his hand without restraint. The verse establishes a middle course that protects against debt, poverty, regret, and psychological blame: the Qur’anic expression."
+  },
+  {
+    "id": 116,
+    "surah": "الإسراء",
+    "ayah": "{إِنَّ رَبَّكَ يَبْسُطُ الرِّزْق لمن يَشَاءُ وَيَقْدِرُ إِنَّهُ كَانَ بِعِبَادِهِ خَبِيرًا بَصِيرًا} [الآية 30]",
+    "insightAr": "حكمة تفاوت الأرزاق والقدر و \"يقدر\" لغة تعني يضيق ويقنن بحكمة. بسط الرزق المالي أو تضييقه وتحديده محكوم بخبرة الله ال؛ فمن العباد من لا يصلح حاله ودينه إلا الغنى ولو افتقر لكفر، ومنهم من لا يصلحه إلا الكفاف ولو اغتنى لطغى.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The wisdom behind differences in provision and hidden divine regulation; the Qur’anic expression can mean restricting or limiting with wisdom. Expansion or restriction of provision is governed by Allah’s complete knowledge of His servants. Some may be better suited to abundance, while others may be better protected by sufficiency rather than excess."
+  },
+  {
+    "id": 117,
+    "surah": "الإسراء",
+    "ayah": "{وَلَا تَقْفُ مَا لَيْسَ لَكَ بِهِ عِلْمٌ إِنَّ السَّمْعَ وَالْبَصَرُ وَالْفُؤَادَ كُلُّ أُولَ ئِكَ كَانَ عَنْهُ مَسْئُولًا} [الآية 36]",
+    "insightAr": "\"لا تقف\" أي لا تتبع، ولا تقل، ولا تظن، ولا تنشر شائعة أو تهمة بلا دليل علمي قطعي ويقين جازم. وضعت الآية المسؤولية الجنائية والشرعية الفردية على أدوات الوعي الكبرى (السمع البصر القلب)، وهي",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A principle of evidence-based integrity; the Qur’anic expression means do not follow, say, assume, or spread a claim without sound evidence. The verse places individual responsibility upon the major faculties of awareness—the hearing, sight, and heart—protecting the Muslim mind from rumor and superstition."
+  },
+  {
+    "id": 118,
+    "surah": "الإسراء",
+    "ayah": "{قُل لِّعِبَادِي يَقُولُوا الَّتِي هِيَ أَحْسَنُ إِنَّ الشَّيْطَانَ يَنزَغُ بَيْنَهُمْ} [الآية 53]",
+    "insightAr": "انتقاء اللفظ السامي لإغلاق ثغرات النزاع ال؛ لم يقل الله \"يقولوا الكلمة الحسنة\"، بل ارتقى بالمعيار ليكون {الَّتِي هِيَ أَحْسَنُ} بصيغة التفضيل الدقيقة؛ لأن العلاقات ال؛ فالكلمة العادية المحتملة يفسدها الشيطان بنزغه {يَنزَغُ بَيْنَهُمْ} ويفجر بها الخصام.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Choosing the finest wording to close openings for social conflict; Allah does not merely command a good word, but the Qur’anic expression, the best possible expression. Family and social relationships require refined speech, because Satan can exploit an ordinary or ambiguous word and turn it into conflict."
+  },
+  {
+    "id": 119,
+    "surah": "الإسراء",
+    "ayah": "{أَقِمِ الصَّلَاةَ لِدُلُوكِ الشَّمْسِ إِلَى غَسَقِ اللَّيْلِ وَقُرْآنَ الْفَجْرِ إِنَّ قُرْآنَ الْفَجْرِ كَانَ مَشْهُودًا} [الآية 78]",
+    "insightAr": "خصوصية صلاة الفجر والشهود الملائكي الحركي؛ خصّ الله صلاة الفجر ووصف تلاوتها بـ {قُرْآنَ الْفَجْرِ}، وجعل علتها المتميزة {كَانَ مَشْهُودًا}؛ حيث تشهدها وتحضرها ملائكة الليل وملائكة النهار الحفظة في لحظة التناوب الكوني، مما يمنح روح المؤمن طاقة روحة هائلة لبدء يومه وثبات خطواته.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The special status of Fajr prayer and its witnessing; Fajr is singled out as the Qur’anic expression and described as the Qur’anic expression. The reflection connects this with the witnessing of the night and day angels, giving the believer a spiritually significant beginning to the day."
+  },
+  {
+    "id": 120,
+    "surah": "الإسراء",
+    "ayah": "{وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ وَلَا يَزِيدُ الظَّالِمِينَ إِلَّا خَسَارًا} [الآية 82]",
+    "insightAr": "دقة لفظ \"شفاء\" وعكسية التأثر المعرفي؛ لم يقل القرآن \"دواء\" (فالدواء قد يحتمل الشفاء أو يفشل)، بل قال قاطعاً بيقين {شِفَاءٌ}؛ فهو شفاء للأمراض ال. واللطيفة أن هذا النور المعرفي إذا نزل على ظالم معاند زاده خسراناً وعناداً لإعراضه.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "The precision of the word ‘healing’ and differing responses to revelation; the Qur’an says the Qur’anic expression, not merely ‘medicine,’ emphasizing healing for inward diseases such as anxiety, grief, envy, arrogance, and doubts. Yet the same revelation can increase the loss of a stubborn wrongdoer because of his deliberate rejection."
+  },
+  {
+    "id": 121,
+    "surah": "الإسراء",
+    "ayah": "{قُل كُلٌّ يَعْمَلُ عَلَى شَاكِلَتِهِ فَرَبُّكُمْ أَعْلَمُ بِمَنْ هُوَ أَهْدَى سَبِيلًا} [الآية 84]",
+    "insightAr": "انعكاس البناء الداخلي ال؛ \"شاكلته\" هي؛ فالأفعال، والقرارات، والكلمات الصادرة من الإنسان هي محض مرايا وانعكاس ل؛ فالطيب ينضح طيباً والخبيث ينضح بما انطوى عليه صدره.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "A person’s inner psychological makeup is reflected in outward behavior; the Qur’anic expression refers to one’s nature, character, and settled spiritual formation. Actions, decisions, and words mirror what is within: good produces good, and what is corrupt reveals its inner corruption."
+  },
+  {
+    "id": 122,
+    "surah": "الكهف",
+    "ayah": "{فَلَعَلَّكَ بَاخِعٌ نَّفْسَكَ عَلَى آآثَارِهِمْ إِن لَّمْ يُؤْمِنُوا بِهَذَا الْالحَدِيثِ أَسَفًا} [الآية 6]",
+    "insightAr": "الرحمة القيادية العليا المفرطة الشفوقة؛ \"البخع\" في اللغة هو إهلاك ونحر وقتل النفس غماً وحسرة. يواسي الله نبيه الذي كاد يتلف جسده الشريف حزناً على تمنع قومه وإعراضهم عن الهدوء والنجاة؛ والآية ترفع العبء ال؛ دورك البلاغ وليس إهلاك الذات هماً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The highest form of compassionate leadership; the Qur’anic expression denotes destroying oneself through grief. Allah consoles His Prophet, who was deeply distressed by his people’s refusal of guidance, reminding every reformer and parent that their duty is to convey the message, not to destroy themselves with worry."
+  },
+  {
+    "id": 123,
+    "surah": "الكهف",
+    "ayah": "{إِذْ أَوَى الْفِتْيَةُ إِلَى الْكَهْفِ فَقَالُوا رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا}[الآية 10]",
+    "insightAr": "الفرار بالدين من بيئة السوء لطلب الرشد؛ نموذج للشباب الإيجابي؛ هجروا قصور الملوك وظل الرفاهية ال. واللطيفة دعاؤهم بالـ {رَشَدًا}؛ والرشد هو إصابة الحق والصواب وتيسير الخطوات البديلة دون تيه.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Leaving a harmful environment to preserve faith and seek sound guidance; the young believers abandoned worldly comfort and sought refuge in a cave to protect their creed and conscience. Their prayer for the Qur’anic expression expresses seeking truth, right judgment, and a sound path without inner confusion."
+  },
+  {
+    "id": 124,
+    "surah": "الكهف",
+    "ayah": "{وَتَحْسَبُهُمْ أَيْقَاظًا وَهُمْ رُقُودٌ وَنُقَلِّبُهُمْ ذَاتَ الْيَمِينِ وَذَاتَ الشِّمَالِ وَكَلْبُهُم بَاسِطٌ ذِرَاعَيْهِ بِالْوَصِيدِ} [الآية 18]",
+    "insightAr": "يصف الله حال أصحاب الكهف وهم رقود، ويذكر تقليبهم ذات اليمين وذات الشمال، وبقاء كلبهم باسطًا ذراعيه بالوصيد.",
+    "source": "تفسير ابن كثير / موسوعات الإعجاز الطبي.",
+    "insightEn": "Allah describes the People of the Cave lying asleep, mentioning that they were turned from side to side, while their dog remained stretching its forelegs at the entrance."
+  },
+  {
+    "id": 125,
+    "surah": "الكهف",
+    "ayah": "{وَلَا تَقُولَنَّ لِشَيْءٍ إِنِّي فَاعِلٌ ذَلِكَ غَدًا * إِلَّا أَن يَشَاءَ اللَّهُ وَاذْكُر رَّبَّكَ إِذَا نَسِيتَ} [الآية 23-24]",
+    "insightAr": "فقه الاستثناء وقطع وهم السيطرة المطلقة على المستقبل؛ تؤدب الآية الغرور البشري التواق للتخطيط الجازم؛ فالمستقبل غيب محض لا يملكه العبد، وقول \"غداً سأفعل كذا\" بيقين. تعليق الخطط بمشيئة الله يمنح الصدر راحة وتسليماً إذا تعرقلت خطوات الأسباب.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The discipline of saying ‘if Allah wills’ and abandoning the illusion of total control over the future; the future is unseen and belongs to Allah. Linking plans to His will gives the heart calm acceptance when ordinary means do not produce the expected result."
+  },
+  {
+    "id": 126,
+    "surah": "الكهف",
+    "ayah": "{وَاصْبِرْ نَفْسَكَ مَعَ الَّذِينَ يَدْعُونَ رَبَّهُم بِالْغَدَاةِ وَالْعَشِيِّ يُرِيدُونَ وَجْهَهُ وَلَا تَعْدُ عَيْنَاكَ عَنْهُمْ}[الآية 28]",
+    "insightAr": "دور المحضن التربوي البيئي الصالح وحظر التطلع للمترفين؛ أمر صريح بحبس وتثبيت وصبر النفس {وَاصْبِرْ نَفْسَكَ} مع رفقة الطاعة والخير البسيطة الفقيرة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The protective role of a righteous environment and the prohibition of longing for worldly elites; the Qur’anic expression calls the believer to remain with sincere companions, while the Qur’anic expression warns against being dazzled by the fleeting status of the wealthy."
+  },
+  {
+    "id": 127,
+    "surah": "الكهف",
+    "ayah": "{الْمَالُ وَالْبَنُونَ زِينَةُ الْحَيَاةِ الدُّنْيَا وَالْبَاقِيَاتُ الصَّالِحَاتُ خَيْرٌ عِندَ رَبِّكَ ثَوَابًا وَخَيْرٌ أَمَلًا} [الآية 46]",
+    "insightAr": "التفريق اللفظي بين \"الزينة\" العابرة و\"الباقي\" المستقر؛ وصف المال والذرية بزينة؛ والزينة أمر خارجي زائل عابر يُتجمل به مؤقتاً ثم ينفد ويوضع، بينما وصف الطاعات والذكر والقرآن بالـ {الْبَاقِيَاتُ الصَّالِحَاتُ} لتعديل كفة الاهتمام ال؛ فالأولى تتركها وترحل عنها، والثانية تصحبك وتثمر لك أماناً ممتداً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The verbal distinction between fleeting adornment and lasting good; wealth and children are described as adornment, something temporary, while worship, remembrance, and the Qur’an are among the Qur’anic expression. One leaves worldly adornments behind, whereas lasting good accompanies the person with enduring benefit."
+  },
+  {
+    "id": 128,
+    "surah": "الكهف",
+    "ayah": "{وَوَضِعَ الْكِتَابُ فَتَرَى الْمُجْرِمِينَ مُشْفِقِينَ مِمَّا فِيهِ وَيَقُولُونَ يَا وَيْلَتَنَا مَالِ هَذَا الْكِتَابِ لَا يُغَادِرُ صَغِيرَةً وَلَا كَبِيرَةً إِلَّا أَحْصَاهَا} [الآية 49]",
+    "insightAr": "تقديم \"الصغيرة\" في الحساب والتوثيق والوعي البشري؛ من اللطائف الدقيقة تقديم رصد {صَغِيرَةً} قبل {كَبِيرَةً} في صراخ المذنبين؛ لأن الإنسان يميل فطرياً إلى نسيان وتناسي المحقرات والذنوب العابرة الصغير (النظرة المسروقة، الكلمة الجارحة)، بينما يتذكر الجرائم الكبرى. فصدمتهم كانت في دقة إحصاء وتوثيق ما احتقروه في الدنيا.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The recording of ‘the small’ before ‘the great’; people naturally overlook minor sins and passing wrongs, such as a stolen glance or hurtful word, while remembering major offenses. The sinners’ shock is that even what they considered insignificant was precisely recorded."
+  },
+  {
+    "id": 129,
+    "surah": "الكهف",
+    "ayah": "{قَالَ لَهُ مُوسَى هَلْ أَتَّبِعُكَ عَلَى أَن تُعَلِّمَنِ مِمَّا عُلِّمْتَ رُشْدًا} [الآية 66]",
+    "insightAr": "أدب التلميذ مع المعلم رغماً عن علو الرتبة النبوية؛ موسى عليه السلام هو كليم الله ومن كبار أولي العزم من الرسل، ورغم مكانته العظمى الجليلة، خاطب العبد الصالح (الخضر) بمنتهى التواضع والأدب التعلمي مستخدماً أداة الاستئذان والتلطف: {هَلْ أَتَّبِعُكَ}، ومقراً بأن العلم منة إلهية محضة، ومحدداً غاية العلم بطلب الهداية والصواب {رُشْدًا}.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The student’s etiquette with a teacher despite prophetic rank; Moses, one of the great messengers, addressed the righteous servant with humility, asking the Qur’anic expression. He acknowledged that knowledge is a gift from Allah and sought from it the Qur’anic expression: right guidance and sound judgment."
+  },
+  {
+    "id": 130,
+    "surah": "الكهف",
+    "ayah": "{أَمَّا السَّفِينَةُ فَكَانَتْ لِمَسَاكِينَ يَعْمَلُونَ فِي الْبَحْرِ فَأَرَدتُّ أَنْ أَعِيبَهَا وَكَانَ وَرَاءهُم مَّلِكٌ يَأْخُذُ كُلَّ سَفِينَةٍ غَصْبًا} [الآية 79]",
+    "insightAr": "\"العيب\" الظاهري المانع للهلاك الشامل؛ خرق الخضر للسفينة كان في عين أصحابها المساكين مصيبة، وخسارة، ووجعاً. لكن وراء هذا الستار الخفي كان هذا الخرق والتلف هو السبب الوحيد والدرع لزهد الملك الظالم فيها ونجاة أصل ملكهم؛ أقدار الله المؤلمة المعصرة قد تكون هي الحماية لحفظ راسخ النعم.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "An apparent defect that prevents a greater destruction; damaging the boat looked like a sudden loss to its poor owners, but it protected the vessel from an unjust king who seized every sound ship. Painful events may therefore conceal protection for established blessings."
+  },
+  {
+    "id": 131,
+    "surah": "الكهف",
+    "ayah": "{وَأَمَّا الْجِدَارُ فَكَانَ لِغُلَامَيْنِ يَتِيمَيْنِ فِي الْمَدِينَةِ وَكَانَ تَحْتَهُ كَنزٌ لَّهُمَا وَكَانَ أَبُوهُمَا صَالِحًا} [الآية 82]",
+    "insightAr": "كان تحت الجدار كنز للغلامين اليتيمين، وكان أبوهما صالحًا؛ فأقام الخضر الجدار حفظًا لمالهما حتى يبلغا أشدهما ويستخرجا كنزهما.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A treasure lay beneath the wall for two orphan boys, and their father had been righteous. Al-Khidr repaired the wall to preserve their property until they reached maturity and brought out their treasure."
+  },
+  {
+    "id": 132,
+    "surah": "مريم",
+    "ayah": "{فَأَتَتْ بِهِ قَوْمَهَا تَحْمِلُهُ قَالُوا يَا مَرْيَمُ لَقَدْ جِئْتِ شَيْئًا فَرِيًّا} [الآية 27]",
+    "insightAr": "ثقة براءة الباطن لمواجهة الألسن الجائرة؛ مجيئها لقومها وهي تحمله الرضيع الآية تلهم صاحب المبدأ والحق ألا ينكسر أو يختبئ خوفاً من شائعات البيئة ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Confidence in inner innocence when facing unjust tongues; Mary came to her people carrying the infant Jesus with steadiness despite severe accusations. Her certainty in Allah’s care illustrates how a person committed to truth should not collapse or hide merely because of unjust rumors."
+  },
+  {
+    "id": 133,
+    "surah": "مريم",
+    "ayah": "{فَأَشَارَتْ إِلَيْهِ قَالُوا كَيْفَ نُكَلِّمُ مَن كَانَ فِي الْمَهْدِ صَبِيًّا * قَالَ إِنِّي عَبْدُ اللَّهِ آتَانِيَ الْكِتَابَ وَجَعَلَنِي نَبِيًّا} [الآية 29-30]",
+    "insightAr": "أول نطق للمسيح في المهد وتأسيس التوحيد؛ أول كلمة نطق بها عيسى عليه السلام وهو رضيع لتبرئة أمه كانت قطعاً حاسماً لأي غلو مستقبلي في شخصه: {إِنِّي عَبْدُ اللَّهِ}؛ فقدّم وصف العبودية والافتقار التام لله على سائر الرتب والمعجزات، ليضع حداً عقائدياً واضحاً لعلاقة المخلوق بالخالق.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The Messiah’s first words in the cradle and the foundation of monotheism; Jesus first identified himself as the Qur’anic expression, placing servitude to Allah before rank and miracles. The reflection presents this as a clear boundary between Creator and created being."
+  },
+  {
+    "id": 134,
+    "surah": "مريم",
+    "ayah": "{يَا أَبَتِ إِنِّي أَخَافُ أَن يَمَسَّكَ عَذَابٌ مِّنَ الرَّحْمَنِ فَتَكُونَ لِلشَّيْطَانِ وَلِيًّا} [الآية 45]",
+    "insightAr": "ذروة الأدب الدعوي والتربوي مع الأب الجافي؛ في حوار إبراهيم مع أبيه الكافر آزر، كرر نداء التلطف {يَا أَبَتِ} أربع مرات استعطافاً للأبوة. واللطيفة البلاغية اقتران وعيد العذاب باسم الله {الرَّحْمَنِ}؛ ليدل على أن كسر التوحيد وعقوق الحق عظيم جداً ليستوجب العقاب حتى من الإله الذي اتصف بالرحمة الواسعة السابغة.",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "The peak of respectful preaching toward a harsh father; in Abraham’s dialogue with his father, the tender address the Qur’anic expression is repeated to appeal to their bond. The warning connected with the name the Qur’anic expression shows the gravity of rejecting truth even while Allah’s mercy is vast."
+  },
+  {
+    "id": 135,
+    "surah": "مريم",
+    "ayah": "{فَخَلَفَ مِن بَعْدِهِمْ خَلْفٌ أَضَاعُوا الصَّلَاةَ وَاتَّبَعُوا الشَّهَوَاتِ فَسَوْفَ يَلْقَوْنَ غَيًّا} [الآية 59]",
+    "insightAr": "التلازم ال؛ وضعت الآية قانوناً سلوكياً دقيقاً: الصلاة هي الحاجز الحامي والدرع الصاد للنفس من الانزلاق. فإذا فرّط العبد فيها و{أَضَاعُوا الصَّلَاةَ}، انهار الحصن ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The psychological connection between neglecting prayer and surrendering to desire; prayer functions as a protective barrier against moral decline. When it is neglected, the inner restraint weakens and the soul becomes more vulnerable to desires, eventually leading toward misguidance."
+  },
+  {
+    "id": 136,
+    "surah": "النساء",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا كُونُوا قَوَّامِينَ بِالْقِسْطِ شُهَدَاءَ لِلَّهِ وَلَوْ عَلَى أَنفُسِكُمْ أَوِ الْوَالِدَيْنِ وَالْأَقْرَبِينَ} [الآية 135]",
+    "insightAr": "ذروة التجرد والعدالة المطلقة؛ يأمر الله تعالى بالقيام بالعدل والشهادة بالحق حتى لو كانت النتيجة تؤول بالضرر حساً على نفس الشاهد أو والديه أو أقاربه. فالروابط الطينية والقرابة العائلية تذوب أمام قدسية الحق وحقوق العباد، وهذا أصل أمان المجتمعات واستقرارها ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The height of impartial justice; Allah commands justice and truthful testimony even when doing so may harm oneself, one’s parents, or relatives. Family ties and personal interests must not override truth and people’s rights, which are foundations of social security and stability."
+  },
+  {
+    "id": 137,
+    "surah": "النساء",
+    "ayah": "{الَّذِينَ يَتَرَبَّصُونَ بِكُمْ فَإِن كَانَ لَكُمْ فَتْحٌ مِّنَ اللَّهِ قَالُوا أَلَمْ نَكُن مَّعَكُمْ وَإِن كَانَ لِلْكَافِرِينَ نَصِيبٌ قَالُوا أَلَمْ نَسْتَحْوِذْ عَلَيْكُمْ} [الآية 141]",
+    "insightAr": "؛ ترسم الآية بدقة العقلية المنافقة المتذبذبة؛ فهم لا يملكون مبادئ ثابتة بل يرقبون حركة ميزان القوى حساً؛ فإذا انتصر أهل الحق قفزوا لطلب المغانم والمظاهر ({أَلَمْ نَكُن مَّعَكُمْ})، وإذا مالت الكفة للطرف الآخر منوا عليهم بالحماية خفية. الآية تحذر من الشخصيات المتلونة بحسب المصالح ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The psychology of the opportunistic observer; hypocrites have no stable principles and instead watch the balance of power. They seek benefits when the people of truth prevail and seek protection from others when the balance changes. The reflection warns against personalities that change with material interests."
+  },
+  {
+    "id": 138,
+    "surah": "النساء",
+    "ayah": "{إِنَّ الْمُنَافِقِينَ يُخَادِعُونَ اللَّهَ وَهُوَ خَادِعُهُمْ وَإِذَا قَامُوا إِلَى الصَّلَاةِ قَامُوا كُسَالَى يُرَاءُونَ النَّاسَ} [الآية 142]",
+    "insightAr": "علامات البلادة الإيمانية والكسل السلوكي؛ تشخص الآية العلة الباطنة في صلاة المنافق؛ فهو لا يملك دافعاً روحياً داخلياً للقرب، بل يتحرك بدنه تحت ضغط الرغبة في المحاكاة ال.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Signs of spiritual dullness and behavioral laziness; the hypocrite’s prayer lacks an inner motive of closeness to Allah and is driven instead by social appearance and showing off the Qur’anic expression. Inner emptiness is reflected in physical heaviness and reluctance toward prayer."
+  },
+  {
+    "id": 139,
+    "surah": "النساء",
+    "ayah": "{مُّذَبْذَبِينَ بَيْنَ ذَلِكَ لَا إِلَى هَؤُلَاءِ وَلَا إِلَى هَؤُلَاءِ} [الآية 143]",
+    "insightAr": "مرض التردد والقلق الروحي؛ وصف المنافقين بـ {مُّذَبْذَبِينَ} والذبذبة حركياً هي الحركة المضطربة المتأرجحة المعلقة في الهواء بين مكانين دون استقرار. فالشخص الذي يترك الحق ويعيش بلا عقيدة واضحة، يعيش تائهاً ومشتتاً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The illness of spiritual hesitation and anxiety; the Qur’anic expression depicts unstable movement without settled direction. A person who abandons truth without a clear creed becomes psychologically and intellectually scattered, unable to remain firm on a principle or find lasting tranquility."
+  },
+  {
+    "id": 140,
+    "surah": "النساء",
+    "ayah": "{لَّا يُحِبُّ اللَّهُ الْجَهْرَ بِالسُّوءِ مِنَ الْقَوْلِ إِلَّا مَن ظُلِمَ وَكَانَ اللَّهُ سَمِيعًا عَلِيمًا} [الآية 148]",
+    "insightAr": "صمام الأمان اللفظي للمظلوم؛ الأصل في الأخلاق هو الستر وعدم تداول الألفاظ السيئة أو الفضائح؛ واستثنى الله من هذا الحظر ال؛ ليعطيه متنفساً شرعياً و.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A verbal safeguard for the oppressed; the normal rule is to conceal faults and avoid circulating harmful accusations, but the Qur’anic expression gives the wronged person room to speak, complain, and seek redress against the oppressor, protecting dignity and restraining wrongdoing."
+  },
+  {
+    "id": 141,
+    "surah": "النساء",
+    "ayah": "{إِن تُبْدُوا خَيْرًا أَوْ تُخْفُوهُ أَوْ تَعْفُوا عَن سُوءٍ فَإِنَّ اللَّهَ كَانَ عَفُوًّا قَدِيرًا} [الآية 149]",
+    "insightAr": "شرف العفو عند القدرة المطلقة؛ اقتران صفة الله {عَفُوًّا} بـ {قَدِيرًا} عقب الأمر بالمسامحة يحمل توجيهاً تربوياً سامياً؛ فالعفو الحقيقي الفاضل والجاذب للسكينة هو العفو الذي يصدر من العبد وهو في موضع قوة وقدرة كاملة على الانتقام حساً، ولكنه يتركه تذللاً وتشبهاً بأخلاق الحلم الإلهي.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "The honor of forgiveness when fully able to retaliate; pairing the Qur’anic expression with the Qur’anic expression after the command to pardon carries an elevated lesson. The most virtuous forgiveness is offered from a position of strength, when retaliation is possible but deliberately abandoned."
+  },
+  {
+    "id": 142,
+    "surah": "النساء",
+    "ayah": "{فَبِظُلْمٍ مِّنَ الَّذِينَ هَادُوا حُرِّمَتْ عَلَيْهِمْ طَيِّبَاتٌ أُحِلَّتْ لَهُمْ وَبِصَدِّهِمْ عَن سَبِيلِ اللَّهِ كَثِيرًا} [الآية 160]",
+    "insightAr": "تضيق الرزق ال؛ تضع الآية سنة قدرية هامة: ارتكاب المظالم، وبخس حقوق العباد، والصد عن قيم الدين أخلاقياً واقتصادياً يتبعه بالضرورة تضييق رباني على الأرزاق وحرمان من البركات الحقيقية للطيبات عقوبة وتطهيراً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The restriction of provision as a consequence of wrongdoing; the reflection presents a moral pattern in which injustice, denying people their rights, and obstructing religious values can be accompanied by loss of blessing and hardship in provision as a consequence and purification."
+  },
+  {
+    "id": 143,
+    "surah": "النساء",
+    "ayah": "{لَّ كِنِ الرَّاسِخُونَ فِي الْعِلْمِ مِنْهُمْ وَالْمُؤْمِنُونَ يُؤْمِنُونَ بِمَا أُنزِلَ إِلَيْكَ} [الآية 162]",
+    "insightAr": "\"الرسوخ\" الفكري والعلمي درع الشبهات؛ وصفت الآية فئة العلماء بـ {الرَّاسِخُونَ}. والرسوخ لغة هو ثبوت جذور الشيء في عمق الأرض كالجبال الشامخة. فالعالم الراسخ لا تزلزله عواصف الشبهات، ولا تميل ببوصلته الفكرية الأهواء العابرة، لمتانة وتماسك بنائه المعرفي والروحي الباطن.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "Intellectual and scholarly rootedness as protection from doubts; scholars are described as the Qur’anic expression, literally those firmly rooted. A grounded scholar is not shaken by waves of doubt or passing desires because the inner intellectual and spiritual foundation is strong."
+  },
+  {
+    "id": 144,
+    "surah": "النساء",
+    "ayah": "{يَا أَيُّهَا النَّاسُ قَدْ جَاءَكُمُ الْبُرْهَانُ مِن رَّبِّكُمْ وَأَنزَلْنَا إِلَيْكُمْ نُورًا مُّبِينًا} [الآية 174]",
+    "insightAr": "القرآن كبرهان عقلي ونور؛ سمى الله رسالة الوحي والقرآن الكريم بـ {الْبُرْهَانُ} وهو الحجة القاطعة الكاسرة للمغالطات العقلية، و{نُورًا مُّبِينًا} لأنه يبدد ظلمات الحيرة ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The Qur’an as rational proof and spiritual light; revelation is called the Qur’anic expression, a decisive proof that breaks false reasoning, and the Qur’anic expression, clear light that dispels confusion and doubt and illuminates the path of human conduct."
+  },
+  {
+    "id": 145,
+    "surah": "النساء",
+    "ayah": "{يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ} [الآية 176]",
+    "insightAr": "دقة حفظ الحقوق المالية حتى في ختام السور؛ خُتمت سورة النساء الشاسعة بأحكام المواريث والفرائض الدقيقة؛ لتؤكد بياناً وتشريعاً أن أصل استقرار البناء ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The precision of protecting financial rights even at the end of a surah; Surah al-Nisa concludes with detailed inheritance rulings, emphasizing that stable families and society depend on safeguarding financial rights through the balance of divine justice."
+  },
+  {
+    "id": 146,
+    "surah": "المائدة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا أَوْفُوا بِالعُقُودِ} [الآية 1]",
+    "insightAr": "قدسية الوفاء والالتزام بالعهود؛ تفتتح السورة بأمر جازم ومطلق يمثل ركيزة الحضارة والعمران والتعاملات الإنسانية والمالية الشاملة؛ فالإيفاء بالعقود (سواء العهود مع الله عقيدة، أو عقود البيع والشراء والزواج مع البشر) هو عصب الأمان ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The sanctity of fulfilling covenants and commitments; the command to fulfill contracts forms a foundation for civilization and human dealings, whether commitments to Allah or agreements involving commerce and marriage. Faithful fulfillment is a pillar of social and psychological security."
+  },
+  {
+    "id": 147,
+    "surah": "المائدة",
+    "ayah": "{وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَى وَلَا تَعَاوَنُوا عَلَى الْإِثْمِ وَالْعُدْوَانِ} [الآية 2]",
+    "insightAr": "تضع الآية ميزاناً حاسماً للأنشطة والتجمعات البشرية والمؤسسية: فكل تجمع يقود للنماء والخير والنفع والفضيلة الأخلاقية وجب دعمه ومساندته ({عَلَى الْبِرِّ وَالتَّقْوَى })، وكل تحرك ينتج هدراً أو ظلماً أو إشاعة للفاحشة وجبت مقاطعته حماية لبنية المجتمع.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The architecture of constructive collective action; the verse provides a criterion for groups and institutions: activities that produce goodness, benefit, and virtue should be supported the Qur’anic expression, while actions that produce harm, injustice, or indecency should be rejected to protect society."
+  },
+  {
+    "id": 148,
+    "surah": "المائدة",
+    "ayah": "{الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا} [الآية 3]",
+    "insightAr": "الطمأنينة بتمام المنهج المعصوم؛ نزلت هذه الآية العظيمة يوم عرفة في حجة الوداع لتعلن كمال التشريع وثبات الأصول وانقطاع الحاجة للقوانين البشرية الوضعية القاصرة المتناقضة. هذا الكمال يمنح نفس المسلم اعتزازاً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Tranquility through the completeness of the revealed way; this verse announced the completion of the religion and its foundations, giving the believer confidence that the revealed framework is complete and a source of settled identity and reassurance."
+  },
+  {
+    "id": 149,
+    "surah": "المائدة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى الْمَرَافِقِ} [الآية 6]",
+    "insightAr": "الأثر التطهيري وال؛ ربط الله المثول بين يديه في الصلاة بنظام نظافة وغسيل جسدي حسي دقيق لأعضاء الحركة والمواجهة (الوجه اليدين القدمين والرأس)، مما يسهم في تنشيط البدن، وطرد الكسل، وتطهير النفس باطناً وظاهراً لاستقبال المدد الإيماني.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The purifying and psychological effect of repeated daily ablution; linking preparation for prayer with washing the exposed limbs creates a repeated practice of physical cleanliness and spiritual readiness, refreshing the body and preparing the believer inwardly and outwardly for worship."
+  },
+  {
+    "id": 150,
+    "surah": "المائدة",
+    "ayah": "{مَا يُرِيدُ اللَّهُ لِيَجْعَلَ عَلَيْكُم مِّنْ حَرَجٍ وَلَ كِن يُرِيدُ لِيُطَهِّرَكُمْ وَلِيُتِمَّ نِعْمَتَهُ عَلَيْكُمْ} [الآية 6]",
+    "insightAr": "نفي المشقة وإرادة التطهير الكلي؛ تعقب الآية على أحكام الطهارة والتيمم ببيان الفلسفة الشرعية للتكاليف: فالله ينفي أي رغبة في التضييق الحسي أو التعسير على العباد ({مِّنْ حَرَجٍ})، بل الغاية السامية والممتدة هي التطهير ال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Removing hardship while seeking complete purification; after the rulings of purification and dry ablution, the verse clarifies that Allah does not intend undue difficulty the Qur’anic expression. The higher purpose is purification and readiness to receive His blessings."
+  },
+  {
+    "id": 151,
+    "surah": "المائدة",
+    "ayah": "{وَاذْكُرُوا نِعْمَةَ اللَّهِ عَلَيْكُمْ وَمِيثَاقَهُ الَّذِي وَاثَقَكُم بِهِ إِذْ قُلْتُمْ سَمِعْنَا وَأَطَعْنَا} [الآية 7]",
+    "insightAr": "ميثاق السمع والطاعة الطوعي اليقظ؛ تذكر الآية بالعهد الغليظ الثقيل الذي قطعه المؤمنون على أنفسهم بامتثال الأحكام بوعي ({سَمِعْنَا}) واستجابة حركية فورية ({وَأَطَعْنَا})، وهو ميثاق يتطلب يقظة مستمرة للضمير لت.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A conscious covenant of willing obedience; the verse recalls the weighty commitment to hear and obey, the Qur’anic expression. It requires continual moral awareness so that revealed commands are actually implemented in everyday dealings."
+  },
+  {
+    "id": 152,
+    "surah": "المائدة",
+    "ayah": "{فَبِمَا نَقْضِهِم مِّيثَاقَهُمْ لَعَنَّاهُمْ وَجَعَلْنَا قُلُوبَهُمْ قَاسِيَةً} [الآية 13]",
+    "insightAr": "قانون قسوة القلب وشؤم نقض العهود؛ تشرح الآية تسلسل المرض ال؛ فنقض العهود والتهاون مع التكاليف يؤدي الحرمان من الرحمة الإلهية كعقوبة؛ بحيث يصبح القلب صلباً كالحجر لا تؤثر فيه المواعظ ولا يرق للحق.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The law of hardened hearts and the consequence of broken covenants; neglecting commitments and divine duties can lead to deprivation of mercy and a heart described as hard, like stone, no longer responsive to reminders or truth."
+  },
+  {
+    "id": 153,
+    "surah": "المائدة",
+    "ayah": "{يَا أَهْلَ الْكِتَابِ قَدْ جَاءَكُمْ رَسُولُنَا يُبَيِّنُ لَكُمْ كَثِيرًا مِّمَّا كُنتُمْ تُخْفُونَ مِنَ الْكِتَابِ وَيَعْفُو عَن كَثِيرٍ} [الآية 15]",
+    "insightAr": "الذكاء والستر النبوي الراقي في الحوار؛ يبرز القرآن طريقة تعامل النبي مع تحريفات أهل الكتاب وسقطاتهم التاريخية؛ فكان يبين لهم مواضع التغيير الفاصلة لإقامة الحجة والهدى، ويتجاوز ويسكت ({وَيَعْفُو عَن كَثِيرٍ}) عن فضائح وتفاصيل أخرى لا فائدة من إثارتها أدباً وسيراً نحو الغاية.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Prophetic wisdom and discretion in dialogue; the Qur’an presents a balanced response to distortions and historical errors among the People of the Book: clarify what is necessary to establish truth and guidance, while overlooking what needlessly provokes or serves no beneficial purpose the Qur’anic expression."
+  },
+  {
+    "id": 154,
+    "surah": "المائدة",
+    "ayah": "{قَالُوا يَا مُوسَى إِنَّ فِيهَا قَوْمًا جَبَّارِينَ وَإِنَّا لَن نَّدْخُلَهَا حَتَّى يَخْرُجُوا مِنْهَا} [الآية 22]",
+    "insightAr": "وهم العجز ال؛ تعكس الآية ال؛ فهم يملكون العدد والوعود الإلهية ولكنهم تضخمت في أعينهم قوة الخصوم ({قَوْمًا جَبَّارِينَ}) فعلقوا استجابتهم وحركتهم بشرط فاشل مستحيل ({حَتَّى يَخْرُجُوا مِنْهَا})، فالعجز ينبع من الباطن أولاً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The illusion of material helplessness and defeat of the spirit; the Israelites had numbers and divine promises, yet magnified the power of their opponents and conditioned action on their departure. The reflection emphasizes that perceived incapacity often begins within before it appears outwardly."
+  },
+  {
+    "id": 155,
+    "surah": "المائدة",
+    "ayah": "{قَالَ رَجُلَانِ مِنَ الَّذِينَ يَخَافُونَ أَنْعَمَ اللَّهُ عَلَيْهِمَا ادْخُلُوا عَلَيْهِمُ الْبَابَ فَإِذَا دَخَلْتُمُوهُ فَإِنَّكُمْ غَالِبُونَ} [الآية 23]",
+    "insightAr": "أخلاق الشجاعة وبذل السبب الاستراتيجي؛ في مقابل الهزيمة الجماعية، قام رجلان صالحان (يوشع بن نون وكالب بن يوفنا) يملكان رصيداً باطناً من التقوى والخوف الإلهي ({مِنَ الَّذِينَ يَخَافُونَ}) فمنحهما الله ثباتاً وبصيرة، ووضعا الخطة العسكرية المعتمدة على المفاجأة واقتحام خطوط العدو ({ادْخُلُوا عَلَيْهِمُ الْبَابَ}) والتوكل، فالنصر مع بذل السبب الذكي.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Courage and intelligent strategic action; two righteous men stood firm because of their faith and fear of Allah. They combined courage with a practical plan—the Qur’anic expression—showing that reliance on Allah does not exclude taking wise and effective means."
+  },
+  {
+    "id": 156,
+    "surah": "المائدة",
+    "ayah": "{قَالُوا يَا مُوسَى إِنَّا لَن نَّدْخُلَهَا أَبَدًا مَّا دَامُوا فِيهَا فَاذْهَبْ أَنتَ وَرَبُّكَ فَقَاتِلَا إِنَّا هَاهُنَا قَاعِدُونَ} [الآية 24]",
+    "insightAr": "وقاحة اللفظ و بلغت بلادة ووقاحة بني إسرائيل ذروتها بـ {فَاذْهَبْ أَنتَ وَرَبُّكَ فَقَاتِلَا}؛ وهي عبارة تنضح بسلب المسؤولية الأخلاقية والقعود ال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The audacity of the words and the height of human cowardice; the Israelites’ refusal culminated in the Qur’anic expression, a complete rejection of responsibility followed by the Qur’anic expression. The reflection connects this attitude with their forty-year wandering."
+  },
+  {
+    "id": 157,
+    "surah": "المائدة",
+    "ayah": "{وَاتْلُ عَلَيْهِمْ نَبَأَ ابْنَيْ آدَمَ بِالْحَقِّ إِذْ قَرَّبَا قُرْبَانًا فَتُقُبِّلَ مِنْ أَحَدِهِمَا وَلَمْ يُتَقَبَّلْ مِنَ الْآخَرِ قَالَ لأَقْتُلَنَّكَ} [الآية 27]",
+    "insightAr": "آفة عدم قبول العمل وتحول الحسد لبطش جسدي؛ لخصت الآية بداية الجريمة البشرية الأولى على الأرض (قابيل وهابيل)؛ فعدم قبول قربان قابيل لخبث نيته لم يدفعه لمراجعة نفسه وتقويم باطنه، بل تحول وجعه ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The failure to accept one’s deed and the transformation of envy into violence; Cain’s rejected offering should have prompted self-correction, but instead his inner pain became anger, envy, and hatred toward his brother, ending in the threat the Qur’anic expression."
+  },
+  {
+    "id": 158,
+    "surah": "المائدة",
+    "ayah": "{قَالَ إِنَّمَا يَتَقَبَّلُ اللَّهُ مِنَ الْمُتَّقِينَ} [الآية 27]",
+    "insightAr": "قانون قبول الأعمال المعياري؛ وضع الأخ الصالح (هابيل) القاعدة الذهبية العظمى الحاكمة لقبول العبادات والنفقات عند الله: {مِنَ الْمُتَّقِينَ}. فالقيمة عند الخالق ليست بضخامة المظهر ال.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The standard for acceptance of deeds; Abel states the foundational principle the Qur’anic expression: what matters before Allah is not the outward size of an act or offering, but the sincerity, taqwā, and inward awareness behind it."
+  },
+  {
+    "id": 159,
+    "surah": "المائدة",
+    "ayah": "{مِنْ أَجْلِ ذَلِكَ كَتَبْنَا عَلَى بَنِي إِسْرَائِيلَ أَنَّهُ مَن قَتَلَ نَفْسًا بِغَيْرِ نَفْسٍ أَوْ فَسَادٍ فِي الْأَرْضِ فَكَأَنَّمَا قَتَلَ النَّاسَ جَمِيعًا} [الآية 32]",
+    "insightAr": "وحدة النفس الإنسانية وتقدير الدماء الفظيع؛ وضعت الشريعة قاعدة جنائية وأخلاقية صارمة لحفظ الحياة: فكل اعتداء على نفس واحدة بريئة هو بمثابة إعلان حرب واعتداء على الجنس البشري بأكمله {فَكَأَنَّمَا قَتَلَ النَّاسَ جَمِيعًا} لاشتراكهم في حرمة الحياة، وبالمقابل فإن إنقاذ وحقن دم نفس واحدة هو إحياء وبناء للمجتمع.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The unity of human life and the gravity of bloodshed; the law presents the killing of one innocent person as comparable to killing humanity as a whole the Qur’anic expression, while saving one life is presented as an act of preservation and social renewal."
+  },
+  {
+    "id": 160,
+    "surah": "المائدة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَابْتَغُوا إِلَيْهِ الْوَسِيلَةَ وَجَاهِدُوا فِي سَبِيلِهِ لَعَلَّكُمْ تُفْلَحُونَ} [الآية 35]",
+    "insightAr": "معنى \"الوسيلة\" وترتيب السير؛ الوسيلة في التفسير واللغة هي القربة وكل ما يقرّب العبد من ربه من طاعات، وصدقات، وأعمال باطنة صالحة بعد تحقيق التقوى الحامية. والجهاد بذل الجهد المستمر لحماية الدين ونشره هو ذروة هذه السبل الموصلة للفلاح الشامل.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني / تفسير ابن كثير.",
+    "insightEn": "The meaning of ‘means’ and the order of the journey; the Qur’anic expression includes acts that draw a servant closer to Allah—worship, charity, and righteous inward deeds. The reflection presents striving to protect and uphold faith as among the strongest paths toward comprehensive success."
+  },
+  {
+    "id": 161,
+    "surah": "المائدة",
+    "ayah": "{وَالسَّارِقُ وَالسَّارِقَةُ فَاقْطَعُوا أَيْدِيَهُمَا جَزَاءً بِمَا كَسَبَا نَكَالًا مِّنَ اللَّهِ} [الآية 38]",
+    "insightAr": "حزم العقوبة الجنائية حماية لملكية الاقتصاد؛ قدّم السارق على السارقة (بخلاف الزنا حيث قُدِّمت الزانية)؛ لأن الرجال أجرأ حساً وحركة على اقتحام الحصون والسرقة ال. وجعل عقوبة القطع {نَكَالًا} والمنكل هو الزاجر الرادع الذي يرى عقوبته غيره فيمتنع عن الفعل، حماية لأموال الناس.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Firm criminal punishment as protection of property; the reflection notes the wording that mentions the male thief before the female thief and explains the Qur’anic expression as a deterrent punishment, intended to protect people’s wealth by discouraging theft."
+  },
+  {
+    "id": 162,
+    "surah": "المائدة",
+    "ayah": "{يَا أَيُّهَا الرَّسُولُ لَا يَحْزُنكَ الَّذِينَ يُسَارِعُونَ فِي الْكُفْرِ مِنَ الَّذِينَ قَالُوا آمَنَّا بِأَفْوَاهِهِمْ وَلَمْ تُؤْمِن قُلُوبُهُمْ} [الآية 41]",
+    "insightAr": "مواساة قلب القائد وفضح نفاق الأفواه؛ يرفع الله العبء ال؛ وكشفت الآية الفجوة الأخلاقية بوضوح تام: إيمان عابر سطحي باللسان والأفواه ({بِأَفْوَاهِهِمْ}) بينما البواطن والقلوب خاوية من اليقين ({وَلَمْ تُؤْمِن قُلُوبُهُمْ})، فلا تحزن على هرب الخائنين.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Consoling the leader’s heart and exposing verbal hypocrisy; Allah relieves the Prophet’s grief over people rushing into disbelief and exposes the gap between superficial faith spoken the Qur’anic expression and hearts that lack true certainty. The reflection teaches the reformer not to be consumed by the departure of hypocrites."
+  },
+  {
+    "id": 163,
+    "surah": "المائدة",
+    "ayah": "{سَمَّاعُونَ لِلْكَذِبِ أَكَّالُونَ لِلسُّحْتِ} [الآية 42]",
+    "insightAr": "التلازم الخطير بين الإعلام الفاسد والمال الحرام؛ وصفت الآية بدقة السلوك المريض لمرضى القلوب؛ فهم يملكون آذاناً وعقولاً مستعدة لتلقي وتصديق الأكاذيب والشائعات والتشويه الإعلامي للحق ({سَمَّاعُونَ لِلْكَذِبِ})، وينعكس هذا الفساد الفكري والروحي الباطن بقبول وجشع أكل الرشاوى والمال السحت المحرم دون ورع.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The dangerous link between corrupt information and unlawful wealth; people described as the Qur’anic expression are ready to absorb lies and distortions, and this intellectual corruption is paired with willingness to consume forbidden or illicit wealth without restraint."
+  },
+  {
+    "id": 164,
+    "surah": "المائدة",
+    "ayah": "{فَلَا تَخْشَوُا النَّاسَ وَاخْشَوْنِ وَلَا تَشْتَرُوا بِآيَاتِي ثَمَنًا قَلِيلًا} [الآية 44]",
+    "insightAr": "التحرر ال؛ يأمر الله تعالى القضاة والعلماء بعدم الخوف من سطوة الناس، أو ضغط المجتمع والأعراف، بل إفراد الخوف والخشية له وحده تثبيتاً للحق. وحذر من طامة تمييع وتشذيب الفتاوى والأحكام من أجل إرضاء أصحاب الأموال أو السلطان نفعاً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Freedom from public pressure and the danger of diluting religious rulings; judges and scholars are instructed not to fear people’s power or social pressure, but to fear Allah alone. The reflection warns against reshaping rulings to satisfy wealthy or powerful interests for a small worldly price."
+  },
+  {
+    "id": 165,
+    "surah": "المائدة",
+    "ayah": "{وَكَتَبْنَا عَلَيْهِمْ فِيهَا أَنَّ النَّفْسَ بِالنَّفْسِ وَالْعَيْنَ بِالْعَيْنِ وَالْأَنفَ بِالْأَنفِ وَالأُذُنَ بِالْأُذُنِ وَالسِّنَّ بِالسِّنِّ وَالْجُرُوحَ قِصَاصٌ} [الآية 45]",
+    "insightAr": "تفصيل القصاص الجنائي الدقيق حماية للبشر؛ وضعت الآية معياراً صارماً وقاسياً للعدالة والقصاص في الاعتداءات الجسدية؛ فكل عضو بشري يُتلف عمداً يُقابل بمثله تماماً وبذات المساحة والجرح حساً دون تفرقة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Precise retributive justice as protection of people; the verse establishes proportional rules for bodily injury. The reflection presents this as a deterrent framework intended to prevent cycles of vengeance and protect human life and physical rights."
+  },
+  {
+    "id": 166,
+    "surah": "المائدة",
+    "ayah": "{وَأَنزَلْنَا إِلَيْكَ الْكِتَابَ بِالْحَقِّ مُصَدِّقًا لِّمَا بَيْنَ يَدَيْهِ مِنَ الْكِتَابِ وَمُهَيْمِنًا عَلَيْهِ} [الآية 48]",
+    "insightAr": "هيمنة وحاكمية القرآن المطلقة؛ وصف القرآن بـ {مُهَيْمِنًا}. والهيمنة في اللغة والتفسير هي السلطة الحاكمة، الأمينة، الرقيبة، والشاهدة التي تفصل، وتصحح، وتنسخ ما سبقتها من تشريعات وكتب، ليكون القرآن هو المرجع النهائي المعصوم للبشرية.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني / تفسير ابن كثير.",
+    "insightEn": "The Qur’an’s decisive authority and guardianship; it is described as the Qur’anic expression, meaning authoritative, trustworthy, watchful, and decisive over what came before it. The reflection presents the Qur’an as the final revealed reference for humanity."
+  },
+  {
+    "id": 167,
+    "surah": "المائدة",
+    "ayah": "{لِكُلٍّ جَعَلْنَا مِنكُمْ شِرْعَةً وَمِنْهَاجًا وَلَوْ شَاءَ اللَّهُ لَجَعَلَكُمْ أُمَّةً وَاحِدَةً وَلَ كِن لِّيَبْلُوَكُمْ فِي مَا آتَاكُمْ فَاسْتَبِقُوا الْخَيْرَاتِ} [الآية 48]",
+    "insightAr": "قانون التعددية الكونية وحافز السباق الأخلاقي؛ جعل الله اختلاف الشرائع الفرعية قديماً ابتلاءً واختباراً لامتثال الأمم. ووجّه فوراً إلى تحويل طاقة هذا الاختلاف والتنوع البشري إلى ميدان عملي إيجابي رائد وهو {فَاسْتَبِقُوا الْخَيْرَاتِ}؛ أي التنافس والمسارعة لصناعة النفع وإعمار الأرض بالفضائل.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "A universal diversity of laws and a motive for moral competition; differences in subsidiary laws were part of the testing of peoples. The proper response to diversity is positive action and the Qur’anic expression: compete and hasten toward good works and beneficial contribution."
+  },
+  {
+    "id": 168,
+    "surah": "المائدة",
+    "ayah": "{أَفَحُكْمَ الْجَاهِلِيَّةِ يَبْغُونَ وَمَنْ أَحْسَنُ مِنَ اللَّهِ حُكْمًا لِّقَوْمٍ يُوقِنُونَ} [الآية 50]",
+    "insightAr": "كمال التشريع الإلهي وبطلان أهواء البشر؛ سؤال إنكاري توبيخي يضع فاصلاً حاسماً: فكل تشريع أو قانون يعزل منهج الله ويحكّم أهواء وعقول البشر القاصرة المتقلبة المليئة بالثغرات والمصالح هو نوع من \"حُكم الجاهلية السفيه\". وجعل إدراك جمال وعدالة إحكام الشريعة مشروطاً بامتلاك رصيد اليقين الباطن {لِّقَوْمٍ يُوقِنُونَ}.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The perfection of divine legislation and the danger of human whims; the verse challenges replacing Allah’s guidance with unstable human desires and judgments. Recognizing the beauty and justice of divine law requires the inner certainty expressed by the Qur’anic expression."
+  },
+  {
+    "id": 169,
+    "surah": "المائدة",
+    "ayah": "{فَتَرَى الَّذِينَ فِي قُلُوبِهِم مَّرَضٌ يُسَارِعُونَ فِيهِمْ يَقُولُونَ نَخْشَى أَن تُصِيبَنَا دَائِرَةٌ} [الآية 52]",
+    "insightAr": "حجة \"الاحتياط السياسي الخائن\" لمرضى القلوب؛ تصف الآية السلوك ال؛ حيث يهرعون ويسارعون لبناء تحالفات وولاءات سرية وعلنية مع خصوم وأعداء الأمة المعصومة، مبررين هذا التراجع والخيانات بعبارات ديبلوماسية خادعة: {نَخْشَى أَن تُصِيبَنَا دَائِرَةٌ} (نحتاط للظروف وتقلبات الزمان القادمة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The excuse of political caution among diseased hearts; hypocrites rush to form hidden or public alliances with opponents during crises, justifying their behavior with the Qur’anic expression. The reflection warns against loyalty shaped by fear of material reversals."
+  },
+  {
+    "id": 170,
+    "surah": "المائدة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا مَن يَرْتَدَّ مِنكُمْ عَن دِينِهِ فَسَوْفَ يَأْتِي اللَّهُ بِقَوْمٍ يُحِبُّهُمْ وَيُحِبُّونَهُ أَذِلَّةٍ عَلَى الْمُؤْمِنِينَ أَعِزَّةٍ عَلَى الْكَافِرِينَ} [الآية 54]",
+    "insightAr": "التوازن ال؛ تهديد كوني بإنهاء الاستبدال البشري؛ فالدين غني عن الأشخاص. ورسمت ملامح الجيل البديل الراقي بأربع صفات متلازمة: الحب المتبادل المطلق مع الله {يُحِبُّهُمْ وَيُحِبُّونَهُ}، والتواضع التام واللين مع أهل الإيمان {أَذِلَّةٍ عَلَى الْمُؤْمِنِينَ}، والصلابة والعزة والشرف أمام الخصوم المعاندين {أَعِزَّةٍ عَلَى الْكَافِرِينَ}، والشجاعة في الحق.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The psychological and moral balance of a generation of empowerment; religion does not depend on particular people. The alternative generation is characterized by love of Allah, humility toward believers, dignity before hostile opponents, and courage in truth: the Qur’anic expression, the Qur’anic expression, and the Qur’anic expression."
+  },
+  {
+    "id": 171,
+    "surah": "المائدة",
+    "ayah": "{يُجَاهِدُونَ فِي سَبِيلِ اللَّهِ وَلَا يَخَافُونَ لَوْمَةَ لَائِمٍ ذَلِكَ فَضْلُ اللَّهِ يُؤْتِيهِ مَن يَشَاءُ} [الآية 54]",
+    "insightAr": "التحرر الكامل من سوط \"النقد ال؛ من أعظم صفات جيل النصر والتمكين امتلاكهم مناعة وحصانة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Freedom from unjust social criticism; among the qualities of a victorious generation is psychological immunity to ridicule, media mockery, and blame when standing upon clear truth: the Qur’anic expression. Seeking Allah’s approval frees the heart from dependence on people’s praise or blame."
+  },
+  {
+    "id": 172,
+    "surah": "الأعراف",
+    "ayah": "{وَإِمَّا يَنزَغَنَّكَ مِنَ الشَّيْطَانِ نَزْغٌ فَاسْتَعِذْ بِاللَّهِ إِنَّهُ سَمِيعٌ عَلِيمٌ} [الآية 200]",
+    "insightAr": "المعالجة الاستباقية الفورية للغضب؛ \"النزغ\" هو الحركة الخفية المفسدة، وشبّه القرآن وسوسة الشيطان بنخزة تصيب القلب لتستثير الانفعال. والعلاج الحاسم والوقائي ليس بمناقشة الفكرة الفاسدة، بل بالفرار السريع للاحتماء بالخالق عبر الاستعاذة.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "Immediate preventive treatment for anger; the Qur’anic expression is a subtle corrupting impulse, portrayed as a poke that stirs the heart. The decisive response is not prolonged debate with the corrupt thought but quickly seeking refuge in the Creator."
+  },
+  {
+    "id": 173,
+    "surah": "الأعراف",
+    "ayah": "{وَأَوْحَيْنَا إِلَى مُوسَى أَنْ أَلْقِ عَصَاكَ فَإِذَا هِيَ تَلْقَفُ مَا يَأْفِكُونَ} [الآية 117]",
+    "insightAr": "حقيقة الحق تبتلع باطل الوهم؛ صنع السحرة وهماً بصرياً سحروا به أعين الناس واسترهبوهم. فلما ألقى موسى عصاه تحولت لثعبان حقيقي {تَلْقَفُ} وتأكل حبالهم، ليدل على أن الباطل—مهما انتفش وضخّمته الآلة الإعلامية—هو مجرد زيف ينهار أمام أول مواجهة حقيقية مع الحق.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Truth overwhelms the illusion of falsehood; the magicians created an optical deception that frightened people, but Moses’ staff became a real serpent that the Qur’anic expression what they had produced. Falsehood may appear powerful, yet genuine truth exposes its weakness."
+  },
+  {
+    "id": 174,
+    "surah": "الأعراف",
+    "ayah": "{وَإِذْ نَتَقْنَا الْجَبَلَ فَوْقَهُمْ كَأَنَّهُ ظُلَّةٌ وَظَنُّوا أَنَّهُ وَاقِعٌ بِهِمْ} [الآية 171]",
+    "insightAr": "دقة لفظ \"النتق\" وعظمة القدرة الإلهية؛ النتق في اللغة هو القلع والجذب بقوة وإزعاج من الأصل والرفع في الهواء. لم يقل الله \"رفعنا\" بل قال {نَتَقْنَا} ليوصف المشهد الحسي المخيف لجبل الطور وهو يُقتلع كلياً من جذور الأرض ويُعلق كالسحابة فوق رؤوسهم لبيان عظمة جلاله.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The precision of the Qur’anic expression and the greatness of divine power; the word conveys forceful lifting and pulling from the root. The reflection emphasizes the vivid image of Mount Sinai being raised as a demonstration of Allah’s immense power."
+  },
+  {
+    "id": 175,
+    "surah": "الأعراف",
+    "ayah": "{وَاتْلُ عَلَيْهِمْ نَبَأَ الَّذِي آتَيْنَاهُ آيَاتِنَا فَانسَلَخَ مِنْهَا فَأَتْبَعَهُ الشَّيْطَانُ فَكَانَ مِنَ الْغَاوِينَ}[الآية 175]",
+    "insightAr": "خطورة الانتكاسة الفكرية؛ تصوير بليغ لانتكاسة العالم (بلعام بن باعوراء)؛ لم يقل الله \"ترك آياتنا\" بل قال {فَانسَلَخَ مِنْهَا}، والانسلاخ يكون لخروج الدابة من جلدها اللصيق بها. فالعلم كان يحيط به كجلده وحمايته، فلما تخلى عن مبادئه صار مكشوفاً فاستحوذ عليه الشيطان.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The danger of intellectual relapse; concerning Balaam, the Qur’an says the Qur’anic expression, using the image of an animal leaving its skin. Knowledge had surrounded and protected him, but when he abandoned its principles he became exposed to Satan’s influence."
+  },
+  {
+    "id": 176,
+    "surah": "الأعراف",
+    "ayah": "{وَلَوْ شِئْنَا لَرَفَعْنَاهُ بِهَا وَلَ كِنَّهُ أَخْلَدَ إِلَى الْأَرْضِ وَاتَّبَعَ هَوَاهُ فَمَثَلُهُ كَمَثَلِ الْكَلْبِ} [الآية 176]",
+    "insightAr": "آفة \"الإخلاد للأرض\" وتشبيه الكلب اللاهث؛ الإخلاد للأرض هو اللصوق بها والانشغال التام بالمصالح ال. وشبّه الله هذا الصنف بالكلب اللاهث في كل أحواله لتوضيح مرض \"عدم الشبع ال؛ فهو قلق، لاهث، يركض وراء الدنيا ولا يعرف قلبه السكينة.",
+    "source": "الفوائد - ابن القيم.",
+    "insightEn": "The disease of clinging to the earth and the image of the panting dog; being attached to worldly interests at the expense of spiritual principles produces perpetual dissatisfaction. The reflection uses the Qur’anic image of a panting dog to depict a person who is never inwardly satisfied with worldly gain."
+  },
+  {
+    "id": 177,
+    "surah": "الأعراف",
+    "ayah": "{وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَى فَادْعُوهُ بِهَا وَذَرُوا الَّذِينَ يُلْحِدُونَ فِي أَسْمَائِهِ} [الآية 180]",
+    "insightAr": "التوسل إلى الله بأسمائه الحسنى هو أقرب الطرق ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The discipline of supplication through Allah’s names; calling upon Allah by His beautiful names can express humility and align the supplication with the need—such as ‘O Most Merciful, have mercy on me’ and ‘O Provider, provide for me.’ Distorting His names away from their truth is condemned."
+  },
+  {
+    "id": 178,
+    "surah": "الأعراف",
+    "ayah": "{يَسْأَلُونَكَ عَنِ السَّاعَةِ أَيَّانَ مُرْسَاهَا قُلْ إِنَّمَا عِلْمُهَا عِندَ رَبِّي} [الآية 187]",
+    "insightAr": "بلاغة لفظ \"المرسى\" لوصف الزمن؛ استعار القرآن لفظ {مُرْسَاهَا}—وهو في الأصل لرسو السفينة وثباتها على الشاطئ بعد حركتها واضطرابها في أمواج البحر—ليصف به حتمية وقوع القيامة واستقرار وقتها، فكأن الزمن سفينة تمشي والقيامة هي محطتها الأخيرة الثابتة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The eloquence of the Qur’anic expression in describing the timing of the Hour; the word originally relates to a ship coming to rest after movement. The reflection uses this image to convey the certainty and fixed arrival of the Day of Resurrection."
+  },
+  {
+    "id": 179,
+    "surah": "الأنفال",
+    "ayah": "{كَمَا أَخْرَجَكَ رَبُّكَ مِن بَيْتِكَ بِالْحَقِّ وَإِنَّ فَرِيقًا مِّنَ الْمُؤْمِنِينَ لَكَارِهُونَ} [الآية 5]",
+    "insightAr": "الرحمة الكامنة في المكاره؛ خرج الصحابة لغزوة بدر وهم يكرهون القتال ويفضلون عير المال لقربها وسهولتها. لكن تدبير الله ساقهم للمواجهة ليتحقق النصر الأكبر وتُبنى دولة الإسلام، فالإنسان يكره بعض الأقدار المعصرة وهي في طياتها عين صلاحه ومستقبله الأجمل.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Mercy hidden within disliked circumstances; the Companions initially preferred the caravan because it seemed easier, yet Allah’s decree led them to Badr and to a greater outcome. A person may dislike an event while its hidden consequences contain the good of his future."
+  },
+  {
+    "id": 180,
+    "surah": "الأنفال",
+    "ayah": "{إِذْ يُغَشِّيكُمُ النُّعَاسَ أَمَنَةً مِّنْهُ وَيُنَزِّلُ عَلَيْكُم مِّنَ السَّمَاءِ مَاءً لِّيُطَهِّرَكُم بِهِ} [الآية 11]",
+    "insightAr": "النعاس كمخفف ومثبت؛ من العجائب ال.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Drowsiness as reassurance during battle; at Badr, light sleep came to the Companions while they faced intense fear. The reflection presents this as divine reassurance that restored physical and psychological steadiness at a critical moment."
+  },
+  {
+    "id": 181,
+    "surah": "الأنفال",
+    "ayah": "{وَمَا كَانَ اللَّهُ لِيُعَذِّبَهُمْ وَأَنتَ فِيهِمْ وَمَا كَانَ اللَّهُ مُعَذِّبَهُمْ وَهُمْ يَسْتَغْفِرُونَ} [الآية 33]",
+    "insightAr": "صمامات الأمان لرفع العقوبات العامة؛ وضعت الآية درعين لحماية الأمة من العقوبات الاستئصالية: الأمان الأول هو وجود النبي حساً وسنته ت.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Safeguards against collective punishment; the verse identifies two protections: the Prophet’s presence among the people the Qur’anic expression, and the continuing safeguard of seeking forgiveness the Qur’anic expression."
+  },
+  {
+    "id": 182,
+    "surah": "الأنفال",
+    "ayah": "{وَإِذْ يَمْكُرُ بِكَ الَّذِينَ كَفَرُوا لِيُثْبِتُوكَ أَوْ يَقْتُلُوكَ أَوْ يُخْرِجُوكَ وَيَمْكُرُونَ وَيَمْكُرُ اللَّهُ} [الآية 30]",
+    "insightAr": "إحاطة التدبير الإلهي بمؤامرات البشر؛ لخصت الآية خيارات دار الندوة لإنهاء دعوة النبي (السجن العزل التام {لِيُثْبِتُوكَ}، الاغتيال الجسدي {أَوْ يَقْتُلُوكَ}، النفي الطرد {أَوْ يُخْرِجُوكَ}). وفي ذروة إحكام مخططهم البشري الخفي، كان تدبير الله يبطل فاعليتهم وينسج خيوط النصر.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Divine planning surrounding human conspiracies; the leaders of Quraysh considered imprisonment, assassination, or expulsion of the Prophet. At the height of their hidden planning, Allah’s decree rendered their strategy ineffective and brought about the success of the message."
+  },
+  {
+    "id": 183,
+    "surah": "آل عمران",
+    "ayah": "{إِذْ تَقُولُ لِلْمُؤْمِنِينَ أَلَن يَكْفِيَكُمْ أَن يُمِدَّكُمْ رَبُّكُم بِثَلَاثَةِ آلَافٍ مِّنَ الْمَلَائِكَةِ مُنزَلِينَ} [الآية 124 - آل عمران]",
+    "insightAr": "التفريق البلاغي بين التنزيل والمسومين؛ في بدر قال {مُنزَلِينَ} (تفيد النزول الحركي المباشر لمرة)، وفي موضع آخر قال {مُسَوِّمِينَ} (أي معلَمين واضحين). التغير اللفظي يطابق الحالة ال.",
+    "source": "الخصائص والبلاغة في الكشاف - الزمخشري.",
+    "insightEn": "The rhetorical distinction between forms of divine military support; the reflection notes the wording the Qur’anic expression and the Qur’anic expression, observing how different expressions describe the nature and appearance of the angelic support at different moments."
+  },
+  {
+    "id": 184,
+    "surah": "الأنفال",
+    "ayah": "{وَإِن جَنَحُوا لِلسَّلْمِ فَاجْنَحْ لَهَا وَتَوَكَّل عَلَى اللَّهِ إِنَّهُ هُوَ السَّمِيعُ الْعَلِيمُ} [الآية 61]",
+    "insightAr": "الميل البلاغي للأمان؛ \"جنح\" في اللغة مأخوذة من الجناح؛ أي مال وانحنى برغبة واضحة. يوجه القرآن المسلم لقبول السلام وحقن الدماء فوراً إذا مال العدو بصدق للأمان، وعقّب بـ {وَتَوَكَّلْ عَلَى اللَّهِ} لحماية النفس من التوجس والخوف من خديعة الخصم.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The rhetorical inclination toward peace; the Qur’anic expression comes from the image of a wing inclining downward. The Qur’an directs believers to accept genuine offers of peace and restrain bloodshed, while relying upon Allah rather than fearing betrayal."
+  },
+  {
+    "id": 185,
+    "surah": "التوبة",
+    "ayah": "{أَفَمَنْ أَسَّسَ بُنْيَانَهُ عَلَى تَقْوَى مِنَ اللَّهِ وَرِضْوَانٍ خَيْرٌ أَم مَّنْ أَسَّسَ بُنْيَانَهُ عَلَى شَفَا جُرُفٍ هَارٍ فَانْهَارَ بِهِ} [الآية 109]",
+    "insightAr": "بلاغة التشبيه الهندسي للمبادئ والقرارات؛ صوّرت الآية قرارات الإنسان وبناء حياته بمشروع هندسي معمار؛ فمن بنى أفكاره وعلاقاته على الإخلاص والتقوى فأساسه راسخ متين، ومن بناها على النفاق والمصالح المؤقتة فمثله كمن بنى برجاً ضخماً على حافة خندق ترابي متآكل ({شَفَا جُرُفٍ هَارٍ}) فيسقط البناء كاملاً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The architectural metaphor for principles and decisions; a life built on sincerity and taqwā has a firm foundation, whereas one built on hypocrisy and temporary interests resembles a structure on the Qur’anic expression, a crumbling edge that cannot support it."
+  },
+  {
+    "id": 186,
+    "surah": "التوبة",
+    "ayah": "{فَإِن تَوَلَّوْا فَقُل حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ} [الآية 129]",
+    "insightAr": "درع الكفاية ال؛ تضع ترياقاً؛ العلاج هو اللجوء الفوري لحصن {حَسْبِيَ اللَّهُ} (أي كافيني وملاذي وحده)، فالتعلق بالرزاق يغني عن تقلب وجفاء الخلائق.",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "A psychological shield when people disappoint you; for a parent, educator, or reformer facing rejection or ingratitude, the Qur’anic expression means that Allah alone is sufficient and a refuge. Dependence upon the Provider frees the heart from the instability of people’s approval."
+  },
+  {
+    "id": 187,
+    "surah": "يوسف",
+    "ayah": "{قَالَ رَبِّ السِّجْنُ أَحَبُّ إِلَيَّ مِمَّا يَدْعُونَنِي إِلَيْهِ وَإِلَّا تَصْرِف عَنِّي كَيْدَهُنَّ أَصْبُ إِلَيْهِنَّ} [الآية 33]",
+    "insightAr": "تفضيل سلب الحرية البدنية على سلب الحرية الروحية؛ اختار يوسف السجن الضيق حساً على سجن المعصية الضيق روحاً. واللطيفة البلاغية اعترافه بضعفه البشري الذاتي {أَصْبُ إِلَيْهِنَّ وَأَكُن مِّنَ الْجَاهِلِينَ} إن لم يتول الله حمايته، فلا يغتر مؤمن بقوته أمام الفتن البصرية بل يسأل الله الثبات دائماً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Choosing physical confinement over spiritual captivity; Joseph preferred prison to sin and acknowledged his human vulnerability in the Qur’anic expression. The lesson is not to trust one’s strength before temptation, but to ask Allah continually for protection and steadfastness."
+  },
+  {
+    "id": 188,
+    "surah": "يوسف",
+    "ayah": "{يَا بَنِيَّ اذْهَبُوا فَتَحَسَّسُوا مِن يُوسُفَ وَأَخِيهِ وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ إِنَّهُ لَا يَيْأَسُ مِن رَّروْحِ اللَّهِ إِلَّا الْقَوْمُ الْكَافِرُونَ} [الآية 87]",
+    "insightAr": "التمييز البلاغي بين التحسس والتجسس وعمق الأمل؛ أرسلهم قائلاً {فَتَحَسَّسُوا} بالـ حاء؛ والتحسس هو تتبع أخبار الخير والبحث عن المفقود برفق، أما \"التجسس\" بالـ جيم فهو تتبع عورات الناس وسقطاتهم في خفاء. وحذر حذراً صارماً من اليأس الروحي؛ فالأمل في الفرج هو عصب العبادة الباطنة.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني / تفسير ابن كثير.",
+    "insightEn": "The rhetorical distinction between seeking information and spying, with a warning against despair; the Qur’anic expression means gently seeking news and searching for what is lost, unlike spying on people’s faults. Hope for relief is presented as essential to inward worship."
+  },
+  {
+    "id": 189,
+    "surah": "الرعد",
+    "ayah": "{هُوَ الَّذِي يُرِيكُمُ الْبَرْقَ خَوْفًا وَطَمَعًا وَيُنشِئُ السَّحَابَ الثِّقَالَ} [الآية 12]",
+    "insightAr": "اقتران المشاعر المتناقضة بالمظاهر الكونية الشاملة؛ البرق الواحد يثير في نفوس البشر شعورين متضادين في ذات اللحظة: خوفاً (من الصواعق والدمار) وطمعاً (في الغيث والمطر والخير ال. والآية تدل على أن قدر الله قد يحمل أبعاداً مزدوجة تتطلب توازناً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Contrasting emotions reflected in a single natural sign; lightning can evoke fear of harm and hope for rain at the same time. The reflection uses this dual response to illustrate the believer’s need to balance fear and hope in contemplating Allah’s decree."
+  },
+  {
+    "id": 190,
+    "surah": "الحجر",
+    "ayah": "{إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ} [الآية 9]",
+    "insightAr": "التعهد الإلهي الحاسم وصيانة الوحي الخالد؛ تكفل الله بحفظ القرآن الكريم بنفسه بصيغة التوكيد الثقيلة المتتابعة ({إِنَّا نَحْنُ})، بخلاف الكتب السابقة التي استحفظ عليها الأحبار فضاعت. هذا التعهد يمنح نفس المسلم يقيناً مطلقاً وثباتاً",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The decisive divine commitment to preserve revelation; Allah emphasizes His preservation of the Qur’an with the Qur’anic expression. The reflection presents this as a source of certainty that the Qur’anic guidance remains preserved and available as a living proof."
+  },
+  {
+    "id": 191,
+    "surah": "الحجر",
+    "ayah": "{وَإِن مِّن شَيْءٍ إِلَّا عِندَنَا خَزَائِنُهُ وَمَا نُنَزِّلُهُ إِلَّا بِقَدَرٍ مَّعْلُومٍ} [الآية 21]",
+    "insightAr": "خزائن الوفرة الإلهية والتقنين الحكيم؛ تفتح الآية آفاق الطمأنينة المعيشية؛ فكل ما يحتاجه البشر من ماء، ودواء، ورزق، وطاقة موجود بوفرة مطلقة في خزائن الغني سبحانه، ولكن النزول للأرض محكوم بقدر معلوم تماشياً مع سنن الابتلاء وحاجة المخلوقات دون إغراق أو تجفيف.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The abundance of divine provision and wise measure; what people need is ultimately within Allah’s provision, while its distribution and descent are governed by a known measure according to His wisdom and the circumstances of creation."
+  },
+  {
+    "id": 192,
+    "surah": "الحجر",
+    "ayah": "{لَا تَمُدَّنَّ عَيْنَيْكَ إِلَى مَا مَتَّعْنَا بِهِ أَزْوَاجًا مِّنْهُمْ وَلَا تَحْزَنْ عَلَيْهِمْ وَاخْفِضْ جَنَاحَكَ لِلْمُؤْمِنِينَ}[الآية 88]",
+    "insightAr": "صيانة العين من المقارنات ال؛ \"مد العين\" هو إطالة النظر البصري بإعجاب وحسرة نحو النعم ال. ونهى القرآن عن هذا السلوك ال.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Protecting the eye from material comparison and cultivating leadership humility; ‘stretching the eyes’ toward others’ possessions can produce dissatisfaction and unhealthy comparison. The reflection connects this with the command the Qur’anic expression to remain humble toward people of obedience."
+  },
+  {
+    "id": 193,
+    "surah": "النحل",
+    "ayah": "{وَأَلْقَى فِي الْأَرْضِ رَوَاسِيَ أَن تَمِيدَ بِكُمْ وَأَنْهَارًا وَسُبُلًا لَّعَلَّكُمْ تَهْتَدُونَ} [الآية 15]",
+    "insightAr": "دور الجبال التوازني الجيولوجي؛ عبّر عن الجبال برواسي (وهي المراسي المثبتة لقطع الحركة والاضطراب). والعلة الجيولوجية البلاغية {أَن تَمِيدَ بِكُمْ} والميد هو الميل والاهتزاز، فخلق الجبال يعمل كأوتاد تمنع تذبذب واضطراب القشرة الأرضية لتستقر حياة البشر وتصلح حركتهم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The balancing image of mountains; the Qur’an calls mountains the Qur’anic expression, suggesting things firmly set in place. The reflection connects this wording with the image of mountains as stabilizing features that allow human life to continue securely."
+  },
+  {
+    "id": 194,
+    "surah": "النحل",
+    "ayah": "{وَاللَّهُ أَخْرَجَكُم مِّن بُطُونِ أُمَّهَاتِكُمْ لَا تَعْلَمُونَ شَيْئًا وَجَعَلَ لَكُمُ السَّمْعَ وَالْأَبْصَارَ وَالْأَفْئِدَةَ} [الآية 78]",
+    "insightAr": "الصفحة البيضاء وأدوات الوعي الكبرى؛ يولد الإنسان بصفحة عقلية بيضاء خالية من العلوم المكتسبة، ثم زُوِّد بالثلاثية المعرفية الحاسمة ليتعلم ويبني وعيه: السمع لتلقي النقل واللغة، والأبصار للمشاهدة الحسية والتجربة، والأفئدة (العقول والقلوب) للربط والتدبر والتحليل.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The blank page and the major faculties of awareness; human beings acquire knowledge through hearing, sight, and the inner faculties of reflection. Hearing receives language and transmitted information, sight observes the world, and the heart or mind connects, considers, and analyzes."
+  },
+  {
+    "id": 195,
+    "surah": "النحل",
+    "ayah": "{وَإِذَا بُشِّرَ أَحَدُهُم بِالْأُنثَى ظَلَّ وَجْهُهُ مُسْوَدًّا وَهُوَ كَظِيمٌ * يَتَوَارَى مِنَ الْقَوْمِ مِن سُوءِ مَا بُشِّرَ بِهِ} [الآية 58-59]",
+    "insightAr": "فضح الجاهلية ال؛ ترسم الآية بدقة ال؛ حيث يترجم الضيق ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Exposing the social and psychological ignorance surrounding daughters; the verse portrays the distress some people felt at the birth of a girl and the shame they concealed from society. The reflection presents the Qur’anic exposure of this attitude as protection of human dignity."
+  },
+  {
+    "id": 196,
+    "surah": "النحل",
+    "ayah": "{إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ وَإِيتَاءِ ذِي الْقُرْبَى وَيَنْهَى عَنِ الْفَحْشَاءِ وَالْمُنكَرِ وَالْبَغْيِ}[الآية 90]",
+    "insightAr": "الآية الجامعة لمكارم الشريعة و قال العلماء: هذه الآية هي أجمع آية في القرآن للخير والشر؛ فقد شملت الأوامر الثلاثة الكبرى المصلحة للمجتمعات (العدل الحاسم، الإحسان الفاضل، والتلاحم الأسري والقرابة)، وحظرت المثبطات الثلاثة المدمرة للعمران (الفحشاء الخفية، المنكر الظاهر، والبغي).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A comprehensive verse of moral principles; the verse gathers major commands that benefit society—justice, excellence, and care for kin—and prohibits destructive forces such as indecency, wrongdoing, and aggression. It is presented as a concise ethical framework for human life."
+  },
+  {
+    "id": 197,
+    "surah": "النحل",
+    "ayah": "{وَلَا تَكُونُوا كَالَّتِي نَقَضَتْ غَزْلَهَا مِن بَعْدِ قُوَّةٍ أَنكَاثًا} [الآية 92]",
+    "insightAr": "بلاغة التشبيه للمنتكس وهدر الطاقات الحركية؛ صوّرت الآية حال المسلم المطيع الذي يبني رصيداً من الطاعات والعبادات ثم ينتكس ويعود للمعاصي أو يهدم التزامه الأخلاقي، بامرأة تجلس طوال النهار تبذل جهداً مضنياً في غزل ثوب صوف متين وقوي ({مِن بَعْدِ قُوَّةٍ})، فلما أتمته قامت بتفكيك خيوطه ونقضه خيطاً خيطاً بلا عقل.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The metaphor of wasted effort after reversal; a person may spend years building obedience and then undo it through moral relapse, like someone who spends the day making a strong garment and then tears it apart thread by thread. The image warns against destroying accumulated good."
+  },
+  {
+    "id": 198,
+    "surah": "النحل",
+    "ayah": "{ادْعُ إِلَى سَبِيلِ رَبِّكَ بِالْحِكْمَةِ وَالْمَوْعِظَةِ الْحَسَنَةِ وَجَادِلْهُم بِالَّتِي هِيَ أَحْسَنُ} [الآية 125]",
+    "insightAr": "المنهج التدرجي الثلاثي للتواصل والإقناع الفكري؛ وضعت الآية دستوراً للتأثير الدعوي والتربوي مقسماً بحسب نوعية عقول الناس: فالأذكياء والمنصفون يخاطبون بالحكمة (الحجة العلمية العقلية الهادئة)، وعوام الناس يخاطبون بالموعظة الحسنة (الخطاب العاطفي الرقيق الموقظ)، والخصوم والمعاندون يتعامل معهم بالتي هي أحسن (الجدال الراقي).",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "A three-level method of communication and persuasion; people are addressed according to their needs: the wise through wisdom and calm reasoning, ordinary audiences through good exhortation, and opponents through the best form of respectful argument."
+  },
+  {
+    "id": 199,
+    "surah": "النحل",
+    "ayah": "{وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ وَلَا تَحْزَنْ عَلَيْهِمْ وَلَا تَكُ فِي ضَيْقٍ مِّمَّا يَمْكُرُونَ * إِنَّ اللَّهَ مَعَ الَّذِينَ اتَّقَوْا} [الآية 127-128]",
+    "insightAr": "عهد المعية الحامية وإنهاء قلق المكر ال؛ ختام سورة النحل يضع ترياقاً لسلامة صدر الداعية؛ ربط الصبر بالمدد الإلهي الخالص {إِلَّا بِاللَّهِ} لئلا تنفذ طاقة البدن البشرية. وحظر الحزن والضيق ال؛ لأن معية الله الخاصة هي سور أمني يحيط بالعبد ويبطل فاعلية مكر البشر كلياً.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "The protective companionship that ends anxiety over social plots; the conclusion of al-Nahl links patience to divine help the Qur’anic expression. The reflection presents Allah’s special support as a protection against the psychological burden of opponents’ schemes."
+  },
+  {
+    "id": 200,
+    "surah": "الإسراء",
+    "ayah": "{وَكُلَّ إِنسَانٍ أَلْزَمْنَاهُ طَائِرَهُ فِي عُنُقِهِ وَنُخْرِجُ لَهُ يَوْمَ الْقِيَامَةِ كِتَابًا يَلْقَاهُ مَنشُورًا} [الآية 13]",
+    "insightAr": "سر اختيار \"العنق\" لالتصاق العمل؛ \"طائره\" هو عمله الصالح أو السيء. واللطيفة البلاغية وال؛ أن العنق هو العضو البشري الذي لا يمكن للإنسان الانفكاك عنه أو نزعه، فكذلك مسؤولية قراراتك واختياراتك السلوكية ملازمة لذاتك تماماً، وسيتحول هذا الغيب الخفي إلى وثيقة علنية مكشوفة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Why ‘the neck’ is chosen to depict attached responsibility; the Qur’anic expression represents a person’s deeds, while the Qur’anic expression evokes something inseparable from him. The reflection emphasizes that decisions and actions remain attached to their doer and will eventually be made manifest."
+  },
+  {
+    "id": 201,
+    "surah": "الإسراء",
+    "ayah": "{اقْرَأْ كِتَابَكَ كَفَى بِنَفْسِكَ الْيَوْمَ عَلَيْكَ حَسِيبًا} [الآية 14]",
+    "insightAr": "منتهى العدالة الذاتية في الحساب؛ يُقال للعبد يوم القيامة حين يُسلم صحيفة أعماله: تولَّ محاسبة نفسك بنفسك. وفي هذا فالإنسان أدرى بصدق نواياه وخفايا أفعاله، وإذا كان هو الحكَم على ذاته انقطعت أي مبررات أو أعذار كاذبة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The fullest form of self-accountability; on the Day of Resurrection a person will face his own record and know the truth of his intentions and actions. This is complete justice, leaving no room for false excuses."
+  },
+  {
+    "id": 202,
+    "surah": "الإسراء",
+    "ayah": "{وَلَا تَمْشِ فِي الْأَرْضِ مَرَحًا إِنَّكَ لَن تَخْرِقَ الْأَرْضَ وَلَن تَبْلُغَ الْجِبَالَ طُولًا} [الآية 37]",
+    "insightAr": "كسر وعلاج الغرور الجسدي؛ \"المرح\" هو مشية الخيلاء والكبر التي يترجم فيها الإنسان استعلاءه ال. يذكره القرآن بحدوده الفيزيائية الضعيفة: فمهما ضربت بقدمك الأرض فلن تشقها، ومهما تطاولت بجسدك فلن تصل لارتفاع الجبال، فتواضع لئلا تُسلب العافية.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Breaking and treating physical arrogance; the Qur’anic expression describes a proud, swaggering manner of walking. The Qur’an reminds the arrogant of human limits: no stride can split the earth and no stature can reach the mountains. Humility protects the person from delusion."
+  },
+  {
+    "id": 203,
+    "surah": "الإسراء",
+    "ayah": "{وَقُل لِّعِبَادِي يَقُولُوا الَّتِي هِيَ أَحْسَنُ إِنَّ الشَّيْطَانَ يَنزَغُ بَيْنَهُمْ} [الآية 53]",
+    "insightAr": "اختيار الكلمة \"الأحسن\" لغلق ثغرات الشيطان؛ لم يقل الله \"يقولوا الكلمة الحسنة\" بل قال {الَّتِي هِيَ أَحْسَنُ} بصيغة التفضيل؛ لأن العلاقات الأسرية وال؛ فالكلمة العادية قد تحتمل تأويلاً يفسده الشيطان {يَنزَغُ بَيْنَهُمْ}، والكلمة الفاضلة الأجمل تفتح مغاليق القلوب.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Choosing the ‘best’ word to close openings for Satan; Allah says the Qur’anic expression, not merely a good word. Family and social relationships require precise, gracious speech, because an ordinary phrase may be exploited to create conflict, while beautiful speech opens hearts."
+  },
+  {
+    "id": 204,
+    "surah": "الإسراء",
+    "ayah": "{وَمِنَ اللَّيْلِ فَتَهَجَّدْ بِهِ نَافِلَةً لَّكَ عَسَى أَن يَبْعَثَكَ رَبُّكَ مَقَامًا مَّحْمُودًا} [الآية 79]",
+    "insightAr": "سر العلاقة بين التهجد والمقام الرفيع؛ التهجد هو القيام بعد نوم. رتب الله نيل \"المقام المحمود\" (وهي الشفاعة العظمى للنبي، والمكانة السامية للمؤمن) على عبادة الليل الخفية؛ لأن التضحية بالراحة والنوم ابتغاء وجه الله تدل على صدق المحبة الباطنة التي ترفع قدر العبد وتورثه هيبة ومقاماً رفيعاً في الدنيا والآخرة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The connection between night prayer and elevated rank; tahajjud is prayer performed after sleep. The reflection connects the ‘Praiseworthy Station’ with hidden night worship because sacrificing sleep for Allah expresses sincere love and can raise a servant’s standing in this world and the Hereafter."
+  },
+  {
+    "id": 205,
+    "surah": "الكهف",
+    "ayah": "{الْحَمْدُ لِلَّهِ الَّذِي أَنزَلَ عَلَى عَبْدِهِ الْكِتَابَ وَمَلْ يَجْعَل لَّهُ عِوَجًا * قَيِّمًا لِّيُنذِرَ بَأْسًا شَدِيدًا}[الآية 1-2]",
+    "insightAr": "نفي العوج وإثبات الاستقامة المطلقة؛ جمع بين {وَلَمْ يَجْعَل لَّهُ عِوَجًا} ونفى كل خلل أو ميل خفي، وأتبعها بـ {قَيِّمًا} ليفيد أنه مستقيم في ذاته ومُقيم ومُصلح لغيره من المناهج البشرية، وفي هذا طمأنينة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Removing crookedness and affirming complete uprightness; the Qur’anic expression negates hidden deviation, followed by the Qur’anic expression, indicating uprightness and the ability to set other matters right. The reflection presents this as reassurance in the reliability of divine guidance."
+  },
+  {
+    "id": 206,
+    "surah": "الكهف",
+    "ayah": "{وَتَحْسَبُهُمْ أَيْقَاظًا وَهُمْ رُقُودٌ وَنُقَلِّبُهُمْ ذَاتَ الْيَمِينِ وَذَاتَ الشِّمَالِ} [الآية 18]",
+    "insightAr": "ذكر ابن عاشور تقليب أصحاب الكهف ذات اليمين وذات الشمال في سياق وصف حالهم وهم رقود، دون أن نجعل ذلك دعوى إعجاز طبي.",
+    "source": "التحرير والتنوير - ابن عاشور / الإعجاز الطبي.",
+    "insightEn": "Ibn Ashur mentions the turning of the People of the Cave from side to side as part of the description of their state while asleep, without presenting it as a claim of medical miracle."
+  },
+  {
+    "id": 207,
+    "surah": "الكهف",
+    "ayah": "{وَلَا تَقُولَنَّ لِشَيْءٍ إِنِّي فَاعِلٌ ذَلِكَ غَدًا * إِلَّا أَن يَشَاءَ اللَّهُ} [الآية 23-24]",
+    "insightAr": "فقه الاستثناء وقطع وهم السيطرة على المستقبل؛ تؤدب الآية النفس البشرية التواقة للتخطيط الجازم؛ فالمستقبل غيب لا يملكه العبد، وقول \"غداً سأفعل كذا\" بيقين. تعليق الخطط بمشيئة الله يربط الأسباب بمسببها ويمنح الصدر راحة وتسليماً إذا تعرقلت الخطط.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The discipline of saying ‘if Allah wills’ and abandoning the illusion of control over the future; the future is unseen and not owned by the servant. Connecting plans to Allah’s will joins the means to their ultimate disposer and brings calm when plans fail."
+  },
+  {
+    "id": 208,
+    "surah": "الكهف",
+    "ayah": "{الْمَالُ وَالْبَنُونَ زِينَةُ الْحَيَاةِ الدُّنْيَا وَالْبَاقِيَاتُ الصَّالِحَاتُ خَيْرٌ عِندَ رَبِّكَ ثَوَابًا} [الآية 46]",
+    "insightAr": "التفريق اللفظي بين \"الزينة\" العابرة و\"الباقي\" الدائم؛ وصف المال والأولاد بزينة؛ والزينة أمر خارج عن جوهر الشيء يُتجمَّل به مؤقتاً ثم يزول. بينما وصف الطاعات والذكر بالباقيات الصالحات لتعديل كفة الاهتمام ال؛ فالأولى تتركها وترحل عنها، والثانية تصحبك وتثمر لك خلوداً حقيقياً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The verbal distinction between fleeting adornment and lasting good; wealth and children are adornment that passes, while righteous deeds and remembrance are lasting good. The reflection uses this contrast to redirect attention from what one eventually leaves behind to what remains with lasting benefit."
+  },
+  {
+    "id": 209,
+    "surah": "الكهف",
+    "ayah": "{وَوُضِعَ الْكِتَابُ فَتَرَى الْمُجْرِمِينَ مُشْفِقِينَ مِمَّا فِيهِ وَيَقُولُونَ يَا وَيْلَتَنَا مَالِ هَذَا الْكِتَابِ لَا يُغَادِرُ صَغِيرَةً وَلَا كَبِيرَةً إِلَّا أَحْصَاهَا} [الآية 49]",
+    "insightAr": "تقديم \"الصغيرة\" في الحساب والوعي؛ من اللطائف الدقيقة تقديم رصد {صَغِيرَةً} قبل {كَبِيرَةً} في صراخ المذنبين؛ لأن الإنسان يميل فطرياً إلى تذكر الجرائم الكبرى والذنوب العظيمة، بينما ينسى تماماً النظرات الخفية، والهفوات، والكلمات العابرة الجارحة (الصغائر). فصدمتهم كانت في دقة إحصاء وتوثيق ما استصغروه في الدنيا.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The recording of ‘the small’ in accountability; people naturally remember major sins while overlooking hidden glances, slips, and passing hurtful words. The sinners’ shock is that even what they considered insignificant has been carefully recorded."
+  },
+  {
+    "id": 210,
+    "surah": "مريم",
+    "ayah": "{فَأَشَارَتْ إِلَيْهِ قَالُوا كَيْفَ نُكَلِّمُ مَن كَانَ فِي الْمَهْدِ صَبِيًّا * قَالَ إِنِّي عَبْدُ اللَّهِ آتَانِيَ الْكِتَابَ} [الآية 29-30]",
+    "insightAr": "أول نطق للمسيح وأساس التوحيد الخالص؛ أول كلمة نطق بها عيسى عليه السلام وهو رضيع في المهد كانت قطعاً حاسماً لأي غلو مستقبلّي في شخصه: {إِنِّي عَبْدُ اللَّهِ}؛ فقدّم وصف العبودية والافتقار لله على سائر الرتب والمعجزات، ليضع حداً فاصلاً وعقائدياً واضحاً لعلاقة الخالق بالمخلوق.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The Messiah’s first words and the foundation of pure monotheism; Jesus first declared the Qur’anic expression, placing servitude and dependence upon Allah before every rank and miracle and establishing the distinction between Creator and creation."
+  },
+  {
+    "id": 211,
+    "surah": "مريم",
+    "ayah": "{وَاذْكُرْ فِي الْكِتَابِ إِدْرِيسَ إِنَّهُ كَانَ صِدِّيقًا نَّبِيًّا * وَرَفَعْنَاهُ مَكَانًا عَلِيًّا} [الآية 56-57]",
+    "insightAr": "رفعة المكانة وجنس العمل الباطن؛ ربط الله علو ورفعة رتبة إدريس {وَرَفَعْنَاهُ مَكَانًا عَلِيًّا} حساً ومعنى بصفته الباطنة {إِنَّهُ كَانَ صِدِّيقًا}؛ والصدّيقية هي أعلى مراتب الإخلاص وتطابق السريرة مع العلانية، فمن سما صدقه باطناً رفعه الله تبارك وتعالى قدراً ومكاناً فوق الخلق.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "High rank and the nature of inward character; Idris was described as the Qur’anic expression before being mentioned as raised to a high station. The reflection links sincere truthfulness and harmony between inner and outward character with elevated standing before Allah."
+  },
+  {
+    "id": 212,
+    "surah": "طه",
+    "ayah": "{طه * مَا أَنزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَى * إِلَّا تَذْكِرَةً لِّمَن يَخْشَى } [الآية 1-3]",
+    "insightAr": "نفي الشقاء والربط بالسعادة؛ افتتحت السورة بتقرير غاية الوحي والرسالة: القرآن لم ينزل ليكون عبئاً، أو مشقة، أو شقاءً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Negating hardship and connecting revelation with happiness; the Qur’an was not sent to make people miserable the Qur’anic expression. It is presented as a source of guidance, serenity, and benefit for receptive hearts."
+  },
+  {
+    "id": 213,
+    "surah": "طه",
+    "ayah": "{إِذْ رَأَى نَارًا فَقَالَ لِأَهْلِهِ امْكُثُوا إِنِّي آنَسْتُ نَارًا لَّعَلِّي آتِيكُم مِّنْهَا بِقَبَسٍ} [الآية 10]",
+    "insightAr": "دقة التعبير البلاغي بـ \"آنست\"؛ لم يقل موسى \"رأيت ناراً\" (التي تفيد مجرد الرؤية البصرية المجردة)، بل قال {آنَسْتُ}؛ والإيناس هو الرؤية المصحوبة بشعور الأنس والراحة والأمان الزائل لوحشة الليل والصحراء، واللطيفة أنه ذهب يطلب جذوة نار.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The precision of the Qur’anic expression; Moses did not merely say that he saw a fire. The expression conveys seeing accompanied by a sense of familiarity, comfort, and relief from the loneliness of night and desert. He sought a physical flame and was instead chosen for the greater light of revelation."
+  },
+  {
+    "id": 214,
+    "surah": "طه",
+    "ayah": "{إِنَّ السَّاعَةَ آتِيَةٌ أَكَادُ أُخْفِيهَا لِتُجْزَى كُلُّ نَفْسٍ بِمَا تَسْعَى } [الآية 15]",
+    "insightAr": "سر اللفظ {أَكَادُ أُخْفِيهَا} وشدة الغيب الكوني؛ من شدة إحاطة وخصوصية علم الساعة وحتمية غيبها، صوّر الله الأمر بـ {أَكَادُ أُخْفِيهَا} أي أقرب أن أستر وقتها حكمة وتدبيراً، ليبقى العبد في حالة استعداد.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The significance of the Qur’anic expression and the unseen nature of the Hour; the wording conveys the extraordinary hiddenness of its exact timing. This keeps the servant in continual readiness and vigilance rather than complacency."
+  },
+  {
+    "id": 215,
+    "surah": "طه",
+    "ayah": "{قَالَ رَبِّ اشْرَحْ لِي صَدْرِي * وَيَسِّرْ لِي أَمْرِي * وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي * يَفْقَهُوا قَوْلِي} [الآية 25-28]",
+    "insightAr": "الترتيب الدعوي في معالجة الكفاءة الذاتية؛ بدأ موسى بطلب السكينة الداخلية {اشْرَحْ لِي صَدْرِي} لأن الصدر الضيق الخائف لا ينتج تأثيراً، ثنى بتيسير الظروف الخارجية {وَيَسِّرْ لِي أَمْرِي}، وثلث بطلاقة البيان اللساني لإيصال الفكرة، ليعلمنا",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "The sequence of supplication in preparing for responsibility; Moses first asked for inner openness the Qur’anic expression, then ease in circumstances the Qur’anic expression, and then clarity of speech. The reflection presents this as a model for asking Allah for the capacities needed for major tasks."
+  },
+  {
+    "id": 216,
+    "surah": "طه",
+    "ayah": "{وَاصْطَنَعْتُكَ لِنَفْسِي * اذْهَبْ أَنتَ وَأَخُوكَ بِآيَاتِي وَلَا تَنِيَا فِي ذِكْرِي} [الآية 41-42]",
+    "insightAr": "معنى \"الاصطناع ال؛ {وَاصْطَنَعْتُكَ لِنَفْسِي} كلمة تذوب لها القلوب عذوبة؛ أي اخترتك وربيتك وصنعتك على عيني لتكون خالصاً لحمل رسالتي. وجاء التوجيه المشروط لنجاح المهمة {وَلَا تَنِيَا فِي ذِكْرِي} والوني هو الفتور، والكسل، والضعف؛ فالذكر المستمر هو الوقود ال.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The meaning of being specially fashioned for a mission and the warning against weakness; the Qur’anic expression expresses selection and nurturing for Allah’s purpose, while the Qur’anic expression warns against slackness. Continual remembrance is presented as spiritual fuel for a reformer."
+  },
+  {
+    "id": 217,
+    "surah": "طه",
+    "ayah": "{قَالَ فَإِنَّا قَدْ فَتَنَّا قَوْمَكَ مِن بَعْدِكَ وَأَضَلَّهُمُ السَّامِرِيُّ * فَرَجَعَ مُوسَى إِلَى قَوْمِهِ غَضْبَانَ أَسِفًا}[الآية 85-86]",
+    "insightAr": "سرعة هدم البناء الفكري في غياب القيادة؛ في غياب موسى القصير لثلاثين ليلة وأتمت بعشر، استطاع شخص واحد (السامري) اختراق وعي المجتمع وصناعة عجل ذهبي ونسف عقيدتهم. الآية تنبه المربين والقادة والآباء إلى خطورة ترك المحضن التربوي أو الأسري دون رقابة؛ فالأفكار الخبيثة سريعة التسلل للقلوب غير المحصنة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "How quickly intellectual foundations can collapse without leadership; during Moses’ absence, the Samiri managed to influence the community and produce the calf. The reflection warns parents, educators, and leaders that an unprotected educational environment can allow harmful ideas to enter quickly."
+  },
+  {
+    "id": 218,
+    "surah": "طه",
+    "ayah": "{فَأَوْجَسَ فِي نَفْسِهِ خِيفَةً مُّوسَى * قُلْنَا لَا تَخَفْ إِنَّكَ أَنتَ الْأَعْلَى } [الآية 67-68]",
+    "insightAr": "الخوف البشري ال؛ لما ألقى السحرة حبالهم، خاف موسى داخل نفسه خيفة {فَأَوْجَسَ فِي نَفْسِهِ خِيفَةً}، والقرآن لا يخجل من تسجيل المشاعر البشرية للأنبياء ليدل على بشريتهم؛ فجاء التثبيت الإلهي الحاسم مغيراً الموازين {لَا تَخَفْ إِنَّكَ أَنتَ الْأَعْلَى } بنور الحق الذاتي الساحق لسراب الباطل.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Natural human fear and immediate reassurance; when the magicians cast their ropes, Moses felt fear within himself the Qur’anic expression. The Qur’an does not conceal this human emotion; instead Allah immediately reassured him: the Qur’anic expression."
+  },
+  {
+    "id": 219,
+    "surah": "طه",
+    "ayah": "{وَمَنْ أَعْرَضَ عَن ذِكْرِي فَإِنَّ لَهُ مَعِيشَةً ضَنكًا وَنَحْشُرُهُ يَوْمَ الْقِيَامَةِ أَعْمَى } [الآية 124]",
+    "insightAr": "قانون \"الضنك\" ال؛ \"الضنك\" هو الضيق الشديد الخانق. تضع الآية حقيقة واضحة: من قرر إغلاق قلبه وعقله عن منهج الله والقرآن الكريم، عوقب بعقوبة داخلية صامتة وهي المعيشة الضنك؛ حتى لو ملك الملايين وعاش في القصور؛ فلن يعرف الرضا، أو الطمأنينة، وسيبقى القلق والخواء الروحي يمزقان صدره.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "The psychological constriction of material delusion; the Qur’anic expression denotes severe narrowness and distress. The reflection presents turning away from Allah’s guidance as producing an inwardly constricted life even amid wealth, because material abundance cannot by itself provide contentment or spiritual peace."
+  },
+  {
+    "id": 220,
+    "surah": "الأنبياء",
+    "ayah": "{اقْتَرَبَ لِلنَّاسِ حِسَابُهُمْ وَهُمْ فِي غَفْلَةٍ مُّعْرِضُونَ} [الآية 1]",
+    "insightAr": "صدمة زمنية موقظة؛ الحساب والآخرة يقتربان بلمح البصر، بينما الجنس البشري يعيش غيبوبة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A temporal shock meant to awaken; the reckoning and Hereafter approach swiftly, while humanity can remain psychologically asleep in heedlessness. The reflection calls for translating Qur’anic reminders into real behavior before the opportunity is gone."
+  },
+  {
+    "id": 221,
+    "surah": "الأنبياء",
+    "ayah": "{بَلْ نَقْذِفُ بِالْحَقِّ عَلَى الْبَاطِلِ فَيَدْمَغُهُ فَإِذَا هُوَ زَاهِقٌ وَلَكُمُ الْوَيْلُ مِمَّا تَصِفُونَ} [الآية 18]",
+    "insightAr": "\"القذف\" هو الرمي بقوة وسرعة ومن مسافة بعيدة. و\"الدمغ\" في اللغة هو ضرب الرأس حتى تصل الضربة للدماغ الباطن فتقتله فوراً. صوّر القرآن صراع الأفكار بمشهد عسكري عنيف؛ فالحق إذا أُطلق بقوته الذاتية صدم رأس الباطل دمغاً، فينهار الباطل بلحظة ويتحول إلى لا شيء زائل ({زَاهِقٌ}).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The imagery of the Qur’anic expression and the collapse of falsehood; ‘casting’ conveys forceful, rapid projection, while the Qur’anic expression evokes a blow that reaches the head. The Qur’an depicts truth striking falsehood decisively until the latter becomes fleeting and vanishes."
+  },
+  {
+    "id": 222,
+    "surah": "الأنبياء",
+    "ayah": "{خُلِقَ الْإِنسَانُ مِنْ عَجَلٍ سَأُرِيكُمْ آيَاتِي فَلَا تَسْتَعْجِلُونِ} [الآية 37]",
+    "insightAr": "العجلة الفطرية البشرية وضبط إيقاع الانتظار؛ لشدة تسرع الإنسان البشري وحبه للحصول على النتائج السريعة، صوّره القرآن وكأن خيمته ال. والآية تضبط هذا الاندفاع ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Human haste and the need to regulate the rhythm of waiting; the Qur’an depicts people as naturally impatient. The reflection teaches restraint and entrusting the timing of events and relief to Allah’s wisdom rather than demanding immediate results."
+  },
+  {
+    "id": 223,
+    "surah": "الأنبياء",
+    "ayah": "{وَنَضَعُ الْمَوَازِينَ الْقِسْطَ لِيَوْمِ الْقِيَامَةِ فَلَا تُظْلَمُ نَفْسٌ شَيْئًا وَإِن كَانَ مِثْقَالَ حَبَّةٍ مِّنْ خَرْدَلٍ أَتَيْنَا بِهَا} [الآية 47]",
+    "insightAr": "ميزان \"الخردل\" والتوثيق المطلق للأفعال؛ اختيار حبة الخردل (وهي حبة متناهية الصغر والوزن في البيئة العربية) يقطع دابر أي قلق من ضياع المعروف أو إفلات العقاب؛ فالنظام القضائي الإلهي يوم القيامة موثق، رصين، يزن الخواطر، والابتسامات، والنيات والكلمات العابرة بإنصاف كامل لا يغادر شيئاً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The mustard seed and absolute accountability; choosing something extraordinarily small illustrates that no good or evil deed is lost. Divine judgment records actions and weighs them with complete justice, leaving nothing outside the reckoning."
+  },
+  {
+    "id": 224,
+    "surah": "الأنبياء",
+    "ayah": "{وَأَيُّوبَ إِذْ نَادَى رَبَّهُ أَنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ * فَاسْتَجَبْنَا لَهُ فَكَشَفْنَا مَا بِهِ مِن ضُرٍّ} [الآية 83-84]",
+    "insightAr": "لطافة الأدب مع الله في عرض الشكوى؛ نادى أيوب ربه بعد سنوات المرض والفقر الطويل بـ {مَسَّنِيَ الضُّرُّ} بلفظ المس اليسير أدباً وتودداً، ونسب الضر للفعل المجهول ولم يقل \"ربِ إنك ضررتني\"، ثم عقب بالثناء بـ {وَأَنتَ أَرْحَمُ الرَّاحِمِينَ} تفويضاً وتسليماً، ففتحت له أبواب الشفاء العاجل.",
+    "source": "الفوائد - ابن القيم.",
+    "insightEn": "The etiquette of complaining to Allah; Job said the Qur’anic expression, using the language of a mere touch of harm, and followed it with the Qur’anic expression. The reflection presents this as humility, restraint, and trust while asking for relief."
+  },
+  {
+    "id": 225,
+    "surah": "الأنبياء",
+    "ayah": "{وَذَا النُّونِ إِذ ذَّهَبَ مُغَاضِبًا فَظَنَّ أَن لَّن نَّقْدِرَ عَلَيْهِ فَنَادَى فِي الظُّلُمَاتِ} [الآية 87]",
+    "insightAr": "سر \"نقْدر\" وظلمات الابتلاء المتعددة؛ \"نقْدِر\" هنا في التفسير واللغة ليست من العجز حاشا لله، بل هي من \"القدر والتقدير والتضييق\" كقوله {الله يبسط الرزق لمن يشاء ويَقْدر} أي يضيق. فنادى يونس في ظلمات ثلاث متداخلة (ظلمة الليل، وظلمة قاع البحر، وظلمة بطن الحوت)، ليعلم المسلم أنه لا توجد ورطة أو ضيق مظلم يعجز الله عن شقه للعبد إذا وحّده بصدق ونزّهه.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The meaning of ‘We have power’ and the layered darkness of trial; the Qur’anic expression here is understood in the sense of measure or restriction, not inability. Jonah called upon Allah from overlapping darknesses, illustrating that no distress is beyond Allah’s ability to relieve when a person turns to Him sincerely."
+  },
+  {
+    "id": 226,
+    "surah": "الحج",
+    "ayah": "{يَا أَيُّهَا النَّاسُ اتَّقُوا رَبَّكُمْ إِنَّ زَلْزَلَةَ السَّاعَةِ شَيْءٌ عَظِيمٌ * يَوْمَ تَرَوْنَهَا تَذْهَلُ كُلُّ مُرْضِعَةٍ عَمَّا أَرْضَعَتْ} [الآية 1-2]",
+    "insightAr": "اختيار \"المرضعة\" دون المرضع لتصوير صوّر القرآن فزع الساعة بمشهد؛ لم يقل \"تذهل كل مرضع\" (التي تفيد صفة المرأة المنجبة)، بل قال {مُرْضِعَةٍ} بالتاء؛ وهي التي تلقم ثديها فعلياً في فم رضيعها في ذات اللحظة؛ فمن شدة الهيبة والزلزلة تنزع ثديها وتلقي بطفلها رعباً وهلعاً، وهو خروج كامل عن أقوى غرائز الكون.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Why the Qur’anic expression evokes the intensity of the scene; the expression refers to a woman actively nursing an infant, making the image of the Day of Judgment especially vivid: even one of the strongest natural bonds is overwhelmed by the terror of the Hour."
+  },
+  {
+    "id": 227,
+    "surah": "الحج",
+    "ayah": "{وَمِنَ النَّاسِ مَن يَعْبُدُ اللَّهَ عَلَى حَرْفٍ فَإِنْ أَصَابَهُ خَيْرٌ اطْمَأَنَّ بِهِ وَإِنْ أَصَابَتْهُ فِتْنَةٌ انقَلَبَ عَلَى وَجْهِهِ} [الآية 11]",
+    "insightAr": "\"عبادة الحرف\" واعتلال النفعية ال؛ \"الحرف\" هو الطرف والطرف الحاد أو الحافة الجبلية غير المستقرة. تشخص الآية صنفاً نفعياً من البشر يعبد الله بشرط استقرار الرخاء ال؛ فإذا أصابه خير مالي اطمأن، وإذا مسه أدنى ابتلاء أو تراجع.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "‘Worship on the edge’ and the instability of material conditionality; the verse depicts a person who worships Allah only while life remains comfortable. When hardship touches him he turns away, revealing that his devotion was conditional and not firmly rooted."
+  },
+  {
+    "id": 228,
+    "surah": "الحج",
+    "ayah": "{أَلَمْ تَرَ أَنَّ اللَّهَ يَسْجُدُ لَهُ مَن فِي السَّمَاوَاتِ وَمَن فِي الْأَرْضِ وَالشَّمْسُ وَالْقَمَرُ وَالنُّجُومُ وَالْجِبَالُ} [الآية 18]",
+    "insightAr": "انسجام الكائنات وسجود الخضوع العام؛ يضع القرآن مشهداً كونياً مهيباً: الشمس، القمر، النجوم، الجبال، الشجر كلها في حالة سجود دائم وخضوع تام طوعاً لسنن وخالق الكون الشاملة. والآية تدعو الإنسان—وهو الكائن الممنوح حرية الإرادة—ألا يشذ بتمصره وعصيانه عن هذا السيمفونية الكونية الخاضعة لربها الباقي.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The harmony of creation and universal submission; the sun, moon, stars, mountains, and trees are portrayed as submitting to their Creator. The reflection invites human beings, despite possessing free choice, not to isolate themselves from the wider order of creation in rebellion."
+  },
+  {
+    "id": 229,
+    "surah": "الحج",
+    "ayah": "{ذَلِكَ وَمَن يُعَظِّمْ حُرُمَاتِ اللَّهِ فَهُوَ خَيْرٌ لَّلهُ عِندَ رَبِّهِ} [الآية 30]",
+    "insightAr": "\"تعظيم الحرمات\" كمؤشر لسلامة الضمير؛ الحرمات هي كل ما أوجب الله احترامه ورعايته من حدود، وتشريعات، ودماء، وأعراض وأوقات فاضلة. تعظيمها في النفس والقلب بالهيبة والاجتناب الخفي دليل قاطع على حياة الضمير الإيماني، والتهاون والاستخفاف بها هما أول دركات القسوة ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Revering sacred limits as a sign of a living conscience; Allah’s sacred boundaries, lives, honors, and appointed times deserve inner reverence. Taking them lightly can be an early sign of moral hardening, while honoring them reflects a living conscience."
+  },
+  {
+    "id": 230,
+    "surah": "المؤمنون",
+    "ayah": "{وَلَقَدْ خَلَقْنَا الْإِنسَانَ مِن سُلَالَةٍ مِّن طِينٍ * ثُمَّ جَعَلْنَاهُ نُطْفَةً فِي قَرَارٍ مَّكِينٍ} [الآية 12-13]",
+    "insightAr": "\"قرار مكين\" وال وصف الرحم بـ {قَرَارٍ مَّكِينٍ}؛ والقرار هو المستقر الهادئ، والمكين هو المثبت الحصين المحاط بعظام الحوض، والأغشية الحامية، والسوائل الممتصة للصدمات. هذا الوصف التشريحي البليغ يعلم الإنسان دقة العناية الإلهية به وهو في أضعف أطوار تكوينه الجسدي الخفي.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression and the protected human womb; the womb is described as a secure, firmly established place. The reflection draws attention to the remarkable protection surrounding human development in its most vulnerable hidden stage."
+  },
+  {
+    "id": 231,
+    "surah": "المؤمنون",
+    "ayah": "{حَتَّى إِذَا جَاءَ أَحَدَهُمُ الْمَوْتُ قَالَ رَبِّ ارْجِعُونِ * لَعَلِّي أَعْمَلُ صَالِحًا فِيمَا تَرَكْتُ كَلَّا} [الآية 99-100]",
+    "insightAr": "صراخ الندم المتأخر وطلب \"العمل الصالح\" تحديداً؛ عند معاينة الموت الحتمي وانقشاع غبار الدنيا، لا يطلب المفرط العودة لجمع الأموال، أو التمتع بالشهوات الفانية، بل تتركز صرخته ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The late cry of regret and the specific request for righteous action; when death becomes certain, the heedless person does not ask to return for more wealth or pleasure, but says the Qur’anic expression. The answer the Qur’anic expression shows that the opportunity has passed."
+  },
+  {
+    "id": 232,
+    "surah": "المؤمنون",
+    "ayah": "{قَالَ اخْسَئُوا فِيهَا وَلَا تُكَلِّمُونِ * إِنَّهُ كَانَ فَرِيقٌ مِّنْ عِبَادِي يَقُولُونَ رَبَّنَا آمَنَّا فَاغْفِرْ لَنَا}[الآية 108-109]",
+    "insightAr": "عقوبة الزجر بالطرد وسبب انتصار المؤمنين؛ استخدام لفظ {اخْسَئُوا} وهو لفظ زجر يُقال للكلاب لطردهم وإهانتهم؛ وهي أشد عقوبة. واللطيفة بيان سبب عذابهم: سخريتهم واستهزاؤهم في الدنيا بأهل الدين والصلاح الخاشعين {فَاتَّخَذْتُمُوهُمْ سِخْرِيًّا} فجازاهم الله بإهانتهم ونصرة المظلومين.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Rejection through the word the Qur’anic expression and the cause of humiliation; the term is a harsh command of expulsion. The reflection connects the punishment with the sinners’ mockery of righteous believers in worldly life and presents the scene as a reversal of that humiliation."
+  },
+  {
+    "id": 233,
+    "surah": "المؤمنون",
+    "ayah": "{أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنَاكُمْ عَبَثًا وَأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُونَ * فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ} [الآية 115-116]",
+    "insightAr": "نفي العبثية الكونية وإثبات حتمية المسؤولية المعنوية؛ سؤال إنكاري ينسف الفلسفات العبثية والعدمية ال؛ فتنزه الله عز وجل بـ {فَتَعَالَى} وجلال ملكه وحقه عن العبث؛ فخلق البشر محكوم بغاية الابتلاء، والمسؤولية الأخلاقية هي أساس التكريم الإنساني الأعلى.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Rejecting cosmic meaninglessness and affirming moral responsibility; the verse challenges the idea that human life is purposeless biological accident. Creation has a purpose and accountability, and moral responsibility is central to human dignity."
+  },
+  {
+    "id": 234,
+    "surah": "النور",
+    "ayah": "{قُل لِّلْمُؤْمِنِينَ يَغُضُّوا مِنْ أَبْصَارِهِمْ وَيَحْفَظُوا فُرُوجَهُمْ ذَلِكَ أَزْكَى لَهُمْ} [الآية 30]",
+    "insightAr": "ال قدّم الله غض البصر على حفظ الفرج؛ لأن العين هي البوابة الأولى والنافذة الكبرى التي تتسلل منها الخواطر والصور إلى القلب، فإذا أُطلق البصر تحركت الشهوة الباطنة وقادت الجوارح للمحظور. وجعل الله النتيجة الحتمية للغض هي الزكاة والنقاء ال.",
+    "source": "إغاثة اللهفان - ابن القيم.",
+    "insightEn": "Preventive design of the soul and the priority of lowering the gaze; the eye is described as an early gateway through which images and thoughts reach the heart. Guarding it helps restrain desire, and the reflection connects this with the Qur’anic expression, purification of the inner self."
+  },
+  {
+    "id": 235,
+    "surah": "النور",
+    "ayah": "{اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ مَثَلُ نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ} [الآية 35]",
+    "insightAr": "سر تشبيه نور الإيمان بالمصباح في الزجاجة؛ شبّه الله نور الهداية والقرآن في قلب المؤمن بمصباح متقد في زجاجة صافية كالكوكب الدري، والزجاجة تحمي المصباح من الرياح الخارجية (الشبهات) لكنها لا تحجب ضوءه ونوره النقي (البصيرة). وفي هذا تصوير بليغ لثبات قلب المؤمن وسط فتن الحياة وأمواج الشكوك.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The lamp-in-glass image of faith; Allah compares guidance and Qur’anic light in the believer’s heart to a shining lamp in a clear glass. The image conveys protection from doubts while allowing the light of insight to remain clear, illustrating steadiness amid life’s trials."
+  },
+  {
+    "id": 236,
+    "surah": "النور",
+    "ayah": "{فِي بُيُوتٍ أَذِنَ اللَّهُ أَن تُرْفَعَ وَيُذْكَرَ فِيهَا اسْمُهُ يُسَبِّحُ لَهُ فِيهَا بِالْغُدُوِّ وَالْآصَالِ * رِجَالٌ لَّا تُلْهِيهِمْ تِجَارَةٌ وَلَا بَيْعٌ عَن ذِكْرِ اللَّهِ} [الآية 36-37]",
+    "insightAr": "معنى \"الرجال\" في القرآن والتوازن المالي؛ لم يطلق الله وصف {رِجَالٌ} على مجرد الذكور حساً، بل منحه لأصحاب الهمم العالية والقلوب المعلقة بالمساجد، واللطيفة أنهم يمارسون الأعمال ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The Qur’anic meaning of ‘men’ and balance in worldly activity; the Qur’anic expression is associated here with people of high resolve whose hearts remain attached to the mosques. They trade and work the Qur’anic expression, yet economic activity does not distract them from remembrance and prayer."
+  },
+  {
+    "id": 237,
+    "surah": "النور",
+    "ayah": "{وَالَّذِينَ كَفَرُوا أَعْمَالُهُمْ كَسَرَابٍ بِقِيعَةٍ يَحْسَبُهُ الظَّمْآنُ مَاءً حَتَّى إِذَا جَاءَهُ لَمْ يَجِدْهُ شَيْئًا وَوَجَدَ اللَّهَ عِندَهُ} [الآية 39]",
+    "insightAr": "الصدمة ال؛ تصوير رائع ومرعب لأعمال الكافر والمنافق؛ فهو يبذل جهداً في الدنيا ويظن أنه يحسن صنعاً كالعطشان ({الظَّمْآنُ}) الذي يركض وراء السراب طمعاً في ري ظمئه، فإذا جاءت لحظة الحقيقة والموت اكتشف الخواء المطلق {لَمْ يَجِدْهُ شَيْئًا} وواجه العدالة الإلهية الحازمة فجأة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The psychological shock of fruitless deeds; the deeds of the disbeliever are compared to the mirage pursued by a thirsty person the Qur’anic expression. At the decisive moment he finds nothing there the Qur’anic expression, exposing the emptiness of efforts detached from faith."
+  },
+  {
+    "id": 238,
+    "surah": "الفرقان",
+    "ayah": "{وَقَالَ الرَّسُولُ يَا رَبِّ إِنَّ قَوْمِي اتَّخَذُوا هَذَا الْقُرْآنَ مَهْجُورًا} [الآية 30]",
+    "insightAr": "خطورة الشكوى النبوية وأنواع الهجر؛ الشكوى المرفوعة من النبي لربه ضد هاجري القرآن هي نداء يهز النفس خوفاً؛ لأن هجر القرآن لا يقف عند حدود عدم تلاوته باللسان فحسب، بل يمتد ليشمل هجر تدبر معانيه بوعي، وهجر تحكيم تشريعاته وأحكامه في واقع التعاملات، وهجر التداوي به والاستشفاء بنوره الروحي.",
+    "source": "الفوائد - ابن القيم.",
+    "insightEn": "The seriousness of the Prophet’s complaint and the forms of abandoning the Qur’an; abandoning the Qur’an is not limited to leaving its recitation. It can also include neglecting reflection on its meanings, refusing to apply its guidance, and failing to seek its spiritual healing and light."
+  },
+  {
+    "id": 239,
+    "surah": "الفرقان",
+    "ayah": "{وَجَعَلْنَا بَعْضَكُمْ لِبَعْضٍ فِتْنَةً أَتَصْبِرُونَ وَكَانُ رَبُّكَ بَصِيرًا} [الآية 20]",
+    "insightAr": "قانون الاختلاف ال؛ وضعت الآية سنة إلهية في العلاقات البشرية: جعل الله تفاوت الناس في الأرزاق، والصحة، والمناصب، والأخلاق ابتلاءً متبادلاً؛ فالغني فتنة للفقير، والظالم فتنة للمظلوم، والمريض فتنة للصحيح؛ ليرى الله من يلتزم بالصبر وحفظ الحقوق {أَتَصْبِرُونَ}، وهو تشخيص يرفع القلق ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The law of social difference and mutual testing; differences in wealth, health, position, and circumstances test people in different ways. The question the Qur’anic expression calls for patience and preservation of rights, helping the believer understand social inequality without being consumed by anxiety."
+  },
+  {
+    "id": 240,
+    "surah": "الفرقان",
+    "ayah": "{الَّذِينَ يَقُولُونَ رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا}[الآية 74]",
+    "insightAr": "حقيقة \"قرة العين\" وعلو الهمة في طلب الريادة؛ قرة العين في التفسير واللغة هي الدمعة الباردة التي تخرج من شدة الفرح والسرور؛ فأجمل فرحة. واللطيفة طلبهم للريادة الصالحة {وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا}؛ وهي إمامة في القدوة والخير لا في التسلط والسلطان ال.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The meaning of ‘coolness of the eyes’ and high aspiration in leadership; the Qur’anic expression expresses deep joy. One of the believer’s greatest joys is seeing a spouse and children upright in obedience to Allah. The prayer the Qur’anic expression seeks leadership through good example, not domination."
+  },
+  {
+    "id": 241,
+    "surah": "الشعراء",
+    "ayah": "{لَعَلَّكَ بَاخِعٌ نَّفْسَكَ أَلَّا يَكُونُوا مُؤْمِنِينَ} [الآية 3]",
+    "insightAr": "\"البخع\" والرحمة القيادية في التعامل مع إعراض الجمهور؛ \"البخع\" في اللغة هو قتل النفس هماً وغماً وحسرة. يواسي الله نبيه الكريم الذي كاد يهلك بدنه وروحه حزناً وشفقة على تمنع قومه وإعراضهم عن الهدى والنجاة، والآية ترفع العبء ال.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression and compassionate leadership when people turn away; the word denotes exhausting or destroying oneself through grief. Allah consoles His Prophet for his deep concern over people’s rejection of guidance, reminding reformers that their role is to convey the truth without destroying themselves through sorrow."
+  },
+  {
+    "id": 242,
+    "surah": "الشعراء",
+    "ayah": "{الَّذِي خَلَقَنِي فَهُوَ يَهْدِينِ * وَالَّذِي هُوَ يُطْعِمُنِي وَيَسْقِينِ * وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ} [الآية 78-80]",
+    "insightAr": "دقة الأدب التعبدي مع الله في نسبة المرض؛ في ثناء إبراهيم عليه السلام، نسب أفعال الخلق، والهداية، والإطعام والرزق كلها لله بصيغة الفاعل الصريح، فلما جاء موضع المرض تلطف وأدباً ونسب المرض لنفسه فقال: {وَإِذَا مَرِضْتُ} بضمير المتكلم، ولم يقل \"وإذا أمرضني\"، مسنداً النقص لنفسه والكمال والشرف لله الشافي.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The etiquette of attributing illness to oneself; Abraham attributes creation, guidance, feeding, and provision directly to Allah, but when mentioning illness he says the Qur’anic expression, assigning the deficiency to himself while honoring Allah as the Healer."
+  },
+  {
+    "id": 243,
+    "surah": "الشعراء",
+    "ayah": "{يَوْمَ لَا يَنفَعُ مَالٌ وَلَا بَنُونَ * إِلَّا مَنْ أَتَى اللَّهَ بِقَلْبٍ سَلِيمٍ} [الآية 88-89]",
+    "insightAr": "العملة الأوحد والوحيدة المقبولة في الآخرة؛ تنزع الآية القيمة عن كل ممتلكات الدنيا ال. والقلب السليم هو السليم الخالي من الشرك، والكبر، والحسد، والغل على عباد الله الموحدين.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "The only currency accepted in the Hereafter; worldly wealth and status cannot secure salvation. The reflection identifies the decisive inner asset as the Qur’anic expression: a heart free from shirk, arrogance, envy, and rancor toward Allah’s servants."
+  },
+  {
+    "id": 244,
+    "surah": "النمل",
+    "ayah": "{فَتَبَسَّمَ ضَاحِكًا مِّن قَوْلِهَا وَقَالَ رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ} [الآية 19]",
+    "insightAr": "أخلاق النبوة وسرعة الاستجابة للشكر؛ لما سمع سليمان كلام النملة، لم يصبه الغرور والزهو بسلطانه وقدرته الفريدة على فهم لغة الكائنات، بل ترجم انتباهه فوراً إلى تواضع، وانكسار، ولجوء للدعاء وطلب العون من الله ليستشعر ويدوم على الشكر {رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ} لئلا يطغى البدن بالنعم.",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "Prophetic character and immediate gratitude; when Solomon heard the ant, he did not respond with pride in his extraordinary power. He immediately turned to humility and supplication: the Qur’anic expression, asking Allah to help him remain grateful rather than become intoxicated by blessings."
+  },
+  {
+    "id": 245,
+    "surah": "النمل",
+    "ayah": "{قَالَ هَذَا مِن فَضْلِ رَبِّي لِيَبْلُوَنِي أَأَشْكُرُ أَمْ أَكْفُرُ وَمَن شَكَرَ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِ} [الآية 40]",
+    "insightAr": "فقه التعامل مع الإمكانات ال؛ عند جلب عرش ملكة سبأ في لمح البصر وحضور القوة والتمكين الخارق، جرد سليمان النعمة ونسبها لأصلها الإلهي الخالص {هَذَا مِن فَضْلِ رَبِّي}، وأدرك بوعي عميق أن هذه الإمكانات ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "How to handle great worldly capabilities; when Solomon was granted extraordinary power, he immediately attributed it to Allah: the Qur’anic expression. He recognized such capability as a test: the Qur’anic expression, not merely a source of status."
+  },
+  {
+    "id": 246,
+    "surah": "النمل",
+    "ayah": "{أَمَّن يُجِيبُ الْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ السُّوءَ وَيَجْعَلُكُمْ خُلَفَاءَ الْأَرْضِ} [الآية 62]",
+    "insightAr": "رصيد الاضطرار والانكسار وعصمة الدعاء؛ \"المضطر\" هو العبد الذي انقطعت بوجهه كافة الأسباب ال. وجعل الله الاستجابة له مضمونة بقوة ربوبيته تودداً؛ لأن الانكسار الباطن والافتقار التام يفتحان أبواب الرحمة الكونية الكاشفة للسوء بلحظة.",
+    "source": "الفوائد - ابن القيم.",
+    "insightEn": "The state of desperate need and the sincerity of supplication; the one in is a servant whose worldly means have failed and whose options have narrowed. The reflection presents this complete dependence as a powerful state of humility through which the servant turns to Allah for relief."
+  },
+  {
+    "id": 247,
+    "surah": "القصص",
+    "ayah": "{وَأَصْبَحَ فُؤَادُ أُمِّ مُوسَى فَارِغًا إِن كَادَتْ لَتُبدِي بِهِ لَوْلَا أَن رَّبَطْنَا عَلَى قَلْبِهَا} [الآية 10]",
+    "insightAr": "التفريق البلاغي بين الفؤاد والقلب وسر \"الربط\" الإلهي؛ صوّرت الآية عمق الوجع الإنساني والأمومة؛ {فُؤَادُ أُمِّ مُوسَى فَارِغًا}؛ والفؤاد هو القلب في حالة فورانه، واحتراقه، واضطرابه من الهم والخوف؛ أي فرغ من كل شؤون الدنيا إلا من ذكر ابنها الخائف. فجاء المدد الإلهي السريع بربط وتثبيت السكينة على قلبها {لَوْلَا أَن رَّبَطْنَا عَلَى قَلْبِهَا} ليسكن اضطراب البدن.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The distinction between heart and inner heart, and divine strengthening; the Qur’an describes Moses’ mother’s the Qur’anic expression as overwhelmed. Her inner being was consumed by concern for her child, then Allah strengthened her heart the Qur’anic expression, restoring steadiness."
+  },
+  {
+    "id": 248,
+    "surah": "القصص",
+    "ayah": "{وَقَالَتْ لِأُخْتِهِ قُصِّيهِ فَبَصُرَتْ بِهِ عَن جُنُبٍ وَهُمْ لَا يَشْعُرُونَ} [الآية 11]",
+    "insightAr": "دقة التخطيط وحماية العمل في خفاء؛ \"قصيه\" أي تتبعي أثره بحذر. مشهد الفتاة الذكية وهي تراقب حركة أخيها الصغير وسط قصر فرعون وجيشه العارم {عَن جُنُبٍ} (أي من مكان بعيد جانبي وبتظاهر باللامبالاة لئلا تثير الشكوك {وَهُمْ لَا يَشْعُرُونَ}) يعلم المسلم دقة اتخاذ الأسباب الذكية المبطنة بالوعي لحماية الرسائل والمبادئ.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Precise planning and protecting a mission through secrecy; the Qur’anic expression means follow his trace carefully. The girl watched from a distance the Qur’anic expression without attracting attention, illustrating the value of intelligent, discreet means in protecting important aims."
+  },
+  {
+    "id": 249,
+    "surah": "القصص",
+    "ayah": "{وَمَا كُنتَ بِجَانِبِ الْغَرْبِيِّ إِذْ قَضَيْنَا إِلَى مُوسَى الْأَمْرَ وَمَا كُنتَ مِنَ الشَّاهِدِينَ} [الآية 44]",
+    "insightAr": "إثبات صدق الوحي بالأدلة الجغرافية والتاريخية؛ يواجه الله من يشك في رسالة النبي بتذكيرهم: محمد لم يحضر جغرافيا جبل الطور {بِجَانِبِ الْغَرْبِيِّ} ولم يشهد كواليس الحوار التاريخي القديم، وسرد هذه التفاصيل الدقيقة بالنظم المعجز هو برهان ساطع لا يقبل الجدل على أن المصدر هو علام الغيوب سبحانه.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Establishing the truth of revelation through geographical and historical evidence; the Prophet had not witnessed the ancient events surrounding Mount Sinai, yet the Qur’an presents detailed accounts of them. The reflection treats this as evidence of revelation from the Knower of the unseen."
+  },
+  {
+    "id": 250,
+    "surah": "القصص",
+    "ayah": "{إِنَّكَ لَا تَهْدِي مَنْ أَحْبَبْتَ وَلَ كِنَّ اللَّهَ يَهْدِي مَن يَشَاءُ وَهُوَ أَعْلَمُ بِالْمُهْتَدِينَ} [الآية 56]",
+    "insightAr": "رفع العبء العاطفي في هداية الأحبة والذرية؛ نزلت السورة تعزية ومواساة لقلب النبي الشريف عند موت عمه أبي طالب كافراً رغماً عن حرصه الشديد ومحبته له. تضع الآية حداً فاصلاً: الهداية التوفيقية هي ملك خالص لله وحده وليست بالعاطفة أو القرابة، وعلى الوالد والمربي بذل الجهد وترك النتائج للقدر.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Lifting the emotional burden of guiding loved ones; the verse consoles the Prophet after his uncle died without accepting faith despite his concern. Guidance in the sense of granting success belongs to Allah alone, while parents and educators must make the effort and leave outcomes to Allah."
+  },
+  {
+    "id": 251,
+    "surah": "القصص",
+    "ayah": "{قَالَ إِنَّمَا أُوتِيتُهُ عَلَى عِلْمٍ عِندِي أَوَلَمْ يَعْلَمْ أَنَّ اللَّهَ قَدْ أَهْلَكَ مِن قَبْلِهِ مِنَ الْقُرُونِ مَنْ هُوَ أَشَدُّ مِنْهُ قُوَّةً} [الآية 78]",
+    "insightAr": "آفة قارون والنرجسية المالية والعلمية؛ لخص قارون العقلية ال. فجاء التذكير بسنن التاريخ الكاسرة لغرور القوة والثروات.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Qarun’s material and intellectual narcissism; he attributed his economic success and knowledge to himself, the Qur’anic expression, overlooking Allah’s favor and distribution. The reflection presents his story as a warning against pride in wealth, expertise, and personal achievement."
+  },
+  {
+    "id": 252,
+    "surah": "القصص",
+    "ayah": "{فَخَرَجَ عَلَى قَوْمِهِ فِي زِينَتِهِ قَالَ الَّذِينَ يُرِيدُونَ الْحَيَاةَ الدُّنْيَا يَا لَيْتَ لَنَا مِثْلَ مَا أُوتِيَ قَارُونُ} [الآية 79]",
+    "insightAr": "فتنة الاستعراض وحسرة المقارنات ال؛ مشهد خروج قارون بكامل أبهته ال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The temptation of display and the pain of material comparison; Qarun’s public display the Qur’anic expression unsettled people whose faith was weak, leading them to wish for his possessions. The reflection warns against measuring personal worth through the fleeting appearances of worldly elites."
+  },
+  {
+    "id": 253,
+    "surah": "القصص",
+    "ayah": "{فَخَسَفْنَا بِهِ وَبِدَارِهِ الْأَرْضَ فَمَا كَانَ لَهُ مِن فِئَةٍ يَنصُرُونَهُ مِن دُونِ اللَّهِ} [الآية 81]",
+    "insightAr": "سر العقوبة السريعة بالخسف وعبرة زوال الرواسي ال؛ جاء الجواب العقابي بحرف الفاء السريع الكاسر للمهل {فَخَسَفْنَا}؛ ولما استعلى قارون بماله وبنائه فوق الأرض، كان جزاؤه أن تبتلعه ذات الأرض وتخسف بدار وقصوره وثرواته الباطنة لتتحول إلى جحيم.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The sudden punishment of being swallowed by the earth and the fragility of material security; the rapid the Qur’anic expression depicts Qarun’s fall after his worldly pride. His wealth and structures could not protect him, illustrating the weakness of material precautions without taqwā."
+  },
+  {
+    "id": 254,
+    "surah": "فصلت",
+    "ayah": "{سَنُرِيهِمْ آيَاتِنَا فِي الْآفَاقِ وَفِي أَنفُسِهِمْ حَتَّى يَتَبَيَّنَ لَهُمْ أَنَّهُ الْحَقُّ} [الآية 53]",
+    "insightAr": "وعد المشاهدة الكونية والتشريحية المتجدد؛ أداة الاستقبل {سَنُرِيهِمْ} تحمل وعداً ربانياً مستمراً ومتجدداً عبر القرون: سيكشف الله للبشرية من أسرار الفلك والكون الفسيح ({فِي الْآفَاقِ}) ومن بدائع الطب وال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The promise of continually renewed observation; the Qur’anic expression is presented as an ongoing promise that people will encounter signs in the horizons the Qur’anic expression and within themselves the Qur’anic expression. The reflection connects this with expanding human knowledge while affirming revelation as the reference point."
+  },
+  {
+    "id": 255,
+    "surah": "الشورى",
+    "ayah": "{وَمَا أَصَابَكُم مِّن مُّصِيبَةٍ فَبِمَا كَسَبَتْ أَيْدِيكُمْ وَيَعْفُوعَن كَثِيرٍ} [الآية 30]",
+    "insightAr": "عدالة الابتلاء وسعة الرحمة؛ تنبه الآية الإنسان عند وقوع الأزمات الحياتية إلى مراجعة نفسه وأعماله أولاً، فالذنوب لها أثرها في الواقع. ومع ذلك، فإن الله بلطفه يغفو عن كثير من الزلات دون عقوبة، فما أصاب العبد هو النزار اليسير تربيةً وتطهيراً له.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The justice of trials and the breadth of mercy; the reflection encourages a person facing hardship to examine his conduct while remembering that Allah overlooks many faults. What reaches a servant can therefore serve as correction and purification rather than being understood only as punishment."
+  },
+  {
+    "id": 256,
+    "surah": "الشورى",
+    "ayah": "{تَكَادُ السَّمَاوَاتُ يَتَفَطَّرْنَ مِن فَوْقِهِنَّ وَالْمَلَائِكَةُ يُسَبِّحُونَ بِحَمْدِ رَبِّهِمْ} [الآية 5]",
+    "insightAr": "هيبة الجلال الكوني؛ تصوير قرآني مهيب لعظمة جلال الله؛ فالأجرام السماوية الشاسعة الصلبة تكاد تتشقق وتتفطر هيبةً وإجلالاً من فوق الأرض، وفي ذات اللحظة يعيش ملائكة السماء في حالة تسبيح مستمر واستغفار لأهل الأرض، مما يعلم العبد حجم التقصير البشري في حق الخالق.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The awe of cosmic majesty; the Qur’an portrays the heavens as overwhelmed by the greatness of Allah, while the angels continually glorify and seek forgiveness. The image reminds the servant of the immense majesty of the Creator and the seriousness of human shortcomings."
+  },
+  {
+    "id": 257,
+    "surah": "الزخرف",
+    "ayah": "{الْأَخِلَّاءُ يَوْمَئِذٍ بَعْضُهُمْ لِبَعْضٍ عَدُوٌّ إِلَّا الْمُتَّقِينَ} [الآية 67]",
+    "insightAr": "حقيقة الصداقة الممتدة؛ كل علاقة وصداقة قامت في الدنيا على مصلحة. والاستثناء الوحيد والناجي هو الصداقة القائمة على التقوى والتواصي بالحق، فهي الوحيدة التي تمتد أواصرها وتثمر شفاعةً في الآخرة.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The reality of enduring friendship; relationships based on worldly interest or sin can become enmity on the Day of Resurrection. The exception is friendship grounded in taqwā and mutual encouragement toward truth, which can endure with beneficial consequences in the Hereafter."
+  },
+  {
+    "id": 258,
+    "surah": "الزخرف",
+    "ayah": "{وَلَوْلَا أَن يَكُونَ النَّاسُ أُمَّةً وَاحِدَةً لَّجَعَلْنَا لِمَن يَكْفُرُ بِالرَّحْمَٰنِ لِبُيُوتِهِمْ سُقُفًا مِّن فِضَّةٍ} [الآية 33]",
+    "insightAr": "هوان الدنيا ال؛ تكشف الآية عن حقيقة فلسفية مدهشة؛ فالدنيا وحطامها المالي من ذهب وفضة وسقوف وقصور هينة وضئيلة جداً في ميزان الله لدرجة أنه كان مستعداً لمنحها بالكامل وببذخ لمن يكفر به، ولم يمنع ذلك إلا رحمة بالبشر لئلا يفتتنوا ويتحولوا جميعاً للكفر لضعف نفوسهم أمام المادة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The insignificance of worldly luxury before Allah; the reflection emphasizes how little worldly adornments ultimately weigh in the divine balance. Their abundance is not proof of honor, and their attraction can itself become a test that leads people away from faith."
+  },
+  {
+    "id": 259,
+    "surah": "الدخان",
+    "ayah": "{فَمَا بَكَتْ عَلَيْهِمُ السَّمَاءُ وَالْأَرْضُ وَمَا كَانُوا مُنظَرِينَ} [الآية 29]",
+    "insightAr": "قيمة المؤمن في الكون؛ مفهوم المخالفة في الآية يدل على أن المؤمن الصالح إذا مات، تبكي عليه السماء والأرض. وتبكي عليه السماء لانقطاع صعود عمله الصالح إليها، وتبكي عليه الأرض لفقدان سجوده وطاعته على مناكبها. بينما الطغاة يرحلون دون أن يتركوا خلفهم سوى الفرج برحيلهم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The believer’s value in creation; the reflection understands the verse as indicating that a righteous believer’s departure matters to the heavens and earth because his worship and good deeds cease. Tyrants, by contrast, may leave no meaningful loss behind."
+  },
+  {
+    "id": 260,
+    "surah": "الدخان",
+    "ayah": "{إِنَّا أَنزَلْنَاهُ فِي لَيْلَةٍ مُّبَارَكَةٍ إِنَّا كُنَّا مُنذِرِينَ * فِيهَا يُفْرَقُ كُلُّ أَمْرٍ حَكِيمٍ} [الآية 3-4]",
+    "insightAr": "ليلة الحسابات السنوية للأقدار؛ \"يفرق\" أي يفصل ويُكتب. في ليلة القدر المباركة يُنسخ من اللوح المحفوظ إلى صحف الملائكة الحفظة تفاصيل أقدار البشر السنوية القادمة: من يعيش، من يموت، من يفتقر، ومن يغتني، وهي دعوة للنفس لتقاد الطاعات في تلك الليلة ليكون قدرها سعيداً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The night of annual apportionment; the Qur’anic expression is understood as being separated and determined. The reflection describes Laylat al-Qadr as a time associated with the recording of matters for the coming year and encourages the believer to fill it with worship and supplication."
+  },
+  {
+    "id": 261,
+    "surah": "الجاثية",
+    "ayah": "{أَفَرَأَيْتَ مَنِ اتَّخَذَ إِلَهَهُ هَوَاهُ وَأَضَلَّهُ اللَّهُ عَلَى عِلْمٍ} [الآية 23]",
+    "insightAr": "عبودية الهوى ال؛ صوّرت الآية خطورة الانقياد التام للرغبات والشهوات حتى يصبح \"الهوى\" بمثابة إله يُعبد ويُطاع من دون الله. وأخطر ما في هذا المرض ال.",
+    "source": "إغاثة اللهفان - ابن القيم.",
+    "insightEn": "Worshipping personal desire; the verse portrays the danger of following desire until the Qur’anic expression effectively becomes an object of obedience in place of Allah. Even a person with knowledge can fall into this disease if knowledge is not accompanied by self-purification and action."
+  },
+  {
+    "id": 262,
+    "surah": "الأحقاف",
+    "ayah": "{حَتَّى إِذَا بَلَغَ أَشُدَّهُ وَبَلَغَ أَرْبَعِينَ سَنَةً قَالَ رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ} [الآية 15]",
+    "insightAr": "سن النضج العقلي والروحي؛ خصّ الله سن الأربعين في القرآن لأنه يمثل عند هذه المحطة، ينبغي على الإنسان تغيير بوصلة اهتماماته بالكامل نحو الافتقار، والتركيز على شكر النعم، واللتفات لتربية الذرية، والاستعداد للقاء الله.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The age of forty as a stage of maturity; the reflection treats forty as a significant point of intellectual, physical, and spiritual maturity. It calls the person at this stage to renew gratitude, care for family, strengthen dependence on Allah, and prepare for meeting Him."
+  },
+  {
+    "id": 263,
+    "surah": "الأحقاف",
+    "ayah": "{فَاصْبِرْ كَمَا صَبَرَ أُولُو الْعَزْمِ مِنَ الرُّسُلِ وَلَا تَسْتَعْجِل لَّهُمْ} [الآية 35]",
+    "insightAr": "شحن طاقة الصبر بقدوات التاريخ؛ يوجه الله نبيه وكل مصلح يواجه جفاء المجتمع إلى النظر في السير الإستراتيجية لكبار الأنبياء (أولو العزم: نوح، إبراهيم، موسى، عيسى)؛ فاستحضار حجم معاناتهم، وثباتهم، وصبرهم يمسح الوجع ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Recharging patience through historical role models; Allah directs His Prophet and every reformer facing social rejection to consider the lives of the great messengers. Remembering their trials, steadfastness, and patience can ease psychological pain and renew perseverance."
+  },
+  {
+    "id": 264,
+    "surah": "محمد",
+    "ayah": "{أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ أَمْ عَلَى قُلُوبٍ أَقْفَالُهَا} [الآية 24]",
+    "insightAr": "قفل القلب وحرمانه؛ تعيب الآية على من يمرون بآيات القرآن دون وعي أو تدبر. واستخدمت الآية لفظ {أَقْفَالُهَا} مضافة إلى القلوب، دلالة على أن القفل يناسب.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The heart’s lock and deprivation; the verse criticizes those who pass by Qur’anic signs without reflection. the Qur’anic expression depicts hearts sealed against revelation, with sincerity, attentive listening, and reflection presented as the means of opening them."
+  },
+  {
+    "id": 265,
+    "surah": "محمد",
+    "ayah": "{ذَلِكَ بِأَنَّ اللَّهَ مَوْلَى الَّذِينَ آمَنُوا وَأَنَّ الْكَافِرِينَ لَا مَوْلَى لَهُمْ} [الآية 11]",
+    "insightAr": "الولاية الإلهية الخاصة درع الأمان؛ تلخص الآية سر الفارق ال؛ فالمؤمن يعيش في كنف \"المولى\" (الحفيظ، الناصر، المؤيد، والمدبر)، فإذا عصفت به أزمة علم أن له ركناً شديداً يحتويه، بينما الكافر يعيش منقطعاً تائهاً معتمداً على المادة الزائلة، فإذا انهارت انهار معها.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Special divine guardianship as a shield of security; the believer lives under the care, support, and direction of Allah, while the one who relies solely on transient material means may collapse when those means fail. The reflection emphasizes the psychological stability of dependence upon Allah."
+  },
+  {
+    "id": 266,
+    "surah": "الفتح",
+    "ayah": "{هُوَ الَّذِي أَنزَلَ السَّكِينَةَ فِي قُلُوبِ الْمُؤْمِنِينَ لِيَزْدَادُوا إِيمَانًا مَّعَ إِيمَانِهِمْ} [الآية 4]",
+    "insightAr": "السكينة مدد إلهي وقت الاضطراب؛ السكينة هي الطمأنينة والهدوء الروحي الذي يسكبه الله في قلب عبده المؤمن في أوقات الفتن، والحروب، والأزمات ال. والهدف منها التثبيت وزيادة اليقين وسط أمواج الشك والقلق ال.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Tranquility as divine support during turmoil; sakīnah is spiritual calm that Allah places in the believer’s heart during trials, conflict, and distress. Its purpose is to strengthen certainty amid waves of doubt and anxiety."
+  },
+  {
+    "id": 267,
+    "surah": "الفتح",
+    "ayah": "{إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا * لِّيَغْفِرَ لَكَ اللَّهُ مَا تَقَدَّمَ مِن ذَنبِكَ وَمَا تَأَخَّرَ} [الآية 1-2]",
+    "insightAr": "سر الربط بين الفتح والمغفرة؛ من عجائب النظم البلاغي ربط المغفرة للنبي بـ \"الفتح العسكري والسياسي\" (صلح الحديبية) بحرف اللام {لِّيَغْفِرَ}؛ واللطيفة أن الفتح أنتج دخول الناس في دين الله أفواجاً، فكثرت الطاعات، وارتفعت راية التوحيد، فكان هذا النصر سبباً في تعظيم الأجر ومغفرة الزلات ليكون الجزاء من جنس العمل الشامل.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The connection between victory and forgiveness; the reflection links the forgiveness mentioned with the conquest and its consequences, including the spread of Islam and increased good works. It presents victory as opening the way to greater obedience and benefit."
+  },
+  {
+    "id": 268,
+    "surah": "الحجرات",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا إِن جَاءَكُمْ فَاسِقٌ بِنَبَأٍ فَتَبَيَّنُوا أَن تُصِيبُوا قَوْمًا بِجَهَالَةٍ} [الآية 6]",
+    "insightAr": "وضعت الآية قاعدة أمنية و. فالجهالة والتسرع في تصديق الأخبار دون تبين يؤديان إلى تدمير العلاقات، وظلم الأبرياء، والندم ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "A social principle of verification; the verse establishes a strict rule for receiving and transmitting news. Haste and ignorance can destroy relationships, wrong the innocent, and leave lasting regret, so information should be checked before action."
+  },
+  {
+    "id": 269,
+    "surah": "الحجرات",
+    "ayah": "{وَلَا يَغْتَب بَّعْضُكُم بَعْضًا أَيُحِبُّ أَحَدُكُمْ أَن يَأْكُلَ لَحْمَ أَخِيهِ مَيْتًا فَكَرِهْتُمُوهُ} [الآية 12]",
+    "insightAr": "شناعة الغيبة بالتصوير الحسي؛ لتنفير النفس البشريّة من فاكهة المجالس الخبيثة (الغيبة)، صوّر القرآن المغتاب بمن يجلس لينهش ويأكل لحم أخيه المسلم وهو ميت لا يملك القدرة على الدفاع عن نفسه، وهو تصوير يقشعر منه البدن لقطع دابر الآفة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The ugliness of backbiting through vivid imagery; to make the soul recoil from backbiting, the Qur’an depicts it as eating the flesh of one’s dead brother. The disturbing image is intended to expose the moral ugliness of the act."
+  },
+  {
+    "id": 270,
+    "surah": "الحجرات",
+    "ayah": "{وَلَ كِنَّ اللَّهَ حَبَّبَ إِلَيْكُمُ الْإِيمَانَ وَزَيَّنَهُ فِي قُلُوبِكُمْ وَكَرَّهَ إِلَيْكُمُ الْكُفْرَ وَالْفُسُوقَ وَالْعِصْيَانَ}[الآية 7]",
+    "insightAr": "المنة في تذوق حلاوة الطاعة؛ تنبه الآية المؤمن ألا يغتر بصلاته أو التزامه الأخلاقي؛ فالطاعة لم تكن بقوتك الذاتية، بل لأن الله هو الذي تولى تذكر هذا يورث النفس انكساراً وشكراً للمنعم سبحانه.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The gift of tasting the sweetness of obedience; a believer should not become proud of worship because Allah is the One who made goodness beloved and adorned it in the heart the Qur’anic expression. Remembering this produces humility and gratitude."
+  },
+  {
+    "id": 271,
+    "surah": "ق",
+    "ayah": "{وَلَقَدْ خَلَقْنَا الْإِنسَانَ وَنَعْلَمُ مَا تُوَسْوِسُ بِهِ نَفْسُهُ وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ الْوَرِيدِ} [الآية 16]",
+    "insightAr": "الرقابة والمراقبة الباطنية؛ إحاطة علم الله لا تقف عند حدود أفعال الإنسان الظاهرة وأقواله اللسانية فحسب، بل تمتد لتشمل حتى حديث النفس الخفي والوساوس الباطنة التي لم تخرج للعلن بعد، والاقتران بحبل الوريد تمثيل مشهد",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Inner surveillance and divine awareness; Allah’s knowledge encompasses not only outward words and actions but also hidden thoughts and intentions. The image of the jugular vein conveys an intense sense of divine nearness and awareness."
+  },
+  {
+    "id": 272,
+    "surah": "ق",
+    "ayah": "{أَفَعَيِينَا بِالْخَلْقِ الْأَوَّلِ بَلْ هُمْ فِي لَبْسٍ مِّن خَلْقٍ جَدِيدٍ} [الآية 15]",
+    "insightAr": "سهولة الإعادة حساً وعقلاً؛ يسأل الله سؤالاً إنكارياً يبطل شك ال؛ فمن أوجد هذا الكون المعقد والبشر من العدم المحض أول مرة دون سابق مثال، أليس بقادر وأهون عليه إعادة إحيائهم بعد موتهم؟ والعلة أن منكري البعث يعيشون في خلط وحيرة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The ease of resurrection for the One who originated creation; the argument challenges doubt about resurrection by pointing to the first creation of the heavens and human beings. If Allah created everything initially, bringing creation back is certainly within His power."
+  },
+  {
+    "id": 273,
+    "surah": "الذاريات",
+    "ayah": "{وَفِي السَّمَاءِ رِزْقُكُمْ وَمَا تُوعَدُونَ * فَوَرَبِّ السَّمَاءِ وَالْأَرْضِ إِنَّهُ لَحَقٌّ مِّثْلَ مَا أَنَّكُمْ تَنطِقُونَ} [الآية 22-23]",
+    "insightAr": "قطع دابر القلق ال؛ جعل الله الرزق ومفاتحه في السماء بعيداً عن أيدي البشر وتلاعبهم على الأرض لتطمئن النفوس. ثم أقسم بنفسه عز وجل على ضمان وصول هذا الرزق للعبد، تشبيهاً بيقين خروج الحروف والكلمات من فم العبد عند النطق، فلا مجال للشك أو الخوف من الفقر.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Removing material and financial anxiety; the reflection presents provision as coming from Allah rather than being controlled absolutely by people. It invokes the certainty of Allah’s promise to reassure the believer against fear of poverty."
+  },
+  {
+    "id": 274,
+    "surah": "الذاريات",
+    "ayah": "{وَفِي أَنفُسِكُمْ أَفَلَا تُبْصِرُونَ * وَفِي السَّمَاءِ رِزْقُكُمْ وَمَا تُوعَدُونَ} [الآية 21-22]",
+    "insightAr": "التلازم بين التشريح الداخلي والتدبير الخارجي؛ قرن الله الدعوة للتدبر في تشريح الجسد البشري و؛ ليعلم العبد أن الإله الذي هندس.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The connection between inner anatomy and outward provision; the reflection connects contemplating the human self with trust in Allah’s provision. The One who created and sustains the body is not unaware of the servant’s needs."
+  },
+  {
+    "id": 275,
+    "surah": "الطور",
+    "ayah": "{وَاصْبِرْ لِحُكْمِ رَبِّكَ فَإِنَّكَ بِأَعْيُنِنَا وَسَبِّحْ بِحَمْدِ رَبِّكَ حِينَ تَقُومُ} [الآية 48]",
+    "insightAr": "يواسي الله نبيه وكل داعية يسير على خطاه، بأن مرارة الصبر وتحمل المشاق في طريق الحق محفوفة برعاية إلهية خاصة وحفظ مباشر عبّر عنه بـ {فَإِنَّكَ بِأَعْيُنِنَا}، وهي كلمة تمسح كل تعب.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The height of reassurance through special divine care; Allah consoles His Prophet and every caller to truth that patient endurance is accompanied by special care expressed as the Qur’anic expression. The reflection presents this as a source of inward reassurance."
+  },
+  {
+    "id": 276,
+    "surah": "الطور",
+    "ayah": "{إِنَّ الْمُتَّقِينَ فِي جَنَّاتٍ وَنَعِيمٍ * فَاكِهِينَ بِمَا آتَاهُمْ رَبُّهُمْ وَوَقَاهُمْ رَبُّهُمْ عَذَابَ الْجَحِيمِ} [الآية 17-18]",
+    "insightAr": "تمام النعيم بزوال الخوف؛ وصف أهل الجنة بـ {فَاكِهِينَ} وهي تفيد واللطيفة البلاغية أن هذا النعيم ال؛ لأن تذكر السلامة من هلاك محقق يضاعف شعور الفرحة والاطمئنان داخل الصدر.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Complete joy through the removal of fear; the people of Paradise are described as the Qur’anic expression, enjoying profound comfort and delight. Their joy is completed by being protected from Hell, showing how security intensifies happiness."
+  },
+  {
+    "id": 277,
+    "surah": "النجم",
+    "ayah": "{وَأَن لَّيْسَ لِلْإِنسَانِ إِلَّا مَا سَعَى * وَأَنَّ سَعْيَهُ سَوْفَ يُرَى } [الآية 39-40]",
+    "insightAr": "قانون العدالة والإنتاجية الإيمانية؛ حصرت الآية النتيجة الحقيقية للإنسان بـ \"السعي\" والعمل وبذل الجهد، وليس بالتمني أو التواكل. والجميل أن الجزاء رُتب على السعي نفسه {وَأَنَّ سَعْيَهُ سَوْفَ يُرَى } وليس على النتيجة دائماً، فالله ينظر إلى صدق محاولتك وجهدك المفتوح.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The law of justice and productive striving; the verse makes striving and effort central rather than wishful thinking. The reflection emphasizes the Qur’anic expression: the sincerity and effort of a person are seen and accounted for, not merely the final outcome."
+  },
+  {
+    "id": 278,
+    "surah": "النجم",
+    "ayah": "{مَا زَاغَ الْبَصَرُ وَمَا طَغَى * لَقَدْ رَأَى مِنْ آيَاتِ رَبِّهِ الْكُبْرَى } [الآية 17-18]",
+    "insightAr": "ثبات الأدب النبوي في المعراج؛ مدح الله تعالى بصر نبيه بالانضباط التام والأدب السامي في حضرة جلال السماوات؛ فلم يمل بصره يمنة أو يسرة استشرافاً ({مَا زَاغَ})، ولم يتجاوز حدود ما أُذن له برؤيته ({وَمَا طَغَى }). وهو توجيه للنفس البشرية بحفظ الأدب والخشوع عند المثول بين يدي الله.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Steadfast prophetic etiquette during the Miʿrāj; Allah praised the Prophet’s disciplined gaze: it did not deviate the Qur’anic expression nor exceed its proper limit the Qur’anic expression. The reflection presents this as a model of humility and composure before Allah."
+  },
+  {
+    "id": 279,
+    "surah": "القمر",
+    "ayah": "{فَدَعَا رَبَّهُ أَنِّي مَغْلُوبٌ فَانتَصِرْ * فَفَتَحْنَا أَبْوَابَ السَّمَاءِ بِمَاءٍ مُّنْهَمِرٍ} [الآية 10-11]",
+    "insightAr": "بلاغة الدعاء المختصر الكاسر للموازين؛ دعا نوح عليه السلام ربه بكلمتين فقط تلخصان انكساره وعجزه ال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The eloquence of a brief supplication that overturns circumstances; Noah summarized his helplessness in the Qur’anic expression. The immediate response the Qur’anic expression illustrates swift divine relief for a servant who turns sincerely to his Lord."
+  },
+  {
+    "id": 280,
+    "surah": "القمر",
+    "ayah": "{وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ} [الآية 17]",
+    "insightAr": "سر تكرار الآية وحث الهمم؛ كرر الله عز وجل هذه الآية أربع مرات متتالية في ذات السورة؛ تأكيداً على التيسير الإلهي للقرآن: تيسيراً للفظه للحفظ، وتيسيراً لمعانيه للفهم والتدبر. وجاء الستفهام {فَهَلْ مِن مُّدَّكِرٍ} لإيقاظ النفوس الغافلة، فالمحروم حقيقة هو من أعرض عن مائدة القرآن الميسرة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Repeating the verse to awaken determination; the reflection notes its repeated occurrence in the surah as emphasizing the Qur’an’s accessibility for recitation, memorization, and reflection. the Qur’anic expression calls heedless hearts to engage with the readily accessible reminder."
+  },
+  {
+    "id": 281,
+    "surah": "الرحمن",
+    "ayah": "{هَلْ جَزَاءُ الْإِحْسَانِ إِلَّا الْإِحْسَانُ} [الآية 60]",
+    "insightAr": "قانون التعامل العام الإلهي والبشري؛ استفهام قرآني يحمل معنى التقرير واليقين. فمن أحسن نيتها، وعملها، وعبادتها مع الله، وجب في كرم الله أن يقابل إحسانه بالإحسان والتوفيق والجنة. وفي التعاملات الإنسانية، هي دعوة لمقابلة المعروف بالمعروف وحفظ الوداد ونقاء التعامل.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A general divine and human law of reciprocity; the verse establishes that excellence in intention, worship, and conduct is met with excellence from Allah. In human relationships, it encourages returning good with good and preserving goodwill."
+  },
+  {
+    "id": 282,
+    "surah": "الرحمن",
+    "ayah": "{الرَّحْمَٰنُ * عَلَّمَ الْقُرْآنَ * خَلَقَ الْإِنسَانَ * عَلَّمَهُ الْبَيَانَ} [الآية 1-4]",
+    "insightAr": "سر تقديم تعليم القرآن على خلق الإنسان؛ من أسرار النظم البليغ تقديم تعليم القرآن {عَلَّمَ الْقُرْآنَ} على نعمة الوجود {خَلَقَ الْإِنسَانَ}؛ ليدل بيانياً وتربوياً على أن حياة الإنسان بلا قرآن وبلا منهج سماوي هي حياة فانية لا قيمة لها، فكأن حقيقة وجود الإنسان بدأت فعلياً بتلقي الوحي.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "Why teaching the Qur’an precedes the creation of humanity; the sequence the Qur’anic expression then the Qur’anic expression highlights the centrality of revelation and guidance in human purpose. The reflection treats revealed guidance as essential to meaningful human life."
+  },
+  {
+    "id": 283,
+    "surah": "الواقعة",
+    "ayah": "{إِذَا رُجَّتِ الْأَرْضُ رَجًّا * وَبُسَّتِ الْجِبَالُ بَسًّا * فَكَانَتْ هَبَاءً مُّنبَثًّا} [الآية 4-6]",
+    "insightAr": "زوال الرواسي ال؛ الجبال التي يراها الإنسان اليوم رمزاً للثبات والصلابة والقوة على الأرض، تتفتت يوم القيامة وتتحول إلى غبار دقيق متطاير في الهواء {هَبَاءً مُّنبَثًّا}. تذكر هذا مشهد يقلل في عين المؤمن حجم التحديات والمشاكل ال.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The disappearance of material strongholds; mountains that appear to represent permanence will be reduced on the Day of Resurrection. The reflection uses this image to lessen the believer’s fixation on worldly obstacles and redirect attention toward Allah, the Everlasting."
+  },
+  {
+    "id": 284,
+    "surah": "الواقعة",
+    "ayah": "{فَلَا أُقْسِمُ بِمَوَاقِعِ النُّجُومِ * وَإِنَّهُ لَقَسَمٌ لَّوْ تَعْلَمُونَ عَظِيمٌ} [الآية 75-76]",
+    "insightAr": "عظمة القسم وعلم الفلك؛ عظم الله شأن هذا القسم في وعي القارئ {وَإِنَّهُ لَقَسَمٌ لَّوْ تَعْلَمُونَ عَظِيمٌ}، ولم يقل بالنجوم بل بـ {بِمَوَاقِعِ النُّجُومِ}؛ والواقع الفلكي كشف أن الإنسان لا يرى النجم ذاته بل يرى موقعه القديم الذي انطلق منه الضوء منذ ملايين السنين، وهو",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The greatness of the oath and the astronomical image; the verse emphasizes the greatness of the oath by the ‘positions of the stars.’ The reflection draws attention to the vastness and complexity of the celestial order as a sign of divine precision."
+  },
+  {
+    "id": 285,
+    "surah": "الحديد",
+    "ayah": "{أَلَمْ يَأْنِ لِلَّذِينَ آمَنُوا أَن تَخْشَعَ قُلُوبُهُمْ لِذِكْرِ اللَّهِ وَمَا نَزَلَ مِنَ الْحَقِّ} [الآية 16]",
+    "insightAr": "عتاب الحب الإلهي الموقظ للقلوب؛ نداء رقيق يحمل عتاباً حاراً من الله لقلوب المؤمنين التي طال عليها الأمد واستأنست بالدنيا فخفت خشوعها. الآية بمثابة صدمة إيجابية وتنبيه.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "A loving divine admonition that awakens hearts; the verse addresses believers whose hearts have become accustomed to worldly life and whose humility has weakened. It serves as a positive shock, calling the believer to renew his relationship with Allah’s remembrance and the Qur’an."
+  },
+  {
+    "id": 286,
+    "surah": "المجادلة",
+    "ayah": "{قَدْ سَمِعَ اللَّهُ قَوْلَ الَّتِي تُجَادِلُكَ فِي زَوْجِهَا وَتَشْتَكِي إِلَى اللَّهِ وَاللَّهُ يَسْمَعُ تَحَاوُرَكُمَا} [الآية 1]",
+    "insightAr": "نصرة الضعيف وسماع الشكوى المباشرة؛ نزلت في خولة بنت ثعلبة وهي تشتكي نبي الله. تروي عائشة أنها كانت في كنف البيت ويخفى عليها بعض كلام خولة، بينما الله من فوق سبع سماوات سمع حوارها الضعيف ونصر مظلمتها وشرّع لأجلها أحكاماً تتلى، دلالة على إحاطة سمعه ونصرته للمنكسرين.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Supporting the vulnerable and hearing the direct complaint; the reflection refers to the account of Khawlah bint Thaʿlabah, whose complaint was heard by Allah and led to revealed guidance. It presents this as a powerful sign of Allah’s awareness of the distressed and oppressed."
+  },
+  {
+    "id": 287,
+    "surah": "الحشر",
+    "ayah": "{وَلَا تَكُونُوا كَالَّذِينَ نَسُوا اللَّهَ فَأَنسَاهُمْ أَنفُسَهُمْ أُولَ ئِكَ هُمُ الْفَاسِقُونَ} [الآية 19]",
+    "insightAr": "العقوبة ال؛ رتب الله على نسيان ذكره عقوبة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The most dangerous psychological punishment: losing awareness of oneself; the Qur’anic expression is presented as a state in which a person becomes distracted from his true interests and spends himself on pursuits that ultimately damage his life, health, and soul."
+  },
+  {
+    "id": 288,
+    "surah": "الممتحنة",
+    "ayah": "{رَّبَّنَا لَا تَجْعَلْنَا فِتْنَةً لِّلَّذِينَ كَفَرُوا وَاغْفِرْ لَنَا رَبَّنَا} [الآية 5]",
+    "insightAr": "دقة الدعاء والمسؤولية السلوكية؛ من لطائف هذا الدعاء أن المؤمن يسأل ربه ألا يكون سلوكه السيء، أو تقصيره، أو تخلفه ال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "Precision in supplication and behavioral responsibility; the believer asks Allah not to let his poor conduct or weakness become a cause of others turning away from Islam. Personal behavior can affect how others perceive the faith, so conduct carries responsibility."
+  },
+  {
+    "id": 289,
+    "surah": "الصف",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا لِمَ تَقُولُونَ مَا لَا تَفْعَلُونَ * كَبُرَ مَقْتًا عِندَ اللَّهِ أَن تَقُولُوا مَا لَا تَفْعَلُونَ} [الآية 2-3]",
+    "insightAr": "فجوة المصداقية ال؛ يُحذر القرآن من التناقض بين القول والعمل، فـ \"المقت\" هو أشد البغض. والآية تدعو المسلم إلى الصدق التام مع ذاته ومع ربه، لأن الخطاب التوجيهي الصادر من لسان لا يُطبقه صاحبه يولد نفوراً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The psychological credibility gap; the Qur’an warns against contradiction between speech and action, calling such hypocrisy deeply hateful. Authentic guidance requires sincerity with Allah and oneself, because words unsupported by conduct lose social and moral influence."
+  },
+  {
+    "id": 290,
+    "surah": "الجمعة",
+    "ayah": "{مَثَلُ الَّذِينَ حُمِّلُوا التَّوْرَاةَ ثُمَّ لَمْ يَحْمِلُوهَا كَمَثَلِ الْحِمَارِ يَحْمِلُ أَسْفَارًا} [الآية 5]",
+    "insightAr": "عبء العلم بلا فقه؛ شبّه القرآن من يملك الكتب والمصادر العلمية والشرعية دون أن يفهم معانيها أو يطبق أحكامها في واقع حياته بالحمار الذي يحمل على ظهره مجلدات ثقيلة نافعة ({أَسْفَارًا})، لكنه لا يناله منها سوى ثقل الحمل والتعب البدني، دون أي وعي أو استفادة حقيقية.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The burden of knowledge without understanding; those who possess books and religious sources without understanding or acting upon them are compared to a donkey carrying volumes. Knowledge becomes beneficial only when it is understood, internalized, and lived."
+  },
+  {
+    "id": 291,
+    "surah": "الجمعة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا نُودِيَ لِلصَّلَاةِ مِن يَوْمِ الْجُمُعَةِ فَاسْعَوْا إِلَى ذِكْرِ اللَّهِ وَذَرُوا الْبَيْعَ} [الآية 9]",
+    "insightAr": "دقة لفظ السعي وقطع الانشغال؛ السعي هنا في التفسير واللغة لا يعني الجري والركض البدني، بل يعني القصد، الاهتمام، والجدية ال. والقرآن أمر بترك البيع تحديداً لأنه أكبر شاغل مالي يربط العبد بالدنيا وقت الفريضة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The precision of ‘striving’ and ending distraction; the command to hurry toward the Friday prayer concerns purposeful movement and serious attention rather than frantic running. The prohibition of trade removes a major worldly distraction at the time of the obligation."
+  },
+  {
+    "id": 292,
+    "surah": "المنافقون",
+    "ayah": "{وَإِذَا رَأَيْتَهُمْ تُعْجِبُكَ أَجْسَامُهُمْ وَإِن يَقُولُوا تَسْمَعْ لِقَوْلِهِمْ كَأَنَّهُمْ خُشُبٌ مُّسَنَّدَةٌ} [الآية 4]",
+    "insightAr": "وهم المظاهر الجوفاء؛ تصوير قرآني دقيق للمنافقين الذين يملكون هيئات جسدية حسنة وفصاحة لسانية تشد الأسماع، لكنهم من الداخل خواء بلا روح ولا إيمان ثابت. فشبّههم بـ {خُشُبٌ مُّسَنَّدَةٌ}؛ أي جذوع أشجار ميتة مقطوعة لا نفع فيها ولا ثمر، وإنما أُسندت إلى الحائط لتبدو قائمة للناظرين فحسب.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The illusion of hollow appearances; hypocrites may possess impressive bodies and persuasive speech while being inwardly empty. They are compared to the Qur’anic expression, lifeless pieces of wood propped upright only for appearance, with no real inner fruitfulness."
+  },
+  {
+    "id": 293,
+    "surah": "التغابن",
+    "ayah": "{مَا أَصَابَ مِن مُّصِيبَةٍ إِلَّا بِإِذْنِ اللَّهِ وَمَن يُؤْمِن بِاللَّهِ يَهْدِ قَلْبَهُ} [الآية 11]",
+    "insightAr": "بلسم المصائب وهداية القلب؛ في تفسير هذه الآية قال علقمة: \"هو الرجل تصيبه المصيبة، فيعلم أنها من عند الله، فيرضى ويسلم\". وجزاء هذا الرضا ال؛ وهي أعظم عطاء إلهي يربط على نفس العبد وقت الأزمة، فينزل عليه السكينة والرضا بالقدر بدلاً من السخط والقلق.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The balm of hardship and guidance of the heart; when a believer recognizes that a calamity comes by Allah’s decree and responds with acceptance, the Qur’anic expression. The reflection presents this inward guidance as a great gift that replaces panic and resentment with steadiness."
+  },
+  {
+    "id": 294,
+    "surah": "الطلاق",
+    "ayah": "{وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا * وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ} [الآية 2-3]",
+    "insightAr": "سعة المخرج الإلهي؛ من عجائب هذه الآية أنها نزلت في سياق أحكام الطلاق والفراق والخلافات الأسرية الشديدة التي يظن أصحابها أن الأبواب قد أُغلقت تماماً. فبين الله أن التقوى والالتزام بالحدود الشرعية يفتحان للمرء أبواباً من الفرج والرزق ال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The breadth of divine escape; amid severe divorce and family conflict, the verse reassures that taqwā and respect for Allah’s limits can open unexpected paths of relief and provision. Closed doors are not necessarily the end of the story."
+  },
+  {
+    "id": 295,
+    "surah": "الطلاق",
+    "ayah": "{لَا تَدْرِي لَعَلَّ اللَّهَ يُحْدِثُ بَعْدَ ذَلِكَ أَمْرًا} [الآية 1]",
+    "insightAr": "فتح طاقة الأمل ال؛ قاعدة قرآنية عظيمة تزرع الطمأنينة في قلب كل من يمر بظروف قاسية، أو خسارة مالية، أو مرض؛ فالأحوال لا تدوم، وتدبير الله الخفي يغير الموازين بلحظة ويُحدث من اليسر والفرج ما لم يكن في الحسبان.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Opening the heart to hope; the verse offers reassurance to people facing hardship, financial loss, or illness: circumstances do not remain fixed, and Allah can change the balance of events and bring relief from unexpected directions."
+  },
+  {
+    "id": 296,
+    "surah": "التحريم",
+    "ayah": "{قُوا أَنفُسَكُمْ وَأَهْلِيكُمْ نَارًا وَقُودُهَا النَّاسُ وَالْحِجَارَةُ} [الآية 6]",
+    "insightAr": "ترتيب الأولويات التربوية؛ بدأ الله بالأمر بوقاية النفس أولاً {أَنفُسَكُمْ} ثم الأهل {وَأَهْلِيكُمْ}، لأن فاقد الشيء لا يعطيه. فالإنسان لا يمكنه إصلاح أسرته أو مجتمعه إلا إذا بدأ أولاً بزكاة وتأديب وتقويم نفسه على طاعة الله.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "Educational prioritization; Allah commands believers to protect the Qur’anic expression before the Qur’anic expression. The reflection stresses that a person who neglects his own reform cannot effectively reform his family, so self-discipline comes first."
+  },
+  {
+    "id": 297,
+    "surah": "الملك",
+    "ayah": "{هُوَ الَّذِي جَعَلَ لَكُمُ الْأَرْضَ ذَلُولًا فَامْشُوا فِي مَنَاكِبِهَا وَكُلُوا مِن رِّزْقِهِ} [الآية 15]",
+    "insightAr": "فلسفة السعي والتوكل؛ وصف الأرض بأنها {ذَلُولًا} كالدابة المطيعة السهلة ليتشجع الإنسان على الحركة. وأمر بالمشي في {مَنَاكِبِهَا} (أطرافها وطرقها الصعبة) بذلاً للأسباب، ثم عقب بـ {وَكُلُوا مِن رِّزْقِهِ} للتأكيد على أن الرزق مضاف لله وحده، فالمسلم يُمشي بدنه طاعة للأسباب، ويعلق قلبه بالرزاق سبحانه.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "The philosophy of effort and reliance; describing the earth as the Qur’anic expression encourages movement and productive work. Walking through its paths means taking practical means, while the Qur’anic expression keeps the heart attached to Allah as the true Provider."
+  },
+  {
+    "id": 298,
+    "surah": "الملك",
+    "ayah": "{وَأَسِرُّوا قَوْلَكُمْ أَوِ اجْهَرُوا بِهِ إِنَّهُ عَلِيمٌ بِذَاتِ الصُّدُورِ} [الآية 13]",
+    "insightAr": "دقة العلم الإلهي بالبواطن؛ لم يقل الله \"إنه عليم بما تسرون\"، بل ارتقى بالمعنى ليكون {بِذَاتِ الصُّدُورِ}؛ أي بالخواطر والنوايا والمشاعر اللصيقة بالقلب والتي لم تخرج بعد على لسان العبد سراً أو جهراً، وهي",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The precision of divine knowledge of inner states; the Qur’anic expression reaches beyond outward speech to thoughts, intentions, and feelings closely held in the heart. The reflection presents this as a profound reminder of inner accountability."
+  },
+  {
+    "id": 299,
+    "surah": "القلم",
+    "ayah": "{وَإِنَّكَ لَعَلَى خُلُقٍ عَظِيمٍ} [الآية 4]",
+    "insightAr": "استخدام حرف الاستعلاء (على)؛ لم يقل الله \"وإنك لذو خلق\"، بل قال {لَعَلَى } دلالة على تمكن النبي واستعلائه وسيطرته الكاملة على الأخلاق الفاضلة، حتى صارت الأخلاق كالدابة المطيعة له يقودها كيف يشاء بامتياز وثبات تام.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The use of the preposition of elevation the Qur’anic expression; rather than merely describing noble character, the wording the Qur’anic expression conveys an elevated, firmly established moral station. The reflection presents prophetic character as deeply settled and dominant."
+  },
+  {
+    "id": 300,
+    "surah": "الحاقة",
+    "ayah": "{فَأَمَّا مَنْ أُوتِيَ كِتَابَهُ بِيَمِينِهِ فَيَقُولُ هَاؤُمُ اقْرَؤُوا كِتَابِيَهْ} [الآية 19]",
+    "insightAr": "فرحة النجاح المطلق؛ تصوير مشهد الفرحة والابتهاج يوم القيامة لدرجة أن الناجي من شدة سعادته يلتفت للخلق من حوله طالباً منهم مشاركته قراءة صحيفة أعماله البيضاء المليئة بالحسنات، تماماً كحال الطالب الناجح بتفوق يرفع شهادته أمام الجميع بفخر.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The joy of complete success; the scene portrays the successful person in the Hereafter so delighted by his record that he invites others to read it with him. The reflection compares this to the natural pride of someone receiving a successful result after great effort."
+  },
+  {
+    "id": 301,
+    "surah": "المعارج",
+    "ayah": "{إِنَّ الْإِنسَانَ خُلِقَ هَلُوعًا * إِذَا مَسَّهُ الشَّرُّ جَزُوعًا * وَإِذَا مَسَّهُ الْخَيْرُ مَنُوعًا * إِلَّا الْمُصَلِّينَ}[الآية 19-22]",
+    "insightAr": "الاستثناء الإلهي من المرض ال؛ شخصت الآيات. ثم جاء الاستثناء الوحيد والعلاج الجذري لهذا التقلب ال؛ فالصلاة الدائمة تمنح النفس ثباتاً واتزاناً يقيها الجزع والمنع.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The divine exception to the psychological illness of panic; the verses describe the human tendency toward intense anxiety in hardship and withholding in ease. The exception is the Qur’anic expression, those constant in prayer, whose worship provides steadiness and balance."
+  },
+  {
+    "id": 302,
+    "surah": "نوح",
+    "ayah": "{فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا * يُرْسِلِ السَّمَاءَ عَلَيْكُم مِّدْرَارًا * وَيُمْدِدْكُم بِأَمْوَالٍ وَبَنِينَ} [الآية 10-12]",
+    "insightAr": "الآثار الدنيوية وال؛ ربط القرآن بين العبادة الروحية الباطنة (الاستغفار) وبين النتائج ال. الاستغفار ليس مجرد توبة من ذنب، بل هو مفتاح حقيقي لإزالة المعوقات القدرية وجلب الأرزاق وتيسيرها.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The worldly effects associated with seeking forgiveness; the Qur’an connects spiritual repentance and istighfār with rain, increased wealth, children, and flourishing gardens. The reflection presents istighfār as more than remorse: it is a means of seeking Allah’s mercy and provision."
+  },
+  {
+    "id": 303,
+    "surah": "الجن",
+    "ayah": "{وَأَن لَّوِ اسْتَقَامُوا عَلَى الطَّرِيقَةِ لَأَسْقَيْنَاهُم مَّاءً غَدَقًا} [الآية 16]",
+    "insightAr": "شرط الوفرة؛ الاستقامة على منهج الله وطاعته هي البوابة الحقيقية لتدفق البركات والوفرة ال.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "The condition for abundance; steadfastness upon Allah’s guidance and obedience is presented as a path to blessing and provision. The reflection emphasizes a positive relationship between faithfulness and the good that Allah grants in worldly life."
+  },
+  {
+    "id": 304,
+    "surah": "المزمل",
+    "ayah": "{إِنَّ نَاشِئَةَ اللَّيْلِ هيَ أَشَدُّ وَطْئًا وَأَقْوَمُ قِيلًا} [الآية 6]",
+    "insightAr": "سر العبادة الليلية والاتساق الفكري؛ \"ناشئة الليل\" هي العبادة التي تنشأ بعد النوم. ووصفت بأنها {أَشَدُّ وَطْئًا} أي أكثر مواطأة وتوافقاً بين وعي القلب الباطن ونطق اللسان؛ لأن مشاغل النهار وضوضاء الحياة تنقطع، فيخلو العبد بربه بكامل تركيزه الذهني والروحي.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The secret of night worship and inner consistency; the Qur’anic expression refers to worship arising during the night. It is described as stronger in harmony between the heart and tongue because daytime distractions recede and the servant becomes more focused in worship."
+  },
+  {
+    "id": 305,
+    "surah": "المدثر",
+    "ayah": "{كُلُّ نَفْسٍ بِمَا كَسَبَتْ رَهِينَةٌ * إِلَّا أَصْحَابَ الْيَمِينِ} [الآية 38-39]",
+    "insightAr": "التحرر الأخلاقي المطلق؛ كل إنسان مرهون ومحبوس ومقيد بقراراته واختياراته السلوكية والمالية، وسيدفع كلفة أخطائه بنفسه إنصافاً. والاستثناء الوحيد والناجي هم {أَصْحَابَ الْيَمِينِ} الذين فكوا رهان أنفسهم وصكوا حريتهم بالإيمان والعمل البناء.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "Complete moral freedom; every person is bound by his decisions and behavioral choices and will bear their consequences. The successful exception is the Qur’anic expression, those whose faith and righteous action free them from the consequences of moral ruin."
+  },
+  {
+    "id": 306,
+    "surah": "القيامة",
+    "ayah": "{بَلِ الْإِنسَانُ عَلَى نَفْسِهِ بَصِيرَةٌ * وَلَوْ أَلْقَى مَعَاذِيرَهُ} [الآية 14-15]",
+    "insightAr": "المواجهة الذاتية والوعي الداخلي؛ تضع الآية حقيقة.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "Self-confrontation and inner awareness; a person knows his faults, sins, shortcomings, and hidden intentions better than anyone else. However many excuses he presents the Qur’anic expression, his inner reality remains known and cannot be concealed."
+  },
+  {
+    "id": 307,
+    "surah": "الإنسان",
+    "ayah": "{وَيُطْعِمُونَ الطَّعَامَ عَلَى حُبِّهِ مِسْكِينًا وَيَتِيمًا وَأَسِيرًا * إِنَّمَا نُطْعِمُكُمْ لِوَجْهِ اللَّهِ لَا نُرِيدُ مِنكُمْ جَزَاءً وَلَا شُكُورًا} [الآية 8-9]",
+    "insightAr": "ذروة التجرد وعلاج حب الثناء؛ \"على حبه\" أي ينفقون الطعام رغماً عن حاجتهم الشديدة إليه وحبهم له. وجردوا عملهم الأخلاقي والمالي من طلب أي مقابل إنساني؛ حتى مجرد كلمة شكر لفظية أو مديح.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The height of sincerity and freedom from the desire for praise; they give food despite loving and needing it, without seeking even verbal thanks or social praise the Qur’anic expression. The reflection presents this as a model of pure charitable action."
+  },
+  {
+    "id": 308,
+    "surah": "المرسلات",
+    "ayah": "{انطَلِقُوا إِلَى ظِلٍّ ذِي ثَلَاثِ شُعَبٍ * لَّا ظَلِيلٍ وَلَا يُغْنِي مِنَ اللَّهَبِ} [الآية 30-31]",
+    "insightAr": "سر الظل الخادع؛ يُساق أهل الجحيم إلى ظل دخان النار الكثيف المتفرع بثلاث شعب، وهو مشهد يثير رعباً؛ لأن هذا الظل لا يحمي من الحرارة حساً {لَّا ظَلِيلٍ} ولا يدفع وجع النار {وَلَا يُغْنِي مِنَ اللَّهَبِ}، فكان عذابهم ال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The deceptive shade; the people of Hell are described as being under a shade of smoke divided into branches. It provides no real protection the Qur’anic expression and cannot save them from the flames, combining psychological and physical punishment."
+  },
+  {
+    "id": 309,
+    "surah": "النبأ",
+    "ayah": "{وَجَعَلْنَا النَّهارَ مَعَاشًا * وَبَنَيْنَا فَوْقَكُمْ سَبْعًا شِدَادًا * وَجَعَلْنَا سِرَاجًا وَهَّاجًا} [الآية 11-13]",
+    "insightAr": "صوّر الله النهار بصيغة الظرف والمكان للحركة {مَعَاشًا} لبذل الطاقة وعمران الأرض، وأتبعه بالسراج الوهّاج (الشمس). الترتيب ينبه المسلم لتنظيم نشاطه اليومي مع حركة الكون، فالعمل ال.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "The natural architecture of the biological clock; the day is described as a period of livelihood and activity the Qur’anic expression, followed by the illuminating lamp. The reflection encourages organizing productive activity in harmony with the natural rhythm of light and day."
+  },
+  {
+    "id": 310,
+    "surah": "النازعات",
+    "ayah": "{أَأَنتُمْ أَشَدُّ خَلْقًا أَمِ السَّمَاءُ بَنَاهَا * رَفَعَ سَمْكَهَا فَسَوَّاهَا} [الآية 27-28]",
+    "insightAr": "كسر الكبرياء والغرور البشري بالمقارنة الكونية؛ يسأل الله سؤالاً تقريرياً يخرس غرور الإنسان المعاصر الذي يغتر بقوته ال. تذكر هذه الآية يورث النفس حجماً حقيقياً وتواضعاً أمام الخالق.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "Breaking human pride through cosmic comparison; the verse contrasts humanity’s limited creation with the vast heavens. Remembering this comparison can restore a realistic sense of human scale and humility before the Creator."
+  },
+  {
+    "id": 311,
+    "surah": "عبس",
+    "ayah": "{عَبَسَ وَتَوَلَّى * أَن جَاءَهُ الْأَعْمَى * وَمَا يُدْرِيكَ لَعَلَّهُ يَزَّكَّى } [الآية 1-3]",
+    "insightAr": "أسلوب الغيبة في العتاب؛ معاتبة الله لنبيه لأنه كلح وجهه في وجه ابن أم مكتوم (الأعمى) انشغالاً بسادات قريش. من اللطائف البليغة أن الله استخدم أسلوب الغيبة في البداية {عَبَسَ وَتَوَلَّى } تخفيفاً لشدة العتاب على قلب النبي الشريف، ثم التفت للمخاطبة {وَمَا يُدْرِيكَ} ليضع قاعدة شرعية: ميزان الناس عند الله بالتقوى والإقبال، لا بالجاه والمال.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "The use of third-person reference in admonition; the opening the Qur’anic expression softens the directness of the initial address before the Qur’anic expression. The reflection draws a broader lesson: people are measured by receptiveness and taqwā, not status or wealth."
+  },
+  {
+    "id": 312,
+    "surah": "التكوير",
+    "ayah": "{وَاللَّيْلِ إِذَا عَسْعَسَ * وَالصُّبْحِ إِذَا تَنَفَّسَ} [الآية 17-18]",
+    "insightAr": "الاستعارة البيانية وبث الأمل؛ عبّر عن خروج الصبح وانتشار ضيائه بـ {تَنَفَّسَ}، وهو تصوير حركي بديع تشبه فيه الأرض بالحيوان الذي كان مخنوقاً بالظلام والليل، فلما أقبل الصبح انفرج ضيقه وتنفس الصعداء بالحياة والحركة. الآية تبعث في قلب المكروب يقيناً بأن ليل أزمته سيعقبه تنفس لصبح الفرج.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "A metaphor that spreads hope; dawn is described with the Qur’anic expression, as though the earth had been constricted by darkness and then breathed freely when morning arrived. The image reassures the distressed that hardship can likewise give way to relief."
+  },
+  {
+    "id": 313,
+    "surah": "الانفطار",
+    "ayah": "{يَا أَيُّهَا الْإِنسَانُ مَا غَرَّكَ بِرَبِّكَ الْكَرِيمِ * الَّذِي خَلَقَكَ فَسَوَّاكَ فَعَدَلَكَ} [الآية 6-7]",
+    "insightAr": "حياء النفس أمام كرم الخالق؛ نداء عتاب إلهي يهز أركان النفس. استخدام اسم الله {الْكَرِيمِ} دون غيره في هذا الموضع يحمل لطيفة دقيقة؛ فكأن الله يلقن العبد الحجة، فما غر الإنسان بربه وعصاه إلا أنه طمع في كرمه وحلمه السابغ، وهو عتاب يستثير الحياء الداخلي في القلب ليتوب تذللاً.",
+    "source": "مدارج السالكين - ابن القيم.",
+    "insightEn": "The soul’s modesty before the Creator’s generosity; addressing the human being as the Qur’anic expression reminds him that Allah’s generosity and forbearance should not become an excuse for disobedience. The admonition is intended to awaken inward shame and repentance."
+  },
+  {
+    "id": 314,
+    "surah": "المطففين",
+    "ayah": "{كَلَّا بَلْ رَانَ عَلَى قُلُوبِهِم مَّا كَانُوا يَكْسِبُونَ} [الآية 14]",
+    "insightAr": "الأثر التراكمي للذنوب؛ \"الران\" هو الغطاء الكثيف والحجاب الصدئ الذي يغلف القلب. تشرح الآية تدرج القسوة ال؛ فالذنب الصغير ينكت نكتة سوداء، فإذا تكرر دون استغفار غطى السواد القلب كاملاً، فيفقد الإنسان بوصلة التمييز بين الحق والباطل ويصبح بليد الإحساس الإيماني.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "The cumulative effect of sins; the Qur’anic expression is a covering that obscures the heart. A small sin can leave a mark, and repeated sins without repentance can accumulate until the heart becomes less responsive to truth and spiritual awareness."
+  },
+  {
+    "id": 315,
+    "surah": "البقرة",
+    "ayah": "{الَّذِينَ يَظُنُّونَ أَنَّهُم مُّلَاقُو رَبِّهِمْ وَأَنَّهُمْ إِلَيْهِ رَاجِعُونَ} [الآية 46]",
+    "insightAr": "{يَظُنُّونَ}؛ معناها: يوقنون يقيناً جازماً واعتقاداً راسخاً لا شك فيه (وليس الشك والتردد).",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: in this context, it means to hold a firm conviction or certainty, not merely doubt or hesitation."
+  },
+  {
+    "id": 316,
+    "surah": "البقرة",
+    "ayah": "{وَإِذْ نَجَّيْنَاكُم مِّنْ آلِ فِرْعَوْنَ يَسُومُونَكُمْ سُوءَ الْعَذَابِ} [الآية 49]",
+    "insightAr": "{يَسُومُونَكُمْ}؛ معناها: يذيقونكم، ويولونكم، ويجددون تعمد إذلالكم وإهانتكم حساً باستمرار.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: they make you taste, subject you to, and repeatedly impose humiliation and degradation upon you."
+  },
+  {
+    "id": 317,
+    "surah": "البقرة",
+    "ayah": "{وَإِذْ قَالَ مُوسَى لِقَوْمِهِ يَا قَوْمِ إِنَّكُمْ ظَلَمْتُمْ أَنفُسَكُم بِاتِّخَاذِكُمُ الْعِجْلَ فَتُوبُوا إِلَى بَارِئِكُمْ} [الآية 54]",
+    "insightAr": "{بَارِئِكُمْ}؛ معناها: الخالق الذي أوجدكم من العدم، وبَرَأَ خِلقتكم نقية ومتميزة من العيوب والتشويه.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: your Creator, who brought you into existence and fashioned your creation distinctly and free from defect."
+  },
+  {
+    "id": 318,
+    "surah": "البقرة",
+    "ayah": "{وَظَلَّلْنَا عَلَيْكُمُ الْغَمَامَ وَأَنزَلْنَا عَلَيْكُمُ الْمَنَّ وَالسَّلْوَى } [الآية 57]",
+    "insightAr": "{الْغَمَامَ}؛ معناها: سحاب أبيض رقيق بارد ينزل منه بَرَد خفيف، يستر ويغمّ حرارة الشمس الحارقة في صحراء التيه.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: light, cool cloud cover that provides shade and relief from the intense heat of the sun in the desert."
+  },
+  {
+    "id": 319,
+    "surah": "البقرة",
+    "ayah": "{فَبَدَّلَ الَّذِينَ ظَلَمُوا قَوْلًا غَيْرَ الَّذِي قِيلَ لَهُمْ فَأَنزَلْنَا عَلَى الَّذِينَ ظَلَمُوا رِجْزًا مِّنَ السَّمَاءِ} [الآية 59]",
+    "insightAr": "{رِجْزًا}؛ معناها: العذاب الطاحن الشديد، والمتمثل هنا في مرض الطاعون المهلِك الذي حصد أرواح المخالفين.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: severe, overwhelming punishment; in the reflection’s context, the destructive plague that afflicted the offenders."
+  },
+  {
+    "id": 320,
+    "surah": "البقرة",
+    "ayah": "{قَالُوا أَتَتَّخِذُنَا هُزُوًا قَالَ أَعُوذُ بِاللَّهِ أَنْ أَكُونَ مِنَ الْجَاهِلِينَ} [الآية 67]",
+    "insightAr": "{الْجَاهِلِينَ}؛ معناها: السفهاء الطائشين الذين يستهزئون بالناس في مواطن الجد والفتوى الشرعية.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: foolish and rash people who mock others in serious situations and matters of religious guidance."
+  },
+  {
+    "id": 321,
+    "surah": "البقرة",
+    "ayah": "{قَالُوا ادْعُ لَنَا رَبَّكَ يُبَيِّن لَّا مَا هِيَ قَالَ إِنَّهُ يَقُولُ إِنَّهَا بَقَرَةٌ لَّا فَارِضٌ وَلَا بِكْرٌ} [الآية 68]",
+    "insightAr": "{فَارِضٌ}؛ معناها: البقرة العجوز المسنة الطاعنة في السن الكبيرة (والبِكْر هي الصغيرة الفتية التي لم تلد).",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: an old, aged cow; by contrast, the Qur’anic expression refers to a young cow that has not given birth."
+  },
+  {
+    "id": 322,
+    "surah": "البقرة",
+    "ayah": "{قَالُوا ادْعُ لَنَا رَبَّكَ يُبَيِّن لَّنَا مَا لَوْنُهَا قَالَ إِنَّهُ يَقُولُ إِنَّهَا بَقَرَةٌ صَفْرَاءُ فَاقِعٌ لَّوْنُهَا} [الآية 69]",
+    "insightAr": "{فَاقِعٌ}؛ معناها: ناصع شديد الصفرة الخالص والنقي من العيوب، والمشرق لدرجة اللمعان البهي.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: intensely bright and pure yellow, vivid and shining without defect."
+  },
+  {
+    "id": 323,
+    "surah": "البقرة",
+    "ayah": "{ثُمَّ قَسَتْ قُلُوبُكُم مِّن بَعْدِ ذَلِكَ فَهِيَ كَالْحِجَارَةِ أَوْ أَشَدُّ قَسْوَةً} [الآية 74]",
+    "insightAr": "{أَوْ}؛ معناها في هذا الموضع: \"بل\" الإضرابية لبيان علو الوصف وعظم الشدة؛ أي: بل هي أشد قسوة وصمتاً من الحجارة.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: here, the reflection understands it as a corrective ‘rather,’ indicating a stronger degree of the description—harder and more unresponsive than stones."
+  },
+  {
+    "id": 324,
+    "surah": "البقرة",
+    "ayah": "{وَمِنْهُمْ أُمِّيُّونَ لَا يَعْلَمُونَ الْكِتَابَ إِلَّا أَمَانِيَّ وَإِنْ هُمْ إِلَّا يَظُنُّونَ} [الآية 78]",
+    "insightAr": "{أَمَانِيَّ}؛ معناها: أكاذيب وتلاوات وترديد مجرد وتلقين لا فقه فيه ولا تدبر لمعاني الحروف والأحكام.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: empty recitations, wishes, or repeated words without genuine understanding or reflection upon their meanings and rulings."
+  },
+  {
+    "id": 325,
+    "surah": "البقرة",
+    "ayah": "{بَلَى مَن كَسَبَ سَيِّئَةً وَأَحَاطَتْ بِهِ خَطِيئَتُهُ فَأُولَ ئِكَ أَصْحَابُ النَّارِ} [الآية 81]",
+    "insightAr": "{وَأَحَاطَتْ بِهِ خَطِيئَتُهُ}؛ معناها: استولت عليه ذنوبه من جميع جوانبه، وسدت عليه منافذ النجاة حتى مات على كفره وشركه.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: his sins surrounded and overtook him from every side, leaving him no avenue of escape until he died in disbelief and shirk."
+  },
+  {
+    "id": 326,
+    "surah": "البقرة",
+    "ayah": "{وَلَقَدْ آتَيْنَا مُوسَى الْكِتَابَ وَقَفَّيْنَا مِن بَعْدِهِ بِالرُّسُلِ} [الآية 87]",
+    "insightAr": "{وَقَفَّيْنَا}؛ معناها: أتبعنا وأرسلنا رسلاً متتابعين واحداً تلو الآخر على أثره وطريقته الشاملة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: We followed one messenger with another, sending messengers successively along the same path of revelation."
+  },
+  {
+    "id": 327,
+    "surah": "البقرة",
+    "ayah": "{وَأُشْرِبُوا فِي قُلُوبِهِمُ الْعِجْلَ بِكُفْرِهِمْ} [الآية 93]",
+    "insightAr": "{وَأُشْرِبُوا}؛ معناها: تداخل وتمكن حب عبادة العجل وثبت في أعماق قلوبهم وتغلغل فيها كامتزاج الصبغ بالثوب.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: the love of worshipping the calf entered and settled deeply in their hearts, like dye penetrating cloth."
+  },
+  {
+    "id": 328,
+    "surah": "البقرة",
+    "ayah": "{يَوَدُّ أَحَدُهُمْ لَوْ يُعَمَّرُ أَلْفَ سَنَةٍ وَمَا هُوَ بِمُزَحْزِحِهِ مِنَ الْعَذَابِ أَن يُعَمَّرَ} [الآية 96]",
+    "insightAr": "{بِمُزَحْزِحِهِ}؛ معناها: بمبعده أو منقذه أو منجيه من العذاب والوقوع في النار.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: something that would distance, rescue, or save a person from punishment and the Fire."
+  },
+  {
+    "id": 329,
+    "surah": "البقرة",
+    "ayah": "{مَا نَنسَخْ مِنْ آيَةٍ أَوْ نُنسِهَا نَأْتِ بِخَيْرٍ مِّنْهَا أَوْ مِثْلِهَا} [الآية 106]",
+    "insightAr": "{نَنسَخْ}؛ معناها: نرفع، أو نبطل، أو نُزيل حكم آية شرعية سابقة ونستبدلها بغيرها لحكمة وتدبير.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: to remove, repeal, or replace the ruling of an earlier revealed verse with another according to divine wisdom."
+  },
+  {
+    "id": 330,
+    "surah": "البقرة",
+    "ayah": "{بَدِيعُ السَّمَاوَاتِ وَالْأَرْضِ وَإِذَا قَضَى أَمْرًا فَإِنَّمَا يَقُولُ لَهُ كُن فَيَكُونُ} [الآية 117]",
+    "insightAr": "{بَدِيعُ}؛ معناها: الخالق والموجد لها على غير مثال سابق وبأعلى درجات الإتقان والصنع الفطري الفاخر.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: the One who creates and brings something into existence without a previous model, with perfect craftsmanship."
+  },
+  {
+    "id": 331,
+    "surah": "البقرة",
+    "ayah": "{وَإِذِ ابْتَلَى إِبْرَاهِيمَ رَبُّهُ بِكَلِمَاتٍ فَأَتَمَّهُنَّ} [الآية 124]",
+    "insightAr": "{بِكَلِمَاتٍ}؛ معناها: باختبارات وتكاليف وأوامر ونواهٍ شرعية ثقيلة أداها وقام بها بتمام الامتثال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: through commands, prohibitions, tests, and obligations that he fulfilled with complete obedience."
+  },
+  {
+    "id": 332,
+    "surah": "البقرة",
+    "ayah": "{وَإِذْ جَعَلْنَا الْبَيْتَ مَثَابَةً لِّلنَّاسِ وَأَمْنًا} [الآية 125]",
+    "insightAr": "{مَثَابَةً}؛ معناها: مرجعاً وملجأً يقصده الناس ويثوبون ويرجعون إليه كلما رحلوا عنه، فلا تنتهي رغبة نفوسهم منه.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: a place of return and refuge to which people repeatedly come back after departing from it."
+  },
+  {
+    "id": 333,
+    "surah": "البقرة",
+    "ayah": "{صِبْغَةَ اللَّهِ وَمَنْ أَحْسَنُ مِنَ اللَّهِ صِبْغَةً} [الآية 138]",
+    "insightAr": "{صِبْغَةَ}؛ معناها: الفطرة والدين والملة التي فطر الله الناس عليها وتغلغلت في كيان العبد وصبغت أخلاقه وسلوكه الباطن والظاهر.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: the divinely given disposition, religion, and way that permeates a person’s character and shapes outward and inward conduct."
+  },
+  {
+    "id": 334,
+    "surah": "البقرة",
+    "ayah": "{سَيَقُولُ السُّفَهَاءُ مِنَ النَّاسِ مَا وَلَّاهُمْ عَن قِبْلَتِهِمُ الَّتِي كَانُوا عَلَيْهَا} [الآية 142]",
+    "insightAr": "{مَا وَلَّاهُمْ}؛ معناها: ما صرفهم أو ما حوّل وجوههم ووجهتهم عن بيت المقدس إلى الكعبة.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: what turned or redirected them away from the direction of Bayt al-Maqdis toward the Kaʿbah."
+  },
+  {
+    "id": 335,
+    "surah": "البقرة",
+    "ayah": "{إِنَّ اللَّهَ لَا يَسْتَحْيِي أَن يَضْرِبَ مَثَلًا مَّا بَعُوضَةً فَمَا فَوْقَهَا} [الآية 26]",
+    "insightAr": "{فَمَا فَوْقَهَا}؛ معناها: فما دونها وأصغر منها في الحجم والضآلة والوزن (وليس أكبر منها حجماً حساً).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: what is smaller than it or beneath it in size, not something physically larger."
+  },
+  {
+    "id": 336,
+    "surah": "البقرة",
+    "ayah": "{إِنَّ الَّذِينَ كَفَرُوا سَوَاءٌ عَلَيْهِمْ أَأَنذَرْتَهُمْ أَمْ لَمْ تُنذِرْهُمْ لَا يُؤْمِنُونَ} [الآية 6]",
+    "insightAr": "{أَأَنذَرْتَهُمْ}؛ معناها: أخوفتهم وحذرتهم إعلاماً مقروناً بالوعيد من عقوبة الله ومصير المخالفة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: whether you warn and frighten them by informing them of Allah’s punishment and the consequences of rejection."
+  },
+  {
+    "id": 337,
+    "surah": "البقرة",
+    "ayah": "{يَكَادُ الْبَرْقُ يَخْطَفُ أَبْصَارَهُمْ كُلَّمَا أَضَاءَ لَهُم مَّشَوْا فِيهِ وَإِذَا أَظْلَمَ عَلَيْهِمْ قَامُوا} [الآية 20]",
+    "insightAr": "{قَامُوا}؛ معناها: ثبتوا في أماكنهم متقيدين عاجزين عن الحركة والتقدم خطوة (وليس النهوض والقيام من الجلوس).",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: they remained fixed and unable to advance, rather than simply standing up from a seated position."
+  },
+  {
+    "id": 338,
+    "surah": "البقرة",
+    "ayah": "{كُلَّمَا رُزِقُوا مِنْهَا مِن ثَمَرَةٍ رِّزْقًا قَالُوا هَذَا الَّذِي رُزِقْنَا مِن قَبْلُ وَأُتُوا بِهِ مُتَشَابِهًا} [الآية 25]",
+    "insightAr": "{مُتَشَابِهًا}؛ معناها: متماثلاً في اللون والشكل والمنظر البهي، لكنه يختلف تماماً في مذاقه وطعمه الداخلي اللذيذ.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: similar in color, form, and pleasing appearance, while differing in taste."
+  },
+  {
+    "id": 339,
+    "surah": "البقرة",
+    "ayah": "{الَّذِينَ يَنقُضُونَ عَهْدَ اللَّهِ مِن بَعْدِ مِيثَاقِهِ} [الآية 27]",
+    "insightAr": "{مِثَاقِهِ}؛ معناها: إحكامه وتغليظه وتأكيده بالأيمان والعهود الثقيلة الغليظة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: its firm covenant, strengthened and confirmed by solemn oaths and binding commitments."
+  },
+  {
+    "id": 340,
+    "surah": "البقرة",
+    "ayah": "{قَالُوا أَتَجْعَلُ فِيهَا مَن يُفْسِدُ فِيهَا وَيَسْفِكُ الدِّمَاءَ وَنَحْنُ نُسَبِّحُ بِحَمْدِكَ وَنُقَدِّسُ لَكَ} [الآية 30]",
+    "insightAr": "{وَنُقَدِّسُ لَكَ}؛ معناها: نطهر أنفسنا تعظيماً وإجلالاً لك، ونصفك وننزهك بالطهارة المطلقة من النقائص.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: we purify and sanctify ourselves in reverence for You and declare You free of every imperfection."
+  },
+  {
+    "id": 341,
+    "surah": "البقرة",
+    "ayah": "{وَلَا تَلْبِسُوا الْحَقَّ بِالْبَاطِلِ وَتَكْتُمُوا الْحَقَّ وَأَنتُمْ تَعْلَمُونَ} [الآية 42]",
+    "insightAr": "{وَلَا تَلْبِسُوا}؛ معناها: لا تخلطوا، ولا تستروا، ولا تموهوا الحق بالباطل فيتشابه الأمر على العوام.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: do not mix, conceal, or obscure truth with falsehood so that the matter becomes confused to people."
+  },
+  {
+    "id": 342,
+    "surah": "البقرة",
+    "ayah": "{أَتأْمُرُونَ النَّاسَ بِالْبِرِّ وَتَنسَوْنَ أَنفُسَكُمْ} [الآية 44]",
+    "insightAr": "{بِالْبِرِّ}؛ معناها: التوسع في أعمال طاعة الله وجماع الخير والفضل الفردي والاجتماعي.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: abundant righteousness and the comprehensive good of obedience to Allah in individual and social life."
+  },
+  {
+    "id": 343,
+    "surah": "آل عمران",
+    "ayah": "{هُوَ الَّذِي أَنزَلَ عَلَيْكَ الْكِتَابَ مِنْهُ آيَاتٌ مُّحْكَمَاتٌ هُنَّ أُمُّ الْكِتَابِ} [الآية 7]",
+    "insightAr": "{مُّحْكَمَاتٌ}؛ معناها: واضحات الدلالة والبيان، محفوظات من الاحتمال واللبس والتشابه، وهن أصل الأحكام.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: clear and decisive verses whose meaning is established and not obscured by ambiguity; they form a basis for rulings."
+  },
+  {
+    "id": 344,
+    "surah": "آل عمران",
+    "ayah": "{فَأَمَّا الَّذِينَ فِي قُلُوبِهِمْ زَيْغٌ فَيَتَّبِعُونَ مَا تَشَابَهَ مِنْهُ} [الآية 7]",
+    "insightAr": "{زَيْغٌ}؛ معناها: ميل وانحراف خفي وضلال عن الاستقامة والحق نحو الشبهات والأهواء الفاسدة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: hidden deviation and a turning away from uprightness and truth toward doubts and corrupt desires."
+  },
+  {
+    "id": 345,
+    "surah": "آل عمران",
+    "ayah": "{كَدَأْبِ آلِ فِرْعَوْنَ وَالَّذِينَ مِن قَبْلِهِمْ} [الآية 11]",
+    "insightAr": "{كَدَأْبِ}؛ معناها: كعادتهم المستمرة وشأنهم وطريقتهم ومذهبهم الدائم في التكذيب والعناد.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: like their established custom, pattern, manner, and continuing way of denial and stubbornness."
+  },
+  {
+    "id": 346,
+    "surah": "آل عمران",
+    "ayah": "{زُيِّنَ لِلنَّاسِ حُبُّ الشَّهَوَاتِ مِنَ النِّسَاءِ وَالْبَنِينَ وَالْقَنَاطِيرِ الْمُقَنطَرَةِ} [الآية 14]",
+    "insightAr": "{الْمُقَنطَرَةِ}؛ معناها: الأموال الضخمة والمجمعة الكثيرة جداً المرصوفة والمحصنة بعضها فوق بعض بإحكام.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: enormous quantities of accumulated wealth, gathered and arranged in great abundance."
+  },
+  {
+    "id": 347,
+    "surah": "آل عمران",
+    "ayah": "{وَمَا اخْتَلَفَ الَّذِينَ أُوتُوا الْكِتَابَ إِلَّا مِن بَعْدِ مَا جَاءهُمُ الْعِلْمُ بَغْيًا بَيْنَهُمْ} [الآية 19]",
+    "insightAr": "{بَغْيًا}؛ معناها: حسداً، وتعدياً، وظلماً، وطلباً للمكاسب والريادة المادية رغماً عن وضوح الحجة الفكرية.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: envy, transgression, and wrongdoing driven by a desire for material advantage or superiority despite the clarity of the evidence."
+  },
+  {
+    "id": 348,
+    "surah": "آل عمران",
+    "ayah": "{تُولِجُ اللَّيْلَ فِي النَّهَارِ وَتُولِجُ النَّهَارَ فِي اللَّيْلِ} [الآية 27]",
+    "insightAr": "{تُولِجُ}؛ معناها: تُدخل وتزيد من ساعات هذا الجرم والظرف في ذاك تدريجياً بحسب الفصول الكونية الجارية.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: You cause one period or condition to enter another gradually, as the seasons and cycles change."
+  },
+  {
+    "id": 349,
+    "surah": "آل عمران",
+    "ayah": "{إِذْ قَالَتِ امْرَأَتُ عِمْرَانَ رَبِّ إِنِّي نَذَرْتُ لَكَ مَا فِي بَطْنِي مُحَرَّرًا} [الآية 35]",
+    "insightAr": "{مُحَرَّرًا}؛ معناها: عتيقاً خالصاً، مفرغاً لخدمة بيت المقدس ودين الله والمسجد، لا شائبة لطلب الدنيا أو مكاسبها فيه.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: dedicated and freed for the service of Bayt al-Maqdis and Allah’s religion, without worldly motives."
+  },
+  {
+    "id": 350,
+    "surah": "آل عمران",
+    "ayah": "{أَنَّ اللَّهَ يُبَشِّرُكَ بِيَحْيَى مُصَدِّقًا بِكَلِمَةٍ مِّنَ اللَّهِ وَسَيِّدًا وَحَصُورًا} [الآية 39]",
+    "insightAr": "{وَحَصُورًا}؛ معناها: الذي يحصر ويمنع ويكبح نفسه عن الشهوات وعن النساء عفةً وزهداً وانقطاعاً تاماً للعبادة (وليس العاجز جنسياً وعضوياً حساً).",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: one who restrains himself from sexual desire and women out of chastity, asceticism, and devotion; the reflection does not understand it as physical incapacity."
+  },
+  {
+    "id": 351,
+    "surah": "آل عمران",
+    "ayah": "{وَمَكَرُوا وَمَكَرَ اللَّهُ وَاللَّهُ خَيْرُ الْمَاكِرِينَ} [الآية 54]",
+    "insightAr": "{وَمَكَرُوا}؛ معناها: خططوا ودبروا في سر وخفاء مطلق لإلحاق الأذى والقتل بعيسى عليه السلام، فأبطل الله مكرهم بتدبير خفي محكم حمى به نبيه.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: they plotted and secretly planned to harm and kill Jesus, while Allah nullified their scheme through His own wise plan."
+  },
+  {
+    "id": 352,
+    "surah": "آل عمران",
+    "ayah": "{مَا كَانَ إِبْرَاهِيمُ يَهُودِيًّا وَلَا نَصْرَانِيًّا وَلَ كِن كَانَ حَنِيفًا مُّسْلِمًا} [الآية 67]",
+    "insightAr": "{حَنِيفًا}؛ معناها: مائلاً عن الشرك والأديان الباطلة كلها، ومستقيماً متجهاً بكليته نحو التوحيد الخالص الخاشع لله وحده.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: turning away from shirk and false religions and directing oneself wholly toward sincere monotheism and devotion to Allah."
+  },
+  {
+    "id": 353,
+    "surah": "آل عمران",
+    "ayah": "{إِنَّ مَثَلَ عِيسَى عِندَ اللَّهِ كَمَثَلِ آدَمَ خَلَقَهُ مِن تُرَابٍ ثُمَّ قَالَ لَهُ كُن فَيَكُونُ} [الآية 59]",
+    "insightAr": "{كَمَثَلِ آدَمَ}؛ معناها: شبهه ونظيره في الإيجاد والخلق.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: his likeness in creation; if Jesus was created without a father, Adam was created without either father or mother, making the divine power behind both creations clear."
+  },
+  {
+    "id": 354,
+    "surah": "النساء",
+    "ayah": "{وَآتُوا الْيَتَامَى أَمْوَالَهُمْ وَلَا تَتَبَدَّلُوا الْخَبِيثَ بِالطَّيِّبِ} [الآية 2]",
+    "insightAr": "{تَتَبَدَّلُوا}؛ معناها: لا تأخذوا الرديء من أموالكم وتضعوه مكان الجيد الصالح من أموال اليتامى شحاً وجوراً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: do not replace good property belonging to orphans with inferior property out of greed or injustice."
+  },
+  {
+    "id": 355,
+    "surah": "النساء",
+    "ayah": "{وَإِنْ خِفْتُمْ أَلَّا تُقْسِطُوا فِي الْيَتَامَى فَانكِحُوا مَا طَابَ لَكُم مِّنَ النِّسَاءِ} [الآية 3]",
+    "insightAr": "{تُقْسِطُوا}؛ معناها: تعدلوا وتنصفوا (يُقال أقسط إذا عدل بإنصاف، وقسط إذا جار وظلم).",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: act justly and fairly; the reflection contrasts it with the Qur’anic expression, which denotes injustice."
+  },
+  {
+    "id": 356,
+    "surah": "النساء",
+    "ayah": "{ذَلِكَ أَدْنَى أَلَّا تَعُولُوا} [الآية 3]",
+    "insightAr": "{تَعُولُوا}؛ معناها: تجوروا وتظلموا وتميلوا عن الحق، وقيل: تكثر عيالكم فتعجزوا عن النفقة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: act unjustly and deviate from fairness; it has also been interpreted as becoming burdened with dependents and unable to support them."
+  },
+  {
+    "id": 357,
+    "surah": "النساء",
+    "ayah": "{وَآتُوا النِّسَاءَ صَدُقَاتِهِنَّ نِحْلَةً} [الآية 4]",
+    "insightAr": "{نِحْلَةً}؛ معناها: فريضة واجبة مفروضة عن طيب نفس وعطاء هنيء شرعه الله إكراماً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: an obligatory gift or due given willingly and graciously, as prescribed by Allah."
+  },
+  {
+    "id": 358,
+    "surah": "النساء",
+    "ayah": "{فَإِنْ آنَسْتُم مِّنْهُمْ رُشْدًا فَادْفَعُوا إِلَيْهِمْ أَمْوَالَهُمْ} [الآية 6]",
+    "insightAr": "{آنَسْتُم}؛ معناها: علمتم وتيقنتم وأبصرتم منهم صلاحاً في حفظ المال وحسن التدبير الباطن.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: you have recognized and become certain that they possess sound judgment and the ability to manage property responsibly."
+  },
+  {
+    "id": 359,
+    "surah": "النساء",
+    "ayah": "{وَلَا تَأْكُلُوهَا إِسْرَافًا وَبِدَارًا أَن يَكْبَرُوا} [الآية 6]",
+    "insightAr": "{وَبِدَارًا}؛ معناها: مبادرة ومسارعة وعجلة لمصادرة أموالهم واستهلاكها قبل أن يبلغوا سن الرشد فيأخذوها.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: hastily and prematurely consuming or taking their property before they reach maturity."
+  },
+  {
+    "id": 360,
+    "surah": "النساء",
+    "ayah": "{الَّذِينَ يَأْكُلُونَ أَمْوَالَ الْيَتَامَى ظُلْمًا إِنَّمَا يَأْكُلُونَ فِي بُطُونِهِمْ نَارًا وَسَيَصْلَوْنَ سَعِيرًا}[الآية 10]",
+    "insightAr": "{وَسَيَصْلَوْنَ}؛ معناها: يدخلون النار ويقاسون حرها الملتهب ويحترقون بها حساً ومعنى.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: they will enter the Fire and experience its burning heat in punishment."
+  },
+  {
+    "id": 361,
+    "surah": "النساء",
+    "ayah": "{فَإِن كَانَ لَهُ إِخْوَةٌ فَلِأُمِّهِ السُّدُسُ مِن بَعْدِ وَصِيَّةٍ يُوصِي بِهَا أَوْ دَيْنٍ} [الآية 11]",
+    "insightAr": "{فَلِأُمِّهِ السُّدُسُ}؛ معناها: حُكم \"السدس\" هنا مشروط بوجود اثنين من الإخوة فصاعداً (حجب حرمان جزئي للأم من الثلث إلى السدس).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: the mother receives one-sixth when the specified condition of multiple siblings is present, reducing her share from one-third."
+  },
+  {
+    "id": 362,
+    "surah": "النساء",
+    "ayah": "{وَإِن كَانَ رَجُلٌ يُورَثُ كَلَالَةً أَوِ امْرَأَةٌ وَلَهُ أَخٌ أَوْ أُخْتٌ فَلِكُلِّ وَاحِدٍ مِّنْهُمَا السُّدُسُ} [الآية 12]",
+    "insightAr": "{كَلَالَةً}؛ معناها: الميت الذي يموت وليس له ولد (فرع وارث) ولا والد (أصل وارث)، فيرثه أقرباؤه الآخرون كالإخوة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: a deceased person who leaves neither a child or other inheriting descendant nor a parent, so inheritance passes to other relatives such as siblings."
+  },
+  {
+    "id": 363,
+    "surah": "المائدة",
+    "ayah": "{أُحِلَّتْ لَكُم بَهِيمَةُ الْأَنْعَامِ إِلَّا مَا يُتْلَى عَلَيْكُمْ غَيْرَ مُحِلِّي الصَّيْدِ وَأَنتُمْ حُرُمٌ} [الآية 1]",
+    "insightAr": "{حُرُمٌ}؛ معناها: متلبسون بالإحرام للحج أو العمرة، أو موجودون داخل حدود الحرم المعظم.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: in a state of consecration for Hajj or ʿUmrah, or within the sacred precincts."
+  },
+  {
+    "id": 364,
+    "surah": "المائدة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا لَا تُحِلُّوا شَعَائِرَ اللَّهِ وَلَا الشَّهْرَ الْحَرَامَ وَلَا الْهَدْيَ وَلَا الْقَلَائِدَ} [الآية 2]",
+    "insightAr": "{الْقَلَائِدَ}؛ معناها: الأنعام والبهائم التي كانت تُوضع في أعناقها قلادة من شجر الحرم ليعلم الناس أنها هدي فلا يتعرض لها أحد بأذى.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: sacrificial animals marked with collars made from material associated with the Sacred Precinct, so people would recognize them as offerings and not harm them."
+  },
+  {
+    "id": 365,
+    "surah": "المائدة",
+    "ayah": "{حُرِّمَتْ عَلَيْكُمُ الْمَيْتَةُ وَالدَّمُ وَلَحْمُ الْخِنزِيرِ وَمَا أُهِلَّ لِغَيْرِ اللَّهِ بِهِ وَالْمُنْخَنِقَةُ وَالْمَوْقُوذَةُ} [الآية 3]",
+    "insightAr": "{وَالْمَوْقُوذَةُ}؛ معناها: الدابة التي ضُربت بالخشب أو الحجارة أو العصا حتى ماتت من شدة الضرب دون تذكية شرعية.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: an animal beaten with sticks, stones, or similar objects until it dies without lawful slaughter."
+  },
+  {
+    "id": 366,
+    "surah": "المائدة",
+    "ayah": "{وَالْمُتَرَدِّيَةُ وَالنَّطِيحَةُ وَمَا أَكَلَ السَّبُعُ إِلَّا مَا ذَكَّيْتُمْ} [الآية 3]",
+    "insightAr": "{وَالْمُتَرَدِّيَةُ}؛ معناها: الدابة التي سقطت وتردت من مكان مرتفع كجبل أو بئر فماتت بسبب السقوط.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: an animal that falls from a high place, such as a mountain or well, and dies from the fall."
+  },
+  {
+    "id": 367,
+    "surah": "المائدة",
+    "ayah": "{وَمَا ذُبِحَ عَلَى النُّصُبِ وَأَن تَسْتَقْسِمُوا بِالْأَزْلَامِ} [الآية 3]",
+    "insightAr": "{بِالْأَزْلَامِ}؛ معناها: قداح وسهام خشبية كانت تستخدم في الجاهلية لاستطلاع الغيب والقدر قبل السفر أو التجارة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: divining arrows used in pre-Islamic Arabia to seek decisions concerning the unseen, travel, or commerce."
+  },
+  {
+    "id": 368,
+    "surah": "المائدة",
+    "ayah": "{فَمَنِ اضْطُرَّ فِي مَخْمَصَةٍ غَيْرَ مُتَجَانِفٍ لِّإِثْمٍ فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ} [الآية 3]",
+    "insightAr": "{مَخْمَصَةٍ}؛ معناها: مجاعة شديدة قاسية تلوى بها البطون وتعرّض حياة الإنسان للهلاك حساً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: severe famine and hunger that causes intense abdominal distress and can threaten life."
+  },
+  {
+    "id": 369,
+    "surah": "المائدة",
+    "ayah": "{وَمَا عَلَّمْتُم مِّنَ الْجَوَارِحِ مُكَلِّبِينَ تُعَلِّمُونَهُنَّ مِمَّا عَلَّمَكُمُ اللَّهُ} [الآية 4]",
+    "insightAr": "{مُكَلِّبِينَ}؛ معناها: مدربين ومعلمين للحيوانات والطيور الجارحة (كالكلاب والفهود) على قنص الصيد واصطياده.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: trainers who teach hunting animals or birds of prey, such as dogs, to catch game."
+  },
+  {
+    "id": 370,
+    "surah": "الأنعام",
+    "ayah": "{الْحَمْدُ لِلَّهِ الَّذِي خَلَقَ السَّمَاوَاتِ وَالْأَرْضَ وَجَعَلَ الظُّلُمَاتِ وَالنُّورَ ثُمَّ الَّذِينَ كَفَرُوا بِرَبِّهِمْ يَعْدِلُونَ} [الآية 1]",
+    "insightAr": "{يَعْدِلُونَ}؛ معناها: يسوّون ويشركون بالله غيره من الأوثان والمخلوقات (وليس من العدل والإنصاف).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: to make equals or partners for Allah among idols or created beings; here it does not mean justice."
+  },
+  {
+    "id": 371,
+    "surah": "الأنعام",
+    "ayah": "{وَلَوْ جَعَلْنَاهُ مَلَكًا لَّجَعَلْنَاهُ رَجُلًا وَلَلَبَسْنَا عَلَيْهِم مَّا يَلْبِسُونَ} [الآية 9]",
+    "insightAr": "{وَلَلَبَسْنَا}؛ معناها: لخلطنا ولشبهنا عليهم ما يخلطون على أنفسهم فلا يميزون الحق من الباطل.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: We would have confused them, as they confuse themselves, making truth and falsehood difficult for them to distinguish."
+  },
+  {
+    "id": 372,
+    "surah": "الأنعام",
+    "ayah": "{أَلَمْ يَرَوْا كَمْ أَهْلَكْنَا مِن قَبْلِهِم مِّن قَرْنٍ مَّكَّنَّاهُمْ فِي الْأَرْضِ} [الآية 6]",
+    "insightAr": "{مِّن قَرْنٍ}؛ معناها: من أمة وجيل من الناس عاشوا في حقبة زمنية متلازمة.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: a community or generation of people belonging to a particular period of time."
+  },
+  {
+    "id": 373,
+    "surah": "الأنعام",
+    "ayah": "{وَأَرْسَلْنَا السَّمَاءَ عَلَيْهِم مِّدْرَارًا وَجَعَلْنَا الْأَنْهَارَ تَجْرِي مِن تَحْتِهِمْ} [الآية 6]",
+    "insightAr": "{مِّدْرَارًا}؛ معناها: متتابعة الأمطار والخير بغزارة وقوة حركية متتالية عذبة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: abundant, successive rainfall and repeated provision of goodness."
+  },
+  {
+    "id": 374,
+    "surah": "الأعراف",
+    "ayah": "{فَلَمَّا تَغَشَّاهَا حَمَلَتْ حَمْلًا خَفِيفًا فَمَرَّتْ بِهِ} [الآية 189]",
+    "insightAr": "{تَغَشَّاهَا}؛ معناها: جامعها وباشرها زوجها حساً في علاقة النكاح.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: he approached her in marital relations."
+  },
+  {
+    "id": 375,
+    "surah": "الأعراف",
+    "ayah": "{وَالَّذِينَ كَذَّبُوا بِآيَاتِنَا وَلِقَاءِ الْآخِرَةِ حَبِطَتْ أَعْمَالُهُمْ} [الآية 147]",
+    "insightAr": "{حَبِطَتْ}؛ معناها: بطلت وفسدت وتلاشت كلياً فصارت صفراً بلا ثواب ولا وزن.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: became null, spoiled, and lost so that nothing of reward remained."
+  },
+  {
+    "id": 376,
+    "surah": "الأعراف",
+    "ayah": "{فَلَمَّا عَتَوْا عَن مَّا نُهُوا عَنْهُ قُلْنَا لَهُمْ كُونُوا قِرَدَةً خَاسِئِينَ} [الآية 166]",
+    "insightAr": "{عَتَوْا}؛ معناها: استكبروا، وتمردوا، وتجاوزوا الحدود الشرعية والعهود بعناد وإصرار.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: they became arrogant, rebellious, and persistently exceeded the limits of Allah’s commands."
+  },
+  {
+    "id": 377,
+    "surah": "الأعراف",
+    "ayah": "{فَمَثَلُهُ كَمَثَلِ الْكَلْبِ إِن تَحْمِلْ عَلَيْهِ يَلْهَثْ أَوْ تَتْرُكْهُ يَلْهَث} [الآية 176]",
+    "insightAr": "{إِن تَحْمِل * عَلَيْهِ}؛ معناها: إن تطرده، وتزجره، وتصح عليه بغضب (وليس وضع الأثقال والأحمال على ظهره).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: if you drive, rebuke, or pursue him angrily; the reflection distinguishes this from physically loading him with burdens."
+  },
+  {
+    "id": 378,
+    "surah": "الأعراف",
+    "ayah": "{وَلَقَد ذَرَأْنَا لِجَهَنَّمَ كَثِيرًا مِّنَ الْجِنِّ وَالْإِنسِ} [الآية 179]",
+    "insightAr": "{ذَرَأْنَا}؛ معناها: خلقنا، وأوجدنا، وبثثنا بمقتضى علمنا وقدرتنا وحكمتنا المحيطة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: We created, brought into existence, and spread throughout creation according to Our encompassing knowledge, power, and wisdom."
+  },
+  {
+    "id": 379,
+    "surah": "الأنفال",
+    "ayah": "{يَسْأَلُونَكَ عَنِ الْأَنفَالِ قُلِ الْأَنفَالُ لِلَّهِ وَالرَّسُولِ} [الآية 1]",
+    "insightAr": "{الْأَنفَالِ}؛ معناها: الغنائم والمكاسب المادية التي تؤخذ من الأعداء قهراً بقوة السلاح في المعركة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: spoils of war and material gains acquired from an enemy during battle."
+  },
+  {
+    "id": 380,
+    "surah": "الأنفال",
+    "ayah": "{إِذْ تَسْتَغِيثُونَ رَبَّكُمْ فَاسْتَجَابَ لَكُمْ أَنِّي مُمِدُّكُم بِأَلْفٍ مِّنَ الْمَلَائِكَةِ مُرْدِفِينَ} [الآية 9]",
+    "insightAr": "{مُرْدِفِينَ}؛ معناها: متتابعين يتبع بعضهم بعضاً صفوفاً متلاحقة بلا انقطاع.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: following one another in successive ranks without interruption."
+  },
+  {
+    "id": 381,
+    "surah": "الأنفال",
+    "ayah": "{فَاضْرِبُوا فَوْقَ الْأَعْنَاقِ وَاضْرِبُوا مِنْهُمْ كُلَّ بَنَانٍ} [الآية 12]",
+    "insightAr": "{بَنَانٍ}؛ معناها: أطراف الأصابع والمفاصل الدقيقة في اليدين والقدمين لشل حركتهم العسكرية.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: fingertips and the fine joints of the hands and feet; striking them would impair movement."
+  },
+  {
+    "id": 382,
+    "surah": "الأنفال",
+    "ayah": "{وَمَن يُوَلِّهِمْ يَوْمئِذٍ دُبُرَهُ إِلَّا مُتَحَرِّفًا لِّقِتَالٍ أَوْ مُتَحَيِّزًا إِلَى فِئَةٍ} [الآية 16]",
+    "insightAr": "{مُتَحَرِّفًا}؛ معناها: مائلاً ومنعطفاً بخديعة ومناورة تكتيكية ليعود ويضرب العدو (وليس الهرب فراراً).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: turning or maneuvering tactically in battle in order to reposition and strike the enemy, rather than simply fleeing."
+  },
+  {
+    "id": 383,
+    "surah": "الأنفال",
+    "ayah": "{وَإِذْ يَمْكُرُ بِكَ الَّذِينَ كَفَرُوا لِيُثْبِتُوكَ أَوْ يَقْتُلُوكَ أَوْ يُخْرِجُوكَ} [الآية 30]",
+    "insightAr": "{لِيُثْبِثُوكَ}؛ معناها: ليحبسوك، أو يقيدوك بالأغلال، أو يثبتوا حركتك بالاعتقال والعزل التام في خفاء.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: to imprison, restrain, or immobilize you through confinement and detention."
+  },
+  {
+    "id": 384,
+    "surah": "الأنفال",
+    "ayah": "{مَا كَانَ لِنَبِيٍّ أَن يَكُونَ لَهُ أَسْرَى حَتَّى يُثْخِنَ فِي الْأَرْضِ} [الآية 67]",
+    "insightAr": "{يُثْخِنَ}؛ معناها: يبالغ في القتال ويضعف شوكة الأعداء ويهزم قوتهم المادية تماماً ويثبت قدمه.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: to press the fighting hard, weaken the enemy’s strength, and establish superiority over them."
+  },
+  {
+    "id": 385,
+    "surah": "التوبة",
+    "ayah": "{فَسِيحُوا فِي الْأَرْضِ أَرْبَعَةَ أَشْهُرٍ وَاعْلَمُوا أَنَّكُمْ غَيْرُ مُعْجِزِي اللَّهِ} [الآية 2]",
+    "insightAr": "{فَسِيحُوا}؛ معناها: سيروا بحرية، وأمان، وتنقلوا متبوئين في الأرض كيف شئتم بغير قتال خلال المهلة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: travel freely and safely through the land during the granted period without fighting."
+  },
+  {
+    "id": 386,
+    "surah": "التوبة",
+    "ayah": "{لَا يَرْقُبُونَ فِي مُؤْمِنٍ إِلًّا وَلَا ذِمَّةً وَأُولَ ئِكَ هُمُ الْمُعْتَدُونَ} [الآية 10]",
+    "insightAr": "{إِلًّا}؛ معناها: قرابة، أو حلفاً، أو عهداً وقيل اسم الله (أي لا يراعون ذمة ولا قرابة شرعية).",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: a bond, treaty, kinship, or covenant whose protection they do not honor; the reflection also notes the interpretation connected with Allah’s covenant."
+  },
+  {
+    "id": 387,
+    "surah": "التوبة",
+    "ayah": "{وَإِن نَّكَثُوا أَيْمَانَهُم مِّن بَعْدِ عَهْدِهِمْ وَطَعَنُوا فِي دِينِكُمْ فَقَاتِلُوا أئِمَّةَ الْكُفْرِ} [الآية 12]",
+    "insightAr": "{نَّكَثُوا}؛ معناها: نقضوا، وحلوا خيوط عهودهم وأيمانهم المغلظة بعد إحكامها وربطها.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: they broke and unraveled their solemn covenants and oaths after having firmly bound them."
+  },
+  {
+    "id": 388,
+    "surah": "التوبة",
+    "ayah": "{أَمْ حَسِبْتُمْ أَن تُتْرَكُوا وَلَمَّا يَعْلَمِ اللَّهُ الَّذِينَ جَاهَدُوا مِنكُمْ وَلَمْ يَتَّخِذُوا مِن دُونِ اللَّهِ وَلَا رَسُولِهِ وَلَا الْمُؤْمِنِينَ وَلِيجَةً} [الآية 16]",
+    "insightAr": "{وَلِيجَةً}؛ معناها: بطانة، أو دخيلة، أو أولياء مخلصين مطلعين على أسرار الدولة في خفاء.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: an intimate insider, confidant, or hidden ally entrusted with private affairs and secrets."
+  },
+  {
+    "id": 389,
+    "surah": "التوبة",
+    "ayah": "{إِنَّمَا النَّسِيءُ زِيَادَةٌ فِي الْكُفْرِ يُضَلُّ بِهِ الَّذِينَ كَفَرُوا يُحِلُّونَهُ عَامًا وَيُحَرِّمُونَهُ عَامًا}[الآية 37]",
+    "insightAr": "{النَّسِيءُ}؛ معناها: تأخير حرمة شهر حرام إلى شهر آخر حِل للتلاعب من أجل القتال.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: postponing the sanctity of a sacred month to another month as a pre-Islamic manipulation of the calendar for warfare."
+  },
+  {
+    "id": 390,
+    "surah": "التوبة",
+    "ayah": "{يَا أَيُّهَا الَّذِينَ آمَنُوا مَا لَكُمْ إِذَا قِيلَ لَكُمُ انفِرُوا فِي سَبِيلِ اللَّهِ اثَّاقَلْتُمْ إِلَى الْأَرْضِ} [الآية 38]",
+    "insightAr": "{اثَّاقَلْتُمْ}؛ معناها: تباطأتم، وكسلتم، وملتم برغبة وجسد ثقيل نحو نعيم وراحة القعود الفاني.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: you became slow and reluctant, weighed down physically and psychologically by the attraction of ease and worldly comfort."
+  },
+  {
+    "id": 391,
+    "surah": "يونس",
+    "ayah": "{وَالَّذِينَ كَسَبُوا السَّيِّئَاتِ جَزَاءُ سَيِّئَةٍ بِمِثْلِهَا وَتَرْهَقُهُمْ ذِلَّةٌ} [الآية 27]",
+    "insightAr": "{وَتَرْهَقُهمْ}؛ معناها: تغشاهم، وتغلفهم، وتصيب وجوههم وأبدانهم ذلة حركية ظاهرة بانكسار.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: they are covered and overwhelmed by visible humiliation and abasement."
+  },
+  {
+    "id": 392,
+    "surah": "يونس",
+    "ayah": "{أَمَّن لَّا يَهِدِّي إِلَّا أَن يُهْدَى فَمَا لَكُمْ كَيْفَ تَحْكُمُونَ} [الآية 35]",
+    "insightAr": "{لَّا يَهِدِّي}؛ معناها: لا يهتدي بنفسه ولا يملك القدرة على التحرك للحق بذاته لعجزه (كالأصنام).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: it does not guide itself and has no independent ability to move toward truth; the reflection applies this to idols."
+  },
+  {
+    "id": 393,
+    "surah": "يونس",
+    "ayah": "{بَلْ كَذَّبُوا بِمَا لَمْ يُحِيطُوا بِعِلْمِهِ وَلَمَّا يَأْتِهِمْ تَأْوِيلُهُ} [الآية 39]",
+    "insightAr": "{تَأْوِيلُهُ}؛ معناها في هذا الموضع: عاقبته، ومآله، وتحقق وعيده واقعاً حساً أمام أعينهم.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: its final outcome, fulfillment, and realization of what had been promised or warned about."
+  },
+  {
+    "id": 394,
+    "surah": "هود",
+    "ayah": "{أَلَا حِينَ يَسْتَغْشُونَ ثِيَابَهُمْ يَعْلَمُ مَا يُسِرُّونَ وَمَا يُعْلِنُونَ} [الآية 5]",
+    "insightAr": "{يَسْتَغْشُونَ}؛ معناها: يتغطون بها، ويلفونها بإحكام على أجسادهم خفية ظناً أنهم يستترون عن علم الله.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: they cover themselves and wrap themselves up, imagining that this can conceal them from Allah’s knowledge."
+  },
+  {
+    "id": 395,
+    "surah": "هود",
+    "ayah": "{مَن كَانَ يُرِيدُ الْحَيَاةَ الدُّنْيَا وَزِينَتَهَا نُوَفِّ إِلَيْهِمْ أَعْمَالَهُمْ فِيهَا وَهُمْ فِيهَا لَا يُبْخَسُونَ} [الآية 15]",
+    "insightAr": "{لَا يُبْخَسُونَ}؛ معناها: لا يُنقصون من أجرهم الدنيوي المادي ذرّة، بل يستوفونه كاملاً حساً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: their reward is not diminished in the least; they receive it in full."
+  },
+  {
+    "id": 396,
+    "surah": "هود",
+    "ayah": "{إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَأَخْبَتُوا إِلَى رَبِّهِمْ} [الآية 23]",
+    "insightAr": "{وَأَخْبَتُوا}؛ معناها: خشعوا، وانقادوا، واطمأنت وتذللت نفوسهم في خضوع مطلق لخالقهم الباقي.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: they humbled themselves, submitted, and found inward peace in complete devotion to their Creator."
+  },
+  {
+    "id": 397,
+    "surah": "هود",
+    "ayah": "{وَيَصْنَعُ الْفُلْكَ وَكُلَّمَا مَرَّ عَلَيْهِ مَلَأٌ مِّن قَوْمِهِ سَخِرُوا مِنْهُ} [الآية 38]",
+    "insightAr": "{مَلَأٌ}؛ معناها: أشراف، وسادات، وكبراء القوم الذين يملؤون العين بمظهرهم وجاههم المادي.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: the chiefs, nobles, and leaders of a people whose status and appearance fill the eyes of observers."
+  },
+  {
+    "id": 398,
+    "surah": "هود",
+    "ayah": "{حَتَّى إِذَا جَاءَ أَمْرُنَا وَفَارَ التَّنُّورُ قُلْنَا احْمِلْ فِيهَا} [الآية 40]",
+    "insightAr": "{التَّنُّورُ}؛ معناها: فرن الخبز المنزلي المألوف.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: the familiar household bread oven; the emergence of water from it was a sign marking the beginning of the flood."
+  },
+  {
+    "id": 399,
+    "surah": "يوسف",
+    "ayah": "{وَقَالَ نِسْوَةٌ فِي الْمَدِينَةِ امْرَأَتُ الْعَزِيزِ تُرَاوِدُ فَتَاهَا عَن نَّفْسِهِ قَدْ شَغَفَهَا حُبًّا} [الآية 30]",
+    "insightAr": "{شَغَفَهَا}؛ معناها: غلف وخرق حبه شغاف قلبها (وهو الغشاء والمحفظة اللحمية الرقيقة المحيطة بالقلب).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: his love penetrated the deepest part of her heart, reaching its inner covering or sheath."
+  },
+  {
+    "id": 400,
+    "surah": "يوسف",
+    "ayah": "{فَلَمَّا سَمِعَتْ بِمَكْرِهِنَّ أَرْسَلَتْ إِلَيْهِنَّ وَأَعْتَدَتْ لَهُنَّ مُتَّكأً} [الآية 31]",
+    "insightAr": "{مُتَّكأً}؛ معناها: مجالس ونمارق ووسائد مريحة يتكئن عليها حساً للتناول والأكل.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: a comfortable sitting place with cushions or supports on which people recline while eating."
+  },
+  {
+    "id": 401,
+    "surah": "يوسف",
+    "ayah": "{ثُمَّ بَدَا لَهُم مِّن بَعْدِ مَا رَأَوُا الْآيَاتِ لَيَسْجُنُنَّهُ حَتَّى حِينٍ} [الآية 35]",
+    "insightAr": "{حَتَّى حِينٍ}؛ معناها: إلى وقت غير محدد ومفتوح تراه السلطة السياسية مناسباً لإخماد الشائعات.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: until an unspecified and open time considered appropriate for suppressing the rumors."
+  },
+  {
+    "id": 402,
+    "surah": "يوسف",
+    "ayah": "{قَالَ تَزْرَعُونَ سَبْعَ سِنِينَ دَأَبًا فَمَا حَصَدتُّمْ فَذَرُوهُ فِي سُنبُلِهِ} [الآية 47]",
+    "insightAr": "{دَأَبًا}؛ معناها: بجدٍّ، ومثابرةٍ، وعملٍ مستمر متواصل كالعادة دون تهاون أو كسل.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: diligently, persistently, and continuously, without slackness or laziness."
+  },
+  {
+    "id": 403,
+    "surah": "يوسف",
+    "ayah": "{ثُمَّ يَأْتِي مِن بَعْدِ ذَلِكَ عَامٌ فِيهِ يُغَاثُ النَّاسُ وَفِيهِ يَعْصِرُونَ} [الآية 49]",
+    "insightAr": "{يَعْصِرُونَ}؛ معناها: يعصرون ثمار الزيتون، والعنب، والسمسم لوفرة الأمطار والخيرات النباتية بعد الجفاف.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: they press or squeeze fruits such as olives, grapes, and sesame, in a context of abundant rain and vegetation."
+  },
+  {
+    "id": 404,
+    "surah": "يوسف",
+    "ayah": "{فَلَمَّا اسْتَيْأَسُوا مِنْهُ خَلَصُوا نَجِيًّا} [الآية 80]",
+    "insightAr": "{خَلَصُوا نَجِيًّا}؛ معناها: انفردوا، وانعزلوا معاً جانباً يتناجون ويتشاورون في خلوة وسر بعيداً عن بقية الناس.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: they withdrew together, privately conferring and consulting away from the others."
+  },
+  {
+    "id": 405,
+    "surah": "الرعد",
+    "ayah": "{مَثَلُ الْجَنَّةِ الَّتِي وُعِدَ الْمُتَّقُونَ تَجْرِي مِن تَحْتِهَا الْأَنْهَارُ أُكُلُهَا دَائِمٌ وَظِلُّهَا} [الآية 35]",
+    "insightAr": "",
+    "source": "تفسير ابن كثير.",
+    "insightEn": ""
+  },
+  {
+    "id": 406,
+    "surah": "إبراهيم",
+    "ayah": "{مَّثَلُ الَّذِينَ كَفَرُوا بِرَبِّهِمْ أَعْمَالُهُمْ كَرَمَادٍ اشْتَدَّتْ بِهِ الرِّيحُ فِي يَوْمٍ عَاصِفٍ} [الآية 18]",
+    "insightAr": "{عَاصِفٍ}؛ معناها: شديد هبوب الرياح وقوتها التدميرية التي تذرو كل شيء وتفرقه.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: violently blowing, with destructive wind strong enough to scatter and disperse things."
+  },
+  {
+    "id": 407,
+    "surah": "إبراهيم",
+    "ayah": "{وَتَرَى الْمُجْرِمِينَ يَوْمَئِذٍ مُّقَرَّنِينَ فِي الْأَصْفَادِ} [الآية 49]",
+    "insightAr": "{مُّقَرَّنِينَ فِي الْأَصْفَادِ}؛ معناها: مشدودين وموثقين معاً مقيدين بالأغلال والسلاسل الحديدية.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: bound and chained together with heavy restraints and iron chains."
+  },
+  {
+    "id": 408,
+    "surah": "الحجر",
+    "ayah": "{لَعَمْرُكَ إِنَّهُمْ لَفِي سَكْرَتِهِمْ يَعْمَهُونَ} [الآية 72]",
+    "insightAr": "{يَعْمَهُونَ}؛ معناها: يتحيرون، ويتخبطون في ضلالهم تائهين في عمى البصيرة.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: they wander in confusion, stumbling in misguidance without clear insight."
+  },
+  {
+    "id": 409,
+    "surah": "الحجر",
+    "ayah": "{فَاصْدَعْ بِمَا تُؤْمَرُ وَأَعْرِضْ عَنِ الْمُشْرِكِينَ} [الآية 94]",
+    "insightAr": "{فَاصْدَعْ}؛ معناها: أظهر، واجهر بدعوتك حاسماً فاصلاً وشاقاً بها باطلهم.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: proclaim and make your call openly, decisively breaking through falsehood."
+  },
+  {
+    "id": 410,
+    "surah": "النحل",
+    "ayah": "{فَأَتَى اللَّهُ بُنْيَانَهُم مِّنَ الْقَوَاعِدِ فَخَرَّ عَلَيْهِمُ السُّقْفُ مِن فَوْقِهِمْ} [الآية 26]",
+    "insightAr": "{فَخَرَّ}؛ معناها: سقط، وهوى، وانقض بقوة وسرعة من الأعلى إلى الأسفل.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: he fell and plunged forcefully and rapidly from above to below."
+  },
+  {
+    "id": 411,
+    "surah": "النحل",
+    "ayah": "{أَوْ يَأْخُذَهُمْ فِي تَقَلُّبِهِمْ فَمَا هُم بِمُعْجِزِينَ} [الآية 46]",
+    "insightAr": "{تَقَلُّبِهِمْ}؛ معناها: أسفارهم، وتصرفهم، وحركتهم اليومية في تجاراتهم ومعايشهم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: their travels, movements, and daily activity in trade and livelihood."
+  },
+  {
+    "id": 412,
+    "surah": "الإسراء",
+    "ayah": "{فَإِذَا جَاءَ وَعْدُ أُولَاهُمَا بَعَثْنَا عَلَيْكُمْ عِبَادًا لَّنا أُولِي بَأْسٍ شَدِيدٍ فَجَاسُوا خِلَالَ الدِّيَارِ} [الآية 5]",
+    "insightAr": "{فَجَاسُوا}؛ معناها: تخللوا، وطافوا، وترددوا بين البيوت مفسدين عسكرياً ومخربين حساً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: they entered and moved through the houses, causing destruction and disorder."
+  },
+  {
+    "id": 413,
+    "surah": "لقمان",
+    "ayah": "{وَاقْصِدْ فِي مَشْيِكَ وَاغْضُضْ مِن صَوْتِكَ} [الآية 19]",
+    "insightAr": "{وَاغْضُضْ}؛ معناها: اخفض، وانقص، وقصِّر من حدة نبرتك أدباً وخلقاً.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: lower, soften, and reduce the sharpness of your tone as an expression of good manners."
+  },
+  {
+    "id": 414,
+    "surah": "الكهف",
+    "ayah": "{فَلَعَلَّكَ بَاخِعٌ نَّفْسَكَ عَلَى آثَارِهِمْ إِن لَّمْ يُؤْمِنُوا بِهَذَا الْحَدِيثِ أَسَفًا} [الآية 6]",
+    "insightAr": "{بَاخِعٌ}؛ معناها: مهلِكٌ، وقاتلٌ نفسك غماً وحسرة وحزناً على إعراضهم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: destroying or exhausting oneself through grief over people’s rejection."
+  },
+  {
+    "id": 415,
+    "surah": "مريم",
+    "ayah": "{قَالَ رَبِّ إِنِّي وَهَنَ الْعَظْمُ مِنِّي وَاشْتَعَلَ الرَّأْسُ شَيْبًا} [الآية 4]",
+    "insightAr": "{وَهَنَ}؛ معناها: ضعف، ورقَّ، ونَفِدت قوته حساً فسيولوجياً.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: became weak, frail, and depleted in strength."
+  },
+  {
+    "id": 416,
+    "surah": "مريم",
+    "ayah": "{أَلَمْ تَرَ أَنَّا أَرْسَلْنَا الشَّيَاطِينَ عَلَى الْكَافِرِينَ تَؤُزُّهُمْ أَزًّا} [الآية 83]",
+    "insightAr": "{تَؤُزُّهُمْ}؛ معناها: تدفعهم، وتغريهم، وتستفزهم إلى المعاصي دفعاً وإثارة شديدة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: drives, incites, and strongly urges them toward wrongdoing."
+  },
+  {
+    "id": 417,
+    "surah": "طه",
+    "ayah": "{إِذْ رَأَى نَارًا فَقَالَ لِأَهْلِهِ امْكُثُوا إِنِّي آنَسْتُ نَارًا} [الآية 10]",
+    "insightAr": "{آنَسْتُ}؛ معناها: أبصرت برؤية هادئة مصحوبة بشعور الأمان والأنس الباطن.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: I perceived or saw with a calm sense of safety and inward reassurance."
+  },
+  {
+    "id": 418,
+    "surah": "طه",
+    "ayah": "{قَالُوا لَن نُّؤْثِرَكَ عَلَى مَا جَاءَنَا مِنَ الْبَيِّنَاتِ} [الآية 72]",
+    "insightAr": "{نُؤْثِرَكَ}؛ معناها: نختارك، أو نقدمك، أو نفضل طاعتك على الحق المعاش.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: we choose, prefer, or give you precedence over others."
+  },
+  {
+    "id": 419,
+    "surah": "الأنبياء",
+    "ayah": "{لَاهِيَةً قُلُوبُهُمْ وَأَسَرُّوا النَّجْوَى الَّذِينَ ظَلَمُوا} [الآية 3]",
+    "insightAr": "{النَّجْوَى}؛ معناها: الحديث السري الخفي المتداول المكتوم بين طائفة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: a private, concealed conversation or confidential consultation among a group."
+  },
+  {
+    "id": 420,
+    "surah": "الأنبياء",
+    "ayah": "{حَتَّى إِذَا فُتِحَتْ يَأْجُوجُ وَمَأْجُوجُ وَهُم مِّن كُلِّ حَدَبٍ يَنسِلُونَ} [الآية 96]",
+    "insightAr": "{حَدَبٍ يَنسِلُونَ}؛ معناها: مرتفع من الأرض يسرعون ويقهرون في المشي بكثافة عدوانية.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: elevated ground from which they descend or move swiftly in large numbers."
+  },
+  {
+    "id": 421,
+    "surah": "الحج",
+    "ayah": "{وَتَرَى الْأَرْضَ هَامِدَةً فَإِذَا أَنزَلْنَا عَلَيْهَا الْمَاءَ اهْتَزَّتْ وَرَبَتْ} [الآية 5]",
+    "insightAr": "{وَرَبَتْ}؛ معناها: تنفست، وانتفخت، وزادت ونمت نباتاً طيباً.",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: it swelled, increased, and grew into flourishing vegetation."
+  },
+  {
+    "id": 422,
+    "surah": "الحج",
+    "ayah": "{ثُمَّ لْيَقْضُوا تَفَثَهُمْ وَلْيُوفُوا نُذُورَهُمْ} [الآية 29]",
+    "insightAr": "{تَفَثَهُمْ}؛ معناها: النظافة، وقص الشعر والأظافر، وإزالة الأوساخ بعد التحلل من الإحرام.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: personal cleansing, including trimming hair and nails and removing impurities after completing the rites of consecration."
+  },
+  {
+    "id": 423,
+    "surah": "المؤمنون",
+    "ayah": "{حَتَّى إِذَا أَخَذْنَا مُتْرَفِيهِم بِالْعَذَابِ إِذَا هُمْ يَجْأَرُونَ} [الآية 64]",
+    "insightAr": "{يَجْأَرُونَ}؛ معناها: يصرخون، ويتضرعون برفع أصواتهم مستغيثين بذلة وشدة جزع.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: they cry out and plead loudly for help in humiliation and intense distress."
+  },
+  {
+    "id": 424,
+    "surah": "المؤمنون",
+    "ayah": "{قَالَ اخْسَئُوا فِيهَا وَلَا تُكَلِّمُونِ} [الآية 108]",
+    "insightAr": "{اخْسَئُوا}؛ معناها: انزجروا مطرودين ذليلين مهانين (كلمة زجر تُقال للكلاب لطردها).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: be driven away, humiliated, and disgraced; a harsh word of expulsion."
+  },
+  {
+    "id": 425,
+    "surah": "النور",
+    "ayah": "{أَوْ كَظُلُمَاتٍ فِي بَحْرٍ لُّجِّيٍّ يَغْشَاهُ مَوْجٌ مِّن فَوْقِهِ مَوْجٌ} [الآية 40]",
+    "insightAr": "{لُّجِّيٍّ}؛ معناها: عميق، سحيق، كثير الماء، شاسع القاع بعيد النواحي.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: deep, vast, and abundant in water, with a distant or inaccessible bottom."
+  },
+  {
+    "id": 426,
+    "surah": "النور",
+    "ayah": "{أَلَمْ تَرَ أَنَّ اللَّهَ يُزْجِي سَحَابًا ثُمَّ يُؤَلِّفُ بَيْنَهُ} [الآية 43]",
+    "insightAr": "{يُزْجِي}؛ معناها: يسوق، ويدفع برفق وحركة لطيفة ليتجمع.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: gently drives or pushes something along until it gathers together."
+  },
+  {
+    "id": 427,
+    "surah": "الفرقان",
+    "ayah": "{تَبَارَكَ الَّذِي جَعَلَ فِي السَّمَاءِ بُرُوجًا وَجَعَلَ فِيهَا سِرَاجًا} [الآية 61]",
+    "insightAr": "{سِرَاجًا}؛ معناها: الشمس المضيئة المتوقدة بنور ذاتي حار حارق.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: a shining, burning lamp; the reflection applies it to the sun with its own intense light and heat."
+  },
+  {
+    "id": 428,
+    "surah": "الفرقان",
+    "ayah": "{وَمَن يَفْعَلْ ذَلِكَ يَلْقَ أَثَامًا} [الآية 68]",
+    "insightAr": "{أَثَامًا}؛ معناها: وادياً سحيقاً في جهنم، أو عقوبةً ونكالاً طاحناً للذنب.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: a deep valley in Hell, or a severe punishment and consequence for sin."
+  },
+  {
+    "id": 429,
+    "surah": "الشعراء",
+    "ayah": "{فَأَلْقَى مُوسَى عَصَاهُ فَإِذَا هِيَ تَلْقَفُ مَا يَأْفِكُونَ} [الآية 45]",
+    "insightAr": "{تَلْقَفُ}؛ معناها: تبتلع بسرعة وتزدرد حساً حبال أوهامهم.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: swallows or consumes rapidly, here depicting the ropes of their illusion being taken up."
+  },
+  {
+    "id": 430,
+    "surah": "الشعراء",
+    "ayah": "{أَتَبْنُونَ بِكُلِّ رِيعٍ آيَةً تَعْبَثُونَ} [الآية 128]",
+    "insightAr": "{رِيعٍ}؛ معناها: مكان مرتفع مشرف مستبصر من الأرض (مثل مرتفع جبل أو تل شاهق).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: a high, prominent place of land, such as a lofty hill or elevated pass."
+  },
+  {
+    "id": 431,
+    "surah": "النمل",
+    "ayah": "{وَأَدْخِلْ يَدَكَ فِي جَيْبِكَ تَخْرُجْ بَيْضَاءَ مِنْ غَيْرِ سُوءٍ} [الآية 12]",
+    "insightAr": "{جَيْبِكَ}؛ معناها: فتحة طوق الثوب العلوية عند الصدر (وليس مخبأ المال والنقود).",
+    "source": "مفردات ألفاظ القرآن - الراغب الأصفهاني.",
+    "insightEn": "the Qur’anic expression: the opening of the upper garment at the chest, not a place for hiding money."
+  },
+  {
+    "id": 432,
+    "surah": "النمل",
+    "ayah": "{اذْهَب بِّكِتَابِي هَذَا فَأَلْقِهْ إِلَيْهِمْ ثُمَّ تَوَلَّ عَنْهُمْ فَانظُرْ مَاذَا يَرْجِعُونَ} [الآية 28]",
+    "insightAr": "{يَرْجِعُونَ}؛ معناها: يردون ويعيدون من جواب فكري أو سياسي على الخطاب.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: they return or respond, here in the sense of replying to an intellectual or political message."
+  },
+  {
+    "id": 433,
+    "surah": "القصص",
+    "ayah": "{وَأَصْبَحَ فُؤَادُ أُمِّ مُوسَى فَارِغًا} [الآية 10]",
+    "insightAr": "{فَارِغًا}؛ معناها: خالياً من كل أفكار وشؤون الدنيا إلا من ذكر ابنها الخائف.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: empty of worldly concerns except for the anxious remembrance of her son."
+  },
+  {
+    "id": 434,
+    "surah": "القصص",
+    "ayah": "{قَالَ سَنَشُدُّ عَضُدَكَ بِأَخِيكَ وَنَجْعَلُ لَكُمَا سُلْطَانًا} [الآية 35]",
+    "insightAr": "{عَضُدَكَ}؛ معناها: قوتك، وسندك البشري، ومعاونتك (العضد لغة هو ما بين المرفق إلى الكتف).",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: your strength, support, and assistance; literally, the part of the arm between elbow and shoulder."
+  },
+  {
+    "id": 435,
+    "surah": "العنكبوت",
+    "ayah": "{وَإِنَّ أَوْهَنَ الْبُيُوتِ لَبَيْتُ الْعَنكَبُوتِ} [الآية 41]",
+    "insightAr": "{أَوْهَنَ}؛ معناها: أضعف، وأشد تفتتاً من حيث العلاقات والأمان الباطن والنسيج الاجتماعي.",
+    "source": "إغاثة اللهفان - ابن القيم.",
+    "insightEn": "the Qur’anic expression: weaker and more fragile, including in relationships, security, and social cohesion."
+  },
+  {
+    "id": 436,
+    "surah": "الروم",
+    "ayah": "{وَعَشِيًّا وَحِينَ تُظْهِرُونَ} [الآية 18]",
+    "insightAr": "{تُظْهِرُونَ}؛ معناها: تدخلون في وقت الظهيرة ومنتصف النهار وشدة الضياء حساً.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: you enter the time of midday and intense daylight."
+  },
+  {
+    "id": 437,
+    "surah": "لقمان",
+    "ayah": "{وَلَا تُصَعِّرْ خَدَّكَ لِلنَّاسِ وَلَا تَمْشِ فِي الْأَرْضِ مَرَحًا} [الآية 18]",
+    "insightAr": "{تُصَعِّرْ}؛ معناها: تُمِل وتلوي وجهك كبراً واستعلاءً وإعراضاً عن البشر وقت الحوار.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: turn or twist your face away in arrogance and disdain during interaction."
+  },
+  {
+    "id": 438,
+    "surah": "السجدة",
+    "ayah": "{تَتَجَافَى جُنُوبُهُمْ عَنِ الْمَضَاجِعِ يَدْعُونَ رَبَّهُمْ} [الآية 16]",
+    "insightAr": "{تَتَجَافَى }؛ معناها: ترتفع، وتنبو، وتبتعد بقلق وشوق لتهجر فراش النوم المريح الوثير.",
+    "source": "زاد المعاد - ابن القيم.",
+    "insightEn": "the Qur’anic expression: rises, moves away, or leaves the comfort of the bed with longing and concern for worship."
+  },
+  {
+    "id": 439,
+    "surah": "الأحزاب",
+    "ayah": "{إِذْ جَاءُوكُم مِّن فَوْقِكُمْ وَمِنْ أَسْفَلَ مِنكُمْ وَإِذْ زَاغَتِ الْأَبْصَارُ} [الآية 10]",
+    "insightAr": "{زَاغَتِ}؛ معناها: مالت، وانحرفت ذعراً وهلعاً حركياً شاحباً من شدة هول الحصار.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: turned or deviated in fear and alarm under the pressure of a terrifying situation."
+  },
+  {
+    "id": 440,
+    "surah": "الأحزاب",
+    "ayah": "{يَا أَيُّهَا النَّبِيُّ قُل لِّأَزْوَاجِكَ وَبَنَاتِكَ وَنِسَاءِ الْمُؤْمِنِينَ يُدْنِينَ عَلَيْهِنَّ مِن جَلَابِيبِهِنَّ} [الآية 59]",
+    "insightAr": "{يُدْنِينَ}؛ معناها: يرخين، ويسدلن، ويغطين بالثوب السابغ كامل أبدانهن عفة وهيبة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: draw down and let their garments cover their bodies fully as an expression of modesty and dignity."
+  },
+  {
+    "id": 441,
+    "surah": "سبأ",
+    "ayah": "{يَعْمَلُونَ لَهُ مَا يَشَاءُ مِن مَّحَارِيبَ وَتَمَاثِيلَ وَجِفَانٍ كَالْجَوَابِ} [الآية 13]",
+    "insightAr": "{وَجِفَانٍ كَالْجَوَابِ}؛ معناها: قِصاع وأواني طعام ضخمة هائلة كالأحواض والحياض الكبيرة لجمع السقاية والأكل.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: huge bowls and vessels, like large basins used for food and drink."
+  },
+  {
+    "id": 442,
+    "surah": "فاطر",
+    "ayah": "{وَمَا يَسْتَوِي الْبَحْرَانِ هَذَا عَذْبٌ فُرَاتٌ سَائِغٌ شَرَابُهُ وَهَذَا مِلْحٌ أُجَاجٌ} [الآية 12]",
+    "insightAr": "{مِلْحٌ أُجَاجٌ}؛ معناها: شديد الملوحة، والمرار، والحرقة لدرجة لا تُطاق تذوقاً أو شرباً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: extremely salty, bitter, and burning to the taste, difficult to drink."
+  },
+  {
+    "id": 443,
+    "surah": "يس",
+    "ayah": "{وَالْقَمَرَ قَدَّرْنَاهُ مَنَازِلَ حَتَّى عَادَ كَالْعُرْجُونِ الْقَدِيمِ} [الآية 39]",
+    "insightAr": "{كَالْعُرْجُونِ}؛ معناها: عِذق وغصن النخلة اليابس المنحني الأصفر المتقوس بعد جفافه كالهلال.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: like the dry, curved yellow branch of a date palm, resembling a crescent after drying."
+  },
+  {
+    "id": 444,
+    "surah": "الصافات",
+    "ayah": "{أَئِذَا مِتْنَا وَكُنَّا تُرَابًا وَعِظَامًا أَئِنَّا لَمَدِينُونَ} [الآية 53]",
+    "insightAr": "{لَمَدِينُونَ}؛ معناها: مجزيون، ومحاسبون، ومقادون للمحاكمة العادلة والقصاص (من الدين والحساب).",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: repaid, held accountable, and brought to judgment and requital."
+  },
+  {
+    "id": 445,
+    "surah": "ص",
+    "ayah": "{إِذْ عُرِضَ عَلَيْهِ بِالْعَشِيِّ الصَّافِنَاتُ الْجِيَادُ} [الآية 31]",
+    "insightAr": "{الصَّافِنَاتُ}؛ معناها: الخيل الأصيلة الفاخرة التي تقف بثبات على ثلاث قوائم وترفع حافر الرابعة بخفة وجمال.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: fine thoroughbred horses standing gracefully, often described as poised with one hoof raised."
+  },
+  {
+    "id": 446,
+    "surah": "الزمر",
+    "ayah": "{وَتَرَى الْمَلَائِكَةَ حَافِّينَ مِنْ حَوْلِ الْعَرْشِ يُسَبِّحُونَ} [الآية 75]",
+    "insightAr": "{حَافِّينَ}؛ معناها: محيطين، ومحدقين، ومستديرين بجوانب العرش تعظيماً وإجلالاً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: surrounding and encircling the Throne in reverence and honor."
+  },
+  {
+    "id": 447,
+    "surah": "غافر",
+    "ayah": "{يَعْلَمُ خَائِنَةَ الْأَعْيُنِ وَمَا تُخْفِي الصُّدُورُ} [الآية 19]",
+    "insightAr": "{خَائِنَةَ الْأَعْيُنِ}؛ معناها: اللفتة والالتفاتة البصرية المسروقة السريعة الخفية لشهوة أو عيب دون انتباه الجالسين.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: a hidden, fleeting glance of the eyes toward something forbidden or shameful."
+  },
+  {
+    "id": 448,
+    "surah": "فصلت",
+    "ayah": "{وَقَالُوا لِجُلُودِهِمْ لِمَ شَهِدتُّمْ عَلَيْنَا قَالُوا أَنطَقَنَا اللَّهُ} [الآية 21]",
+    "insightAr": "{أَنطَقَنَا}؛ معناها: جعلنا نتكلم حساً وصوتاً ووضوحاً لتوثيق الجريمة والشهادة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: made us speak audibly and clearly so that the deed could be documented and testified to."
+  },
+  {
+    "id": 449,
+    "surah": "الشورى",
+    "ayah": "{أَوْ يُوبِقْهُنَّ بِمَا كَسَبُوا وَيَعْفُ عَن كَثِيرٍ} [الآية 34]",
+    "insightAr": "{يُوبِقْهُنَّ}؛ معناها: يهلِكهن، ويغرقْهن، ويسقطهن في عمق البحر بعقوبة قدرية.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: destroys, drowns, or causes them to perish in the sea by a decree of punishment."
+  },
+  {
+    "id": 450,
+    "surah": "الزخرف",
+    "ayah": "{سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ} [الآية 13]",
+    "insightAr": "{مُقْرِنِينَ}؛ معناها: مطيقين، أو قادرين بمفردنا على قهر الدابة والتحكم بركوبها لولا تسخير الله.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: able or capable, by ourselves, of controlling and riding the animal without Allah’s enabling it to be subdued for us."
+  },
+  {
+    "id": 451,
+    "surah": "الدخان",
+    "ayah": "{خُذُوهُ فَاعْتِلُوهُ إِلَى سَوَاءِ الْجَحِيمِ} [الآية 47]",
+    "insightAr": "{فَاعْتِلُوهُ}؛ معناها: سوقوه، واجذبوه بعنف، وشدة، وخشونة غليظة إلى وسط عذاب النار.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: drag and drive him roughly and forcefully into the midst of the punishment."
+  },
+  {
+    "id": 452,
+    "surah": "الجاثية",
+    "ayah": "{وَتَرَى كُلَّ أُمَّةٍ جَاثِيَةً كُلُّ أُمَّةٍ تُدْعَى إِلَى كِتَابِهَا} [الآية 28]",
+    "insightAr": "{جَاثِيَةً}؛ معناها: باركة مستسلمة خاضعة على الركب من شدة الهول والانتظار يوم الحساب والقصاص.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: kneeling and humbled in submission because of the terror and waiting of the Day of Judgment."
+  },
+  {
+    "id": 453,
+    "surah": "الأحقاف",
+    "ayah": "{فَلَمَّا رَأَوْهُ عَارِضًا مُّسْتَقْبِلَ أَوْدِيَتِهِمْ قَالُوا هَذَا عَارِضٌ مُّمْطِرُنَا} [الآية 24]",
+    "insightAr": "{عَارِضًا}؛ معناها: سحاباً أفقياً ممتداً شاسعاً يعترض أفق السماء ويملأ مجرى النظر البصري.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: an extensive horizontal cloud spreading across and filling the visible horizon."
+  },
+  {
+    "id": 454,
+    "surah": "محمد",
+    "ayah": "{فَإِذَا لَقِيتُمُ الَّذِينَ كَفَرُوا فَضَرْبَ الرِّقَابِ حَتَّى إِذَا أَثْخَنتُمُوهُمْ فَشُدُّوا الْوَثَاقَ} [الآية 4]",
+    "insightAr": "{أَثْخَنتُمُوهُمْ}؛ معناها: أضعفتموهم تماماً بكسر شوكتهم العسكرية، والإكثار من جراحهم وقتلهم بالميدان لتقييد حركتهم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: you weakened them severely by breaking their military strength and inflicting heavy losses."
+  },
+  {
+    "id": 455,
+    "surah": "الفتح",
+    "ayah": "{إِذْ جَعَلَ الَّذِينَ كَفَرُوا فِي قُلُوبِهِمُ الْحَمِيَّةَ حَمِيَّةَ الْجَاهِلِيَّةِ} [الآية 26]",
+    "insightAr": "{الْحَمِيَّةَ}؛ معناها: الأنفة، والعصبية الجاهلية الجافة، والحمية القائمة على الكبر والباطل والمنع من الهدى.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: pride, rigid partisanship, and -style zeal rooted in arrogance and falsehood."
+  },
+  {
+    "id": 456,
+    "surah": "الحجرات",
+    "ayah": "{وَلَا تَلْمِزُوا أَنفُسَكُمْ وَلَا تَنَابَزُوا بِالْأَلْقَابِ} [الآية 11]",
+    "insightAr": "{تَنَابَزُوا}؛ معناها: يدعو بعضكم بعضاً بألقاب مكروهة، وسيئة، ومعيبة تثير الضغائن وتجرح النفوس.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: call one another by offensive, disliked, or humiliating nicknames that provoke resentment."
+  },
+  {
+    "id": 457,
+    "surah": "الذاريات",
+    "ayah": "{وَالذَّارِيَاتِ ذَرْوًا * فَالْحَامِلَاتِ وِقْرًا} [الآية 1-2]",
+    "insightAr": "{وِقْرًا}؛ معناها: حملاً ثقيلاً مائياً هائلاً (وهي السحب الكثيفة المحملة بأطنان من المطر الكوني).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: a heavy load; the reflection applies it to clouds carrying a great quantity of rain."
+  },
+  {
+    "id": 458,
+    "surah": "الطور",
+    "ayah": "{وَالسَّقْفِ الْمَرْفُوعِ * وَالْبَحْرِ الْمَسْجُورِ} [الآية 5-6]",
+    "insightAr": "{الْمَسْجُورِ}؛ معناها: الموقد الملتهب ناراً يوم القيامة، أو المملوء الممتد بالماء الذي لا يفيض حكمة وتدبيراً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: filled or kindled; the reflection mentions the two interpretive senses of blazing fire or a body of water filled to its extent."
+  },
+  {
+    "id": 459,
+    "surah": "النجم",
+    "ayah": "{أَفَرَأَيْتَ الَّذِي تَوَلَّى * وَأَعْطَى قَلِيلًا وَأَكْدَى } [الآية 33-34]",
+    "insightAr": "{وَأَكْدَى }؛ معناها: قطع عطيته ونفقته وبخل بالمال كلياً (مأخوذة من حافر البئر إذا وصل لحجر صلب ومنع الحفر).",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "the Qur’anic expression: he cut off his giving and became completely miserly, from the image of reaching hard rock while digging a well."
+  },
+  {
+    "id": 460,
+    "surah": "القمر",
+    "ayah": "{فَالْتَقَى الْمَاءُ عَلَى أَمْرٍ قَدْ قُدِرَ * وَحَمَلْنَاهُ عَلَى ذَاتِ أَلْوَاحٍ وَدُسُرٍ} [الآية 12-13]",
+    "insightAr": "{وَدُسُرٍ}؛ معناها: المسامير والروابط والحبال الحديدية والليفية الشديدة التي تُشَد وتُثبت بها ألواح السفينة بدقة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: nails, fastenings, and strong ropes or fibers used to secure the planks of a ship."
+  },
+  {
+    "id": 461,
+    "surah": "الرحمن",
+    "ayah": "{خَلَقَ الْإِنسَانَ مِن صَلْصَالٍ كَالْفَخَّارِ} [الآية 14]",
+    "insightAr": "{صَلْصَالٍ}؛ معناها: طين جاف يابس غير مطبوخ بالنار، ويصوت ويصلصل إذا ضربته حساً لحرارة جفافه.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: dry, hardened clay that makes a ringing sound when struck."
+  },
+  {
+    "id": 462,
+    "surah": "الواقعة",
+    "ayah": "{لَا يَصْدَعُونَ عَنْهَا وَلَا يُنزِفُونَ} [الآية 19]",
+    "insightAr": "{وَلَا يُنزِفُونَ}؛ معناها: لا تذهب ولا تغيب عقولهم ووعيهم بسكر الخمر (خمر الجنة نقي لا يعقبه صداع ولا ذهاب عقل).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: they do not lose their minds or consciousness through intoxication; the drink of Paradise causes no such impairment."
+  },
+  {
+    "id": 463,
+    "surah": "الحديد",
+    "ayah": "{فَضُرِبَ بَيْنَهُم بِسُورٍ لَّلهُ بَابٌ بَاطِنُهُ فِيهِ الرَّحْمَةُ وَظَاهِرُهُ مِن قِبَلِهِ الْعَذَابُ} [الآية 13]",
+    "insightAr": "{بَاطِنُهُ}؛ معناها: الجزء والداخل المواجه للمؤمنين العامر بنور الجنة والسكينة، والظاهر الخارجي للمنافقين المظلم الممتد لعذاب النار.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: its inner side facing the believers, associated in the reflection with the light and serenity of Paradise, contrasted with the outer side facing the hypocrites."
+  },
+  {
+    "id": 464,
+    "surah": "المجادلة",
+    "ayah": "{الَّذِينَ يُظَاهِرُونَ مِنكُم مِّن نِّسَائِهِم مَّا هُنَّ أُمَّهَاتِهِمْ} [الآية 2]",
+    "insightAr": "{يُظَاهِرُونَ}؛ معناها: يحرمون زوجاتهم بقول الجاهلية: \"أنت علي كظهر أمي\" لقطع العلاقة الزوجية إعناتاً للمرأة وظلماً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: they declare their wives forbidden by the pre-Islamic formula likening a wife to one’s mother’s back."
+  },
+  {
+    "id": 465,
+    "surah": "الحشر",
+    "ayah": "{مَا قَطَعْتُم مِّن لِّينَةٍ أَوْ تَرَكْتُمُوهَا قَائِمَةً عَلَى أُصُولِهَا فَبِإِذْنِ اللَّهِ} [الآية 5]",
+    "insightAr": "{لِّينَةٍ}؛ معناها: كل نوع وصنف من نخل التمر الكريمة الطيب الناعمة ما عدا نخلة العجوة حساً وبلاغة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: a type or variety of date palm, described here as a good and tender palm."
+  },
+  {
+    "id": 466,
+    "surah": "الممتحنة",
+    "ayah": "{لَا يَنْهَاكُمُ اللَّهُ عَنِ الَّذِينَ لَمْ يُقَاتِلُوكُمْ فِي الدِّينِ ... أَن تَبَرُّوهُمْ وَتُقْسِطُوا إِلَيْهِمْ}[الآية 8]",
+    "insightAr": "{وَتُقْسِطُوا}؛ معناها: تعدلوا، وتنصفوا، وتتعاملوا بالحق والفضل الواضح معهم ببر (من الإقساط وهو العدل).",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: act justly, fairly, and with kindness toward them."
+  },
+  {
+    "id": 467,
+    "surah": "الصف",
+    "ayah": "{إِنَّ اللَّهَ يُحِبُّ الَّذِينَ يُقَاتِلُونَ فِي سَبِيلِهِ صَفًّا كَأَنَّهُم بُنْيَانٌ مَّرْصُوصٌ} [الآية 4]",
+    "insightAr": "{مَّرْصُوصٌ}؛ معناها: متلاحم، متماسك رصين بقوة شديدة، لا خلل فيه ولا فرجة تسد أي اختراق بنائي.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: tightly joined, cohesive, and firmly bonded, with no gaps that allow structural weakness."
+  },
+  {
+    "id": 468,
+    "surah": "التغابن",
+    "ayah": "{ذَلِكَ يَوْمُ الْجَمْعِ ذَلِكَ يَوْمُ التَّغَابُنِ} [الآية 9]",
+    "insightAr": "{التَّغَابُنِ}؛ معناها: الغبن الفاحش والخسارة الشديدة الحقيقية الكبرى لأهل النار، برؤية وضياع منازلهم التي كانت مخصصة لهم في الجنة لو أطاعوا.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: the great loss and mutual disadvantage realized on the Day of Judgment, including seeing what was lost through disobedience."
+  },
+  {
+    "id": 469,
+    "surah": "الطلاق",
+    "ayah": "{وَاللَّائِي يَئِسْنَ مِنَ الْمَحِيضِ مِن نِّسَائِكُمْ إِنِ ارْتَبْتُمْ فَعِدَّتُهُنَّ ثَلَاثَةُ أَشْهُرٍ} [الآية 4]",
+    "insightAr": "{إِنِ ارْتَبْتُمْ}؛ معناها: إن شككتم وجهلتم حُكم عدتهن الشرعية لعدم معرفة قواعد انقطاع الدم أو السن الفسيولوجي المادي.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: if you are uncertain or do not know the required legal waiting period because of uncertainty about its rules."
+  },
+  {
+    "id": 470,
+    "surah": "التحريم",
+    "ayah": "{وَإِذْ أَسَرَّ النَّبِيُّ إِلَى بَعْضِ أَزْوَاجِهِ حَدِيثًا ... عَرَّفَ بَعْضَهُ وَأَعْرَضَ عَن بَعْضٍ} [الآية 3]",
+    "insightAr": "{وَأَعْرَضَ}؛ معناها: ترك وأغفل عتاب وتنبيه بعض الحديث، كرماً، وأدباً مفرطاً، وخلقاً نبوياً رفيعاً لعدم إحراج أهله.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: he turned away and gently overlooked part of what was said, out of graciousness and refined prophetic conduct."
+  },
+  {
+    "id": 471,
+    "surah": "الملك",
+    "ayah": "{الَّذِي خَلَقَ سَبْعَ سَمَاوَاتٍ طِبَاقًا مَّا تَرَى فِي خَلْقِ الرَّحْمَٰنِ مِن تَفَاوُتٍ فَارْجِعِ الْبَصَرَ هَلْ تَرَى مِن فُطُورٍ} [الآية 3]",
+    "insightAr": "{فُطُورٍ}؛ معناها: شقوق، أو صدوع، أو تآكل، أو وهن وعيوب هندسية في بناء السماء المحكم بغير عمد.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: cracks, breaks, weakness, or defects in the ordered structure of the heavens."
+  },
+  {
+    "id": 472,
+    "surah": "القلم",
+    "ayah": "{يَوْمَ يُكْشَفُ عَن سَاقٍ وَيُدْعَوْنَ إِلَى السُّجُودِ فَلَا يَسْتَطِيعُونَ} [الآية 42]",
+    "insightAr": "{عَن سَاقٍ}؛ معناها: عن كرب عظيم، وشدة بالغة، وأهول مخيفة تذهل له العقول يوم القيامة (وقيل صفة تليق بجلال الخالق).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: a state of tremendous distress and severe hardship; the expression is associated with the terror of the Day of Judgment."
+  },
+  {
+    "id": 473,
+    "surah": "الحاقة",
+    "ayah": "{خُذُوهُ فَغُلُّوهُ * ثُمَّ الْجَحِيمَ صَلُّوهُ * ثُمَّ فِي سِلْسِلَةٍ ذَرْعُهَا سَبْعُونَ ذِرَاعًا فَاسْلُكُوهُ} [الآية 30-32]",
+    "insightAr": "{فَاسْلُكُوهُ}؛ معناها: أدخلوه، وانظموه، واجعلوا السلسلة الحديدية تدخل في جسده وأحشائه الباطنة الالتفافية عذاباً مهيناً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: put him into it and pass the chain around or through him as part of the punishment."
+  },
+  {
+    "id": 474,
+    "surah": "المعارج",
+    "ayah": "{تَعْرُجُ الْمَلَائِكَةُ وَالرُّوحُ إِلَيْهِ فِي يَوْمٍ كَانَ مِقْدَارُهُ خَمْسِينَ أَلْفَ سَنَةٍ} [الآية 4]",
+    "insightAr": "{وَالرُّوحُ}؛ معناها: جبريل عليه السلام، خُصَّ بالذكر تشريفاً، ورفعةً، وإجلالاً لمكانته العليا بين جموع الملائكة المقربين.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: Jibrīl (Gabriel), singled out for mention as an honor and recognition of his high rank among the angels."
+  },
+  {
+    "id": 475,
+    "surah": "نوح",
+    "ayah": "{وَمَكَرُوا مَكْرًا كُبَّارًا} [الآية 22]",
+    "insightAr": "{كُبَّارًا}؛ معناها: غاية في الضخامة، والشدة، والمبالغة المتناهية القصوى في المكر، والإفساد، والصد عن الحق.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: extraordinarily great, severe, and extreme in plotting, corruption, and opposition to truth."
+  },
+  {
+    "id": 476,
+    "surah": "الجن",
+    "ayah": "{وَأَنَّا لَمَسْنَا السَّمَاءَ فَوَجَدْنَاهَا مُلِئَتْ حَرَسًا شَدِيدًا وَشُهُبًا} [الآية 8]",
+    "insightAr": "{لَمَسْنَا}؛ معناها: صعدنا، وتفقدنا، وحاولنا استراق السمع من خطوط الغيب فمُنعت حركتنا كلياً بالشهب الراصدة الحامية.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: we ascended and sought to listen secretly to the unseen, but were prevented by guarding meteors."
+  },
+  {
+    "id": 477,
+    "surah": "المزمل",
+    "ayah": "{إِنَّ لَدَيْنَا أَنكَالًا وَجَحِيمًا} [الآية 12]",
+    "insightAr": "{أَنكَالًا}؛ معناها: قيوداً حديدية ثقيلة ضخمة، تُنكل بالمذنب وتمنع حركته، وتشد وثاقه تعذيباً وإهانة في النار.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: heavy iron shackles and restraints that punish the wrongdoer and restrict movement."
+  },
+  {
+    "id": 478,
+    "surah": "المدثر",
+    "ayah": "{عَلَيْها تِسْعَةَ عَشَرَ * وَمَا جَعَلْنَا أَصْحَابَ النَّارِ إِلَّا مَلَائِكَةً} [الآية 30-31]",
+    "insightAr": "{أَصْحَابَ النَّارِ}؛ معناها: خَزَنَتُها، والملائكة الغلاظ الشداد القائمون على تعذيب أهلها وإدارتها بقوة (وليس المعذبين فيها حساً).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: its keepers—the stern angels appointed over Hell—not the people being punished within it."
+  },
+  {
+    "id": 479,
+    "surah": "القيامة",
+    "ayah": "{فَإِذَا بَرِقَ الْبَصَرُ * وَخَسَفَ الْقَمَرُ} [الآية 7-8]",
+    "insightAr": "{بَرِقَ}؛ معناها: شَخَصَ، وانفتح فزعاً، وذُهِل دهشة ورعباً حركياً شاحباً من أهوال الموت ومعاينة الغيب الحتمي.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: became fixed or wide-eyed in terror and astonishment at the horrors of death and the unavoidable unseen reality."
+  },
+  {
+    "id": 480,
+    "surah": "الإنسان",
+    "ayah": "{وَيُسْقَوْنَ فِيهَا كَأْسًا كَانَ مِزَاجُهَا زَنجَبِيلًا} [الآية 17]",
+    "insightAr": "{مِزَاجُهَا}؛ معناها: ما خُلط به وطُعِّم به الشراب اللذيذ ليكتسب نكهة وطعماً أرقى وأصفى طهارة في النعيم.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: what the drink is mixed or flavored with to give it a refined and pure taste in bliss."
+  },
+  {
+    "id": 481,
+    "surah": "المرسلات",
+    "ayah": "{وَإِذَا الرُّسُلُ أُقِّتَتْ} [الآية 11]",
+    "insightAr": "{أُقِّتَت|؛ معناها: جُمعت، وحُدد لها وقت وميعاد فاصل ومعلوم للحكم، والفصل، والشهادة بين الأمم والعباد يوم الحساب.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: gathered and assigned a fixed, appointed time for judgment, separation, and testimony on the Day of Resurrection."
+  },
+  {
+    "id": 482,
+    "surah": "النبأ",
+    "ayah": "{وَبَنَيْنَا فَوْقَكُمْ سَبْعًا شِدَادًا * وَجَعَلْنَا سِرَاجًا وَهَّاجًا} [الآية 12-13]",
+    "insightAr": "{وَهَّاجًا}؛ معناها: متقداً بالحرارة، والضوء الذاتي المنبعث بقوة هائلة لإنارة وعمران المادة الكونية (وصف للشمس).",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: intensely burning and radiant, emitting its own powerful light and heat; a description of the sun."
+  },
+  {
+    "id": 483,
+    "surah": "النازعات",
+    "ayah": "{وَالنَّازِعَاتِ غَرْقًا * وَالنَّاشِطَاتِ نَشْطًا} [الآية 1-2]",
+    "insightAr": "{وَالنَّاشِطَاتِ}؛ معناها: ملائكة الرحمة الذين يستلون ويخرجون روح المؤمن برفق، ولين، وسهولة عذبة نقية كحل العقدة بيسر.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: the angels of mercy who gently draw out the believer’s soul with ease, like loosening a knot smoothly."
+  },
+  {
+    "id": 484,
+    "surah": "عبس",
+    "ayah": "{فَإِذَا جَاءَتِ الصَّاخَّةُ} [الآية 33]",
+    "insightAr": "{الصَّاخَّةُ}؛ معناها: صيحة القيامة والنفخة الثانية القوية الشديدة الحادة التي تصخ وتصم الآذان حركياً لعظم هيبتها وجلالها.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: the mighty blast of the Resurrection, a piercing cry associated with the overwhelming terror of the Hour."
+  },
+  {
+    "id": 485,
+    "surah": "التكوير",
+    "ayah": "{فَلَا أُقْسِمُ بِالْخُنَّسِ * الْجَوَارِ الْكُنَّسِ} [الآية 15-16]",
+    "insightAr": "{الْكُنَّسِ}؛ معناها: النجوم والكواكب السيّارة التي تختفي، وتستتر، وتغيب حركياً في مداراتها ومواقعها الفلكية المحددة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: celestial bodies that disappear and move within their appointed orbits and positions."
+  },
+  {
+    "id": 486,
+    "surah": "الانفطار",
+    "ayah": "{وَإِذَا الْبِحَارُ فُجِّرَتْ * وَإِذَا الْقُبُورُ بُعْثِرَتْ} [الآية 3-4]",
+    "insightAr": "{بُعْثِرَتْ}؛ معناها: قُلبت، وفُتحت باطن الأرض بقوة، وأُخرج ما فيها من موتى وعظام حساً لإعادتهم للحساب والبعث.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: overturned and opened up, with what lies within the earth brought out for resurrection and judgment."
+  },
+  {
+    "id": 487,
+    "surah": "المطففين",
+    "ayah": "{كَلَّا إِنَّ كِتَابَ الفُجَّارِ لَفِي سِجِّينٍ} [الآية 7]",
+    "insightAr": "{سِجِّينٍ}؛ معناها: كتاب أو ديوان رصين ضيق مخفي سفل الأرض السابعة يحفظ وسجلات أعمال أهل الشر طرداً خذلاناً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: a record or register associated with the deeds of the wicked, described in the reflection as confined and low."
+  },
+  {
+    "id": 488,
+    "surah": "الانشقاق",
+    "ayah": "{وَأَذِنَتْ لِرَبِّهَا وَحُقَّتْ} [الآية 2]",
+    "insightAr": "{وَأَذِنَتْ}؛ معناها: استمعت، وانقادت، وطاعت أمر خالقها بالانشقاق حساً وتصدعاً، وحُق لها وعاد واجباً عليها الانقياد التام.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: listened and submitted to its Creator’s command, obeying by splitting and yielding as commanded."
+  },
+  {
+    "id": 489,
+    "surah": "البروج",
+    "ayah": "{وَالسَّمَاءِ ذَاتِ الْبُرُوجِ * وَالْيَوْمِ الْمَوْعُودِ} [الآية 1-2]",
+    "insightAr": "{الْبُرُوجِ}؛ معناها: منازل، ومواقع فلكية، ومدارات شاسعة محددة هندسياً لسير وحركة الكواكب والنجوم الكبرى بنظم.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: great celestial formations, stations, or constellations through which the sun and other heavenly bodies move."
+  },
+  {
+    "id": 490,
+    "surah": "الطارق",
+    "ayah": "{إِنَّهُ عَلَى رَجْعِهِ لَقَادِرٌ * يَوْمَ تُبْلَى السَّرَائِرُ} [الآية 8-9]",
+    "insightAr": "{تُبْلَى}؛ معناها: تُكشف، وتُختبر، وتُظهر النوايا، والخواطر، والبواطن الخفية المستورة في الصدور لتتحول لعلانية ظاهرة حكماً.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "the Qur’anic expression: are exposed and tested, with hidden intentions and inner realities brought into the open."
+  },
+  {
+    "id": 491,
+    "surah": "الأعلى",
+    "ayah": "{وَالَّذِي أَخْرَجَ الْمَرْعَى * فَجَعَلَهُ غُثَاءً أَحْوَى } [الآية 4-5]",
+    "insightAr": "{غُثَاءً أَحْوَى }؛ معناها: هشيماً يابساً، متفتتاً تالفاً، مائلاً للون الأسود الداكن المتآكل بعد نضارته وخضرته النباتية حساً.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: dry, broken vegetation, darkened and withered after its freshness and greenery have passed."
+  },
+  {
+    "id": 492,
+    "surah": "الغاشية",
+    "ayah": "{تَصْلَى نَارًا حَامِيَةً * تُسْقَى مِنْ عَيْنٍ آنِيَةٍ} [الآية 4-5]",
+    "insightAr": "{آنِيَةٍ}؛ معناها: متناهية في شدة الحرارة، والغليان، والحرقة القصوى التي تذيب الوعي والأحشاء الداخلية حساً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: intensely hot and boiling, reaching an extreme heat that causes severe suffering."
+  },
+  {
+    "id": 493,
+    "surah": "الفجر",
+    "ayah": "{وَالْفَجْرِ * وَلَيَالٍ عَشْرٍ * وَالشَّفْعِ وَالْوَتْرِ} [الآية 1-3]",
+    "insightAr": "{وَالشَّفْعِ وَالْوَتْرِ}؛ معناها: الشفع هو كل عدد أو مخلوق زوجي ثنائي، والوتر هو الفرد الخالق سبحانه وقيل ركعات صلاة مخصوصة فضلاً وتعبداً.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: the even and the odd; the reflection notes interpretations involving paired creation and the One, and also the special odd prayer."
+  },
+  {
+    "id": 494,
+    "surah": "البلد",
+    "ayah": "{لَا أُقْسِمُ بِهَذَا الْبَلَدِ * ... لَقَدْ خَلَقْنَا الْإِنسَانَ فِي كَبَدٍ} [الآية 1-4]",
+    "insightAr": "{فِي كَبَدٍ}؛ معناها: في مشقة، وتعب، وعناء مكابدة مستمرة ومواجهة لمتاعب وصدمات البيئة الحياتية فسيولوجياً ونفسياً منذ الولادة.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: in hardship, toil, and continual struggle with the difficulties and shocks of life from birth onward."
+  },
+  {
+    "id": 495,
+    "surah": "الشمس",
+    "ayah": "{كَذَّبَتْ ثَمُودُ بِطَغْوَاهَا * إِذِ انبَعَثَ أَشْقَاهَا} [الآية 11-12]",
+    "insightAr": "{بطَغْوَاهَا}؛ معناها: بسبب طغيانها، وعصيانها، ومجاوزتها الحدود الشرعية بتمرد وعناد باطن ظاهر ومخالفة أمر التزكية.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: because of its transgression, rebellion, and crossing of divinely set limits."
+  },
+  {
+    "id": 496,
+    "surah": "الليل",
+    "ayah": "{وَمَا يُغْنِي عَنْهُ مَالُهُ إِذَا تَرَدَّى } [الآية 11]",
+    "insightAr": "{تَرَدَّى }؛ معناها: سقط، وهلك، وهوى ومات في بئر قاع عذاب جهنم خسراناً كلياً لممتلكاته المادية الدنيوية.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: fell, perished, and was ruined, ultimately facing complete loss."
+  },
+  {
+    "id": 497,
+    "surah": "الضحى",
+    "ayah": "{وَاللَّيْلِ إِذَا سَجَى * مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَى } [الآية 2-3]",
+    "insightAr": "{سَجَى }؛ معناها: سكن، وأظلم، واستقر هدوء الليل العذب وغطى ظلامه البديع مناكب حركتها الفطرية الأرضية.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: became still and dark, as the calm darkness of night settled over the earth."
+  },
+  {
+    "id": 498,
+    "surah": "الشرح",
+    "ayah": "{الَّذِي أَنقَضَ ظَهْرَكَ} [الآية 3]",
+    "insightAr": "{أَنقَضَ}؛ معناها: أثقل، وأجهد بدنه الشريف تعباً من عظم وثقل أمانة النبوة والرسالة وهموم الدعوة.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "the Qur’anic expression: burdened and weighed down the Prophet with the great responsibility and concerns of revelation and mission."
+  },
+  {
+    "id": 499,
+    "surah": "التين",
+    "ayah": "{ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ} [الآية 5]",
+    "insightAr": "{أَسْفَلَ سَافِلِينَ}؛ معناها: الهرم والضعف الشديد والرد إلى أرذل العمر، وقيل: دركات النار لعصيانه وتعطيله لعقله وفطرته.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: the lowest state, including severe decline and old age; the reflection also mentions the interpretation of the lowest levels of the Fire."
+  },
+  {
+    "id": 500,
+    "surah": "العلق",
+    "ayah": "{كَلَّا لَئِن لَّمْ يَنتَهِ لَنَسْفَعًا بِالنَّاصِيَةِ} [الآية 15]",
+    "insightAr": "{لَنَسْفَعًا}؛ معناها: لنجذبن، ولنسحبن، ولنقهرنه بعنف ممسكين بمقدمة جبهة رأسه إذلالاً وإهانة.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: We shall seize, drag, and overpower him by the forelock in humiliation."
+  },
+  {
+    "id": 501,
+    "surah": "القدر",
+    "ayah": "{إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ} [الآية 1]",
+    "insightAr": "{الْقَدْرِ}؛ معناها: الشرف والمنزلة العالية السامية، وتأتي بمعنى التضييق أو تقدير وفصل تفاصيل الأقدار السنوية للبشر.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: honor and high rank; it can also refer to measure, determination, and the apportioning of decreed matters."
+  },
+  {
+    "id": 502,
+    "surah": "البينة",
+    "ayah": "{لَمْ يَكُنِ الَّذِينَ كَفَرُوا مِنْ أَهْلِ الْكِتَابِ وَالْمُشْرِكِينَ مُنفَكِّينَ} [الآية 1]",
+    "insightAr": "{مُنفَكِّينَ}؛ معناها: تاركين أو مفارقين لما هم عليه من باطن الضلال والجهل حتى يأتيهم برهان ساطع من الوحي.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: abandoning or separating from the state of error and ignorance in which they remain."
+  },
+  {
+    "id": 503,
+    "surah": "الزلزلة",
+    "ayah": "{وَأَخْرَجَتِ الْأَرْضُ أَثْقَالَهَا} [الآية 2]",
+    "insightAr": "{أَثْقَالَهَا}؛ معناها: الموتى، وجثث البشر المحبوسة في باطن التربة، وما تخفيه الأرض من معادن وكنوز مدفونة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: its burdens, including the dead and what the earth contains and conceals."
+  },
+  {
+    "id": 504,
+    "surah": "العاديات",
+    "ayah": "{وَالْعَادِيَاتِ ضَبْحًا} [الآية 1]",
+    "insightAr": "{ضَبْحًا}؛ معناها: صوت النَفَسِ الجاف القوي العنيف المسموع من صدور الخيل عند ركضها وحركتها السريعة للميدان.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: the audible, forceful breathing of horses as they run rapidly into the field."
+  },
+  {
+    "id": 505,
+    "surah": "العاديات",
+    "ayah": "{إِنَّ الْإِنسَانَ لِرَبِّهِ لَكَنُودٌ} [الآية 6]",
+    "insightAr": "{لَكَنُودٌ}؛ معناها: لجحود لنعم الله.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "the Qur’anic expression: deeply ungrateful for Allah’s blessings, remembering hardships while forgetting His abundant favors."
+  },
+  {
+    "id": 506,
+    "surah": "العاديات",
+    "ayah": "{وَحُصِّلَ مَا فِي الصُّدُورِ} [الآية 10]",
+    "insightAr": "{وَحُصِّلَ}؛ معناها: أُظهر، وجُمِع، وكُشِف ما تنطوي عليه النوايا والبواطن الخفية المستورة في الصدور علانية.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: brought out, gathered, and exposed—especially what hidden intentions and inner realities contained."
+  },
+  {
+    "id": 507,
+    "surah": "القارعة",
+    "ayah": "{وَتَكُونُ الْجِبَالُ كَالْعِهْنِ الْمَنفُوشِ} [الآية 5]",
+    "insightAr": "{كَالْعِهْنِ}؛ معناها: كالصوف المصبوغ بألوان مختلفة المتطاير الخفيف الذي تذروه الرياح بلحظة لشدة تفتته.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: like dyed wool, light and scattered, easily carried away by the wind."
+  },
+  {
+    "id": 508,
+    "surah": "التكاثر",
+    "ayah": "{أَلْهَاكُمُ التَّكَاثُرُ * حَتَّى زُرْتُمُ الْمَقَابِرَ} [الآية 1-2]",
+    "insightAr": "{أَلْهَاكُمُ}؛ معناها: شغلكم، وأنساكم، واستعبد طاقتهم ووعي قلوبكم عن الاستعداد للآخرة بالمكاثرة والمفاخرة الدنيوية.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: distracted you, made you forget, and consumed your attention through worldly rivalry and accumulation."
+  },
+  {
+    "id": 509,
+    "surah": "العصر",
+    "ayah": "{وَالْعَصْرِ * إِنَّ الْإِنسَانَ لَفِي خُسْرٍ} [الآية 1-2]",
+    "insightAr": "{خُسْرٍ}؛ معناها: ضياع، وهلاك، وخسارة شاملة محيطة بجنس الإنسان المادي الفاني إذا فرط بدينه.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "the Qur’anic expression: loss, ruin, and comprehensive failure for the human being who neglects his faith."
+  },
+  {
+    "id": 510,
+    "surah": "الهمزة",
+    "ayah": "{وَيْلٌ لِّكُلِّ هُمَزَةٍ لُّمَزَةٍ} [الآية 1]",
+    "insightAr": "{هُمَزَةٍ لُّمَزَةٍ}؛ معناها: الذي يعيب الناس ويغتابهم ويطعن فيهم بإشارات عينه وحركاته الخفية ({هُمَزَةٍ})، وبلسانه صراحة ({لُّمَزَةٍ}).",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: one who disparages and backbites others—by hidden gestures and looks the Qur’anic expression, and openly with the tongue the Qur’anic expression."
+  },
+  {
+    "id": 511,
+    "surah": "الهمزة",
+    "ayah": "{كَلَّا لَيُنبَذَنَّ فِي الْحُطَمَةِ} [الآية 4]",
+    "insightAr": "{الْحُطَمَةُ}؛ معناها: اسم من أسماء جهنم النارية.",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: one of the names of Hell, called so because it crushes and breaks what is cast into it."
+  },
+  {
+    "id": 512,
+    "surah": "الفيل",
+    "ayah": "{فَجَعَلَهُمْ كَعَصْفٍ مَّأْكُولٍ} [الآية 5]",
+    "insightAr": "{كَعَصْفٍ}؛ معناها: كورق الزرع والنبات الجاف اليابس المفرغ التالف الذي أكلته الدواب وروثته بقذارة.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: like dry, withered plant leaves reduced to worthless residue."
+  },
+  {
+    "id": 513,
+    "surah": "قريش",
+    "ayah": "{لِإِيلَافِ قُرَيْشٍ * إِيلَافِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ} [الآية 1-2]",
+    "insightAr": "{لِإِيلَافِ}؛ معناها: لاعتيادهم، وألفتهم، واستقرار خطوط تجارتهم وأمان رحلتهم المعيشية المادية حماية وتكريماً.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: because of their familiarity, settled security, and accustomed commercial journeys and trade routes."
+  },
+  {
+    "id": 514,
+    "surah": "الماعون",
+    "ayah": "{وَيَمْنَعُونَ الْمَاعُونَ} [الآية 7]",
+    "insightAr": "{الْمَاعُونَ}؛ معناها: كل ما يُستعار عادة بين الجيران من أدوات المعيشة البسيطة (كالفأس، والقدر، والإناء، والملح) فمنعه بخل ذميم.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "the Qur’anic expression: ordinary household items commonly lent between neighbors, whose withholding reflects blameworthy miserliness."
+  },
+  {
+    "id": 515,
+    "surah": "الكوثر",
+    "ayah": "{إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ} [الآية 3]",
+    "insightAr": "{الْأَبْتَرُ}؛ معناها: منقطع الذكر والأثر والخير في الدنيا والآخرة، وليس له عقب يحمل اسمه لذكراه الخبيثة.",
+    "source": "التحرير والتنوير - ابن عاشور.",
+    "insightEn": "the Qur’anic expression: cut off from lasting remembrance, influence, and good, with no enduring legacy."
+  },
+  {
+    "id": 516,
+    "surah": "الكافرون",
+    "ayah": "{لَكُمْ دِينُكُمْ وَلِيَ دِينِ} [الآية 6]",
+    "insightAr": "{دِينُكُمْ}؛ معناها: منهجكم، وشرككم، وعقيدتكم الباطلة التي اخترتموها لأنفسكم بعناد (وهي آية براءة وتمايز عقدي حاسم).",
+    "source": "الكشاف - الزمخشري.",
+    "insightEn": "the Qur’anic expression: your way, religion, or false creed that you have chosen; the reflection presents it as a decisive declaration of doctrinal distinction."
+  },
+  {
+    "id": 517,
+    "surah": "النصر",
+    "ayah": "{وَرَأَيْتَ النَّاسُ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا} [الآية 2]",
+    "insightAr": "{أَفْوَاجًا}؛ معناها: جماعات، وطوائف، وقبائل ضخمة متلاحقة بكثافة عددية بعد تمنع وتردد طويل.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: large groups, communities, tribes, or successive waves of people arriving in numbers."
+  },
+  {
+    "id": 518,
+    "surah": "المسد",
+    "ayah": "{تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ} [الآية 1]",
+    "insightAr": "{تَبَّتْ}؛ معناها: خسرت، وهلكت، وضلت وخاب سعي عمله كلياً في مواجهة الحق وعقابه الصارم.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: has perished, lost, and failed completely in the face of truth and its consequence."
+  },
+  {
+    "id": 519,
+    "surah": "المسد",
+    "ayah": "{فِي جِيدِهَا حَبْلٌ مِّن مَّسَدٍ} [الآية 5]",
+    "insightAr": "{مَّسَدٍ}؛ معناها: ليف خشن قوي أو حبل محكم الفتل تُلَف وتُقاد به في عذاب النار إهانة لها بجنس عملها.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: strong twisted fiber or rope used as a restraint in punishment."
+  },
+  {
+    "id": 520,
+    "surah": "الإخلاص",
+    "ayah": "{قُلْ هُوَ اللَّهُ أَحَدٌ * اللَّهُ الصَّمَدُ} [الآية 1-2]",
+    "insightAr": "{الصَّمَدُ}؛ معناها: السيد العظيم المتناهي في الشرف والسؤدد، والّذي تصمد، وتلجأ، وتتجه إليه الخلائق كلها في حوائجها وأزماتها حتماً.",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "the Qur’anic expression: the supreme Master, perfect in greatness, to whom all creation turns and upon whom it depends for its needs."
+  },
+  {
+    "id": 521,
+    "surah": "الفلق",
+    "ayah": "{قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ} [الآية 1]",
+    "insightAr": "{الْفَلَقِ}؛ معناها: الصبح البديع إذا انشق وخرج ضياؤه من ظلام الليل الخانق، وقيل: كل ما يفلقه الله ويشقه من حب ونوى.",
+    "source": "جامع البيان - الطبري.",
+    "insightEn": "the Qur’anic expression: the dawn when its light breaks through the darkness of night; also interpreted as anything Allah causes to split open, such as a seed."
+  },
+  {
+    "id": 522,
+    "surah": "الفلق",
+    "ayah": "{وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ} [الآية 3]",
+    "insightAr": "{غَاسِقٍ إِذَا وَقَبَ}؛ معناها: الليل إذا أظلم، واشتد سواده، ودخل غسقه وغطى بظلامه مناكب الأرض لما فيه من انتشار الشرور في خفاء.",
+    "source": "تفسير ابن كثير.",
+    "insightEn": "the Qur’anic expression: the night when its darkness deepens and spreads over the earth."
+  },
+  {
+    "id": 523,
+    "surah": "الفلق",
+    "ayah": "{وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ} [الآية 4]",
+    "insightAr": "{النَّفَّاثَاتِ}؛ معناها: السواحر اللاتي ينفثن وينفخن مع ريق خفيف في العقد التي يعقدنها في الخيوط لإيقاع السحر والأذى بالناس.",
+    "source": "بدائع الفوائد - الإمام ابن القيم.",
+    "insightEn": "the Qur’anic expression: women who blow lightly with saliva upon knots as part of the practice of sorcery described in the verse."
+  },
+  {
+    "id": 524,
+    "surah": "الناس",
+    "ayah": "{مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ} [الآية 4]",
+    "insightAr": "{الْخَنَّاسِ}؛ معناها: المعتاد على الاختفاء، والانكماش، والتراجع السريع جداً إذا ذكر العبد ربه بصدق ويقظة (صفة الشيطان).",
+    "source": "طريق الهجرتين - ابن القيم.",
+    "insightEn": "the Qur’anic expression: one who repeatedly withdraws and hides, retreating when the servant sincerely remembers Allah; the reflection applies it to Satan."
+  }
+];

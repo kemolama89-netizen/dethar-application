@@ -36,4 +36,30 @@ export function saveTasbeehCounters(counters: TasbeehCounters): void {
   } catch {
     // Best-effort only — counting itself must never depend on this succeeding.
   }
+  notifyListeners(counters);
+}
+
+// Live, event-driven fan-out for whoever's currently rendering these
+// counters (TasbeehScreen) — so a change from a source OTHER than the
+// mounted screen's own handlers (specifically: a Floating Tasbeeh tap,
+// reconciled via floatingTasbeehSync.ts's reconcileFloatingTasbeeh, which
+// calls saveTasbeehCounters exactly like every other commit path) is
+// reflected immediately, without polling. Deliberately placed here, on
+// saveTasbeehCounters itself, rather than in tasbeehCommit.ts or
+// floatingTasbeehSync.ts: EVERY real write to this store — manual tap,
+// either Voice Tasbeeh path, a floating tap's own single/batch
+// reconciliation, and Reset/Reset All — already funnels through this one
+// function, so hooking it here covers all of them from exactly one place,
+// with no risk of a future write path forgetting to notify.
+type TasbeehCountersListener = (counters: TasbeehCounters) => void;
+const listeners = new Set<TasbeehCountersListener>();
+
+function notifyListeners(counters: TasbeehCounters): void {
+  listeners.forEach((listener) => listener(counters));
+}
+
+/** Returns an unsubscribe function — call it on cleanup (e.g. a useEffect return). */
+export function subscribeTasbeehCounters(listener: TasbeehCountersListener): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
 }

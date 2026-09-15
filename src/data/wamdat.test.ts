@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { WAMDAT, getWamdaVerseReference, getWamdaVerseText } from "./wamdat";
+import { WAMDAT, getWamdaVerseReference, getWamdaVerseText, getWamdaSourceCitation } from "./wamdat";
 
 // Structural invariants for the Wamdat dataset (source:
 // DITHAR_Wamdat_524_Bilingual_Source_Aligned.ts, with a content-cleanup
@@ -80,6 +80,22 @@ describe("WAMDAT", () => {
       const verse = getWamdaVerseText(entry);
       expect(verse.startsWith("{")).toBe(false);
       expect(verse.endsWith("}")).toBe(false);
+    }
+  });
+
+  it("getWamdaSourceCitation returns the Arabic source verbatim in Arabic mode", () => {
+    for (const entry of WAMDAT) {
+      expect(getWamdaSourceCitation(entry, "ar")).toBe(entry.source);
+    }
+  });
+
+  it("getWamdaSourceCitation resolves an English rendering for every known source, with no Arabic script", () => {
+    const missing = WAMDAT.filter((e) => getWamdaSourceCitation(e, "en") === undefined).map((e) => e.source);
+    expect(new Set(missing)).toEqual(new Set());
+    for (const entry of WAMDAT) {
+      const en = getWamdaSourceCitation(entry, "en");
+      expect(en).toBeDefined();
+      expect(ARABIC_RE.test(en!)).toBe(false);
     }
   });
 });

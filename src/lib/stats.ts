@@ -9,11 +9,17 @@
 // calm-reading gate ignored, or a tap that never reaches its target, never
 // calls these functions at all).
 //
-// `source` is the seam for future growth: today only "written" (the
-// Written Adhkar reader) and "tasbeeh" (the digital Tasbeeh) exist. A future
-// Audio Adhkar feature adds "audio" as a new source value and its own
-// aggregator function below — it can NEVER be mixed into the written/tasbeeh
-// totals because every read path filters by `source` explicitly.
+// `source` is the seam for future growth: today "written" (the Written
+// Adhkar reader), "tasbeeh" (the manual/Voice digital Tasbeeh), and
+// "floating" (the Floating Tasbeeh quick-access counter — see
+// recordFloatingTasbeehRepetition below) exist. A future Audio Adhkar
+// feature adds "audio" as a new source value and its own aggregator
+// function below — it can NEVER be mixed into the written/tasbeeh totals
+// because every read path filters by `source` explicitly. "floating" is a
+// deliberate EXCEPTION to that isolation: getTasbeehStats() below reads it
+// alongside "tasbeeh" on purpose, so a repetition committed from outside
+// the app still lands in the same Tasbeeh totals the user already sees,
+// while remaining separately tagged in the raw event log for provenance.
 //
 // Every event records the DEVICE's local date/time/timezone AT THE MOMENT
 // IT HAPPENED (not just a raw epoch timestamp) — so a completion always
@@ -26,7 +32,7 @@ import type { WrittenAdhkarCategoryKey } from "../data/written-adhkar";
 
 const STORAGE_KEY = "dithar:stats:events:v1";
 
-export type StatSource = "written" | "tasbeeh"; // future: "audio"
+export type StatSource = "written" | "tasbeeh" | "floating"; // future: "audio"
 
 interface RepetitionEvent {
   ts: number;
@@ -207,6 +213,65 @@ export function recordTasbeehRepetitions(dhikrId: number, times: number) {
   persist();
 }
 
+// A repetition's device-local date/time/timezone, captured at the moment
+// it actually happened. For Floating Tasbeeh specifically, that moment is
+// the native tap itself — which can happen while this JS runtime isn't
+// even running — not whenever reconciliation later gets around to
+// committing it (see floatingTasbeehSync.ts). Structurally identical to
+// nowStamp()'s own return shape, but recordFloatingTasbeehRepetition[s]
+// below accept it explicitly rather than always deriving it internally.
+export interface FloatingTasbeehOccurredAt {
+  ts: number;
+  localDate: string;
+  localTime: string;
+  timeZone: string;
+}
+
+// Floating Tasbeeh's own recording entry point — a deliberately SEPARATE
+// function from recordTasbeehRepetitions above (never a `source` parameter
+// threaded through it) so the manual/Voice Tasbeeh call sites and their
+// existing behavior stay byte-for-byte unchanged. Tags every event
+// `source: "floating"` rather than `"tasbeeh"` so the raw log always shows
+// where a repetition actually came from, while getTasbeehStats() below
+// still folds it into the same Tasbeeh totals the user already sees.
+// `occurredAt` defaults to "now" (unchanged from Phase 1) — reconciliation
+// always passes the tap's own captured stamp explicitly instead.
+export function recordFloatingTasbeehRepetition(dhikrId: number, times: number, occurredAt?: FloatingTasbeehOccurredAt) {
+  if (times <= 0) return;
+  const events = load();
+  const stamp = occurredAt ?? nowStamp();
+  for (let i = 0; i < times; i++) {
+    events.push({ ...stamp, kind: "repetition", source: "floating", dhikrId: String(dhikrId) });
+  }
+  persist();
+}
+
+export interface FloatingTasbeehBatchEntry {
+  dhikrId: number;
+  times: number;
+  occurredAt: FloatingTasbeehOccurredAt;
+}
+
+// Batched sibling of recordFloatingTasbeehRepetition — same rationale as
+// recordTasbeehRepetitions above (one persist() for the whole batch,
+// rather than one full-log serialization per pending event), but each
+// entry keeps its OWN occurredAt stamp rather than sharing one, since a
+// reconciliation batch is typically many DIFFERENT taps made at different
+// real moments while the app was closed (e.g. 50 offline floating taps
+// across a day), unlike Voice Tasbeeh's single-moment burst.
+export function recordFloatingTasbeehRepetitions(entries: FloatingTasbeehBatchEntry[]) {
+  const events = load();
+  let wrote = false;
+  for (const entry of entries) {
+    if (entry.times <= 0) continue;
+    for (let i = 0; i < entry.times; i++) {
+      events.push({ ...entry.occurredAt, kind: "repetition", source: "floating", dhikrId: String(entry.dhikrId) });
+    }
+    wrote = true;
+  }
+  if (wrote) persist();
+}
+
 // Legacy events recorded before this file tracked explicit local
 // date/time/timezone only had `ts` — this derives the same local date from
 // it (using the device's CURRENT timezone, the best available fallback) so
@@ -324,6 +389,13 @@ export interface TasbeehStats {
 
 export function getTasbeehStats(selection: StatSelection): TasbeehStats {
   const events = inSelection(load(), selection);
-  const reps = events.filter((e): e is RepetitionEvent => e.kind === "repetition" && e.source === "tasbeeh");
+  // "tasbeeh" (manual + Voice) and "floating" (Floating Tasbeeh) are
+  // reported as ONE unified total on purpose — see the StatSource doc
+  // comment above. A user tapping the floating counter must see the exact
+  // same running total as tapping inside the app, not a second, separate
+  // number.
+  const reps = events.filter(
+    (e): e is RepetitionEvent => e.kind === "repetition" && (e.source === "tasbeeh" || e.source === "floating"),
+  );
   return { total: reps.length, perDhikr: repetitionBreakdown(reps) };
 }
