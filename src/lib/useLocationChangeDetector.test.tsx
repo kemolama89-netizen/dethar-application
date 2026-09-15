@@ -166,6 +166,22 @@ describe("useLocationChangeDetector — manual location", () => {
     expect(latest?.pending).toBeNull();
     await unmount();
   });
+
+  it("never even calls navigator.geolocation.getCurrentPosition while a manual location is active — not just discarding the result", async () => {
+    saveLastActiveLocation(KUWAIT_ACTIVE);
+    saveManualLocation({ source: "manual", latitude: 25.2048, longitude: 55.2708, timezone: "Asia/Dubai", countryCode: "AE" });
+    const getCurrentPosition = vi.fn();
+    Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition } });
+
+    const { unmount } = await mount();
+    expect(getCurrentPosition).not.toHaveBeenCalled();
+
+    // Also on a later foreground-return, not just at mount.
+    appStateChangeCallback?.({ isActive: true });
+    expect(getCurrentPosition).not.toHaveBeenCalled();
+
+    await unmount();
+  });
 });
 
 describe("useLocationChangeDetector — decline / confirm", () => {

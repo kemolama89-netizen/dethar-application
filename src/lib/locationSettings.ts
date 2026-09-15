@@ -201,3 +201,50 @@ export function resolveActiveLocationRecord(): ActiveLocationRecord {
   const { manualLocation, lastActiveLocation } = loadLocationSettings();
   return manualLocation ?? lastActiveLocation ?? KUWAIT_FALLBACK_LOCATION;
 }
+
+// TEST/DEV-ONLY: wipes this module's ENTIRE persisted state (manual
+// override, last automatic resolution, both change-detector prompt
+// dismissals) in one atomic reset. Afterwards, resolveActiveLocationRecord()
+// returns the Kuwait fallback and — crucially — useCoordinates.ts's mount
+// effect (gated ONLY by `manualLocation`, see its own doc comment) calls
+// navigator.geolocation.getCurrentPosition() again on the next mount,
+// exactly as it would on a genuine first launch.
+//
+// Deliberately does NOT and CANNOT reset the browser's own remembered
+// Permissions-API decision for this origin, nor (on the native Capacitor
+// Android build) the OS's own granted/denied permission record — neither
+// is readable or writable from page JS, by design (see MDN's Permissions
+// API / Android's runtime permission model). Simulating a truly fresh
+// install also requires clearing THAT layer separately:
+//   - Web preview: the browser's own site-settings UI (chrome://settings
+//     /content/siteDetails?site=<origin>) → reset the Location permission
+//     for this origin, or just test in a fresh Incognito/private window.
+//   - Native Android: Settings → Apps → DITHAR → Permissions → Location
+//     → remove, or `adb shell pm reset-permissions`, or a full uninstall/
+//     reinstall.
+// This function only ever touches THIS app's own localStorage entry —
+// never anything OS/browser-level — so it's safe to call from a real
+// (non-automated) testing session with no risk of touching prod data
+// (there is no prod backend; this key is the only place this state
+// lives).
+export function resetLocationSettingsForTesting(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Best-effort only, matching this file's other storage access.
+  }
+}
+
+// DEV-ONLY console convenience wrapper around the reset above — same
+// import.meta.env.DEV gating (and complete production dead-code
+// elimination once Vite statically inlines the constant) already
+// established by useVoiceTasbeeh.ts's window.__ditharVoiceDebugLog. No
+// user-facing UI of any kind; call it from the browser DevTools console
+// while running the dev server (`__ditharResetLocationForTesting()`),
+// then reload the page to see the app behave like a first launch.
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as { __ditharResetLocationForTesting?: () => void }).__ditharResetLocationForTesting = () => {
+    resetLocationSettingsForTesting();
+    console.log("[dithar:dev] Location settings cleared. Reload the page to simulate a first launch.");
+  };
+}

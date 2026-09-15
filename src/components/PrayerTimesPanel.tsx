@@ -7,6 +7,7 @@ import { useCoordinates } from "../lib/useCoordinates";
 import { addOneLocalDay, calculatePrayerTimes, formatPrayerTime } from "../lib/prayerTimes";
 import { resolveCalculationSettings } from "../lib/resolveCalculationSettings";
 import { loadCalculationOverrides } from "../lib/calculationSettings";
+import { getCountryName } from "../data/cities";
 import { useNextPrayerCountdown } from "../lib/useNextPrayerCountdown";
 import { usePrayerReminder } from "../lib/usePrayerReminder";
 
@@ -81,7 +82,24 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
   const { language, dir } = useLanguage();
   const t = labels[language];
   const names = prayerNames[language];
-  const { coordinates, timezone, countryCode } = useCoordinates();
+  const { coordinates, timezone, countryCode, cityNameAr, cityNameEn } = useCoordinates();
+  // The visible "current location" label — sourced from the SAME active
+  // location record the calculation below reads (useCoordinates), never
+  // a static placeholder string. "City, Country" when both are known
+  // (a manual pick, or the Kuwait fallback — see locationSettings.ts's
+  // KUWAIT_FALLBACK_LOCATION); country name alone for a device GPS fix
+  // (Step 7's country-only reverse-geocode has no city-level data to
+  // offer); raw coordinates only for the rare device fix too far from
+  // every bundled city (reverseGeocode.ts's MAX_MATCH_DISTANCE_KM) to
+  // resolve even a country. Never hardcodes "Kuwait".
+  const locationLabel = useMemo(() => {
+    const cityName = language === "ar" ? cityNameAr : cityNameEn;
+    const countryName = countryCode ? getCountryName(countryCode, language) : undefined;
+    if (cityName && countryName && countryName !== cityName) return `${cityName}, ${countryName}`;
+    if (cityName) return cityName;
+    if (countryName) return countryName;
+    return `${coordinates.latitude.toFixed(2)}, ${coordinates.longitude.toFixed(2)}`;
+  }, [language, cityNameAr, cityNameEn, countryCode, coordinates]);
   // Step 6: the user's explicit method/madhab overrides (Settings >
   // Calculation Method), read once per mount — same "full remount on
   // screen switch" convention useLocationChangeDetector.ts's own doc
@@ -142,9 +160,9 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
             center instead of merely at its RTL/LTR "start" edge. */}
         <span className="flex-1" aria-hidden="true" />
         <span className="shrink-0 text-[12px] font-bold sm:text-[14px]">{t.prayerPanelTitle}</span>
-        <span className="flex flex-1 shrink-0 items-center justify-end gap-1 text-[9px] opacity-90 sm:text-[11px]">
-          {t.city}
-          <MapPin size={11} style={{ color: "var(--color-gold)" }} />
+        <span className="flex min-w-0 flex-1 shrink-0 items-center justify-end gap-1 text-[9px] opacity-90 sm:text-[11px]">
+          <span className="truncate">{locationLabel}</span>
+          <MapPin size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />
         </span>
       </div>
 

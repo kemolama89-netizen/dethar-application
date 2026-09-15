@@ -25,7 +25,6 @@ export const labels = {
     hadithTitle: "حديث نبوي",
     hadithAttribution: "قال رسول الله ﷺ",
     prayerPanelTitle: "مواقيت الصلاة",
-    city: "الكويت",
     prayerReminder: "تذكير الصلاة",
     // Prayer Reminder toggle + notification text (see usePrayerReminder.ts)
     // — deliberately separate from Settings > Reminders' own
@@ -79,7 +78,6 @@ export const labels = {
     hadithTitle: "Prophetic Hadith",
     hadithAttribution: "The Messenger of Allah ﷺ said:",
     prayerPanelTitle: "Prayer Times",
-    city: "Kuwait",
     prayerReminder: "Prayer Reminder",
     prayerReminderUnavailableNote: "Actual notifications will activate once available in this build.",
     prayerReminderNotificationTitle: "It's time to pray",

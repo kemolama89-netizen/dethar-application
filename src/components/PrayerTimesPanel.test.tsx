@@ -20,11 +20,12 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { PrayerTimesPanel } from "./PrayerTimesPanel";
 import { LanguageProvider } from "../theme/LanguageContext";
-import { saveManualLocation } from "../lib/locationSettings";
+import { saveManualLocation, resetLocationSettingsForTesting } from "../lib/locationSettings";
 import { resolveCalculationSettings } from "../lib/resolveCalculationSettings";
 import { calculatePrayerTimes, formatPrayerTime, KUWAIT_CITY_COORDINATES } from "../lib/prayerTimes";
 import { prayerOrder } from "../data/content";
 import type { PrayerKey } from "../data/content";
+import { CITIES } from "../data/cities";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -145,6 +146,135 @@ describe("PrayerTimesPanel — Step 9: high-latitude locations never render an i
       expect(expected[key]).toMatch(/^\d{2}:\d{2}$/);
       expect(container.textContent).toContain(expected[key]);
     }
+    await unmount();
+  });
+});
+
+// Regression coverage for the displayed "current location" label — it
+// must be sourced from the SAME useCoordinates() record the calculation
+// above already reads, never a static "Kuwait" placeholder (that was the
+// actual bug: the label used to be a hardcoded content.ts string,
+// completely independent of the active location, so switching to e.g.
+// Makkah via Settings > Location recalculated Prayer Times correctly but
+// left the label reading "Kuwait" forever).
+describe("PrayerTimesPanel — displayed location label reflects the active location, never a stale 'Kuwait'", () => {
+  it("with no manual location and no geolocation (the genuine Kuwait fallback), the label reads Kuwait", async () => {
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain("الكويت");
+    await unmount();
+  });
+
+  it("selecting Makkah (Mecca), Saudi Arabia from the bundled city list updates the label away from Kuwait", async () => {
+    const mecca = CITIES.find((c) => c.id === "mecca")!;
+    saveManualLocation({
+      source: "manual",
+      latitude: mecca.latitude,
+      longitude: mecca.longitude,
+      timezone: mecca.timezone,
+      countryCode: mecca.countryCode,
+      cityNameAr: mecca.nameAr,
+      cityNameEn: mecca.nameEn,
+    });
+
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain(mecca.nameAr); // "مكة المكرمة"
+    expect(container.textContent).toContain(mecca.countryNameAr); // "السعودية"
+    expect(container.textContent).not.toContain("الكويت");
+    await unmount();
+  });
+
+  it("selecting London, United Kingdom updates the label accordingly (not stuck on the previous Makkah selection either)", async () => {
+    const mecca = CITIES.find((c) => c.id === "mecca")!;
+    saveManualLocation({
+      source: "manual",
+      latitude: mecca.latitude,
+      longitude: mecca.longitude,
+      timezone: mecca.timezone,
+      countryCode: mecca.countryCode,
+      cityNameAr: mecca.nameAr,
+      cityNameEn: mecca.nameEn,
+    });
+    const meccaRun = await mount();
+    expect(meccaRun.container.textContent).toContain(mecca.nameAr);
+    await meccaRun.unmount();
+
+    const london = CITIES.find((c) => c.id === "london")!;
+    saveManualLocation({
+      source: "manual",
+      latitude: london.latitude,
+      longitude: london.longitude,
+      timezone: london.timezone,
+      countryCode: london.countryCode,
+      cityNameAr: london.nameAr,
+      cityNameEn: london.nameEn,
+    });
+
+    const londonRun = await mount();
+    expect(londonRun.container.textContent).toContain(london.nameAr); // "لندن"
+    expect(londonRun.container.textContent).toContain(london.countryNameAr); // "المملكة المتحدة"
+    expect(londonRun.container.textContent).not.toContain("الكويت");
+    expect(londonRun.container.textContent).not.toContain(mecca.nameAr);
+    await londonRun.unmount();
+  });
+
+  it.each([
+    { id: "mumbai", label: "Mumbai" },
+    { id: "delhi", label: "Delhi" },
+  ])("selecting $label, India from Settings > Location updates the label and calculation, independently of first-launch permission flow", async ({ id }) => {
+    const city = CITIES.find((c) => c.id === id)!;
+    saveManualLocation({
+      source: "manual",
+      latitude: city.latitude,
+      longitude: city.longitude,
+      timezone: city.timezone,
+      countryCode: city.countryCode,
+      cityNameAr: city.nameAr,
+      cityNameEn: city.nameEn,
+    });
+
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain(city.nameAr);
+    expect(container.textContent).toContain(city.countryNameAr); // "الهند"
+    expect(container.textContent).not.toContain("الكويت");
+    await unmount();
+  });
+
+  it("a manual selection made right after resetLocationSettingsForTesting() (the first-launch reset) still activates normally — the two are fully independent", async () => {
+    resetLocationSettingsForTesting();
+    const mecca = CITIES.find((c) => c.id === "mecca")!;
+    saveManualLocation({
+      source: "manual",
+      latitude: mecca.latitude,
+      longitude: mecca.longitude,
+      timezone: mecca.timezone,
+      countryCode: mecca.countryCode,
+      cityNameAr: mecca.nameAr,
+      cityNameEn: mecca.nameEn,
+    });
+
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain(mecca.nameAr);
+    expect(container.textContent).not.toContain("الكويت");
+    await unmount();
+  });
+
+  it("a device GPS fix with a country-only estimate (Step 7) never falls back to the Kuwait label either", async () => {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: (success: PositionCallback) => {
+          // Matches cities.ts's own London entry closely enough for the
+          // offline nearest-city country estimate (reverseGeocode.ts) to
+          // resolve to the United Kingdom, with no cityName (device fixes
+          // never carry one — see useCoordinates.ts).
+          success({ coords: { latitude: 51.5072, longitude: -0.1276 } } as GeolocationPosition);
+        },
+      },
+    });
+
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain("المملكة المتحدة"); // country name only
+    expect(container.textContent).not.toContain("الكويت");
     await unmount();
   });
 });
