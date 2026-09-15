@@ -13,7 +13,7 @@ import { createRoot } from "react-dom/client";
 import { useCoordinates } from "./useCoordinates";
 import { KUWAIT_CITY_COORDINATES, KUWAIT_TIMEZONE } from "./prayerTimes";
 import { getDeviceTimeZone } from "./dateTime";
-import { saveLastActiveLocation, saveManualLocation } from "./locationSettings";
+import { saveLastActiveLocation, saveManualLocation, resetLocationSettingsForTesting } from "./locationSettings";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -206,6 +206,37 @@ describe("useCoordinates — a manual location is set", () => {
     const second = await mount();
     expect(latest?.source).toBe("manual");
     expect(latest?.cityNameEn).toBe("Tokyo");
+    await second.unmount();
+  });
+
+  // Reproduces the dev-only "simulate a first launch" reset (see
+  // locationSettings.ts's resetLocationSettingsForTesting) actually doing
+  // what it's for: after a manual selection made the hook permanently skip
+  // requesting geolocation (the "manual is sticky" behavior verified
+  // above), clearing that state must re-arm the request on the very next
+  // mount — otherwise the reset wouldn't be a usable way to reproduce
+  // first-launch behavior during testing.
+  it("resetLocationSettingsForTesting() re-arms the geolocation request on the next mount, after a manual selection had suppressed it", async () => {
+    saveManualLocation(TOKYO_MANUAL);
+    let getCurrentPositionCalled = false;
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: () => {
+          getCurrentPositionCalled = true;
+        },
+      },
+    });
+
+    const first = await mount();
+    expect(getCurrentPositionCalled).toBe(false); // still sticky-manual, as verified above
+    await first.unmount();
+
+    resetLocationSettingsForTesting();
+
+    const second = await mount();
+    expect(getCurrentPositionCalled).toBe(true); // now behaves like a genuine first launch
+    expect(latest?.source).toBe("fallback"); // Kuwait, pending that fresh fix — same as a real first launch
     await second.unmount();
   });
 });

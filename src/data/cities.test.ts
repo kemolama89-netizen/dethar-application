@@ -3,7 +3,7 @@
 // and every country code actually referenced is a real one this app's
 // calculation-method table (or its documented MWL fallback) can resolve.
 import { describe, expect, it } from "vitest";
-import { CITIES } from "./cities";
+import { CITIES, getCountryName } from "./cities";
 import { getCalculationMethodForCountry } from "../lib/countryCalculationMethod";
 
 describe("CITIES", () => {
@@ -54,5 +54,21 @@ describe("CITIES", () => {
   it("includes at least one deliberately-unmapped-country city to exercise the MWL fallback", () => {
     const unmapped = CITIES.filter((c) => getCalculationMethodForCountry(c.countryCode) === "MuslimWorldLeague" && c.countryCode !== "GB");
     expect(unmapped.length).toBeGreaterThan(0);
+  });
+});
+
+// getCountryName — used by PrayerTimesPanel.tsx to build the "City,
+// Country" displayed-location label from an ActiveLocationRecord's own
+// countryCode, instead of ever hardcoding a country name.
+describe("getCountryName", () => {
+  it("resolves the bilingual country name for a code present in the bundle", () => {
+    expect(getCountryName("SA", "en")).toBe("Saudi Arabia");
+    expect(getCountryName("SA", "ar")).toBe("السعودية");
+    expect(getCountryName("GB", "en")).toBe("United Kingdom");
+    expect(getCountryName("KW", "en")).toBe("Kuwait");
+  });
+
+  it("returns undefined for a code with no bundled city, rather than guessing", () => {
+    expect(getCountryName("ZZ", "en")).toBeUndefined();
   });
 });

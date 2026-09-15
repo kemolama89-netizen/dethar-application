@@ -111,3 +111,22 @@ export const CITIES: readonly CityRecord[] = [
   { id: "sao-paulo", nameAr: "ساو باولو", nameEn: "São Paulo", countryCode: "BR", countryNameAr: "البرازيل", countryNameEn: "Brazil", latitude: -23.5505, longitude: -46.6333, timezone: "America/Sao_Paulo" },
   { id: "moscow", nameAr: "موسكو", nameEn: "Moscow", countryCode: "RU", countryNameAr: "روسيا", countryNameEn: "Russia", latitude: 55.7558, longitude: 37.6173, timezone: "Europe/Moscow" },
 ];
+
+const countryNamesByCode = new Map<string, { ar: string; en: string }>();
+for (const city of CITIES) {
+  if (!countryNamesByCode.has(city.countryCode)) {
+    countryNamesByCode.set(city.countryCode, { ar: city.countryNameAr, en: city.countryNameEn });
+  }
+}
+
+// Looks up the bundled localized country name for an ISO 3166-1 alpha-2
+// code, from this same CITIES dataset's own countryNameAr/countryNameEn
+// fields (the one place those names already live — see
+// PrayerTimesPanel.tsx, which pairs this with an ActiveLocationRecord's
+// own cityNameAr/cityNameEn to build a "City, Country" display label).
+// `undefined` for a code this bundle has no city for — the caller must
+// fall back to something else (e.g. coordinates), never to a hardcoded
+// country name.
+export function getCountryName(countryCode: string, language: "ar" | "en"): string | undefined {
+  return countryNamesByCode.get(countryCode)?.[language];
+}

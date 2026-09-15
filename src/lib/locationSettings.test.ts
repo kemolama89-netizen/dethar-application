@@ -9,7 +9,10 @@ import {
   loadLocationSettings,
   saveManualLocation,
   saveLastActiveLocation,
+  saveLastPromptedTimezone,
+  saveLastPromptedCoordinates,
   resolveActiveLocationRecord,
+  resetLocationSettingsForTesting,
   KUWAIT_FALLBACK_LOCATION,
 } from "./locationSettings";
 import type { ActiveLocationRecord } from "./locationSettings";
@@ -113,5 +116,35 @@ describe("resolveActiveLocationRecord — the synchronous priority chain", () =>
     expect(KUWAIT_FALLBACK_LOCATION.latitude).toBe(29.3759);
     expect(KUWAIT_FALLBACK_LOCATION.longitude).toBe(47.9774);
     expect(KUWAIT_FALLBACK_LOCATION.timezone).toBe("Asia/Kuwait");
+  });
+});
+
+// resetLocationSettingsForTesting — the dev/test-only "simulate a first
+// launch" reset used to make the first-launch permission flow reliably
+// reproducible during manual QA (see locationSettings.ts's own doc
+// comment on this function for exactly what it does and does NOT reset —
+// it never touches the browser's or the native OS's own remembered
+// permission decision, only this app's own localStorage entry).
+describe("resetLocationSettingsForTesting", () => {
+  it("wipes every field this module persists — manual override, last-active, and both prompt dismissals — back to the defaults", () => {
+    saveManualLocation(TOKYO);
+    saveLastActiveLocation(PARIS_DEVICE_FIX);
+    saveLastPromptedTimezone("Europe/Paris");
+    saveLastPromptedCoordinates({ latitude: 48.8566, longitude: 2.3522 });
+
+    resetLocationSettingsForTesting();
+
+    expect(loadLocationSettings()).toEqual(EMPTY_SETTINGS);
+  });
+
+  it("afterward, resolveActiveLocationRecord() falls all the way back to Kuwait — exactly the genuine first-launch starting point", () => {
+    saveManualLocation(TOKYO);
+    resetLocationSettingsForTesting();
+    expect(resolveActiveLocationRecord()).toEqual(KUWAIT_FALLBACK_LOCATION);
+  });
+
+  it("is safe to call with nothing persisted yet (an actual first launch) — never throws", () => {
+    expect(() => resetLocationSettingsForTesting()).not.toThrow();
+    expect(loadLocationSettings()).toEqual(EMPTY_SETTINGS);
   });
 });

@@ -114,7 +114,17 @@ export function useLocationChangeDetector(): LocationChangeDetectorResult {
   // ONE single-shot geolocation read per check — never `watchPosition`,
   // never a timer/interval. Falls through to the timezone-only path on
   // any failure (denied, unavailable, no runtime support, timeout).
+  //
+  // Bails out BEFORE ever touching navigator.geolocation when a manual
+  // location is active — `evaluate` already discards the result in that
+  // case (see its own "sticky override — never second-guessed" comment),
+  // but skipping the call here too means a manually-located user's app
+  // never issues a live GPS/permission request on every Home mount and
+  // foreground-return for a result it's just going to throw away. Same
+  // "check the sticky override before requesting anything" rule
+  // useCoordinates.ts's own effect already follows.
   function check() {
+    if (loadLocationSettings().manualLocation) return;
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       evaluate(undefined);
       return;
