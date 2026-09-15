@@ -6,7 +6,7 @@
 // installed and these tests don't need one) under the same provider
 // nesting App.tsx itself uses, so useLanguage()/useTheme()/usePalette()
 // all resolve normally.
-import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { TasbeehScreen } from "./TasbeehScreen";
@@ -16,6 +16,31 @@ import { PaletteProvider } from "../theme/PaletteContext";
 import { dhikrItems, tasbeehLabels } from "../data/tasbeeh";
 import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
 import { getTasbeehStats, clearAllStats } from "../lib/stats";
+
+// Floating Tasbeeh <-> Statistics live sync coverage (see
+// tasbeehCommit.ts's syncLiveCountToNative and this file's own
+// handleReset/handleResetAll). isFloatingTasbeehAvailable is forced true
+// here — real (unmocked) it's false in this jsdom environment, which is
+// already what every OTHER test in this file implicitly relies on to keep
+// these native calls as inert no-ops; only the dedicated describe block
+// below actually asserts on them.
+vi.mock("../lib/floatingTasbeehBridge", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/floatingTasbeehBridge")>();
+  return {
+    ...actual,
+    isFloatingTasbeehAvailable: vi.fn(() => true),
+    FloatingTasbeeh: {
+      ...actual.FloatingTasbeeh,
+      syncLiveCount: vi.fn().mockResolvedValue(undefined),
+      resetAllLiveCounts: vi.fn().mockResolvedValue(undefined),
+      // Mocked (not left as the real proxy) so tests can assert Reset
+      // never touches the persisted Floating Tasbeeh enabled state — see
+      // "TasbeehScreen — Floating Tasbeeh live sync"'s own dedicated tests.
+      setEnabled: vi.fn().mockResolvedValue(undefined),
+    },
+  };
+});
+import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
 
 // Silences React's benign "not configured for act()" warning — this
 // file's environment IS the test itself, driven entirely through act().
@@ -80,6 +105,143 @@ beforeEach(() => {
   // stats.ts keeps a module-level in-memory cache that localStorage.clear()
   // alone doesn't reset — see stats.test.ts's own note on this.
   clearAllStats();
+  vi.mocked(FloatingTasbeeh.syncLiveCount).mockClear();
+  vi.mocked(FloatingTasbeeh.resetAllLiveCounts).mockClear();
+  vi.mocked(FloatingTasbeeh.setEnabled).mockClear();
+});
+
+// Regression coverage for the shared counting-core refactor (handleTap now
+// calls commitManualTasbeehRepetition instead of two separate inline
+// calls) — no prior test in this file actually clicked the main circle, so
+// this is the concrete proof manual tapping still works exactly as before:
+// immediate UI increment, persisted counter, and exactly one Statistics
+// event tagged source "tasbeeh".
+describe("TasbeehScreen — manual tap (shared counting-core refactor)", () => {
+  it("a single tap on the main circle increments the displayed count, persists the counter, and records exactly one Statistics event", async () => {
+    const { container, unmount } = await mountTasbeehScreen();
+    expect(displayedCount(container)).toBe("0");
+
+    const tapButton = container.querySelector(`button[aria-label="${t.incrementAria}"]`) as HTMLButtonElement;
+    await click(tapButton);
+
+    expect(displayedCount(container)).toBe("1");
+    expect(loadTasbeehCounters()[dhikrItems[0].id]).toBe(1);
+    const stats = getTasbeehStats({ kind: "all" });
+    expect(stats.total).toBe(1);
+    expect(stats.perDhikr).toEqual([{ dhikrId: String(dhikrItems[0].id), total: 1 }]);
+
+    await unmount();
+  });
+});
+
+describe("TasbeehScreen — Floating Tasbeeh live sync", () => {
+  it("a manual tap pushes the SAME updated count to native via syncLiveCount", async () => {
+    const { container, unmount } = await mountTasbeehScreen();
+
+    const tapButton = container.querySelector(`button[aria-label="${t.incrementAria}"]`) as HTMLButtonElement;
+    await click(tapButton);
+
+    expect(FloatingTasbeeh.syncLiveCount).toHaveBeenCalledWith({ dhikrId: dhikrItems[0].id, count: 1 });
+    await unmount();
+  });
+
+  it("resetting one Dhikr immediately zeroes its native live count", async () => {
+    saveTasbeehCounters({ [dhikrItems[0].id]: 7 });
+    const { container, unmount } = await mountTasbeehScreen();
+
+    await click(findButtonByText(container, t.reset));
+
+    expect(FloatingTasbeeh.syncLiveCount).toHaveBeenCalledWith({ dhikrId: dhikrItems[0].id, count: 0 });
+    await unmount();
+  });
+
+  it("Reset All calls resetAllLiveCounts once, zeroing every dhikr's native live count at once", async () => {
+    saveTasbeehCounters({ [dhikrItems[0].id]: 4, [dhikrItems[1].id]: 9 });
+    const { container, unmount } = await mountTasbeehScreen();
+
+    await click(findButtonByText(container, t.resetAll));
+    await click(findButtonByText(container, t.resetAllConfirmConfirm));
+
+    expect(FloatingTasbeeh.resetAllLiveCounts).toHaveBeenCalledTimes(1);
+    await unmount();
+  });
+
+  it("a Floating Tasbeeh tap reconciled while this screen is already mounted updates the displayed count immediately — no remount, no polling", async () => {
+    const { container, unmount } = await mountTasbeehScreen();
+    expect(displayedCount(container)).toBe("0");
+
+    // Simulates exactly what reconcileFloatingTasbeeh does the instant
+    // native's "pendingEventsChanged" event fires: it calls
+    // saveTasbeehCounters with the freshly-committed counters — the SAME
+    // single choke point every handler in this file already writes
+    // through (see tasbeehCounters.ts's subscribeTasbeehCounters).
+    await act(async () => {
+      saveTasbeehCounters({ [dhikrItems[0].id]: 10 });
+    });
+
+    expect(displayedCount(container)).toBe("10");
+    await unmount();
+  });
+
+  it("unsubscribes on unmount — a later external counters write never touches an unmounted screen", async () => {
+    const { unmount } = await mountTasbeehScreen();
+    await unmount();
+
+    // Only asserting this doesn't throw / isn't silently expected to
+    // update anything — there's nothing left mounted to observe.
+    expect(() => saveTasbeehCounters({ [dhikrItems[0].id]: 3 })).not.toThrow();
+  });
+
+  it("Reset One never touches historical Statistics or the persisted Floating Tasbeeh enabled state", async () => {
+    saveTasbeehCounters({ [dhikrItems[0].id]: 37 });
+    // Seed real Statistics history the same way a genuine prior session
+    // would have — via the actual Shared Counting Core, not a hand-written
+    // fixture — so "unchanged" is checked against real recorded events.
+    const { container, unmount } = await mountTasbeehScreen();
+    const tapButton = container.querySelector(`button[aria-label="${t.incrementAria}"]`) as HTMLButtonElement;
+    await click(tapButton); // 38, one real Statistics event recorded
+    const statsBeforeReset = getTasbeehStats(ALL_TIME).total;
+
+    await click(findButtonByText(container, t.reset));
+
+    expect(getTasbeehStats(ALL_TIME).total).toBe(statsBeforeReset); // untouched by Reset
+    expect(FloatingTasbeeh.setEnabled).not.toHaveBeenCalled();
+
+    await unmount();
+  });
+
+  it("Reset All never touches historical Statistics or the persisted Floating Tasbeeh enabled state", async () => {
+    saveTasbeehCounters({ [dhikrItems[0].id]: 4, [dhikrItems[1].id]: 9 });
+    const { container, unmount } = await mountTasbeehScreen();
+    const tapButton = container.querySelector(`button[aria-label="${t.incrementAria}"]`) as HTMLButtonElement;
+    await click(tapButton); // one real Statistics event recorded
+    const statsBeforeReset = getTasbeehStats(ALL_TIME).total;
+
+    await click(findButtonByText(container, t.resetAll));
+    await click(findButtonByText(container, t.resetAllConfirmConfirm));
+
+    expect(getTasbeehStats(ALL_TIME).total).toBe(statsBeforeReset); // untouched by Reset All
+    expect(FloatingTasbeeh.setEnabled).not.toHaveBeenCalled();
+
+    await unmount();
+  });
+
+  it("clearing Statistics never touches the live counters — Main and Floating stay in sync with whatever they already were", async () => {
+    saveTasbeehCounters({ [dhikrItems[0].id]: 12 });
+    const { container, unmount } = await mountTasbeehScreen();
+    await selectDhikr(container, dhikrItems[0].dhikr_ar);
+    expect(displayedCount(container)).toBe("12");
+
+    // The exact operation SettingsScreen's "Delete Statistics history"
+    // performs — see tasbeehCounters.ts's own "RESET COUNTER ≠ DELETE
+    // STATISTICS" invariant, unchanged by this feature.
+    clearAllStats();
+
+    expect(displayedCount(container)).toBe("12"); // unaffected — nothing to "reflect", counters never changed
+    expect(loadTasbeehCounters()[dhikrItems[0].id]).toBe(12);
+
+    await unmount();
+  });
 });
 
 describe("TasbeehScreen — Reset All", () => {

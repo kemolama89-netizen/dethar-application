@@ -26,12 +26,52 @@ export const labels = {
     hadithAttribution: "قال رسول الله ﷺ",
     prayerPanelTitle: "مواقيت الصلاة",
     city: "الكويت",
-    hijriCalendar: "التقويم الهجري",
     prayerReminder: "تذكير الصلاة",
+    // Prayer Reminder toggle + notification text (see usePrayerReminder.ts)
+    // — deliberately separate from Settings > Reminders' own
+    // notifications*/settings.ts strings: that feature is an unrelated
+    // single daily Dhikr reminder, this one is Fajr/Dhuhr/Asr/Maghrib/Isha
+    // reminders tied to the real calculated prayer times.
+    prayerReminderUnavailableNote: "سيتم تفعيل الإشعارات الفعلية عند توفرها في هذا الإصدار.",
+    prayerReminderNotificationTitle: "حان وقت الصلاة",
+    // "{prayer}" is replaced with the localized prayer name (see
+    // prayerNames below) — never concatenated by hand, so word order stays
+    // grammatically correct in both languages.
+    prayerReminderNotificationBody: "حان الآن وقت صلاة {prayer}",
+    // Next Prayer + live countdown (see useNextPrayerCountdown.ts). "{h}"/
+    // "{m}" are replaced with zero-padded numbers.
+    nextPrayerHeading: "الصلاة القادمة",
+    nextPrayerCountdown: "متبقي {h} ساعة و {m} دقيقة",
+    // Location-change confirmation prompt (see useLocationChangeDetector.ts
+    // / LocationChangePrompt.tsx) — shown only when the device's own
+    // timezone genuinely diverges from the active (non-manual) location,
+    // never for ordinary GPS drift or a plain re-render. Confirming
+    // updates the active location and recalculates Prayer Times;
+    // declining changes nothing.
+    locationChangeTitle: "يبدو أنك غيّرت موقعك",
+    locationChangeBody: "يرجى تحديث موقعك لضبط مواقيت الصلاة.",
+    locationChangeConfirm: "تحديث الموقع",
+    locationChangeDecline: "ليس الآن",
     shareInsight: "شارك اللطيفة",
     shareHadith: "شارك الحديث",
     readMore: "اقرأ المزيد",
     close: "إغلاق",
+    // Hadith card's SINGLE expand control (see App.tsx/InsightCard.tsx) —
+    // pressing it opens the same full-content overlay (ContentModal) used
+    // by the Quranic Insight card's `readMore` above, revealing the
+    // complete Hadith text plus its takhrij/details together. Its
+    // existence is governed by whether there's more text to reveal OR
+    // details DATA exists for the current language (see
+    // getHadithDetailFields in src/data/hadith.ts), never by how long the
+    // Hadith text visually is. Closing happens via the overlay's own X
+    // button, not by pressing this again — there's no separate "collapse"
+    // label.
+    showDetails: "إظهار المزيد",
+    detailSource: "المصدر",
+    detailReference: "رقم الحديث",
+    detailGrade: "الدرجة",
+    detailGradingSource: "مصدر التخريج",
+    detailNarrator: "الراوي",
   },
   en: {
     appName: "Dithar",
@@ -40,12 +80,26 @@ export const labels = {
     hadithAttribution: "The Messenger of Allah ﷺ said:",
     prayerPanelTitle: "Prayer Times",
     city: "Kuwait",
-    hijriCalendar: "Hijri Calendar",
     prayerReminder: "Prayer Reminder",
+    prayerReminderUnavailableNote: "Actual notifications will activate once available in this build.",
+    prayerReminderNotificationTitle: "It's time to pray",
+    prayerReminderNotificationBody: "It's now time for {prayer} prayer",
+    nextPrayerHeading: "Next Prayer",
+    nextPrayerCountdown: "{h} hours and {m} minutes remaining",
+    locationChangeTitle: "Your location appears to have changed.",
+    locationChangeBody: "Please update your location to keep prayer times accurate.",
+    locationChangeConfirm: "Update location",
+    locationChangeDecline: "Not now",
     shareInsight: "Share Insight",
     shareHadith: "Share Hadith",
     readMore: "Read more",
     close: "Close",
+    showDetails: "Show More",
+    detailSource: "Source",
+    detailReference: "Hadith No.",
+    detailGrade: "Grade",
+    detailGradingSource: "Grading Source",
+    detailNarrator: "Narrator",
   },
 };
 
@@ -134,13 +188,15 @@ export const prayerNames: Record<Language, Record<PrayerKey, string>> = {
   },
 };
 
-// Times/order are language-independent data — only the displayed name
-// (via prayerNames[language][key]) changes with language.
-export const prayerTimes: { key: PrayerKey; value: string }[] = [
-  { key: "isha", value: "19:22" },
-  { key: "maghrib", value: "17:56" },
-  { key: "asr", value: "15:30" },
-  { key: "dhuhr", value: "11:54" },
-  { key: "shuruq", value: "05:25" },
-  { key: "fajr", value: "04:03" },
-];
+// The chronological COLUMN ORDER only — language-independent, and holds
+// no time values (those are now calculated for real, see
+// src/lib/prayerTimes.ts, rather than stored here as static placeholder
+// strings). Fajr first, Isha last: PrayerTimesPanel's grid has no explicit
+// direction override, so it inherits `dir` from <html> (see
+// LanguageContext) and mirrors automatically the same way TopBar/BottomNav
+// already do — the first array entry lands at the reading "start" edge,
+// right in RTL (Arabic) and left in LTR (English). That's what puts Fajr
+// on the right in Arabic and on the left in English, matching real-world
+// prayer-time displays; storing this array in a different order would
+// fight that automatic mirroring rather than use it.
+export const prayerOrder: PrayerKey[] = ["fajr", "shuruq", "dhuhr", "asr", "maghrib", "isha"];

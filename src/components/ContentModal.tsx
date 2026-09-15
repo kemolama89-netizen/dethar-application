@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
+import type { InsightCardDetail } from "./InsightCard";
 
 interface ContentModalProps {
   open: boolean;
@@ -11,17 +12,27 @@ interface ContentModalProps {
   verse?: string;
   verseReference?: string;
   body: string;
-  citation: string;
+  citation?: string;
+  /** Hadith card only: structured takhrij/details rows (Source, Hadith
+   *  No., Grade, Grading Source, Narrator), rendered below the body. Omit
+   *  (or pass an empty array) for the Quranic Insight modal, which has
+   *  none. */
+  details?: InsightCardDetail[];
 }
 
-// Full-content view for the two Home cards' "Read more" action. Positioned
-// absolutely within .device-screen (not `position: fixed`, which would
-// escape the phone frame on the desktop preview and cover the whole
-// browser window instead) so it only ever covers the DITHAR frame itself.
-// Reuses the app's existing color tokens/radius/typography — no new
-// visual system. Only its own content area scrolls; the Home Screen
-// underneath is scroll-locked by the parent while this is open (see
-// DeviceFrame's `scrollLocked` prop) and is otherwise untouched.
+// Full-content view for the Home cards' "Read more"/"Show More" action —
+// shared by the Quranic Insight card AND the Hadith card (see App.tsx):
+// same dim backdrop, same centered/bottom-sheet card, same X close button,
+// same typography, for both. Positioned absolutely within .device-screen
+// (not `position: fixed`, which would escape the phone frame on the
+// desktop preview and cover the whole browser window instead) so it only
+// ever covers the DITHAR frame itself. Reuses the app's existing color
+// tokens/radius/typography — no new visual system. Only its own content
+// area scrolls; the Home Screen underneath is scroll-locked by the parent
+// while this is open (see DeviceFrame's `scrollLocked` prop) and is
+// otherwise untouched — including staying fully visible (dimmed, not
+// hidden) behind the backdrop, and never being pushed/resized by this
+// overlay opening.
 export function ContentModal({
   open,
   onClose,
@@ -33,6 +44,7 @@ export function ContentModal({
   verseReference,
   body,
   citation,
+  details,
 }: ContentModalProps) {
   if (!open) return null;
 
@@ -106,9 +118,26 @@ export function ContentModal({
           >
             {body}
           </p>
-          <p className="mt-3 text-[13px]" style={{ color: "var(--color-text-muted)" }}>
-            {citation}
-          </p>
+          {citation && (
+            <p className="mt-3 text-[13px]" style={{ color: "var(--color-text-muted)" }}>
+              {citation}
+            </p>
+          )}
+
+          {details && details.length > 0 && (
+            <dl className="mt-4 flex flex-col gap-1.5 border-t pt-3" style={{ borderColor: "var(--color-gold-soft)" }}>
+              {details.map((detail) => (
+                <div key={detail.label} className="flex items-baseline gap-1.5 text-[13px] leading-[1.6]">
+                  <dt className="shrink-0 font-semibold" style={{ color: "var(--color-text-muted)" }}>
+                    {detail.label}:
+                  </dt>
+                  <dd className="min-w-0" style={{ color: "var(--color-text-primary)" }}>
+                    {detail.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
       </div>
     </div>

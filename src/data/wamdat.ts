@@ -4221,3 +4221,45 @@ export function getWamdaVerseReference(entry: WamdaEntry): string {
   const match = entry.ayah.match(AYAH_NUMBER_RE);
   return match ? `سورة ${entry.surah} – الآية ${match[1]}` : `سورة ${entry.surah}`;
 }
+
+// English rendering of the Tafsir/source citation — `source` has no
+// englishSource field in this dataset. WAMDAT cites from a small, CLOSED
+// set of classical works: exactly 17 distinct `source` strings occur
+// across all 524 entries (verified against this file), each a well-known
+// classical tafsir/scholarly work with one standard, widely-published
+// English title (the same class of "translation" as this app's own
+// "الكويت" -> "Kuwait" — a proper-noun title, never the Wamda commentary
+// text itself, which is never touched here). This dictionary is
+// EXHAUSTIVE over that set; getWamdaSourceCitation falls back to `undefined`
+// (never invents a rendering) if a future content update ever adds a
+// source string outside it.
+const WAMDA_SOURCE_EN_MAP: Readonly<Record<string, string>> = {
+  "إغاثة اللهفان - ابن القيم.": "Ighathat al-Lahfan by Ibn al-Qayyim",
+  "البحر المحيط في التفسير - أبو حيان الأندلسي.": "Al-Bahr al-Muhit fi al-Tafsir by Abu Hayyan al-Andalusi",
+  "التحرير والتنوير - ابن عاشور / الإعجاز الطبي.": "Al-Tahrir wa al-Tanwir by Ibn Ashur / Medical Miracles in the Qur'an",
+  "التحرير والتنوير - ابن عاشور.": "Al-Tahrir wa al-Tanwir by Ibn Ashur",
+  "الخصائص والبلاغة في الكشاف - الزمخشري.": "Al-Khasa'is wa al-Balaghah fi al-Kashshaf by al-Zamakhshari",
+  "الفوائد - ابن القيم.": "Al-Fawa'id by Ibn al-Qayyim",
+  "الكشاف - الزمخشري.": "Al-Kashshaf by al-Zamakhshari",
+  "بدائع الفوائد - الإمام ابن القيم.": "Bada'i al-Fawa'id by Imam Ibn al-Qayyim",
+  "تفسير ابن كثير / الإعجاز العلمي في القرآن.": "Tafsir Ibn Kathir / Scientific Miracles in the Qur'an",
+  "تفسير ابن كثير / موسوعات الإعجاز الطبي.": "Tafsir Ibn Kathir / Encyclopedias of Medical Miracles",
+  "تفسير ابن كثير.": "Tafsir Ibn Kathir",
+  "جامع البيان - الطبري.": "Jami' al-Bayan by al-Tabari",
+  "زاد المعاد - ابن القيم.": "Zad al-Ma'ad by Ibn al-Qayyim",
+  "طريق الهجرتين - ابن القيم.": "Tariq al-Hijratayn by Ibn al-Qayyim",
+  "مدارج السالكين - ابن القيم.": "Madarij al-Salikin by Ibn al-Qayyim",
+  "مفردات ألفاظ القرآن - الراغب الأصفهاني / تفسير ابن كثير.":
+    "Mufradat Alfaz al-Qur'an by al-Raghib al-Isfahani / Tafsir Ibn Kathir",
+  "مفردات ألفاظ القرآن - الراغب الأصفهاني.": "Mufradat Alfaz al-Qur'an by al-Raghib al-Isfahani",
+};
+
+// Language-appropriate citation for the Quranic Insight card. Arabic
+// always returns `entry.source` verbatim. English returns the dictionary
+// rendering above when the exact source string is known, or `undefined`
+// otherwise (never the Arabic string re-labeled as English) — callers
+// should simply omit the citation line when this returns `undefined`.
+export function getWamdaSourceCitation(entry: WamdaEntry, language: "ar" | "en"): string | undefined {
+  if (language === "ar") return entry.source;
+  return WAMDA_SOURCE_EN_MAP[entry.source];
+}

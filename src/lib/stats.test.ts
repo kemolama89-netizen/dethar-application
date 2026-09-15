@@ -8,7 +8,15 @@
 // change WHAT gets recorded, in what order, or how many events end up
 // persisted — only how many synchronous writes it takes to get there.
 import { describe, expect, it, beforeEach } from "vitest";
-import { recordTasbeehRepetition, recordTasbeehRepetitions, getTasbeehStats, clearAllStats } from "./stats";
+import {
+  recordTasbeehRepetition,
+  recordTasbeehRepetitions,
+  recordFloatingTasbeehRepetition,
+  getTasbeehStats,
+  getPrayerStats,
+  getWirdDayStats,
+  clearAllStats,
+} from "./stats";
 
 const STORAGE_KEY = "dithar:stats:events:v1";
 const ALL = { kind: "all" } as const;
@@ -68,5 +76,50 @@ describe("recordTasbeehRepetitions", () => {
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw!);
     expect(parsed.filter((e: { dhikrId: string }) => e.dhikrId === "4")).toHaveLength(3);
+  });
+});
+
+// Regression coverage for the Floating Tasbeeh feature's own source — see
+// recordFloatingTasbeehRepetition's doc comment in stats.ts. The
+// requirement this protects: a repetition committed from outside the app
+// is tagged `source: "floating"` in the raw log, but still folds into the
+// exact same getTasbeehStats() total/breakdown a manual or Voice Tasbeeh
+// repetition would — never a second, isolated number.
+describe("recordFloatingTasbeehRepetition", () => {
+  it('records exactly `times` events, tagged source "floating" in the raw log', () => {
+    recordFloatingTasbeehRepetition(9, 4);
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    const events = raw.filter((e: { dhikrId: string }) => e.dhikrId === "9");
+    expect(events).toHaveLength(4);
+    expect(events.every((e: { source: string }) => e.source === "floating")).toBe(true);
+  });
+
+  it("is a no-op for times <= 0 — never writes, never records a phantom event", () => {
+    recordFloatingTasbeehRepetition(9, 0);
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(getTasbeehStats(ALL).total).toBe(0);
+  });
+
+  it("folds into the SAME getTasbeehStats() total/breakdown as manual/Voice tasbeeh repetitions, matching the exact 'in-app 40 + floating 33 = 73' scenario", () => {
+    recordTasbeehRepetitions(3, 40);
+    recordFloatingTasbeehRepetition(3, 33);
+    const stats = getTasbeehStats(ALL);
+    expect(stats.total).toBe(73);
+    expect(stats.perDhikr).toEqual([{ dhikrId: "3", total: 73 }]);
+  });
+
+  it("interleaves correctly across manual, batched, and floating sources for the same dhikr", () => {
+    recordTasbeehRepetition(5);
+    recordTasbeehRepetitions(5, 2);
+    recordFloatingTasbeehRepetition(5, 3);
+    const stats = getTasbeehStats(ALL);
+    expect(stats.total).toBe(6);
+    expect(stats.perDhikr).toEqual([{ dhikrId: "5", total: 6 }]);
+  });
+
+  it('never leaks into the Written Adhkar (Morning/Prayer) aggregators, which filter by source "written" only', () => {
+    recordFloatingTasbeehRepetition(1, 5);
+    expect(getWirdDayStats("morning", ALL).perDhikr).toEqual([]);
+    expect(getPrayerStats(ALL).perDhikr).toEqual([]);
   });
 });

@@ -6,14 +6,22 @@ import { DeviceFrame } from "./components/DeviceFrame";
 import { AppShell } from "./components/AppShell";
 import { TopBar } from "./components/TopBar";
 import { LogoHeader } from "./components/LogoHeader";
+import { DateTimeStrip } from "./components/DateTimeStrip";
 import { InsightCard } from "./components/InsightCard";
+import type { InsightCardDetail } from "./components/InsightCard";
 import { PrayerTimesPanel } from "./components/PrayerTimesPanel";
 import { BottomNav } from "./components/BottomNav";
 import { ContentModal } from "./components/ContentModal";
+import { LocationChangePrompt } from "./components/LocationChangePrompt";
+import { useLocationChangeDetector } from "./lib/useLocationChangeDetector";
 import { BookOpen, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { MosqueDomeIcon, TasbihBeadsIcon } from "./icons/CustomIcons";
-import { labels, hadithCardContent } from "./data/content";
-import { WAMDAT, getWamdaVerseText, getWamdaVerseReference } from "./data/wamdat";
+import { labels } from "./data/content";
+import { WAMDAT, getWamdaVerseText, getWamdaVerseReference, getWamdaSourceCitation } from "./data/wamdat";
+import { HADITHS, getHadithDetailFields } from "./data/hadith";
+import type { HadithDetailKey } from "./data/hadith";
+import { useDateTime } from "./lib/useDateTime";
+import { dateKeyToDayNumber } from "./lib/dateTime";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
@@ -89,7 +97,10 @@ function ScreenFallback() {
 }
 
 // The Featured Hadith under the logo is never previewed/clamped — it has
-// no modal state here. "Read more" remains only for the two content cards.
+// no modal state here. Both Home cards (Quranic Insight and Hadith) share
+// the same full-content overlay (ContentModal) via this one piece of
+// state — only one can be open at a time, which also matches "opening one
+// closes the other" being the only sane behavior.
 type OpenCard = "quran" | "hadith" | null;
 
 // Resolving `language` -> the right content object happens once, here —
@@ -111,7 +122,30 @@ function HomeScreen({
 }) {
   const { language, dir } = useLanguage();
   const t = labels[language];
-  const hadith = hadithCardContent[language];
+
+  // Date & Time foundation — device clock + device timezone only (see
+  // src/lib/dateTime.ts), the single source of truth for today's date and
+  // the current time. `dateKey` is this same hook's stable LOCAL-calendar-
+  // day identity ("YYYY-MM-DD"); Lataif/Hadith's own daily rotation below
+  // is derived from it (via dateKeyToDayNumber) instead of each keeping
+  // its own separate UTC-epoch-day calculation, so the day flips at the
+  // device's actual local midnight rather than at UTC midnight. `date`
+  // feeds PrayerTimesPanel's real calculation below (which LOCAL day to
+  // calculate for) — it reuses this one foundation for "today" rather
+  // than creating its own. PrayerTimesPanel gets its own timezone from
+  // useCoordinates instead of from here — see that hook's own comment for
+  // why it's paired with location, not with the device clock.
+  const { dateKey, date } = useDateTime(language);
+  const dayNumber = dateKeyToDayNumber(dateKey);
+
+  // Step 5: location-change detection. Runs only while Home is mounted
+  // (see useLocationChangeDetector.ts's own comment on this scoping
+  // trade-off). `refreshToken` is passed as PrayerTimesPanel's `key` —
+  // the same force-remount idiom AppRouter's own screen-switch routing
+  // already uses (`key={screen}`) — so a CONFIRMED location update makes
+  // PrayerTimesPanel's useCoordinates() re-read the freshly-saved
+  // location instead of staying on its stale mount-time snapshot.
+  const locationChange = useLocationChangeDetector();
 
   // Local state for the "Read more" full-content modal — not global,
   // just which (if any) card's full content is currently open.
@@ -119,12 +153,12 @@ function HomeScreen({
 
   // The Quranic Insight card (لطيفة قرآنية) is DITHAR's "Wamda" (Tafsir
   // Flash) card. FINAL production behavior: one deterministic flash per
-  // calendar day — days-since-epoch modulo the flash count — so every
-  // user sees the same flash on a given day with no stored state
-  // needed, and the cycle continues seamlessly past the last flash back
-  // to flash #1. This logic is complete and untouched by the temporary
-  // toggle below.
-  const dayFlashIndex = Math.floor(Date.now() / 86_400_000) % WAMDAT.length;
+  // local calendar day — dayNumber (from the shared dateKey above) modulo
+  // the flash count — so every user sees the same flash on a given day
+  // with no stored state needed, and the cycle continues seamlessly past
+  // the last flash back to flash #1. This logic is complete and untouched
+  // by the temporary toggle below.
+  const dayFlashIndex = dayNumber % WAMDAT.length;
 
   // TEMPORARY, web-only testing phase: while true, the card is driven by
   // the manual Refresh control below (sequential, wraps back to the
@@ -173,18 +207,90 @@ function HomeScreen({
   // `ayah` field (see getWamdaVerseText/getWamdaVerseReference) since the
   // dataset stores them combined, unlike the old dataset's separate
   // fields.
+  // `flash.source` (the tafsir book citation, e.g. "التحرير والتنوير - ابن
+  // عاشور") has no englishSource field in the Wamdat dataset — Arabic
+  // shows it verbatim; English uses getWamdaSourceCitation's own
+  // dictionary of the 17 known classical-work titles this library cites,
+  // and is `undefined` (never the Arabic string under an English label)
+  // for the rare case that dictionary doesn't cover.
   const insight = {
     verse: getWamdaVerseText(flash),
     verseReference: getWamdaVerseReference(flash),
     body: language === "ar" ? flash.insightAr : flash.insightEn,
-    citation: flash.source,
+    citation: getWamdaSourceCitation(flash, language),
   };
 
+  // The Hadith card (حديث نبوي) — same deterministic-daily-pick pattern as
+  // the Quranic Insight card above (same shared `dayNumber`, from the
+  // Date & Time foundation's local dateKey), now backed by the 200-entry
+  // dithar_hadith_library_final.json (see src/data/hadith.ts) instead of
+  // the old single static hadith. One Hadith per local calendar day, same
+  // seamless wrap past the last entry back to #1.
+  const dayHadithIndex = dayNumber % HADITHS.length;
+
+  // TEMPORARY, web-only testing phase — same purpose/lifecycle as
+  // IS_TAFSIR_PREVIEW_TESTING above: while true, the card is driven by the
+  // manual Refresh/Previous controls below instead of dayHadithIndex, so
+  // all 200 Hadiths can be reviewed in the browser. Set this to `false`
+  // (or delete this flag, `previewHadithIndex`, `hadithHistory`, and the
+  // two buttons below) once review is done — dayHadithIndex requires no
+  // change at that point.
+  const IS_HADITH_PREVIEW_TESTING = true;
+
+  const [previewHadithIndex, setPreviewHadithIndex] = useState(0);
+
+  // Same "browsing history, not a numerical walk" behavior as
+  // flashHistory above — Previous retraces exactly what Refresh actually
+  // showed.
+  const [hadithHistory, setHadithHistory] = useState<number[]>([0]);
+  const canGoToPreviousHadith = hadithHistory.length > 1;
+
+  function handleRefreshHadith() {
+    const next = (previewHadithIndex + 1) % HADITHS.length;
+    setPreviewHadithIndex(next);
+    setHadithHistory((history) => (next === history[history.length - 1] ? history : [...history, next]));
+  }
+
+  function handlePreviousHadith() {
+    if (hadithHistory.length <= 1) return;
+    const newHistory = hadithHistory.slice(0, -1);
+    setHadithHistory(newHistory);
+    setPreviewHadithIndex(newHistory[newHistory.length - 1]);
+  }
+
+  const hadithIndex = IS_HADITH_PREVIEW_TESTING ? previewHadithIndex : dayHadithIndex;
+  const hadithEntry = HADITHS[hadithIndex];
+  const hadith = {
+    body: language === "ar" ? hadithEntry.textAr : hadithEntry.textEn,
+  };
+
+  // The Hadith's structured takhrij/details (Source, Hadith No., Grade,
+  // Grading Source, Narrator) — see getHadithDetailFields's own doc
+  // comment for exactly how much of this resolves in English (a field is
+  // omitted, never shown half-translated, when its dictionary doesn't
+  // cover a given entry). `hadithDetails` existing/non-empty is what shows
+  // the Hadith card's "Show More" button (InsightCard.tsx) — never Hadith
+  // text length, which fixes short Hadiths not exposing their (fully
+  // available, Arabic) details before this change. The rows themselves are
+  // rendered by ContentModal, once the full-content overlay is open.
+  const hadithDetailLabels: Record<HadithDetailKey, string> = {
+    source: t.detailSource,
+    reference: t.detailReference,
+    grade: t.detailGrade,
+    gradingSource: t.detailGradingSource,
+    narrator: t.detailNarrator,
+  };
+  const hadithDetails: InsightCardDetail[] = getHadithDetailFields(hadithEntry, language).map((field) => ({
+    label: hadithDetailLabels[field.key],
+    value: field.value,
+  }));
+
   return (
-    <DeviceFrame scrollLocked={openCard !== null}>
+    <DeviceFrame scrollLocked={openCard !== null || locationChange.pending !== null}>
       <AppShell>
         <TopBar />
         <LogoHeader />
+        <DateTimeStrip className="mt-1" />
 
         <InsightCard
           variant="quran"
@@ -233,13 +339,41 @@ function HomeScreen({
           title={t.hadithTitle}
           attribution={t.hadithAttribution}
           body={hadith.body}
-          citation={hadith.citation}
-          readMoreLabel={t.readMore}
+          details={hadithDetails}
+          readMoreLabel={t.showDetails}
           onReadMore={() => setOpenCard("hadith")}
           className="mt-1"
         />
 
-        <PrayerTimesPanel className="mt-1" />
+        {IS_HADITH_PREVIEW_TESTING && (
+          <div className="mt-1 flex items-center gap-3 self-start">
+            <button
+              type="button"
+              onClick={handlePreviousHadith}
+              disabled={!canGoToPreviousHadith}
+              aria-label="Previous Hadith"
+              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+              style={{
+                color: canGoToPreviousHadith ? "var(--color-gold)" : "var(--color-text-muted)",
+                opacity: canGoToPreviousHadith ? 1 : 0.45,
+              }}
+            >
+              {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
+              Previous Hadith (preview test)
+            </button>
+            <button
+              type="button"
+              onClick={handleRefreshHadith}
+              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+              style={{ color: "var(--color-gold)" }}
+            >
+              <RefreshCw size={12} strokeWidth={2} />
+              Refresh Hadith (preview test) — {hadithIndex + 1}/{HADITHS.length}
+            </button>
+          </div>
+        )}
+
+        <PrayerTimesPanel key={locationChange.refreshToken} date={date} className="mt-1" />
 
         {/* Floating Tasbeeh placeholder — the real feature (a native Android
             overlay bubble; see src/lib/floatingTasbeehSync.ts) isn't wired
@@ -301,7 +435,17 @@ function HomeScreen({
         title={t.hadithTitle}
         attribution={t.hadithAttribution}
         body={hadith.body}
-        citation={hadith.citation}
+        details={hadithDetails}
+      />
+
+      <LocationChangePrompt
+        open={locationChange.pending !== null}
+        title={t.locationChangeTitle}
+        body={t.locationChangeBody}
+        confirmLabel={t.locationChangeConfirm}
+        declineLabel={t.locationChangeDecline}
+        onConfirm={locationChange.confirmUpdate}
+        onDecline={locationChange.decline}
       />
     </DeviceFrame>
   );

@@ -8,11 +8,13 @@ import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { navLabels } from "../data/content";
 import { dhikrItems, sourceAr, tasbeehLabels } from "../data/tasbeeh";
-import { recordTasbeehRepetition, recordTasbeehRepetitions } from "../lib/stats";
-import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
+import { recordTasbeehRepetitions } from "../lib/stats";
+import { loadTasbeehCounters, saveTasbeehCounters, subscribeTasbeehCounters } from "../lib/tasbeehCounters";
+import { commitManualTasbeehRepetition, applyVoiceTasbeehCountIncrement } from "../lib/tasbeehCommit";
 import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
 import { useVoiceTasbeeh } from "../lib/useVoiceTasbeeh";
+import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "../lib/floatingTasbeehBridge";
 
 interface TasbeehScreenProps {
   onNavigateHome: () => void;
@@ -188,6 +190,18 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // and remounts it always picks the persisted counts back up rather than
   // starting over at {}.
   const [counts, setCounts] = useState<Record<number, number>>(() => loadTasbeehCounters());
+
+  // Live sync for a counters change from a source OTHER than this
+  // component's own handlers below — specifically, a Floating Tasbeeh tap,
+  // reconciled (via floatingTasbeehSync.ts) the instant native reports it,
+  // which calls saveTasbeehCounters exactly like every handler in this file
+  // already does. Event-driven (subscribeTasbeehCounters fires synchronously
+  // from inside saveTasbeehCounters itself), never polled. This component's
+  // OWN writes below also pass back through here with the SAME object
+  // reference they already just set, so React's own bail-out on an
+  // identical value makes this a harmless no-op for its own actions.
+  useEffect(() => subscribeTasbeehCounters(setCounts), []);
+
   const [targetInputs, setTargetInputs] = useState<Record<number, string>>({});
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const bubbleIdRef = useRef(0);
@@ -335,15 +349,14 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
     // with no user-facing bypass/disable control.
     if (pacingPhase !== "ready") return;
 
-    const nextCount = (counts[selectedId] ?? 0) + 1;
-    const updatedCounts = { ...counts, [selectedId]: nextCount };
+    // commitManualTasbeehRepetition persists synchronously (not from an
+    // effect) so a count is never at risk of being lost to a same-tick
+    // navigation away from this screen — by the time this call returns,
+    // both the counter store and the Statistics log already reflect it.
+    const updatedCounts = commitManualTasbeehRepetition(counts, selectedId);
+    const nextCount = updatedCounts[selectedId] ?? 0;
     setCounts(updatedCounts);
-    // Persisted synchronously (not from an effect) so a count is never at
-    // risk of being lost to a same-tick navigation away from this screen —
-    // by the time this function returns, localStorage already reflects it.
-    saveTasbeehCounters(updatedCounts);
     triggerTapHaptic();
-    recordTasbeehRepetition(selectedId);
 
     const id = bubbleIdRef.current++;
     const drift = Math.round(Math.random() * 48 - 24); // px, natural sideways variation
@@ -402,9 +415,8 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
     const creditedTargetNum = /^[1-9]\d*$/.test(creditedTargetInput) ? Number(creditedTargetInput) : null;
 
     setCounts((prev) => {
-      const nextCount = (prev[creditedId] ?? 0) + times;
-      const updated = { ...prev, [creditedId]: nextCount };
-      saveTasbeehCounters(updated);
+      const updated = applyVoiceTasbeehCountIncrement(prev, creditedId, times);
+      const nextCount = updated[creditedId] ?? 0;
       if (creditedTargetNum !== null && nextCount >= creditedTargetNum && celebratedFor[creditedId] !== creditedTargetNum) {
         setCelebratedFor((prevCel) => ({ ...prevCel, [creditedId]: creditedTargetNum }));
         spawnCelebration();
@@ -439,6 +451,12 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
     // src/lib/stats.ts, so previously recorded Statistics history for this
     // (or any other) Dhikr is completely untouched by pressing Reset.
     saveTasbeehCounters(updatedCounts);
+    // Immediately zeroes the SAME live-count mirror a floating tap itself
+    // writes, so the bubble reflects this reset right away if it's
+    // currently showing this exact Dhikr — never a separate counter.
+    if (isFloatingTasbeehAvailable()) {
+      void FloatingTasbeeh.syncLiveCount({ dhikrId: selectedId, count: 0 });
+    }
     // Allows the same target to celebrate again after a reset.
     setCelebratedFor((prev) => {
       if (!(selectedId in prev)) return prev;
@@ -476,6 +494,12 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
     const clearedCounts: Record<number, number> = {};
     setCounts(clearedCounts);
     saveTasbeehCounters(clearedCounts);
+    // Immediately zeroes the bubble's live count too — see handleReset's
+    // own comment on why this is the exact same mirror a floating tap
+    // writes, just for every Dhikr at once here.
+    if (isFloatingTasbeehAvailable()) {
+      void FloatingTasbeeh.resetAllLiveCounts();
+    }
     setCelebratedFor({});
     setPacingPhase("ready");
     setPacingFraction(0);
