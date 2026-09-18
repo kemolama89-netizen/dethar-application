@@ -21,7 +21,12 @@ import { WAMDAT, getWamdaVerseText, getWamdaVerseReference, getWamdaSourceCitati
 import { HADITHS, getHadithDetailFields } from "./data/hadith";
 import type { HadithDetailKey } from "./data/hadith";
 import { useDateTime } from "./lib/useDateTime";
-import { dateKeyToDayNumber } from "./lib/dateTime";
+import {
+  loadInstallationAnchorDateKey,
+  saveInstallationAnchorDateKey,
+  computeInstallationDayNumber,
+  installationDayToIndex,
+} from "./lib/dailyContentProgress";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
@@ -127,16 +132,40 @@ function HomeScreen({
   // src/lib/dateTime.ts), the single source of truth for today's date and
   // the current time. `dateKey` is this same hook's stable LOCAL-calendar-
   // day identity ("YYYY-MM-DD"); Lataif/Hadith's own daily rotation below
-  // is derived from it (via dateKeyToDayNumber) instead of each keeping
-  // its own separate UTC-epoch-day calculation, so the day flips at the
-  // device's actual local midnight rather than at UTC midnight. `date`
-  // feeds PrayerTimesPanel's real calculation below (which LOCAL day to
-  // calculate for) — it reuses this one foundation for "today" rather
-  // than creating its own. PrayerTimesPanel gets its own timezone from
-  // useCoordinates instead of from here — see that hook's own comment for
-  // why it's paired with location, not with the device clock.
+  // is derived from it instead of each keeping its own separate UTC-epoch-
+  // day calculation, so the day flips at the device's actual local
+  // midnight rather than at UTC midnight. `date` feeds PrayerTimesPanel's
+  // real calculation below (which LOCAL day to calculate for) — it reuses
+  // this one foundation for "today" rather than creating its own.
+  // PrayerTimesPanel gets its own timezone from useCoordinates instead of
+  // from here — see that hook's own comment for why it's paired with
+  // location, not with the device clock. This file's own daily-content
+  // logic below is the ONLY thing that also derives an installation-day
+  // number from `dateKey`; it never feeds back into `date`/PrayerTimesPanel.
   const { dateKey, date } = useDateTime(language);
-  const dayNumber = dateKeyToDayNumber(dateKey);
+
+  // Installation-based Day 1 anchor for Lataif/Hadith rotation: the local
+  // dateKey of THIS INSTALL's first-ever launch, so every new user starts
+  // at item #1 regardless of today's actual calendar date (see
+  // src/lib/dailyContentProgress.ts for the full design rationale). Read
+  // synchronously once via a useState initializer, the same
+  // read-in-useState/write-in-useEffect split useCoordinates.ts already
+  // uses for its own persisted location state (resolveActiveLocationRecord
+  // in useState, saveLastActiveLocation in an effect) — never written
+  // directly during render. Falls back to the CURRENT `dateKey` when no
+  // anchor exists yet (this mount is the genuine first launch); the effect
+  // below then persists exactly that value, once.
+  const [installationAnchorDateKey] = useState(() => loadInstallationAnchorDateKey() ?? dateKey);
+  useEffect(() => {
+    if (loadInstallationAnchorDateKey() === null) {
+      saveInstallationAnchorDateKey(installationAnchorDateKey);
+    }
+  }, [installationAnchorDateKey]);
+  // Recomputed every render from the live `dateKey` (never cached) so a
+  // local-midnight rollover while this screen stays mounted is reflected
+  // immediately — `installationAnchorDateKey` itself never changes after
+  // mount, only the gap between it and `dateKey` grows.
+  const installationDayNumber = computeInstallationDayNumber(installationAnchorDateKey, dateKey);
 
   // Step 5: location-change detection. Runs only while Home is mounted
   // (see useLocationChangeDetector.ts's own comment on this scoping
@@ -152,39 +181,46 @@ function HomeScreen({
   const [openCard, setOpenCard] = useState<OpenCard>(null);
 
   // The Quranic Insight card (لطيفة قرآنية) is DITHAR's "Wamda" (Tafsir
-  // Flash) card. FINAL production behavior: one deterministic flash per
-  // local calendar day — dayNumber (from the shared dateKey above) modulo
-  // the flash count — so every user sees the same flash on a given day
-  // with no stored state needed, and the cycle continues seamlessly past
-  // the last flash back to flash #1. This logic is complete and untouched
-  // by the temporary toggle below.
-  const dayFlashIndex = dayNumber % WAMDAT.length;
+  // Flash) card. DAILY/PRODUCTION mode: one deterministic flash per
+  // INSTALLATION day (installationDayNumber above, anchored to this
+  // install's first launch — see dailyContentProgress.ts) modulo the
+  // flash count — so a brand-new user always starts at flash #1 no matter
+  // today's date, every user sees the same flash on a given install-day,
+  // and the cycle continues seamlessly past the last flash back to #1.
+  const dayFlashIndex = installationDayToIndex(installationDayNumber, WAMDAT.length);
 
-  // TEMPORARY, web-only testing phase: while true, the card is driven by
-  // the manual Refresh control below (sequential, wraps back to the
-  // start) instead of dayFlashIndex above, so every flash can be
-  // clicked through and verified in the browser. Set this to `false`
-  // (or delete this flag, `previewFlashIndex`, and the button below) once
-  // the mobile app ships and only the day-based rotation is needed —
-  // dayFlashIndex requires no change at that point.
-  const IS_TAFSIR_PREVIEW_TESTING = true;
+  // PREVIEW MODE — a permanent manual-review tool (the Previous/Refresh
+  // controls below), NOT a debug-only override: it lets every flash in
+  // the library be walked through and checked without touching the daily
+  // rotation. `isTafsirPreviewMode` starts `false`, so DAILY mode is
+  // always what a fresh mount shows; pressing Refresh/Previous switches
+  // this mount to previewing, and walking Previous all the way back to
+  // today's flash switches it back to daily (see handlePreviousFlash).
+  // Preview state is local to this component instance — it never mutates
+  // dayFlashIndex, and navigating away and back (or reloading) always
+  // returns to the real day-based flash.
+  const [isTafsirPreviewMode, setIsTafsirPreviewMode] = useState(false);
 
-  // Plain React state: normal re-renders never advance it — only the
-  // button's onClick does, by exactly one step, wrapping from the last
-  // flash back to #1. Starts at #1 (index 0) on every fresh mount.
-  const [previewFlashIndex, setPreviewFlashIndex] = useState(0);
+  // Anchored to today's flash (not a fixed 0), so the first Refresh press
+  // steps forward from whatever is actually live today, and Previous can
+  // always walk back down to it. Only ever advances via the button
+  // onClicks below, never on its own.
+  const [previewFlashIndex, setPreviewFlashIndex] = useState(dayFlashIndex);
 
   // Browsing history of the flashes actually shown by Refresh (not a
   // numerical id/index walk) — the stack's top always equals
-  // `previewFlashIndex`. Previous pops the top and reveals what's under
-  // it, without pushing anything, so it retraces exactly what the user
-  // saw. Refresh always pushes forward from wherever the stack currently
-  // sits, so going back and then refreshing starts a new path from that
-  // point (the old "future" entries were never kept in the first place).
-  const [flashHistory, setFlashHistory] = useState<number[]>([0]);
+  // `previewFlashIndex`, and its bottom entry is always the daily flash
+  // this mount started from. Previous pops the top and reveals what's
+  // under it, without pushing anything, so it retraces exactly what the
+  // user saw. Refresh always pushes forward from wherever the stack
+  // currently sits, so going back and then refreshing starts a new path
+  // from that point (the old "future" entries were never kept in the
+  // first place).
+  const [flashHistory, setFlashHistory] = useState<number[]>([dayFlashIndex]);
   const canGoToPreviousFlash = flashHistory.length > 1;
 
   function handleRefreshFlash() {
+    setIsTafsirPreviewMode(true);
     const next = (previewFlashIndex + 1) % WAMDAT.length;
     setPreviewFlashIndex(next);
     setFlashHistory((history) => (next === history[history.length - 1] ? history : [...history, next]));
@@ -195,9 +231,15 @@ function HomeScreen({
     const newHistory = flashHistory.slice(0, -1);
     setFlashHistory(newHistory);
     setPreviewFlashIndex(newHistory[newHistory.length - 1]);
+    // Walked all the way back to the daily anchor — hand control back to
+    // dayFlashIndex itself rather than staying pinned to a preview value
+    // that only currently happens to match it: dayFlashIndex keeps
+    // tracking local midnight even if this component stays mounted,
+    // which a frozen preview index never would.
+    if (newHistory.length === 1) setIsTafsirPreviewMode(false);
   }
 
-  const flashIndex = IS_TAFSIR_PREVIEW_TESTING ? previewFlashIndex : dayFlashIndex;
+  const flashIndex = isTafsirPreviewMode ? previewFlashIndex : dayFlashIndex;
   const flash = WAMDAT[flashIndex];
   // Display order requested for the card: verse, then its surah/ayah
   // reference, then the Wamda insight itself, then the tafsir source —
@@ -220,32 +262,34 @@ function HomeScreen({
     citation: getWamdaSourceCitation(flash, language),
   };
 
-  // The Hadith card (حديث نبوي) — same deterministic-daily-pick pattern as
-  // the Quranic Insight card above (same shared `dayNumber`, from the
-  // Date & Time foundation's local dateKey), now backed by the 200-entry
+  // The Hadith card (حديث نبوي) — same deterministic-installation-day-pick
+  // pattern as the Quranic Insight card above (same shared
+  // `installationDayNumber`), now backed by the 200-entry
   // dithar_hadith_library_final.json (see src/data/hadith.ts) instead of
-  // the old single static hadith. One Hadith per local calendar day, same
+  // the old single static hadith. One Hadith per installation day, same
   // seamless wrap past the last entry back to #1.
-  const dayHadithIndex = dayNumber % HADITHS.length;
+  const dayHadithIndex = installationDayToIndex(installationDayNumber, HADITHS.length);
 
-  // TEMPORARY, web-only testing phase — same purpose/lifecycle as
-  // IS_TAFSIR_PREVIEW_TESTING above: while true, the card is driven by the
-  // manual Refresh/Previous controls below instead of dayHadithIndex, so
-  // all 200 Hadiths can be reviewed in the browser. Set this to `false`
-  // (or delete this flag, `previewHadithIndex`, `hadithHistory`, and the
-  // two buttons below) once review is done — dayHadithIndex requires no
-  // change at that point.
-  const IS_HADITH_PREVIEW_TESTING = true;
+  // PREVIEW MODE — same permanent manual-review purpose/behavior as
+  // isTafsirPreviewMode above, kept independent from it (a reviewer can be
+  // mid-preview on one card without affecting the other). Daily mode is
+  // always the default on a fresh mount; Refresh/Previous below switch
+  // into previewing, and Previous walking back to today's Hadith switches
+  // back to daily (see handlePreviousHadith).
+  const [isHadithPreviewMode, setIsHadithPreviewMode] = useState(false);
 
-  const [previewHadithIndex, setPreviewHadithIndex] = useState(0);
+  // Anchored to today's Hadith, not a fixed 0 — same reasoning as
+  // previewFlashIndex above.
+  const [previewHadithIndex, setPreviewHadithIndex] = useState(dayHadithIndex);
 
   // Same "browsing history, not a numerical walk" behavior as
   // flashHistory above — Previous retraces exactly what Refresh actually
-  // showed.
-  const [hadithHistory, setHadithHistory] = useState<number[]>([0]);
+  // showed, and the stack's bottom entry is always the daily anchor.
+  const [hadithHistory, setHadithHistory] = useState<number[]>([dayHadithIndex]);
   const canGoToPreviousHadith = hadithHistory.length > 1;
 
   function handleRefreshHadith() {
+    setIsHadithPreviewMode(true);
     const next = (previewHadithIndex + 1) % HADITHS.length;
     setPreviewHadithIndex(next);
     setHadithHistory((history) => (next === history[history.length - 1] ? history : [...history, next]));
@@ -256,9 +300,11 @@ function HomeScreen({
     const newHistory = hadithHistory.slice(0, -1);
     setHadithHistory(newHistory);
     setPreviewHadithIndex(newHistory[newHistory.length - 1]);
+    // Same daily-handback reasoning as handlePreviousFlash above.
+    if (newHistory.length === 1) setIsHadithPreviewMode(false);
   }
 
-  const hadithIndex = IS_HADITH_PREVIEW_TESTING ? previewHadithIndex : dayHadithIndex;
+  const hadithIndex = isHadithPreviewMode ? previewHadithIndex : dayHadithIndex;
   const hadithEntry = HADITHS[hadithIndex];
   const hadith = {
     body: language === "ar" ? hadithEntry.textAr : hadithEntry.textEn,
@@ -305,33 +351,31 @@ function HomeScreen({
           className="mt-1"
         />
 
-        {IS_TAFSIR_PREVIEW_TESTING && (
-          <div className="mt-1 flex items-center gap-3 self-start">
-            <button
-              type="button"
-              onClick={handlePreviousFlash}
-              disabled={!canGoToPreviousFlash}
-              aria-label="Previous Tafsir Flash"
-              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-              style={{
-                color: canGoToPreviousFlash ? "var(--color-gold)" : "var(--color-text-muted)",
-                opacity: canGoToPreviousFlash ? 1 : 0.45,
-              }}
-            >
-              {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
-              Previous Tafsir Flash (preview test)
-            </button>
-            <button
-              type="button"
-              onClick={handleRefreshFlash}
-              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-              style={{ color: "var(--color-gold)" }}
-            >
-              <RefreshCw size={12} strokeWidth={2} />
-              Refresh Tafsir Flash (preview test) — {flashIndex + 1}/{WAMDAT.length}
-            </button>
-          </div>
-        )}
+        <div className="mt-1 flex items-center gap-3 self-start">
+          <button
+            type="button"
+            onClick={handlePreviousFlash}
+            disabled={!canGoToPreviousFlash}
+            aria-label="Previous Tafsir Flash"
+            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+            style={{
+              color: canGoToPreviousFlash ? "var(--color-gold)" : "var(--color-text-muted)",
+              opacity: canGoToPreviousFlash ? 1 : 0.45,
+            }}
+          >
+            {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
+            Previous Tafsir Flash (preview test)
+          </button>
+          <button
+            type="button"
+            onClick={handleRefreshFlash}
+            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+            style={{ color: "var(--color-gold)" }}
+          >
+            <RefreshCw size={12} strokeWidth={2} />
+            Refresh Tafsir Flash (preview test) — {flashIndex + 1}/{WAMDAT.length}
+          </button>
+        </div>
 
         <InsightCard
           variant="hadith"
@@ -345,33 +389,31 @@ function HomeScreen({
           className="mt-1"
         />
 
-        {IS_HADITH_PREVIEW_TESTING && (
-          <div className="mt-1 flex items-center gap-3 self-start">
-            <button
-              type="button"
-              onClick={handlePreviousHadith}
-              disabled={!canGoToPreviousHadith}
-              aria-label="Previous Hadith"
-              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-              style={{
-                color: canGoToPreviousHadith ? "var(--color-gold)" : "var(--color-text-muted)",
-                opacity: canGoToPreviousHadith ? 1 : 0.45,
-              }}
-            >
-              {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
-              Previous Hadith (preview test)
-            </button>
-            <button
-              type="button"
-              onClick={handleRefreshHadith}
-              className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-              style={{ color: "var(--color-gold)" }}
-            >
-              <RefreshCw size={12} strokeWidth={2} />
-              Refresh Hadith (preview test) — {hadithIndex + 1}/{HADITHS.length}
-            </button>
-          </div>
-        )}
+        <div className="mt-1 flex items-center gap-3 self-start">
+          <button
+            type="button"
+            onClick={handlePreviousHadith}
+            disabled={!canGoToPreviousHadith}
+            aria-label="Previous Hadith"
+            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+            style={{
+              color: canGoToPreviousHadith ? "var(--color-gold)" : "var(--color-text-muted)",
+              opacity: canGoToPreviousHadith ? 1 : 0.45,
+            }}
+          >
+            {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
+            Previous Hadith (preview test)
+          </button>
+          <button
+            type="button"
+            onClick={handleRefreshHadith}
+            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
+            style={{ color: "var(--color-gold)" }}
+          >
+            <RefreshCw size={12} strokeWidth={2} />
+            Refresh Hadith (preview test) — {hadithIndex + 1}/{HADITHS.length}
+          </button>
+        </div>
 
         <PrayerTimesPanel key={locationChange.refreshToken} date={date} className="mt-1" />
 
