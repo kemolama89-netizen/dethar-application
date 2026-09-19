@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Power } from "lucide-react";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
+import { useLanguage } from "../theme/LanguageContext";
+import { exitAppLabels } from "../data/exitApp";
 
 // Exit-app control — rendered only in TopBar's `showExitButton` slot (Home
 // screen only, see TopBar.tsx), never on any other screen. Same visual
@@ -9,14 +11,11 @@ import { Capacitor } from "@capacitor/core";
 // primary-color icon) so it reads as part of the same existing control
 // row rather than a bolted-on addition — no new colors/spacing introduced.
 //
-// The confirmation dialog's text is FIXED Arabic regardless of the app's
-// own language toggle (see LanguageControl/useLanguage) — a deliberate,
-// literal requirement for this one dialog, not an oversight of the
-// bilingual `labels` system every other on-screen string goes through.
-// `dir="rtl"` is set explicitly on the dialog card (rather than relying on
-// the page's own ambient `dir`, which follows the language toggle and so
-// could be "ltr") so its layout/button order is always correct regardless
-// of whatever language the rest of the app is currently showing.
+// The button's aria-label and the confirmation dialog's text follow the
+// app's own language toggle (useLanguage + exitAppLabels), like every other
+// bilingual on-screen string. `dir` is set explicitly on the dialog card
+// from the same context value so its layout/button order matches the
+// current language.
 //
 // Capacitor's own `App.exitApp()` is native-Android-only — its web
 // implementation throws "Not implemented on web" — so the actual call is
@@ -25,6 +24,8 @@ import { Capacitor } from "@capacitor/core";
 // uses. On web/dev-server preview, confirming just closes the dialog.
 export function ExitAppButton() {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const { language, dir } = useLanguage();
+  const t = exitAppLabels[language];
 
   function handleConfirm() {
     setConfirmOpen(false);
@@ -38,7 +39,7 @@ export function ExitAppButton() {
       <button
         type="button"
         onClick={() => setConfirmOpen(true)}
-        aria-label="الخروج من التطبيق"
+        aria-label={t.buttonAria}
         className="flex h-12 w-12 items-center justify-center rounded-full border-2 transition-transform active:scale-95"
         style={{
           borderColor: "var(--color-gold)",
@@ -67,8 +68,8 @@ export function ExitAppButton() {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="هل تريد الخروج من التطبيق؟"
-            dir="rtl"
+            aria-label={t.confirmTitle}
+            dir={dir}
             onClick={(e) => e.stopPropagation()}
             className="flex w-full max-w-sm flex-col overflow-hidden rounded-2xl border"
             style={{
@@ -87,7 +88,7 @@ export function ExitAppButton() {
               </div>
               <div className="min-w-0 flex-1 pt-1">
                 <h3 className="text-[16px] font-bold leading-[1.4]" style={{ color: "var(--color-text-primary)" }}>
-                  هل تريد الخروج من التطبيق؟
+                  {t.confirmTitle}
                 </h3>
               </div>
             </div>
@@ -99,7 +100,7 @@ export function ExitAppButton() {
                 className="flex-1 rounded-xl border px-3 py-2 text-[13px] font-medium"
                 style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
               >
-                إلغاء
+                {t.cancel}
               </button>
               <button
                 type="button"
@@ -107,7 +108,7 @@ export function ExitAppButton() {
                 className="flex-1 rounded-xl px-3 py-2 text-[13px] font-semibold"
                 style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
               >
-                خروج
+                {t.confirm}
               </button>
             </div>
           </div>
