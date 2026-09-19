@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DITHAR</string>
+    <string name="title_activity_main">DITHAR</string>
+    <string name="package_name">com.dithar.app</string>
+    <string name="custom_url_scheme">com.dithar.app</string>
+</resources>

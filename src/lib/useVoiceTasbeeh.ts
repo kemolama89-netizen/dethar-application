@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { VoiceTasbeehMatcher, type MatcherDebugEvent } from "./voiceTasbeehMatch";
+import { isNativeVoiceRecognitionAvailable } from "./voiceRecognitionNative";
+import { NativeAndroidSpeechRecognition } from "./nativeSpeechRecognitionAdapter";
 
 // DEV-ONLY diagnostic logging for forensic live-device traces. Vite
 // statically replaces `import.meta.env.DEV` with a literal true/false and
@@ -80,6 +82,9 @@ interface UseVoiceTasbeehOptions {
 interface UseVoiceTasbeehResult {
   status: VoiceTasbeehStatus;
   justMatched: boolean;
+  // TEMPORARY — see the VoicePipelineDiagnostic block above. Remove this
+  // field alongside that block once the pipeline issue is confirmed.
+  diagnostics: VoicePipelineDiagnostic;
 }
 
 // Named, explicit recognition locale (see the approved design's locale
@@ -121,10 +126,115 @@ export const RECOGNIZER_STALL_THRESHOLD_MS = INACTIVITY_TIMEOUT_MS / 4;
 const WATCHDOG_CHECK_INTERVAL_MS = 1_000;
 const JUST_MATCHED_PULSE_MS = 400;
 
+// After this many consecutive restarts caused by a GENERIC (non-benign,
+// non-permission/mic) recognition error — e.g. a persistent "network"
+// failure with no connectivity — the session stops outright instead of
+// continuing to restart. Without this, such a failure would otherwise
+// keep restarting on every onend, bounded only by the 60s inactivity
+// watchdog (INACTIVITY_TIMEOUT_MS), which could still mean many rapid
+// restarts within that window for a condition that isn't going to
+// resolve itself. 3 is deliberately small: "no-speech" (silence between
+// repetitions, the overwhelmingly common restart cause during normal use)
+// never counts toward this at all (see the onerror branch below), so
+// legitimate use is never at risk of tripping it — only a genuinely
+// persistent, non-benign failure is.
+const MAX_CONSECUTIVE_GENERIC_ERRORS = 3;
+
+// On native Android, prefer NativeAndroidSpeechRecognition over the
+// browser's own webkitSpeechRecognition: the embedded WebView accepts a
+// SpeechRecognition session (onstart fires) but never engages its
+// recognition backend at all (confirmed via the temporary pipeline
+// diagnostic — onaudiostart/onspeechstart/onresult never fire), a
+// platform limitation of embedded WebView specifically, not present in
+// the standalone Chrome browser. Everywhere else (the web/browser build,
+// this app's own dev server, GitHub Pages, any future non-Android
+// platform) keeps using window.SpeechRecognition/webkitSpeechRecognition
+// completely unchanged. Nothing below this function needs to know which
+// branch fired — both sides return a constructor for a class that
+// satisfies the exact same ambient `SpeechRecognition` interface.
 function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | null {
+  if (isNativeVoiceRecognitionAvailable()) {
+    return NativeAndroidSpeechRecognition as unknown as SpeechRecognitionConstructor;
+  }
   if (typeof window === "undefined") return null;
   return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
 }
+
+// ============================================================================
+// TEMPORARY VOICE PIPELINE DIAGNOSTIC — added 2026-09-18 to investigate the
+// "microphone permission now works, but Voice Tasbeeh never counts anything"
+// APK report. Deliberately UNCONDITIONAL — never gated by
+// isDevBuild/import.meta.env.DEV like emitVoiceDebug above: that entire
+// system is compiled out of the exact production JS bundle this app's APK
+// ships (Vite's DEV flag is false for `vite build`, dev or release native
+// shell alike), so today there is literally no way to observe anything about
+// the recognition pipeline on a real device. This block is read-only
+// bookkeeping ONLY — every field is derived AFTER the fact from events the
+// existing handlers already receive; nothing here is ever read back by any
+// matching/counting/lifecycle decision, and it changes no existing
+// behavior except adding a small number of extra re-renders while Voice
+// Tasbeeh is enabled.
+//
+// REMOVAL: once the pipeline issue is confirmed and this is no longer
+// needed, delete this whole block, the `diagnosticsRef`/`updateDiagnostics`
+// wiring inside the hook below, the five new recognition.on*
+// (onaudiostart/onspeechstart/onspeechend/onaudioend/onnomatch) handlers,
+// the extra updateDiagnostics(...) calls inside the existing
+// onstart/onresult/onerror/onend handlers, the `diagnostics` field from
+// this hook's return value and UseVoiceTasbeehResult, the matching optional
+// fields in speechRecognition.d.ts, and TasbeehScreen.tsx's diagnostic panel.
+export interface VoicePipelineDiagnostic {
+  recognitionApiAvailable: boolean;
+  instancesStarted: number;
+  onstartCount: number;
+  onaudiostartCount: number;
+  onspeechstartCount: number;
+  onspeechendCount: number;
+  onaudioendCount: number;
+  onresultCount: number;
+  onnomatchCount: number;
+  onerrorCount: number;
+  onendCount: number;
+  lastRawTranscript: string | null;
+  lastIsFinal: boolean | null;
+  recognitionLang: string;
+  lastErrorCode: string | null;
+  // TEMPORARY DIAGNOSTIC — added 2026-09-19 alongside
+  // VoiceRecognitionPlugin.kt's own onError diagnostic logging, to
+  // investigate the "onstart=0 onerror=1610" APK report. Round-tripped
+  // from the native layer via the spec's own
+  // SpeechRecognitionErrorEvent.message field — carries the RAW Android
+  // SpeechRecognizer.ERROR_* int/name that `lastErrorCode` above
+  // deliberately collapses away. Always null on the browser
+  // (webkitSpeechRecognition) path, which never populates `message`.
+  lastErrorMessage: string | null;
+  totalCompletionsSeen: number;
+  lastEventAt: string | null;
+}
+
+function makeEmptyVoicePipelineDiagnostic(): VoicePipelineDiagnostic {
+  return {
+    recognitionApiAvailable: getSpeechRecognitionConstructor() !== null,
+    instancesStarted: 0,
+    onstartCount: 0,
+    onaudiostartCount: 0,
+    onspeechstartCount: 0,
+    onspeechendCount: 0,
+    onaudioendCount: 0,
+    onresultCount: 0,
+    onnomatchCount: 0,
+    onerrorCount: 0,
+    onendCount: 0,
+    lastRawTranscript: null,
+    lastIsFinal: null,
+    recognitionLang: VOICE_TASBEEH_LOCALE,
+    lastErrorCode: null,
+    lastErrorMessage: null,
+    totalCompletionsSeen: 0,
+    lastEventAt: null,
+  };
+}
+// ============================================================================
 
 // Owns the native SpeechRecognition lifecycle and the two watchdogs; feeds
 // every recognition result through a single VoiceTasbeehMatcher instance
@@ -134,6 +244,19 @@ function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | null 
 export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout }: UseVoiceTasbeehOptions): UseVoiceTasbeehResult {
   const [status, setStatus] = useState<VoiceTasbeehStatus>("idle");
   const [justMatched, setJustMatched] = useState(false);
+
+  // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
+  // `diagnosticsRef` is the source of truth (read/patched synchronously from
+  // inside recognition event handlers, same pattern as this hook's other
+  // refs); `diagnostics` state exists only to make those patches visible to
+  // TasbeehScreen's diagnostic panel via a re-render. Remove both alongside
+  // that block once the pipeline issue is confirmed.
+  const diagnosticsRef = useRef<VoicePipelineDiagnostic>(makeEmptyVoicePipelineDiagnostic());
+  const [diagnostics, setDiagnostics] = useState<VoicePipelineDiagnostic>(diagnosticsRef.current);
+  function updateDiagnostics(patch: Partial<VoicePipelineDiagnostic>) {
+    diagnosticsRef.current = { ...diagnosticsRef.current, ...patch, lastEventAt: new Date().toISOString().slice(11, 23) };
+    setDiagnostics(diagnosticsRef.current);
+  }
 
   const matcherRef = useRef<VoiceTasbeehMatcher | null>(null);
   if (matcherRef.current === null) {
@@ -189,6 +312,18 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
   // onstart until the instance is torn down for any reason.
   const isListeningRef = useRef(false);
   const lastResultEventAtRef = useRef(0);
+  // Counts consecutive restarts caused by a GENERIC (else-branch) onerror
+  // — never "no-speech" (benign, the expected gap between repetitions) or
+  // "not-allowed"/"service-not-allowed"/"audio-capture" (those already
+  // stop outright via intentionalStopRef, see onerror below). Without
+  // this, a persistent underlying failure (e.g. no network reachable for
+  // a cloud-backed recognizer) would restart on every onend indefinitely
+  // — bounded only by the 60s inactivity watchdog, which could still mean
+  // many rapid restarts in that window. Reset to 0 the moment there's any
+  // real sign of life (a genuine onresult) or a fresh, deliberate
+  // `enabled` activation — see both reset sites below — so a single
+  // transient glitch during otherwise-healthy use never trips this.
+  const consecutiveGenericErrorCountRef = useRef(0);
   const justMatchedTimerRef = useRef<number | null>(null);
   // Populated by the recognition-lifecycle effect below (only while
   // `enabled`) with a closure that safely swaps in a brand-new native
@@ -301,6 +436,7 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
     intentionalStopRef.current = false;
     matcherRef.current!.resetAll();
     lastGenuineActivityAtRef.current = Date.now();
+    consecutiveGenericErrorCountRef.current = 0;
     setStatus("requesting");
     if (isDevBuild) emitVoiceDebug("status", { status: "requesting", targetPhrase: targetPhraseRef.current });
 
@@ -326,8 +462,17 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
         (recognition as unknown as { __ditharInstanceId: number }).__ditharInstanceId = instanceId;
       }
 
+      // Per-instance — NOT a ref — since it must reset to false for every
+      // fresh startInstance() call. Answers "did THIS instance ever
+      // confirm onstart before it errored/ended". Feeds the onerror
+      // "no-speech" branch below: see that branch's own comment for why a
+      // benign classification is only valid AFTER a session actually got
+      // going.
+      let reachedOnStart = false;
+
       recognition.onstart = () => {
         if (recognitionRef.current !== recognition) return;
+        reachedOnStart = true;
         // A fresh native session (including any restart) means the
         // browser's result indexing starts over — clear per-session
         // transport bookkeeping. Target progress deliberately survives
@@ -343,6 +488,33 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
           emitVoiceDebug("onstart", { instanceId, debugReason, snapshot: matcherRef.current!.getDebugSnapshot() });
           emitVoiceDebug("status", { status: "listening", instanceId });
         }
+        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
+        updateDiagnostics({ onstartCount: diagnosticsRef.current.onstartCount + 1 });
+      };
+
+      // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
+      // Five additional lifecycle events this hook has never listened to
+      // before: purely observational, no existing behavior (status/
+      // matching/watchdogs) reacts to any of them.
+      recognition.onaudiostart = () => {
+        if (recognitionRef.current !== recognition) return;
+        updateDiagnostics({ onaudiostartCount: diagnosticsRef.current.onaudiostartCount + 1 });
+      };
+      recognition.onspeechstart = () => {
+        if (recognitionRef.current !== recognition) return;
+        updateDiagnostics({ onspeechstartCount: diagnosticsRef.current.onspeechstartCount + 1 });
+      };
+      recognition.onspeechend = () => {
+        if (recognitionRef.current !== recognition) return;
+        updateDiagnostics({ onspeechendCount: diagnosticsRef.current.onspeechendCount + 1 });
+      };
+      recognition.onaudioend = () => {
+        if (recognitionRef.current !== recognition) return;
+        updateDiagnostics({ onaudioendCount: diagnosticsRef.current.onaudioendCount + 1 });
+      };
+      recognition.onnomatch = () => {
+        if (recognitionRef.current !== recognition) return;
+        updateDiagnostics({ onnomatchCount: diagnosticsRef.current.onnomatchCount + 1 });
       };
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
@@ -351,6 +523,12 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
         // content, proves the recognizer is still alive and talking to
         // us. Updated unconditionally, before matching even runs.
         lastResultEventAtRef.current = Date.now();
+        // A real result is proof of life — clears any generic-error
+        // restart streak (see consecutiveGenericErrorCountRef's own
+        // comment) so a later, unrelated transient error still gets its
+        // own full retry budget instead of inheriting an unrelated
+        // earlier streak.
+        consecutiveGenericErrorCountRef.current = 0;
 
         if (isDevBuild) {
           lastResultIndexRef.current = event.resultIndex;
@@ -371,12 +549,20 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
 
         let totalCompletions = 0;
         let anyGenuineActivity = false;
+        // TEMPORARY — see the VoicePipelineDiagnostic block above this
+        // hook. Captured from inside the loop below (never read by it) so
+        // the diagnostic reflects whatever the LAST segment in this event
+        // actually was, same raw text/isFinal the matcher itself just saw.
+        let lastRawTranscriptThisEvent: string | null = null;
+        let lastIsFinalThisEvent: boolean | null = null;
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
           const rawTranscript = result[0]?.transcript ?? "";
           if (isDevBuild) {
             emitVoiceDebug("onresult:raw", { instanceId, segmentId: i, isFinal: result.isFinal, rawTranscript });
           }
+          lastRawTranscriptThisEvent = rawTranscript;
+          lastIsFinalThisEvent = result.isFinal;
           const { completions, hadGenuineActivity } = matcherRef.current!.processSegment({
             segmentId: i,
             text: rawTranscript,
@@ -385,6 +571,13 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
           totalCompletions += completions;
           if (hadGenuineActivity) anyGenuineActivity = true;
         }
+        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
+        updateDiagnostics({
+          onresultCount: diagnosticsRef.current.onresultCount + 1,
+          lastRawTranscript: lastRawTranscriptThisEvent,
+          lastIsFinal: lastIsFinalThisEvent,
+          totalCompletionsSeen: diagnosticsRef.current.totalCompletionsSeen + totalCompletions,
+        });
         // User/dhikr-activity signal — deliberately separate from the
         // health signal above: this only moves when the matcher judges
         // the new content as genuinely engaging the current target (see
@@ -424,7 +617,13 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
         // exactly like a result does; it never counts toward user/dhikr
         // activity (that stays scoped to genuine matched speech only).
         lastResultEventAtRef.current = Date.now();
-        if (isDevBuild) emitVoiceDebug("onerror", { instanceId, error: event.error });
+        if (isDevBuild) emitVoiceDebug("onerror", { instanceId, error: event.error, message: event.message, reachedOnStart });
+        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
+        updateDiagnostics({
+          onerrorCount: diagnosticsRef.current.onerrorCount + 1,
+          lastErrorCode: event.error,
+          lastErrorMessage: event.message || null,
+        });
 
         if (event.error === "not-allowed" || event.error === "service-not-allowed") {
           intentionalStopRef.current = true;
@@ -436,16 +635,57 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
           isListeningRef.current = false;
           setStatus("no-mic");
           if (isDevBuild) emitVoiceDebug("status", { status: "no-mic", instanceId });
-        } else if (event.error === "no-speech") {
+        } else if (event.error === "no-speech" && reachedOnStart) {
           // Benign in continuous mode — onend decides whether to restart.
+          // Deliberately does NOT touch consecutiveGenericErrorCountRef:
+          // this is the expected, frequent gap between repetitions during
+          // completely normal use, never a sign of an actual problem.
+          // Guarded on reachedOnStart (see its own declaration above) —
+          // see the else branch immediately below for why a "no-speech"
+          // BEFORE onstart is treated completely differently.
         } else {
+          // Reached for every non-benign error, AND for "no-speech" when
+          // reachedOnStart is still false — i.e. the recognizer errored
+          // out before ever confirming it was actually listening. That is
+          // NOT the expected "quiet gap between repetitions" case the
+          // branch above exists for (this session never got that far), so
+          // it must count toward the circuit breaker just like any other
+          // persistent failure. Without this, a recognizer/service that
+          // fails immediately on every single session — reported
+          // "no-speech"/timeout by the OS before onReadyForSpeech ever
+          // fires — would restart as fast as the event loop allows,
+          // completely unbounded until the 60s inactivity watchdog
+          // (thousands of restarts observed on a real device from exactly
+          // this pattern), instead of stopping outright after
+          // MAX_CONSECUTIVE_GENERIC_ERRORS like any other persistent
+          // failure already does.
+          consecutiveGenericErrorCountRef.current += 1;
+          if (consecutiveGenericErrorCountRef.current >= MAX_CONSECUTIVE_GENERIC_ERRORS) {
+            // A persistent, non-benign failure that isn't resolving on
+            // its own (e.g. no network reachable) — stop outright rather
+            // than let onend keep restarting for up to the full 60s
+            // inactivity window. Same shutdown shape as the
+            // denied/no-mic branches above: intentionalStopRef prevents
+            // onend's restart path, isListeningRef reflects that nothing
+            // is listening anymore.
+            intentionalStopRef.current = true;
+            isListeningRef.current = false;
+          }
           setStatus("error");
-          if (isDevBuild) emitVoiceDebug("status", { status: "error", instanceId });
+          if (isDevBuild) {
+            emitVoiceDebug("status", {
+              status: "error",
+              instanceId,
+              consecutiveGenericErrorCount: consecutiveGenericErrorCountRef.current,
+            });
+          }
         }
       };
 
       recognition.onend = () => {
         if (recognitionRef.current !== recognition) return;
+        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
+        updateDiagnostics({ onendCount: diagnosticsRef.current.onendCount + 1 });
         // A target-switch refresh is waiting on THIS instance specifically
         // (see refreshRecognitionRef below) — stop() has now finished
         // flushing whatever was already captured (any trailing onresult
@@ -479,6 +719,8 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
       if (isDevBuild) {
         emitVoiceDebug("start", { instanceId, debugReason: debugReason ?? "initial", targetPhrase: targetPhraseRef.current });
       }
+      // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
+      updateDiagnostics({ instancesStarted: diagnosticsRef.current.instancesStarted + 1 });
       recognition.start();
     }
 
@@ -631,5 +873,5 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
     };
   }, []);
 
-  return { status, justMatched };
+  return { status, justMatched, diagnostics };
 }

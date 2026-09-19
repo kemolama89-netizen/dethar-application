@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build artifacts — never commit packaged APKs or archives
+*.apk
+*.aab
+*.zip

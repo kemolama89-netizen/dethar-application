@@ -24,6 +24,16 @@ declare global {
     onend: ((this: SpeechRecognition, ev: Event) => void) | null;
     onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
     onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null;
+    // TEMPORARY — added 2026-09-18 alongside useVoiceTasbeeh.ts's pipeline
+    // diagnostic to investigate the "mic works, nothing counts" APK report.
+    // Optional (mock recognizers in tests need not implement them) and
+    // read-only from this hook's perspective — remove alongside that
+    // diagnostic once the pipeline issue is confirmed.
+    onaudiostart?: ((this: SpeechRecognition, ev: Event) => void) | null;
+    onspeechstart?: ((this: SpeechRecognition, ev: Event) => void) | null;
+    onspeechend?: ((this: SpeechRecognition, ev: Event) => void) | null;
+    onaudioend?: ((this: SpeechRecognition, ev: Event) => void) | null;
+    onnomatch?: ((this: SpeechRecognition, ev: Event) => void) | null;
   }
 
   interface SpeechRecognitionConstructor {

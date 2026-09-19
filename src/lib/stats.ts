@@ -312,6 +312,27 @@ function matchesSelection(localDate: string, selection: StatSelection): boolean 
   }
 }
 
+const LOCAL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+// Turns the two raw date-picker values of a custom range into the inclusive
+// range actually reported: each date is capped at [today] (statistics for
+// the future are meaningless) and the pair is put in chronological order,
+// so picking the "from" date after the "to" date (or vice versa) reports
+// the span between them instead of an empty inverted range. A value that
+// isn't a full "YYYY-MM-DD" falls back to [today]. Deliberately does NOT
+// snap either picker's own value: a native date input reports partial
+// values while a date is being typed (a year arrives digit by digit,
+// e.g. "0002-…"), and rewriting the other field mid-typing would corrupt
+// it — the raw values stay exactly as the user set them, and only this
+// derived range is normalized. Plain string comparisons, no Date parsing,
+// so there is no timezone-dependent off-by-one.
+export function resolveCustomRange(a: string, b: string, today: string): { from: string; to: string } {
+  const cap = (d: string) => (LOCAL_DATE_PATTERN.test(d) ? (d > today ? today : d) : today);
+  const x = cap(a);
+  const y = cap(b);
+  return x <= y ? { from: x, to: y } : { from: y, to: x };
+}
+
 function inSelection(events: StatEvent[], selection: StatSelection): StatEvent[] {
   return events.filter((e) => matchesSelection(resolvedLocalDate(e), selection));
 }

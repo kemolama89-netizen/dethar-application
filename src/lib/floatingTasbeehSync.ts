@@ -5,6 +5,7 @@
 // never touches tasbeehCounters.ts or stats.ts directly (it can't; those
 // only exist inside this JS runtime).
 import { App } from "@capacitor/app";
+import type { PluginListenerHandle } from "@capacitor/core";
 import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "./floatingTasbeehBridge";
 import { loadTasbeehCounters } from "./tasbeehCounters";
 import { commitFloatingTasbeehRepetitions } from "./tasbeehCommit";
@@ -63,6 +64,89 @@ export async function reconcileFloatingTasbeeh(): Promise<void> {
 
   commitFloatingTasbeehRepetitions(loadTasbeehCounters(), entries);
   await FloatingTasbeeh.confirmPendingEventsDrained({ count: events.length });
+}
+
+// ---- Selected dhikr (floating menu <-> in-app Tasbeeh screen) ----
+//
+// The native store's selectedDhikrId is the source of truth (the bubble must
+// keep working while the app is closed); the in-app screen mirrors it. All of
+// these are safe no-ops on web/iOS and never throw into the caller.
+
+/** The dhikr the floating bubble currently counts, or null if unavailable/unknown. */
+export async function readFloatingSelectedDhikr(): Promise<number | null> {
+  if (!isFloatingTasbeehAvailable()) return null;
+  try {
+    const { dhikrId } = await FloatingTasbeeh.getSelectedDhikr();
+    return dhikrItems.some((item) => item.id === dhikrId) ? dhikrId : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Tells native the in-app selection changed, so the bubble follows it. */
+export function pushFloatingSelectedDhikr(dhikrId: number): void {
+  if (!isFloatingTasbeehAvailable()) return;
+  void FloatingTasbeeh.setSelectedDhikr({ dhikrId }).catch(() => {});
+}
+
+/** Fires when the floating menu picks a dhikr. Returns an unsubscribe function. */
+export function subscribeFloatingSelectedDhikr(listener: (dhikrId: number) => void): () => void {
+  if (!isFloatingTasbeehAvailable()) return () => {};
+  let cancelled = false;
+  let handle: PluginListenerHandle | null = null;
+  FloatingTasbeeh.addListener("selectedDhikrChanged", ({ dhikrId }) => {
+    if (dhikrItems.some((item) => item.id === dhikrId)) listener(dhikrId);
+  })
+    .then((h) => {
+      if (cancelled) void h.remove();
+      else handle = h;
+    })
+    .catch(() => {});
+  return () => {
+    cancelled = true;
+    if (handle) void handle.remove();
+  };
+}
+
+// ---- Open-route requests (floating menu "الإعدادات" -> in-app Settings) ----
+
+/**
+ * Calls [onRoute] whenever a floating-menu action asked the app to open a
+ * screen. Pulls (and thereby clears) the pending route at start, on every
+ * return to the foreground, and whenever native says one arrived — one
+ * pull-and-clear path, so a route can never be replayed later. Returns an
+ * unsubscribe function. A no-op on web/iOS.
+ */
+export function startFloatingOpenRouteRequests(onRoute: (route: string) => void): () => void {
+  if (!isFloatingTasbeehAvailable()) return () => {};
+  let cancelled = false;
+  const handles: PluginListenerHandle[] = [];
+
+  const pull = async () => {
+    try {
+      const { route } = await FloatingTasbeeh.consumeOpenRoute();
+      if (route && !cancelled) onRoute(route);
+    } catch {
+      // Best-effort: a failed pull just means no navigation this time.
+    }
+  };
+
+  const track = (p: Promise<PluginListenerHandle>) =>
+    p
+      .then((h) => {
+        if (cancelled) void h.remove();
+        else handles.push(h);
+      })
+      .catch(() => {});
+
+  void pull();
+  track(App.addListener("appStateChange", (state) => { if (state.isActive) void pull(); }));
+  track(FloatingTasbeeh.addListener("openRouteRequested", () => { void pull(); }));
+
+  return () => {
+    cancelled = true;
+    handles.forEach((h) => void h.remove());
+  };
 }
 
 let syncStarted = false;

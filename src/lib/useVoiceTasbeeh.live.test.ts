@@ -309,6 +309,83 @@ describe("useVoiceTasbeeh lifecycle", () => {
     await unmount();
   });
 
+  it("restarts after a couple of generic errors, but stops outright instead of restarting forever", async () => {
+    // Regression coverage for the native-Android-speech-recognition work:
+    // a persistent, non-benign error (e.g. no network reachable) must not
+    // restart indefinitely, bounded only by the 60s inactivity watchdog —
+    // see MAX_CONSECUTIVE_GENERIC_ERRORS in useVoiceTasbeeh.ts.
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+
+    // First generic error: still under the threshold — restarts normally,
+    // exactly like any other transient recoverable failure.
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireError("network");
+      FakeSpeechRecognition.instances[0].fireBrowserForcedEnd();
+    });
+    expect(latestResult?.status).toBe("error");
+    expect(FakeSpeechRecognition.instances.length).toBe(2);
+
+    // Second consecutive generic error: still under the threshold.
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+      FakeSpeechRecognition.instances[1].fireError("network");
+      FakeSpeechRecognition.instances[1].fireBrowserForcedEnd();
+    });
+    expect(FakeSpeechRecognition.instances.length).toBe(3);
+
+    // Third consecutive generic error: hits the threshold — stops outright,
+    // no further restart/instance is created.
+    await act(async () => {
+      FakeSpeechRecognition.instances[2].fireStart();
+      FakeSpeechRecognition.instances[2].fireError("network");
+      FakeSpeechRecognition.instances[2].fireBrowserForcedEnd();
+    });
+    expect(latestResult?.status).toBe("error");
+    expect(FakeSpeechRecognition.instances.length).toBe(3);
+    await unmount();
+  });
+
+  it("a genuine result in between resets the consecutive-generic-error streak", async () => {
+    const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireStart();
+    });
+
+    // Two generic errors, then a real result in between resets the streak.
+    await act(async () => {
+      FakeSpeechRecognition.instances[0].fireError("network");
+      FakeSpeechRecognition.instances[0].fireBrowserForcedEnd();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[1].fireStart();
+      FakeSpeechRecognition.instances[1].fireError("network");
+      FakeSpeechRecognition.instances[1].fireBrowserForcedEnd();
+    });
+    await act(async () => {
+      FakeSpeechRecognition.instances[2].fireStart();
+      FakeSpeechRecognition.instances[2].fireResult(0, "سبحان الله", true);
+    });
+
+    // Two MORE generic errors after the reset should still be tolerated —
+    // if the streak hadn't reset, this third-in-a-row-since-mount error
+    // would have tripped the breaker instead of restarting again.
+    await act(async () => {
+      FakeSpeechRecognition.instances[2].fireError("network");
+      FakeSpeechRecognition.instances[2].fireBrowserForcedEnd();
+    });
+    expect(FakeSpeechRecognition.instances.length).toBe(4);
+    await act(async () => {
+      FakeSpeechRecognition.instances[3].fireStart();
+      FakeSpeechRecognition.instances[3].fireError("network");
+      FakeSpeechRecognition.instances[3].fireBrowserForcedEnd();
+    });
+    expect(FakeSpeechRecognition.instances.length).toBe(5);
+    await unmount();
+  });
+
   it("reports unsupported when no SpeechRecognition constructor exists", async () => {
     delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
     const { unmount } = await mount({ enabled: true, targetPhrase: "سبحان الله" });
