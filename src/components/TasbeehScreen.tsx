@@ -15,6 +15,12 @@ import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
 import { useVoiceTasbeeh } from "../lib/useVoiceTasbeeh";
 import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "../lib/floatingTasbeehBridge";
+import { VoiceDiagnosticPanel } from "./VoiceDiagnosticPanel";
+import {
+  pushFloatingSelectedDhikr,
+  readFloatingSelectedDhikr,
+  subscribeFloatingSelectedDhikr,
+} from "../lib/floatingTasbeehSync";
 
 interface TasbeehScreenProps {
   onNavigateHome: () => void;
@@ -183,6 +189,30 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   const nav = navLabels[language];
 
   const [selectedId, setSelectedId] = useState<number>(dhikrItems[0]?.id ?? 1);
+
+  // Selected-dhikr sync with the Floating Tasbeeh bubble (see
+  // floatingTasbeehSync.ts). Native holds the source of truth, so on mount
+  // this screen adopts whatever the bubble is currently counting — unless
+  // the user already picked something here before that async read landed —
+  // and afterwards follows a floating-menu pick live. The reverse
+  // direction is selectDhikr below. All of it is inert on web/iOS.
+  const userPickedRef = useRef(false);
+  useEffect(() => {
+    let cancelled = false;
+    void readFloatingSelectedDhikr().then((id) => {
+      if (!cancelled && id !== null && !userPickedRef.current) setSelectedId(id);
+    });
+    const unsubscribe = subscribeFloatingSelectedDhikr(setSelectedId);
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, []);
+  function selectDhikr(id: number) {
+    userPickedRef.current = true;
+    setSelectedId(id);
+    pushFloatingSelectedDhikr(id);
+  }
   // Lazily seeded from localStorage on mount (see src/lib/tasbeehCounters.ts)
   // — the lazy-initializer form runs loadTasbeehCounters() exactly once,
   // the moment this component mounts, so switching Tasbeeh Dhikr, leaving
@@ -240,7 +270,11 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // `onIdleTimeout` is the 60s watchdog's callback — it must genuinely
   // flip this screen's own toggle off, not just an internal status, so
   // reactivation is always a fresh, deliberate action.
-  const { status: voiceStatus, justMatched: voiceJustMatched } = useVoiceTasbeeh({
+  const {
+    status: voiceStatus,
+    justMatched: voiceJustMatched,
+    diagnostics: voiceDiagnostics,
+  } = useVoiceTasbeeh({
     enabled: voiceEnabled,
     targetPhrase: selected?.dhikr_ar ?? "",
     onMatch: applyVoiceRepetitions,
@@ -601,6 +635,10 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
               {t.voiceListeningFor} <bdi dir="rtl">{selected.dhikr_ar}</bdi>
             </p>
           )}
+          {/* Temporary voice-pipeline diagnostic — native Android app only
+              (see VoiceDiagnosticPanel.tsx; remove it and this line
+              together once the pipeline issue is confirmed). */}
+          {voiceEnabled && <VoiceDiagnosticPanel diagnostics={voiceDiagnostics} />}
         </div>
 
         {/* Dhikr selector — intentionally horizontally scrollable; 16 items
@@ -613,7 +651,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => setSelectedId(item.id)}
+                  onClick={() => selectDhikr(item.id)}
                   aria-pressed={isSelected}
                   // This button's text (`item.dhikr_ar`) is ALWAYS Arabic,
                   // regardless of interface language — but `dir` is set on

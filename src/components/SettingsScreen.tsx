@@ -23,6 +23,7 @@ import {
   getEarliestLocalDate,
   getPrayerStats,
   getTasbeehStats,
+  resolveCustomRange,
   getWirdDayStats,
   startOfWeek,
   todayLocalDate,
@@ -310,11 +311,11 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
       case "yearly":
         return { kind: "yearly", year: yearValue };
       case "custom":
-        return { kind: "custom", from: customFrom, to: customTo };
+        return { kind: "custom", ...resolveCustomRange(customFrom, customTo, today) };
       case "all":
         return { kind: "all" };
     }
-  }, [periodKind, dailyDate, weekStart, monthYear, yearValue, customFrom, customTo]);
+  }, [periodKind, dailyDate, weekStart, monthYear, yearValue, customFrom, customTo, today]);
 
   // Same reasoning as `earliest` above: `refreshKey` forces these four to
   // recompute after a Statistics reset even when `selection` itself hasn't
@@ -411,7 +412,7 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
       {periodKind !== "all" && (
         <div className="mt-2.5 rounded-xl border px-3 py-2.5" style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}>
           {periodKind === "daily" && (
-            <DateField label={t.chooseDate} value={dailyDate} min={earliest ?? undefined} max={today} onChange={setDailyDate} />
+            <DateField label={t.chooseDate} value={dailyDate} max={today} onChange={setDailyDate} />
           )}
           {periodKind === "weekly" && (
             <PeriodStepper
@@ -449,8 +450,12 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
           )}
           {periodKind === "custom" && (
             <div className="flex items-center gap-2">
-              <DateField label={t.fromDate} value={customFrom} min={earliest ?? undefined} max={customTo} onChange={setCustomFrom} />
-              <DateField label={t.toDate} value={customTo} min={customFrom} max={today} onChange={setCustomTo} />
+              {/* Both fields are bounded only by "not in the future" — never by
+                  each other or by the earliest recorded date — so any past
+                  date stays selectable in either field, in any order (see
+                  resolveCustomRange in stats.ts). */}
+              <DateField label={t.fromDate} value={customFrom} max={today} onChange={setCustomFrom} />
+              <DateField label={t.toDate} value={customTo} max={today} onChange={setCustomTo} />
             </div>
           )}
         </div>

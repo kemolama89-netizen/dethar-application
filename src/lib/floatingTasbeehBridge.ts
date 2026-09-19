@@ -30,7 +30,11 @@ export interface FloatingTasbeehPlugin {
   // counter at once rather than one at a time.
   resetAllLiveCounts(): Promise<void>;
   getSelectedDhikr(): Promise<{ dhikrId: number }>;
+  // Also refreshes the live bubble (name, size, count, pacing) if it's showing.
   setSelectedDhikr(options: { dhikrId: number }): Promise<void>;
+  // Returns AND clears the route a native floating-menu action asked the
+  // app to open (currently only "settings"), or null if none is pending.
+  consumeOpenRoute(): Promise<{ route: string | null }>;
   // `readyDurationMs` is the SAME per-dhikr calm-counting pacing duration
   // computeTasbeehReadyDurationMs (tasbeehTiming.ts) computes for the main
   // Tasbeeh screen — pushed here so the floating bubble's own pacing gate
@@ -43,6 +47,15 @@ export interface FloatingTasbeehPlugin {
   // reconcileFloatingTasbeeh can run immediately — event-driven, never
   // polled — instead of waiting for the next app-foreground reconciliation.
   addListener(eventName: "pendingEventsChanged", listenerFunc: () => void): Promise<PluginListenerHandle>;
+  // Fired when the user picks a dhikr from the floating long-press menu, so
+  // an already-mounted in-app Tasbeeh screen can follow it immediately.
+  addListener(
+    eventName: "selectedDhikrChanged",
+    listenerFunc: (event: { dhikrId: number }) => void,
+  ): Promise<PluginListenerHandle>;
+  // Fired when a floating-menu action wants the app to navigate somewhere;
+  // carries no payload — the listener pulls the route via consumeOpenRoute.
+  addListener(eventName: "openRouteRequested", listenerFunc: () => void): Promise<PluginListenerHandle>;
 }
 
 export const FloatingTasbeeh = registerPlugin<FloatingTasbeehPlugin>("FloatingTasbeeh");

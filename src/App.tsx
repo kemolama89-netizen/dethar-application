@@ -30,6 +30,7 @@ import {
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
+import { startFloatingOpenRouteRequests, startFloatingTasbeehSync } from "./lib/floatingTasbeehSync";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -334,7 +335,7 @@ function HomeScreen({
   return (
     <DeviceFrame scrollLocked={openCard !== null || locationChange.pending !== null}>
       <AppShell>
-        <TopBar />
+        <TopBar showExitButton />
         <LogoHeader />
         <DateTimeStrip className="mt-1" />
 
@@ -529,6 +530,17 @@ function AppRouter() {
   // stale target from a previous search never lingers into a normal visit.
   const [searchTargetItemId, setSearchTargetItemId] = useState<string | null>(null);
 
+  // The Floating Tasbeeh menu's "الإعدادات" row asks the app to open its
+  // existing Settings screen — routed through this same screen switcher,
+  // never via Home. A no-op on web/iOS.
+  useEffect(
+    () =>
+      startFloatingOpenRouteRequests((route) => {
+        if (route === "settings") setScreen("settings");
+      }),
+    [],
+  );
+
   function handleSelectSearchResult(result: WrittenSearchResult) {
     setSearchTargetItemId(result.itemId);
     if (result.kind === "written") {
@@ -696,6 +708,16 @@ function AppRouter() {
 }
 
 export default function App() {
+  // A safe no-op everywhere except the native Android build (see
+  // isFloatingTasbeehAvailable in floatingTasbeehSync.ts) — the one place
+  // that starts Floating Tasbeeh reconciliation and pushes the dhikr list
+  // to native, once per app launch regardless of the landing screen.
+  // (Removed in 8d240c4 while floatingTasbeehSync.ts was still untracked;
+  // the module is committed now, so it belongs back here.)
+  useEffect(() => {
+    startFloatingTasbeehSync();
+  }, []);
+
   return (
     <LanguageProvider>
       <ThemeProvider>

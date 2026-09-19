@@ -37,6 +37,12 @@ vi.mock("../lib/floatingTasbeehBridge", async (importOriginal) => {
       // never touches the persisted Floating Tasbeeh enabled state — see
       // "TasbeehScreen — Floating Tasbeeh live sync"'s own dedicated tests.
       setEnabled: vi.fn().mockResolvedValue(undefined),
+      // Selected-dhikr sync (see floatingTasbeehSync.ts) — defaults to the
+      // first dhikr, i.e. "the bubble is on the same dhikr the screen
+      // starts on", so every test that doesn't care stays unaffected.
+      getSelectedDhikr: vi.fn().mockResolvedValue({ dhikrId: 1 }),
+      setSelectedDhikr: vi.fn().mockResolvedValue(undefined),
+      addListener: vi.fn().mockResolvedValue({ remove: vi.fn() }),
     },
   };
 });
@@ -108,6 +114,9 @@ beforeEach(() => {
   vi.mocked(FloatingTasbeeh.syncLiveCount).mockClear();
   vi.mocked(FloatingTasbeeh.resetAllLiveCounts).mockClear();
   vi.mocked(FloatingTasbeeh.setEnabled).mockClear();
+  vi.mocked(FloatingTasbeeh.getSelectedDhikr).mockClear().mockResolvedValue({ dhikrId: dhikrItems[0].id });
+  vi.mocked(FloatingTasbeeh.setSelectedDhikr).mockClear();
+  vi.mocked(FloatingTasbeeh.addListener).mockClear();
 });
 
 // Regression coverage for the shared counting-core refactor (handleTap now
@@ -567,6 +576,68 @@ describe("TasbeehScreen — Voice Tasbeeh latency optimization (stats write batc
     expect(stats.total).toBe(1);
     expect(stats.perDhikr).toEqual([{ dhikrId: String(oldItem.id), total: 1 }]);
 
+    await unmount();
+  });
+});
+
+// Selected-dhikr sync between the Floating Tasbeeh bubble and this screen
+// (see floatingTasbeehSync.ts). Native holds the source of truth; this
+// screen adopts it on mount, follows a floating-menu pick live, and pushes
+// its own selection back. Counts are deliberately NOT part of this — they
+// already share one store (tasbeehCounters.ts).
+describe("TasbeehScreen — selected dhikr sync with Floating Tasbeeh", () => {
+  const isSelected = (container: HTMLElement, dhikrAr: string) =>
+    findButtonByText(container, dhikrAr).getAttribute("aria-pressed") === "true";
+
+  it("adopts the dhikr the floating bubble is currently counting when it mounts", async () => {
+    const chosen = dhikrItems[2];
+    vi.mocked(FloatingTasbeeh.getSelectedDhikr).mockResolvedValue({ dhikrId: chosen.id });
+    const { container, unmount } = await mountTasbeehScreen();
+    expect(isSelected(container, chosen.dhikr_ar)).toBe(true);
+    expect(isSelected(container, dhikrItems[0].dhikr_ar)).toBe(false);
+    await unmount();
+  });
+
+  it("shows the persisted count of the adopted dhikr — the same counter store the bubble writes", async () => {
+    const chosen = dhikrItems[1];
+    localStorage.setItem("dithar:tasbeeh:counters:v1", JSON.stringify({ [chosen.id]: 10 }));
+    vi.mocked(FloatingTasbeeh.getSelectedDhikr).mockResolvedValue({ dhikrId: chosen.id });
+    const { container, unmount } = await mountTasbeehScreen();
+    expect(displayedCount(container)).toBe("10");
+    await unmount();
+  });
+
+  it("follows a floating-menu pick made while the screen is open", async () => {
+    const { container, unmount } = await mountTasbeehScreen();
+    const calls = vi.mocked(FloatingTasbeeh.addListener).mock.calls as unknown as [string, (e: { dhikrId: number }) => void][];
+    const handler = calls.find(([n]) => n === "selectedDhikrChanged")![1];
+    const picked = dhikrItems[3];
+    await act(async () => {
+      handler({ dhikrId: picked.id });
+    });
+    expect(isSelected(container, picked.dhikr_ar)).toBe(true);
+    // A pick from native must never echo back to native (no feedback loop).
+    expect(FloatingTasbeeh.setSelectedDhikr).not.toHaveBeenCalled();
+    await unmount();
+  });
+
+  it("pushes an in-app selection to the floating bubble", async () => {
+    const { container, unmount } = await mountTasbeehScreen();
+    await selectDhikr(container, dhikrItems[1].dhikr_ar);
+    expect(FloatingTasbeeh.setSelectedDhikr).toHaveBeenCalledExactlyOnceWith({ dhikrId: dhikrItems[1].id });
+    await unmount();
+  });
+
+  it("does not let a late native read overwrite a dhikr the user already picked here", async () => {
+    let resolveRead!: (v: { dhikrId: number }) => void;
+    vi.mocked(FloatingTasbeeh.getSelectedDhikr).mockReturnValue(new Promise((r) => (resolveRead = r)));
+    const { container, unmount } = await mountTasbeehScreen();
+    await selectDhikr(container, dhikrItems[1].dhikr_ar);
+    await act(async () => {
+      resolveRead({ dhikrId: dhikrItems[4].id });
+    });
+    expect(isSelected(container, dhikrItems[1].dhikr_ar)).toBe(true);
+    expect(isSelected(container, dhikrItems[4].dhikr_ar)).toBe(false);
     await unmount();
   });
 });

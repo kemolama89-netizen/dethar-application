@@ -16,6 +16,8 @@ import {
   getPrayerStats,
   getWirdDayStats,
   clearAllStats,
+  resolveCustomRange,
+  addDays,
 } from "./stats";
 
 const STORAGE_KEY = "dithar:stats:events:v1";
@@ -121,5 +123,65 @@ describe("recordFloatingTasbeehRepetition", () => {
     recordFloatingTasbeehRepetition(1, 5);
     expect(getWirdDayStats("morning", ALL).perDhikr).toEqual([]);
     expect(getPrayerStats(ALL).perDhikr).toEqual([]);
+  });
+});
+
+// The custom-range picker's raw values -> the inclusive range actually
+// reported (see resolveCustomRange's own doc comment for why the pickers'
+// own values are never snapped). All plain string logic, so none of it can
+// be timezone-sensitive — the TZ-varied runs of this file prove that.
+describe("resolveCustomRange", () => {
+  const TODAY = "2026-09-19";
+
+  it("keeps an already-ordered range as is", () => {
+    expect(resolveCustomRange("2026-09-01", "2026-09-10", TODAY)).toEqual({ from: "2026-09-01", to: "2026-09-10" });
+  });
+
+  it("orders an inverted pair chronologically instead of producing an empty range", () => {
+    expect(resolveCustomRange("2026-09-12", "2026-09-09", TODAY)).toEqual({ from: "2026-09-09", to: "2026-09-12" });
+  });
+
+  it("accepts a single-day range (from === to)", () => {
+    expect(resolveCustomRange("2026-08-30", "2026-08-30", TODAY)).toEqual({ from: "2026-08-30", to: "2026-08-30" });
+  });
+
+  it("caps any date after today at today", () => {
+    expect(resolveCustomRange("2026-09-10", "2027-01-01", TODAY)).toEqual({ from: "2026-09-10", to: TODAY });
+    expect(resolveCustomRange("2027-01-01", "2028-01-01", TODAY)).toEqual({ from: TODAY, to: TODAY });
+  });
+
+  it("falls back to today for a value that is not a full YYYY-MM-DD", () => {
+    expect(resolveCustomRange("", "2026-09-10", TODAY)).toEqual({ from: "2026-09-10", to: TODAY });
+    expect(resolveCustomRange("2026-09", "2026-09-10", TODAY)).toEqual({ from: "2026-09-10", to: TODAY });
+  });
+
+  it("tolerates the partial values a native date input reports mid-typing (year arrives digit by digit)", () => {
+    // Still a well-formed date string, so it is used as-is — the range just
+    // temporarily spans further back, and settles once typing finishes.
+    expect(resolveCustomRange("0002-09-01", "2026-09-10", TODAY)).toEqual({ from: "0002-09-01", to: "2026-09-10" });
+    expect(resolveCustomRange("2026-09-01", "2026-09-10", TODAY)).toEqual({ from: "2026-09-01", to: "2026-09-10" });
+  });
+
+  it("selects exactly the events inside the resolved range, inclusive, in either pick order", () => {
+    const at = (localDate: string) => ({ ts: 1, localDate, localTime: "10:00:00", timeZone: "UTC" });
+    recordFloatingTasbeehRepetition(1, 2, at("2026-09-05"));
+    recordFloatingTasbeehRepetition(1, 3, at("2026-09-07"));
+    recordFloatingTasbeehRepetition(1, 4, at("2026-09-09"));
+
+    const total = (a: string, b: string) => {
+      const range = resolveCustomRange(a, b, TODAY);
+      return getTasbeehStats({ kind: "custom", ...range }).total;
+    };
+    expect(total("2026-09-05", "2026-09-07")).toBe(5);
+    expect(total("2026-09-07", "2026-09-05")).toBe(5);
+    expect(total("2026-09-09", "2026-09-09")).toBe(4);
+    expect(total("2026-09-06", "2026-09-08")).toBe(3);
+  });
+
+  it("addDays around DST/month/year boundaries never drifts a day", () => {
+    expect(addDays("2026-03-08", 1)).toBe("2026-03-09"); // US DST start
+    expect(addDays("2026-10-25", 1)).toBe("2026-10-26"); // EU DST end
+    expect(addDays("2026-12-31", 1)).toBe("2027-01-01");
+    expect(addDays("2026-03-01", -1)).toBe("2026-02-28");
   });
 });
