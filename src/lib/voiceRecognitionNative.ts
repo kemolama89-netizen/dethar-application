@@ -21,10 +21,7 @@ export interface VoiceRecognitionResultEvent {
 export interface VoiceRecognitionErrorEvent {
   sessionId: string;
   code: string;
-  // TEMPORARY DIAGNOSTIC field — added 2026-09-19 alongside
-  // VoiceRecognitionPlugin.kt's own onError diagnostic logging, to
-  // investigate the "onstart=0 onerror=1610" APK report. Carries the RAW
-  // Android SpeechRecognizer.ERROR_* int/name that `code` above
+  // Carries the RAW Android SpeechRecognizer.ERROR_* int/name that `code` above
   // deliberately collapses away (see that file's mapErrorCode). Optional —
   // absent on the JS-side-only "service-not-allowed" rejection path in
   // nativeSpeechRecognitionAdapter.ts, which never reaches the native

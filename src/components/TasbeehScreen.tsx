@@ -15,7 +15,6 @@ import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
 import { useVoiceTasbeeh } from "../lib/useVoiceTasbeeh";
 import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "../lib/floatingTasbeehBridge";
-import { VoiceDiagnosticPanel } from "./VoiceDiagnosticPanel";
 import {
   pushFloatingSelectedDhikr,
   readFloatingSelectedDhikr,
@@ -270,11 +269,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // `onIdleTimeout` is the 60s watchdog's callback — it must genuinely
   // flip this screen's own toggle off, not just an internal status, so
   // reactivation is always a fresh, deliberate action.
-  const {
-    status: voiceStatus,
-    justMatched: voiceJustMatched,
-    diagnostics: voiceDiagnostics,
-  } = useVoiceTasbeeh({
+  const { status: voiceStatus, justMatched: voiceJustMatched } = useVoiceTasbeeh({
     enabled: voiceEnabled,
     targetPhrase: selected?.dhikr_ar ?? "",
     onMatch: applyVoiceRepetitions,
@@ -635,10 +630,6 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
               {t.voiceListeningFor} <bdi dir="rtl">{selected.dhikr_ar}</bdi>
             </p>
           )}
-          {/* Temporary voice-pipeline diagnostic — native Android app only
-              (see VoiceDiagnosticPanel.tsx; remove it and this line
-              together once the pipeline issue is confirmed). */}
-          {voiceEnabled && <VoiceDiagnosticPanel diagnostics={voiceDiagnostics} />}
         </div>
 
         {/* Dhikr selector — intentionally horizontally scrollable; 16 items
