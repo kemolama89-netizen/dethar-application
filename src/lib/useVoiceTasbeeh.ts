@@ -82,9 +82,6 @@ interface UseVoiceTasbeehOptions {
 interface UseVoiceTasbeehResult {
   status: VoiceTasbeehStatus;
   justMatched: boolean;
-  // TEMPORARY — see the VoicePipelineDiagnostic block above. Remove this
-  // field alongside that block once the pipeline issue is confirmed.
-  diagnostics: VoicePipelineDiagnostic;
 }
 
 // Named, explicit recognition locale (see the approved design's locale
@@ -160,82 +157,6 @@ function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | null 
   return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
 }
 
-// ============================================================================
-// TEMPORARY VOICE PIPELINE DIAGNOSTIC — added 2026-09-18 to investigate the
-// "microphone permission now works, but Voice Tasbeeh never counts anything"
-// APK report. Deliberately UNCONDITIONAL — never gated by
-// isDevBuild/import.meta.env.DEV like emitVoiceDebug above: that entire
-// system is compiled out of the exact production JS bundle this app's APK
-// ships (Vite's DEV flag is false for `vite build`, dev or release native
-// shell alike), so today there is literally no way to observe anything about
-// the recognition pipeline on a real device. This block is read-only
-// bookkeeping ONLY — every field is derived AFTER the fact from events the
-// existing handlers already receive; nothing here is ever read back by any
-// matching/counting/lifecycle decision, and it changes no existing
-// behavior except adding a small number of extra re-renders while Voice
-// Tasbeeh is enabled.
-//
-// REMOVAL: once the pipeline issue is confirmed and this is no longer
-// needed, delete this whole block, the `diagnosticsRef`/`updateDiagnostics`
-// wiring inside the hook below, the five new recognition.on*
-// (onaudiostart/onspeechstart/onspeechend/onaudioend/onnomatch) handlers,
-// the extra updateDiagnostics(...) calls inside the existing
-// onstart/onresult/onerror/onend handlers, the `diagnostics` field from
-// this hook's return value and UseVoiceTasbeehResult, the matching optional
-// fields in speechRecognition.d.ts, and TasbeehScreen.tsx's diagnostic panel.
-export interface VoicePipelineDiagnostic {
-  recognitionApiAvailable: boolean;
-  instancesStarted: number;
-  onstartCount: number;
-  onaudiostartCount: number;
-  onspeechstartCount: number;
-  onspeechendCount: number;
-  onaudioendCount: number;
-  onresultCount: number;
-  onnomatchCount: number;
-  onerrorCount: number;
-  onendCount: number;
-  lastRawTranscript: string | null;
-  lastIsFinal: boolean | null;
-  recognitionLang: string;
-  lastErrorCode: string | null;
-  // TEMPORARY DIAGNOSTIC — added 2026-09-19 alongside
-  // VoiceRecognitionPlugin.kt's own onError diagnostic logging, to
-  // investigate the "onstart=0 onerror=1610" APK report. Round-tripped
-  // from the native layer via the spec's own
-  // SpeechRecognitionErrorEvent.message field — carries the RAW Android
-  // SpeechRecognizer.ERROR_* int/name that `lastErrorCode` above
-  // deliberately collapses away. Always null on the browser
-  // (webkitSpeechRecognition) path, which never populates `message`.
-  lastErrorMessage: string | null;
-  totalCompletionsSeen: number;
-  lastEventAt: string | null;
-}
-
-function makeEmptyVoicePipelineDiagnostic(): VoicePipelineDiagnostic {
-  return {
-    recognitionApiAvailable: getSpeechRecognitionConstructor() !== null,
-    instancesStarted: 0,
-    onstartCount: 0,
-    onaudiostartCount: 0,
-    onspeechstartCount: 0,
-    onspeechendCount: 0,
-    onaudioendCount: 0,
-    onresultCount: 0,
-    onnomatchCount: 0,
-    onerrorCount: 0,
-    onendCount: 0,
-    lastRawTranscript: null,
-    lastIsFinal: null,
-    recognitionLang: VOICE_TASBEEH_LOCALE,
-    lastErrorCode: null,
-    lastErrorMessage: null,
-    totalCompletionsSeen: 0,
-    lastEventAt: null,
-  };
-}
-// ============================================================================
-
 // Owns the native SpeechRecognition lifecycle and the two watchdogs; feeds
 // every recognition result through a single VoiceTasbeehMatcher instance
 // (src/lib/voiceTasbeehMatch.ts), which does all the actual matching —
@@ -244,19 +165,6 @@ function makeEmptyVoicePipelineDiagnostic(): VoicePipelineDiagnostic {
 export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout }: UseVoiceTasbeehOptions): UseVoiceTasbeehResult {
   const [status, setStatus] = useState<VoiceTasbeehStatus>("idle");
   const [justMatched, setJustMatched] = useState(false);
-
-  // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
-  // `diagnosticsRef` is the source of truth (read/patched synchronously from
-  // inside recognition event handlers, same pattern as this hook's other
-  // refs); `diagnostics` state exists only to make those patches visible to
-  // TasbeehScreen's diagnostic panel via a re-render. Remove both alongside
-  // that block once the pipeline issue is confirmed.
-  const diagnosticsRef = useRef<VoicePipelineDiagnostic>(makeEmptyVoicePipelineDiagnostic());
-  const [diagnostics, setDiagnostics] = useState<VoicePipelineDiagnostic>(diagnosticsRef.current);
-  function updateDiagnostics(patch: Partial<VoicePipelineDiagnostic>) {
-    diagnosticsRef.current = { ...diagnosticsRef.current, ...patch, lastEventAt: new Date().toISOString().slice(11, 23) };
-    setDiagnostics(diagnosticsRef.current);
-  }
 
   const matcherRef = useRef<VoiceTasbeehMatcher | null>(null);
   if (matcherRef.current === null) {
@@ -488,33 +396,6 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
           emitVoiceDebug("onstart", { instanceId, debugReason, snapshot: matcherRef.current!.getDebugSnapshot() });
           emitVoiceDebug("status", { status: "listening", instanceId });
         }
-        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
-        updateDiagnostics({ onstartCount: diagnosticsRef.current.onstartCount + 1 });
-      };
-
-      // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
-      // Five additional lifecycle events this hook has never listened to
-      // before: purely observational, no existing behavior (status/
-      // matching/watchdogs) reacts to any of them.
-      recognition.onaudiostart = () => {
-        if (recognitionRef.current !== recognition) return;
-        updateDiagnostics({ onaudiostartCount: diagnosticsRef.current.onaudiostartCount + 1 });
-      };
-      recognition.onspeechstart = () => {
-        if (recognitionRef.current !== recognition) return;
-        updateDiagnostics({ onspeechstartCount: diagnosticsRef.current.onspeechstartCount + 1 });
-      };
-      recognition.onspeechend = () => {
-        if (recognitionRef.current !== recognition) return;
-        updateDiagnostics({ onspeechendCount: diagnosticsRef.current.onspeechendCount + 1 });
-      };
-      recognition.onaudioend = () => {
-        if (recognitionRef.current !== recognition) return;
-        updateDiagnostics({ onaudioendCount: diagnosticsRef.current.onaudioendCount + 1 });
-      };
-      recognition.onnomatch = () => {
-        if (recognitionRef.current !== recognition) return;
-        updateDiagnostics({ onnomatchCount: diagnosticsRef.current.onnomatchCount + 1 });
       };
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
@@ -549,20 +430,12 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
 
         let totalCompletions = 0;
         let anyGenuineActivity = false;
-        // TEMPORARY — see the VoicePipelineDiagnostic block above this
-        // hook. Captured from inside the loop below (never read by it) so
-        // the diagnostic reflects whatever the LAST segment in this event
-        // actually was, same raw text/isFinal the matcher itself just saw.
-        let lastRawTranscriptThisEvent: string | null = null;
-        let lastIsFinalThisEvent: boolean | null = null;
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
           const rawTranscript = result[0]?.transcript ?? "";
           if (isDevBuild) {
             emitVoiceDebug("onresult:raw", { instanceId, segmentId: i, isFinal: result.isFinal, rawTranscript });
           }
-          lastRawTranscriptThisEvent = rawTranscript;
-          lastIsFinalThisEvent = result.isFinal;
           const { completions, hadGenuineActivity } = matcherRef.current!.processSegment({
             segmentId: i,
             text: rawTranscript,
@@ -571,13 +444,6 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
           totalCompletions += completions;
           if (hadGenuineActivity) anyGenuineActivity = true;
         }
-        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
-        updateDiagnostics({
-          onresultCount: diagnosticsRef.current.onresultCount + 1,
-          lastRawTranscript: lastRawTranscriptThisEvent,
-          lastIsFinal: lastIsFinalThisEvent,
-          totalCompletionsSeen: diagnosticsRef.current.totalCompletionsSeen + totalCompletions,
-        });
         // User/dhikr-activity signal — deliberately separate from the
         // health signal above: this only moves when the matcher judges
         // the new content as genuinely engaging the current target (see
@@ -618,12 +484,6 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
         // activity (that stays scoped to genuine matched speech only).
         lastResultEventAtRef.current = Date.now();
         if (isDevBuild) emitVoiceDebug("onerror", { instanceId, error: event.error, message: event.message, reachedOnStart });
-        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
-        updateDiagnostics({
-          onerrorCount: diagnosticsRef.current.onerrorCount + 1,
-          lastErrorCode: event.error,
-          lastErrorMessage: event.message || null,
-        });
 
         if (event.error === "not-allowed" || event.error === "service-not-allowed") {
           intentionalStopRef.current = true;
@@ -684,8 +544,6 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
 
       recognition.onend = () => {
         if (recognitionRef.current !== recognition) return;
-        // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
-        updateDiagnostics({ onendCount: diagnosticsRef.current.onendCount + 1 });
         // A target-switch refresh is waiting on THIS instance specifically
         // (see refreshRecognitionRef below) — stop() has now finished
         // flushing whatever was already captured (any trailing onresult
@@ -719,8 +577,6 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
       if (isDevBuild) {
         emitVoiceDebug("start", { instanceId, debugReason: debugReason ?? "initial", targetPhrase: targetPhraseRef.current });
       }
-      // TEMPORARY — see the VoicePipelineDiagnostic block above this hook.
-      updateDiagnostics({ instancesStarted: diagnosticsRef.current.instancesStarted + 1 });
       recognition.start();
     }
 
@@ -873,5 +729,5 @@ export function useVoiceTasbeeh({ enabled, targetPhrase, onMatch, onIdleTimeout 
     };
   }, []);
 
-  return { status, justMatched, diagnostics };
+  return { status, justMatched };
 }

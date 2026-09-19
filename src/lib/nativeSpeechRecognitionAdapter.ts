@@ -101,8 +101,8 @@ export class NativeAndroidSpeechRecognition extends EventTarget implements Speec
       if (data.sessionId !== sessionId || !isCurrent()) return;
       // `message` is the spec's own SpeechRecognitionErrorEvent field
       // (see lib.dom.d.ts) — reused here, not invented, to round-trip
-      // VoiceRecognitionPlugin.kt's TEMPORARY DIAGNOSTIC raw Android error
-      // code/name through to useVoiceTasbeeh.ts's diagnostics panel.
+      // VoiceRecognitionPlugin.kt's raw Android error code/name through to
+      // useVoiceTasbeeh.ts (surfaced in its dev-only debug log).
       const event = { error: data.code, message: data.message ?? "" } as unknown as SpeechRecognitionErrorEvent;
       this.onerror?.call(this, event);
     }).then((handle) => this.handles.push(handle));
