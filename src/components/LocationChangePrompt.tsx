@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { useBackDismiss } from "../lib/backOverlays";
 
 interface LocationChangePromptProps {
   open: boolean;
@@ -24,6 +25,8 @@ interface LocationChangePromptProps {
 // this is a low-stakes "not now" dismissal, not a destructive action)
 // changes nothing about the active location.
 export function LocationChangePrompt({ open, title, body, confirmLabel, declineLabel, onConfirm, onDecline }: LocationChangePromptProps) {
+  // System Back is treated as Decline, like the backdrop (see lib/backOverlays.ts).
+  useBackDismiss(open, onDecline);
   if (!open) return null;
 
   return (

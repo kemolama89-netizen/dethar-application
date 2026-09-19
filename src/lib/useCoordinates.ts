@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Coordinates } from "./prayerTimes";
 import { getDeviceTimeZone } from "./dateTime";
-import { loadLocationSettings, resolveActiveLocationRecord, saveLastActiveLocation, KUWAIT_FALLBACK_LOCATION } from "./locationSettings";
+import { loadLocationSettings, resolveActiveLocationRecord, saveLastActiveLocation, saveFallbackLocationIfNoneSaved } from "./locationSettings";
 import type { ActiveLocationRecord, LocationSource } from "./locationSettings";
 import { estimateCountryFromCoordinates } from "./reverseGeocode";
 
@@ -54,7 +54,8 @@ function recordToState(record: ActiveLocationRecord): CoordinatesState {
 //   2. Otherwise, a live device GPS fix, when the browser's Geolocation
 //      API grants one.
 //   3. Otherwise, the Kuwait City fallback (unchanged from before this
-//      step) — paired with Kuwait's own fixed zone, NOT the device's
+//      step; a valid previously-confirmed location always wins over it, and
+//      a failed GPS request never overwrites that saved location) — paired with Kuwait's own fixed zone, NOT the device's
 //      reported timezone: without a real fix the device could physically
 //      be anywhere (this exact mismatch showed up in earlier testing — a
 //      dev container reporting UTC while calculating for Kuwait produced
@@ -82,7 +83,7 @@ export function useCoordinates(): CoordinatesState {
     // entirely rather than fetching a fix that would never be used.
     if (loadLocationSettings().manualLocation) return;
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      saveLastActiveLocation(KUWAIT_FALLBACK_LOCATION);
+      saveFallbackLocationIfNoneSaved();
       return;
     }
 
@@ -109,11 +110,13 @@ export function useCoordinates(): CoordinatesState {
         setState(recordToState(record));
       },
       () => {
-        // Denied, unavailable, or timed out — stay on the Kuwait
-        // fallback (already the initial state, unless a previous device
-        // fix was the last confirmed location — see
-        // resolveActiveLocationRecord) and record it as such.
-        if (!cancelled) saveLastActiveLocation(KUWAIT_FALLBACK_LOCATION);
+        // Denied, unavailable, or timed out — keep whatever is already
+        // active (the initial state: the last confirmed location, else the
+        // Kuwait fallback — see resolveActiveLocationRecord). Kuwait is
+        // only RECORDED when nothing valid is saved yet; it must never
+        // replace a real previously-confirmed location, or one transient
+        // GPS failure would change every later launch's prayer times.
+        if (!cancelled) saveFallbackLocationIfNoneSaved();
       },
       { maximumAge: 30 * 60 * 1000, timeout: 10_000 },
     );

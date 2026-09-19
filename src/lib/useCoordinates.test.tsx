@@ -13,7 +13,7 @@ import { createRoot } from "react-dom/client";
 import { useCoordinates } from "./useCoordinates";
 import { KUWAIT_CITY_COORDINATES, KUWAIT_TIMEZONE } from "./prayerTimes";
 import { getDeviceTimeZone } from "./dateTime";
-import { saveLastActiveLocation, saveManualLocation, resetLocationSettingsForTesting } from "./locationSettings";
+import { saveLastActiveLocation, saveManualLocation, resetLocationSettingsForTesting, loadLocationSettings } from "./locationSettings";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -238,5 +238,110 @@ describe("useCoordinates — a manual location is set", () => {
     expect(getCurrentPositionCalled).toBe(true); // now behaves like a genuine first launch
     expect(latest?.source).toBe("fallback"); // Kuwait, pending that fresh fix — same as a real first launch
     await second.unmount();
+  });
+});
+
+// C6 — a failed GPS request must never replace a real saved location with
+// Kuwait; Kuwait is only ever RECORDED when nothing valid is saved yet.
+describe("useCoordinates — GPS failure never overwrites a valid saved location", () => {
+  const PARIS_DEVICE = { source: "device" as const, latitude: 48.8566, longitude: 2.3522, timezone: "Europe/Paris", countryCode: "FR" };
+
+  function geolocationErrors(code: number) {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: (_success: PositionCallback, error: PositionErrorCallback) => {
+          error({ code, message: "failed" } as GeolocationPositionError);
+        },
+      },
+    });
+  }
+
+  it.each([
+    [1, "permission denied"],
+    [2, "position unavailable"],
+    [3, "timeout"],
+  ])("keeps the saved device location active AND persisted after a GPS error (%i: %s)", async (code) => {
+    saveLastActiveLocation(PARIS_DEVICE);
+    geolocationErrors(code);
+    const { unmount } = await mount();
+
+    expect(latest?.source).toBe("device");
+    expect(latest?.coordinates).toEqual({ latitude: 48.8566, longitude: 2.3522 });
+    expect(latest?.timezone).toBe("Europe/Paris");
+    expect(loadLocationSettings().lastActiveLocation).toEqual(PARIS_DEVICE);
+    await unmount();
+
+    // Next launch (with GPS failing again) still resolves to the real location — not Kuwait.
+    geolocationErrors(code);
+    const second = await mount();
+    expect(latest?.coordinates).toEqual({ latitude: 48.8566, longitude: 2.3522 });
+    expect(latest?.source).toBe("device");
+    await second.unmount();
+  });
+
+  it("keeps the saved device location when the runtime has no geolocation support at all", async () => {
+    saveLastActiveLocation(PARIS_DEVICE);
+    Object.defineProperty(navigator, "geolocation", { configurable: true, value: undefined });
+    const { unmount } = await mount();
+    expect(latest?.coordinates).toEqual({ latitude: 48.8566, longitude: 2.3522 });
+    expect(loadLocationSettings().lastActiveLocation).toEqual(PARIS_DEVICE);
+    await unmount();
+  });
+
+  it("first launch (nothing saved) + GPS failure still records the Kuwait fallback, so the location-change detector has its baseline", async () => {
+    geolocationErrors(1);
+    const { unmount } = await mount();
+    expect(latest).toEqual(KUWAIT_FALLBACK_STATE);
+    expect(loadLocationSettings().lastActiveLocation).toEqual({
+      source: "fallback",
+      latitude: KUWAIT_CITY_COORDINATES.latitude,
+      longitude: KUWAIT_CITY_COORDINATES.longitude,
+      timezone: KUWAIT_TIMEZONE,
+      countryCode: "KW",
+      cityNameAr: "الكويت",
+      cityNameEn: "Kuwait",
+    });
+    await unmount();
+  });
+
+  it("an unusable saved location (out-of-range coordinates) counts as 'nothing saved': Kuwait is used and recorded", async () => {
+    localStorage.setItem(
+      "dithar:location:settings:v1",
+      JSON.stringify({ manualLocation: null, lastActiveLocation: { source: "device", latitude: 999, longitude: 2, timezone: "Europe/Paris" } }),
+    );
+    geolocationErrors(1);
+    const { unmount } = await mount();
+    expect(latest).toEqual(KUWAIT_FALLBACK_STATE);
+    expect(loadLocationSettings().lastActiveLocation?.source).toBe("fallback");
+    await unmount();
+  });
+
+  it("a later successful GPS fix still replaces a previously saved location (only FAILURES are non-destructive)", async () => {
+    saveLastActiveLocation(PARIS_DEVICE);
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: (success: PositionCallback) => {
+          success({ coords: { latitude: 51.5072, longitude: -0.1276 } } as GeolocationPosition);
+        },
+      },
+    });
+    const { unmount } = await mount();
+    expect(latest?.coordinates).toEqual({ latitude: 51.5072, longitude: -0.1276 });
+    expect(loadLocationSettings().lastActiveLocation?.latitude).toBe(51.5072);
+    await unmount();
+  });
+
+  it("a saved manual location is untouched by a GPS failure", async () => {
+    const manual = { source: "manual" as const, latitude: 35.6762, longitude: 139.6503, timezone: "Asia/Tokyo", countryCode: "JP" };
+    saveManualLocation(manual);
+    saveLastActiveLocation(PARIS_DEVICE);
+    geolocationErrors(3);
+    const { unmount } = await mount();
+    expect(latest?.source).toBe("manual");
+    expect(loadLocationSettings().manualLocation).toEqual(manual);
+    expect(loadLocationSettings().lastActiveLocation).toEqual(PARIS_DEVICE);
+    await unmount();
   });
 });

@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from "vitest";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { ContentModal } from "./ContentModal";
+import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -108,5 +109,21 @@ describe("ContentModal", () => {
     await click(backdrop);
     expect(onClose).toHaveBeenCalledTimes(1);
     await unmount();
+  });
+});
+
+describe("ContentModal — system Back", () => {
+  it("is registered only while open, and Back calls its onClose", async () => {
+    const onClose = vi.fn();
+    const closed = await mount(<ContentModal {...baseProps} open={false} onClose={onClose} />);
+    expect(backOverlayCount()).toBe(0);
+    await closed.unmount();
+
+    const { unmount } = await mount(<ContentModal {...baseProps} open onClose={onClose} />);
+    expect(backOverlayCount()).toBe(1);
+    dismissTopBackOverlay();
+    expect(onClose).toHaveBeenCalledTimes(1);
+    await unmount();
+    expect(backOverlayCount()).toBe(0);
   });
 });

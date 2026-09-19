@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import type { ReactNode } from "react";
 import { useLanguage } from "./LanguageContext";
 import type { Language } from "./LanguageContext";
+import { loadThemePreference, saveThemePreference } from "../lib/appearancePreferences";
 
 export type IdentityTheme = "men" | "women";
 
@@ -43,7 +44,9 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<IdentityTheme>("men");
+  // Restored from the persisted choice (see appearancePreferences.ts);
+  // defaults to "men" on a first launch or an unreadable stored value.
+  const [theme, setTheme] = useState<IdentityTheme>(() => loadThemePreference());
   const { language } = useLanguage();
 
   // Warm the browser cache for the other 3 theme/language combinations
@@ -62,7 +65,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
-      toggleTheme: () => setTheme((t) => (t === "men" ? "women" : "men")),
+      toggleTheme: () => {
+        const next: IdentityTheme = theme === "men" ? "women" : "men";
+        setTheme(next);
+        saveThemePreference(next);
+      },
       logoSrc: LOGO_BY_THEME_AND_LANGUAGE[theme][language],
     }),
     [theme, language],

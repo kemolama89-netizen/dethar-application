@@ -10,10 +10,19 @@ import { navLabels } from "../data/content";
 import { dhikrItems, sourceAr, tasbeehLabels } from "../data/tasbeeh";
 import { recordTasbeehRepetitions } from "../lib/stats";
 import { loadTasbeehCounters, saveTasbeehCounters, subscribeTasbeehCounters } from "../lib/tasbeehCounters";
+import {
+  loadSelectedDhikrId,
+  saveSelectedDhikrId,
+  loadTasbeehTargets,
+  saveTasbeehTargets,
+  loadCelebratedTargets,
+  saveCelebratedTargets,
+} from "../lib/tasbeehSelection";
 import { commitManualTasbeehRepetition, applyVoiceTasbeehCountIncrement } from "../lib/tasbeehCommit";
 import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
 import { useVoiceTasbeeh } from "../lib/useVoiceTasbeeh";
+import { useBackDismiss } from "../lib/backOverlays";
 import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "../lib/floatingTasbeehBridge";
 import {
   pushFloatingSelectedDhikr,
@@ -168,6 +177,9 @@ function bubbleTextClass(length: number) {
   return "text-[10px] leading-[1.25]";
 }
 
+// Whether an id (e.g. one read back from storage) is still in the dhikr library.
+const isKnownDhikrId = (id: number) => dhikrItems.some((d) => d.id === id);
+
 // Independent screen — its own DeviceFrame/AppShell instance, reusing
 // existing theme tokens/TopBar/BottomNav unmodified, same as before. All
 // Dhikr text/virtue/source below comes verbatim from
@@ -180,14 +192,23 @@ function bubbleTextClass(length: number) {
 // component state (a couple of Records), not a new global store — `counts`
 // is just seeded from, and written back to, localStorage on every change
 // (see src/lib/tasbeehCounters.ts) so it survives this component
-// unmounting on navigation; `targetInputs`/`celebratedFor` remain
-// session-only exactly as before.
+// unmounting on navigation. `selectedId` and `targetInputs` are likewise
+// seeded from / written back to localStorage (see
+// src/lib/tasbeehSelection.ts) so the screen reopens on the dhikr and
+// targets the user last had, and `celebratedFor` (which target each dhikr
+// has already celebrated) is kept the same way so navigating away and back
+// can't replay a celebration.
 export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateToSettings }: TasbeehScreenProps) {
   const { language } = useLanguage();
   const t = tasbeehLabels[language];
   const nav = navLabels[language];
 
-  const [selectedId, setSelectedId] = useState<number>(dhikrItems[0]?.id ?? 1);
+  const [selectedId, setSelectedId] = useState<number>(() => loadSelectedDhikrId(isKnownDhikrId) ?? dhikrItems[0]?.id ?? 1);
+  // Persist whatever ends up selected — a user pick, or a pick adopted from
+  // the Floating Tasbeeh bubble below — so a restart reopens on it.
+  useEffect(() => {
+    saveSelectedDhikrId(selectedId);
+  }, [selectedId]);
 
   // Selected-dhikr sync with the Floating Tasbeeh bubble (see
   // floatingTasbeehSync.ts). Native holds the source of truth, so on mount
@@ -231,7 +252,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // identical value makes this a harmless no-op for its own actions.
   useEffect(() => subscribeTasbeehCounters(setCounts), []);
 
-  const [targetInputs, setTargetInputs] = useState<Record<number, string>>({});
+  const [targetInputs, setTargetInputs] = useState<Record<number, string>>(() => loadTasbeehTargets(isKnownDhikrId));
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const bubbleIdRef = useRef(0);
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
@@ -239,7 +260,10 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // Per-dhikr: the target value (if any) that celebration has already fired
   // for, so it triggers exactly once per target reach — not on every tap
   // past it — and can fire again after Reset or after the target changes.
-  const [celebratedFor, setCelebratedFor] = useState<Record<number, number>>({});
+  const [celebratedFor, setCelebratedFor] = useState<Record<number, number>>(() => loadCelebratedTargets(isKnownDhikrId));
+  useEffect(() => {
+    saveCelebratedTargets(celebratedFor);
+  }, [celebratedFor]);
 
   // "Reset All" confirmation — mirrors SettingsScreen's own
   // `confirmingReset` pattern for its (equally destructive, equally
@@ -248,6 +272,8 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // this dialog, and the actual reset happens exclusively from its
   // confirm button below.
   const [confirmingResetAll, setConfirmingResetAll] = useState(false);
+  // System Back cancels the confirmation, like the backdrop (see lib/backOverlays.ts).
+  useBackDismiss(confirmingResetAll, () => setConfirmingResetAll(false));
 
   // Voice Tasbeeh — OFF by default (spec requirement), session-only (not
   // persisted): re-enabling it on every visit rather than remembering a
@@ -540,7 +566,9 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
     // logic — parsing above already treats anything non-matching as "no
     // target" rather than throwing.
     if (value === "" || /^\d*$/.test(value)) {
-      setTargetInputs((prev) => ({ ...prev, [selectedId]: value }));
+      const nextTargets = { ...targetInputs, [selectedId]: value };
+      setTargetInputs(nextTargets);
+      saveTasbeehTargets(nextTargets);
       // A changed target gets its own fresh chance to celebrate.
       setCelebratedFor((prev) => {
         if (!(selectedId in prev)) return prev;

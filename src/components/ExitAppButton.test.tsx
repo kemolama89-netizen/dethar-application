@@ -13,6 +13,7 @@ import { ExitAppButton } from "./ExitAppButton";
 import { LanguageControl } from "./LanguageControl";
 import { LanguageProvider } from "../theme/LanguageContext";
 import { exitAppLabels } from "../data/exitApp";
+import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 vi.mock("@capacitor/app", () => ({ App: { exitApp: vi.fn().mockResolvedValue(undefined) } }));
 vi.mock("@capacitor/core", () => ({ Capacitor: { isNativePlatform: vi.fn(() => false) } }));
@@ -36,6 +37,9 @@ const dialog = () => container.querySelector('[role="dialog"]') as HTMLElement |
 const languageToggle = () => container.querySelector('button[aria-label="Switch to English"], button[aria-label="التبديل إلى العربية"]') as HTMLButtonElement;
 
 beforeEach(async () => {
+  // The chosen language now persists (appearancePreferences.ts) — every test
+  // here assumes a fresh, first-launch (Arabic) start.
+  localStorage.clear();
   vi.mocked(CapacitorApp.exitApp).mockClear();
   vi.mocked(Capacitor.isNativePlatform).mockReturnValue(false);
   container = document.createElement("div");
@@ -134,5 +138,28 @@ describe("exitAppLabels", () => {
     expect(Object.keys(exitAppLabels.en).sort()).toEqual(Object.keys(exitAppLabels.ar).sort());
     for (const v of Object.values(exitAppLabels.en)) expect(ARABIC.test(v)).toBe(false);
     for (const v of Object.values(exitAppLabels.ar)) expect(LATIN.test(v)).toBe(false);
+  });
+});
+
+// System Back (lib/backOverlays.ts) must cancel the open confirmation — like
+// its backdrop — WITHOUT exiting the app; with the dialog closed it has
+// nothing to dismiss, so the navigation layer's own Back handling applies.
+describe("ExitAppButton — system Back", () => {
+  it("cancels the open dialog and does not exit the app", async () => {
+    expect(backOverlayCount()).toBe(0);
+    await click(exitButton());
+    expect(dialog()).not.toBeNull();
+    expect(backOverlayCount()).toBe(1);
+    await act(async () => {
+      expect(dismissTopBackOverlay()).toBe(true);
+    });
+    expect(dialog()).toBeNull();
+    expect(backOverlayCount()).toBe(0);
+    expect(CapacitorApp.exitApp).not.toHaveBeenCalled();
+  });
+
+  it("registers nothing while the dialog is closed", () => {
+    expect(backOverlayCount()).toBe(0);
+    expect(dismissTopBackOverlay()).toBe(false);
   });
 });

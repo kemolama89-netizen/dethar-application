@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
+import { useScreenNavigation } from "./lib/useScreenNavigation";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
 import { PaletteProvider } from "./theme/PaletteContext";
@@ -496,11 +497,12 @@ function HomeScreen({
 
 type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings";
 
-// Minimal in-memory screen switcher — no router dependency added. No
-// screen persists its state across a switch (matching how theme/language
-// already don't persist across a reload): navigating away and back
-// unmounts/remounts, so e.g. the Tasbeeh counter or the domino reader's
-// progress resets each visit.
+// Minimal in-memory screen switcher — no router dependency added. Screens
+// don't keep their own transient state across a switch (theme/language are
+// separate app-wide preferences and DO persist — see
+// lib/appearancePreferences.ts): navigating away and back
+// unmounts/remounts, so e.g. the domino reader's progress resets each
+// visit.
 //
 // `writtenCategory` is the one extra piece of navigation state the
 // Written Adhkar flow needs (Home -> Written Adhkar -> Category ->
@@ -515,7 +517,11 @@ type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-searc
 // touching HomeScreen's or TasbeehScreen's own markup at all: this only
 // wraps their already-existing output at the router boundary.
 function AppRouter() {
-  const [screen, setScreen] = useState<Screen>("home");
+  // `setScreen` keeps its old name and call shape but now also records a
+  // back stack (see lib/useScreenNavigation.ts) so system Back — Android's
+  // hardware/gesture button and the browser's — returns to the previous
+  // screen instead of leaving the app.
+  const { screen, navigate: setScreen } = useScreenNavigation<Screen>("home");
   const [writtenCategory, setWrittenCategory] = useState<WrittenAdhkarCategoryKey>("morning");
   // Which Misc-library category the detail screen should open — same
   // pattern as `writtenCategory` above, set right before switching to

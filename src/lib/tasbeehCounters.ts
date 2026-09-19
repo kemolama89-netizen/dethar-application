@@ -16,16 +16,78 @@ const STORAGE_KEY = "dithar:tasbeeh:counters:v1";
 
 export type TasbeehCounters = Record<number, number>;
 
+// Where the ORIGINAL stored text is copied (once) if load ever has to drop or
+// repair anything in it, so a repair can never be what destroys the only
+// copy of a user's counts. Nothing reads it back automatically. Same
+// convention as stats.ts's corrupt-backup.
+const CORRUPT_BACKUP_KEY = `${STORAGE_KEY}:corrupt-backup`;
+
+// Turns whatever JSON.parse produced into a clean counters record. Entries
+// are validated one by one so a single bad value can't cost the user every
+// other count:
+//   - the key must be a whole-number dhikr id; the id is NOT checked against
+//     the current library — a count for a dhikr that is no longer in it is
+//     kept, not dropped (it is the user's history, and a later library could
+//     bring the id back);
+//   - the value must be a finite whole number >= 0 and safely representable.
+//     A fractional number is floored, and a digit-only string (an older
+//     writer) is converted; anything else (NaN/Infinity, negative, object,
+//     null, non-numeric string) drops just that entry, i.e. that dhikr
+//     restarts at 0 — better than showing "NaN" or a negative count.
+// `changed` is true whenever anything was dropped or repaired, or the root
+// wasn't a plain object at all.
+function sanitizeStoredCounters(parsed: unknown): { counters: TasbeehCounters; changed: boolean } {
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return { counters: {}, changed: true };
+  const counters: TasbeehCounters = {};
+  let changed = false;
+  for (const [key, value] of Object.entries(parsed)) {
+    const id = Number(key);
+    const count = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value;
+    if (
+      !Number.isSafeInteger(id) ||
+      id < 0 ||
+      String(id) !== key ||
+      typeof count !== "number" ||
+      !Number.isFinite(count) ||
+      count < 0 ||
+      count > Number.MAX_SAFE_INTEGER
+    ) {
+      changed = true;
+      continue;
+    }
+    const whole = Math.floor(count);
+    if (whole !== value) changed = true;
+    counters[id] = whole;
+  }
+  return { counters, changed };
+}
+
+function backUpUnreadableCounters(raw: string): void {
+  try {
+    if (localStorage.getItem(CORRUPT_BACKUP_KEY) === null) localStorage.setItem(CORRUPT_BACKUP_KEY, raw);
+  } catch {
+    // Nothing more to do.
+  }
+}
+
 export function loadTasbeehCounters(): TasbeehCounters {
   try {
     const raw = typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
     if (!raw) return {};
-    const parsed: unknown = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? (parsed as TasbeehCounters) : {};
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      backUpUnreadableCounters(raw);
+      return {};
+    }
+    const { counters, changed } = sanitizeStoredCounters(parsed);
+    if (changed) backUpUnreadableCounters(raw);
+    return counters;
   } catch {
-    // Corrupt data or storage unavailable (private mode, quota) — start
-    // clean rather than throwing; the counter is a convenience, never
-    // load-bearing for the app to function.
+    // Storage unavailable (private mode, blocked) — start clean rather than
+    // throwing; the counter is a convenience, never load-bearing for the app
+    // to function.
     return {};
   }
 }

@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { createContext, useContext, useState, useMemo, useLayoutEffect } from "react";
 import type { ReactNode } from "react";
+import { loadLanguagePreference, saveLanguagePreference } from "../lib/appearancePreferences";
 
 export type Language = "ar" | "en";
 
@@ -12,12 +13,12 @@ interface LanguageContextValue {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 // Language is a state fully independent of `theme` (see ThemeContext) —
-// toggling one never touches the other. Neither persists across reloads;
-// that matches the existing (also non-persistent) theme state, so the two
-// stay consistent with each other rather than one surviving a refresh and
-// the other not.
+// toggling one never touches the other. The chosen language is persisted
+// (see appearancePreferences.ts) and restored as the initial state, so an
+// app restart comes back in the language the user last picked; a first
+// launch, or an unreadable stored value, starts in Arabic as before.
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>("ar");
+  const [language, setLanguage] = useState<Language>(() => loadLanguagePreference());
   const dir: "rtl" | "ltr" = language === "ar" ? "rtl" : "ltr";
 
   // dir/lang are set on <html> (not a wrapping element) because logical CSS
@@ -25,8 +26,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // dividers, default text alignment, flex DOM-order-based mirroring for
   // TopBar/BottomNav) resolve against the document's direction — this is
   // "handled at the application/layout level" rather than by manually
-  // reversing individual elements.
-  useEffect(() => {
+  // reversing individual elements. A layout effect (not a passive one) so a
+  // restored English session never paints a frame in index.html's default
+  // rtl/ar before its own ltr/en is applied.
+  useLayoutEffect(() => {
     document.documentElement.dir = dir;
     document.documentElement.lang = language;
   }, [language, dir]);
@@ -34,7 +37,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const value = useMemo<LanguageContextValue>(
     () => ({
       language,
-      toggleLanguage: () => setLanguage((l) => (l === "ar" ? "en" : "ar")),
+      toggleLanguage: () => {
+        const next: Language = language === "ar" ? "en" : "ar";
+        setLanguage(next);
+        saveLanguagePreference(next);
+      },
       dir,
     }),
     [language, dir],

@@ -123,25 +123,139 @@ export { addDays, startOfWeek };
 // re-parse JSON.
 let cache: StatEvent[] | null = null;
 
+// Where the ORIGINAL stored text is copied (once) if load() ever has to
+// discard or repair anything in it — see sanitizeStoredEvents. Nothing
+// reads this key back automatically; it exists so that a repair can never
+// be the thing that destroys the only copy of a user's history.
+const CORRUPT_BACKUP_KEY = `${STORAGE_KEY}:corrupt-backup`;
+
+const LOCAL_DATE_SHAPE = /^\d{4}-\d{2}-\d{2}$/;
+const STAT_SOURCES: readonly string[] = ["written", "tasbeeh", "floating"];
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+// Validates ONE stored entry and returns a well-formed StatEvent, or null
+// if it can't be trusted at all. Repairs rather than rejects wherever the
+// entry is still meaningful, so existing history survives:
+//   - `localDate` missing/malformed (older data, or a hand-edited entry) is
+//     re-derived from `ts` — exactly what resolvedLocalDate() below already
+//     did lazily for entries without one;
+//   - `localTime`/`timeZone` missing become "" (they're informational only —
+//     no report reads them);
+//   - a numeric `dhikrId` (any older writer) is stringified.
+// Rejected: non-objects, a non-finite `ts`, an unknown `kind`, a repetition
+// with an unknown `source` or no usable `dhikrId`, a wird-complete with no
+// string `category`.
+function sanitizeStoredEvent(value: unknown): StatEvent | null {
+  if (!isRecord(value)) return null;
+  const { ts, kind } = value;
+  if (typeof ts !== "number" || !Number.isFinite(ts)) return null;
+
+  const localDate =
+    typeof value.localDate === "string" && LOCAL_DATE_SHAPE.test(value.localDate) ? value.localDate : localDateString(new Date(ts));
+  const localTime = typeof value.localTime === "string" ? value.localTime : "";
+  const timeZone = typeof value.timeZone === "string" ? value.timeZone : "";
+
+  if (kind === "repetition") {
+    if (typeof value.source !== "string" || !STAT_SOURCES.includes(value.source)) return null;
+    const dhikrId =
+      typeof value.dhikrId === "string" && value.dhikrId !== ""
+        ? value.dhikrId
+        : typeof value.dhikrId === "number" && Number.isFinite(value.dhikrId)
+          ? String(value.dhikrId)
+          : null;
+    if (dhikrId === null) return null;
+    const event: RepetitionEvent = { ts, localDate, localTime, timeZone, kind, source: value.source as StatSource, dhikrId };
+    if (typeof value.category === "string") event.category = value.category as WrittenAdhkarCategoryKey;
+    return event;
+  }
+
+  if (kind === "wird-complete") {
+    if (typeof value.category !== "string") return null;
+    return { ts, localDate, localTime, timeZone, kind, category: value.category as WrittenAdhkarCategoryKey };
+  }
+
+  return null;
+}
+
+// Turns whatever JSON.parse produced into a clean event list. `changed` is
+// true whenever anything was dropped or the top-level shape itself was
+// wrong — load() uses it to decide whether to preserve the original text.
+function sanitizeStoredEvents(parsed: unknown): { events: StatEvent[]; changed: boolean } {
+  if (!Array.isArray(parsed)) return { events: [], changed: true };
+  const events: StatEvent[] = [];
+  let changed = false;
+  for (const entry of parsed) {
+    const clean = sanitizeStoredEvent(entry);
+    if (clean === null) changed = true;
+    else events.push(clean);
+  }
+  return { events, changed };
+}
+
+// Copies the untouched original text aside, once. If a backup already
+// exists it's kept as-is (never overwritten), so the FIRST unreadable
+// snapshot — the one most likely to be the user's real history — is the one
+// that's preserved. Best-effort: a full/blocked storage just skips it.
+function backUpUnreadableStats(raw: string) {
+  try {
+    if (localStorage.getItem(CORRUPT_BACKUP_KEY) === null) localStorage.setItem(CORRUPT_BACKUP_KEY, raw);
+  } catch {
+    // Nothing more to do.
+  }
+}
+
 function load(): StatEvent[] {
   if (cache) return cache;
   try {
     const raw = typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    cache = raw ? (JSON.parse(raw) as StatEvent[]) : [];
+    if (!raw) {
+      cache = [];
+    } else {
+      let parsed: unknown;
+      let parseFailed = false;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        parseFailed = true;
+      }
+      const { events, changed } = parseFailed ? { events: [], changed: true } : sanitizeStoredEvents(parsed);
+      if (changed) backUpUnreadableStats(raw);
+      cache = events;
+    }
   } catch {
-    // Corrupt data or storage unavailable (private mode, quota) — start
-    // clean rather than throwing; stats are a nice-to-have, never load-bearing.
+    // Storage unavailable (e.g. access blocked) — start clean rather than
+    // throwing; stats are a nice-to-have, never load-bearing.
     cache = [];
   }
   return cache;
 }
 
-function persist() {
-  if (!cache) return;
+// Another tab/window of the same origin wrote (or cleared) the log: this
+// tab's in-memory copy is now stale, and persisting it later would silently
+// overwrite the other tab's events (last writer wins). Dropping the cache
+// makes the next read/append re-load the current stored log instead. `key`
+// is null when the whole storage area was cleared.
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+  window.addEventListener("storage", (event) => {
+    if (event.key === null || event.key === STORAGE_KEY) cache = null;
+  });
+}
+
+// Writes the whole in-memory log. Returns whether the write reached
+// storage. A failed write (quota/blocked storage) never loses events from
+// THIS session: they stay in `cache`, and because every later persist()
+// re-serializes the entire cache, the next successful write includes them.
+function persist(): boolean {
+  if (!cache) return false;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+    return true;
   } catch {
     // Nothing to do — worship/recitation itself must never depend on this succeeding.
+    return false;
   }
 }
 
@@ -240,10 +354,36 @@ export function recordFloatingTasbeehRepetition(dhikrId: number, times: number, 
   if (times <= 0) return;
   const events = load();
   const stamp = occurredAt ?? nowStamp();
+  // An explicit `occurredAt` is a native tap's own captured moment — if the
+  // log already holds a floating event for that exact tap, this call is a
+  // replay of one that was already recorded (see floatingReplayKey), so it
+  // records nothing. A "now" stamp is never a replay, so it isn't checked.
+  if (occurredAt && floatingReplayKeys(events).has(floatingReplayKey(stamp, String(dhikrId)))) return;
   for (let i = 0; i < times; i++) {
     events.push({ ...stamp, kind: "repetition", source: "floating", dhikrId: String(dhikrId) });
   }
   persist();
+}
+
+// A floating tap is identified by the native moment it was accepted (`ts`,
+// millisecond epoch, plus the local date/time stamped alongside it) and its
+// dhikr. Native accepts at most one tap per
+// pacing window (>= 500ms, and never closer than the 80ms duplicate guard),
+// so two genuinely different taps can never share both values — which makes
+// a repeat of the same pair a REPLAY of an already-recorded tap (a batch
+// redelivered because the process died before native was told it was
+// drained, or two overlapping reconciliation passes reading the same
+// pending queue), not a new repetition.
+function floatingReplayKey(at: FloatingTasbeehOccurredAt, dhikrId: string): string {
+  return `${at.ts}|${at.localDate}|${at.localTime}|${dhikrId}`;
+}
+
+function floatingReplayKeys(events: StatEvent[]): Set<string> {
+  const keys = new Set<string>();
+  for (const e of events) {
+    if (e.kind === "repetition" && e.source === "floating") keys.add(floatingReplayKey(e, e.dhikrId));
+  }
+  return keys;
 }
 
 export interface FloatingTasbeehBatchEntry {
@@ -259,13 +399,23 @@ export interface FloatingTasbeehBatchEntry {
 // reconciliation batch is typically many DIFFERENT taps made at different
 // real moments while the app was closed (e.g. 50 offline floating taps
 // across a day), unlike Voice Tasbeeh's single-moment burst.
+//
+// Replay-safe: an entry whose native tap (ts + dhikr, see floatingReplayKey)
+// is already in the log — or repeated earlier in this same batch — is
+// skipped, so redelivering a pending batch can never record the same tap
+// twice in Statistics.
 export function recordFloatingTasbeehRepetitions(entries: FloatingTasbeehBatchEntry[]) {
   const events = load();
+  const seen = floatingReplayKeys(events);
   let wrote = false;
   for (const entry of entries) {
     if (entry.times <= 0) continue;
+    const dhikrId = String(entry.dhikrId);
+    const key = floatingReplayKey(entry.occurredAt, dhikrId);
+    if (seen.has(key)) continue;
+    seen.add(key);
     for (let i = 0; i < entry.times; i++) {
-      events.push({ ...entry.occurredAt, kind: "repetition", source: "floating", dhikrId: String(entry.dhikrId) });
+      events.push({ ...entry.occurredAt, kind: "repetition", source: "floating", dhikrId });
     }
     wrote = true;
   }

@@ -17,6 +17,7 @@ import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
 import { settingsLabels, calculationMethodLabels, madhabLabels } from "../data/settings";
 import { loadCalculationOverrides } from "../lib/calculationSettings";
+import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -259,6 +260,26 @@ describe("SettingsScreen — Calculation Method entry (Step 6)", () => {
     await click(backButton);
     expect(() => findButtonByText(container, t.calculationRow)).not.toThrow();
 
+    await unmount();
+  });
+});
+
+describe("SettingsScreen — system Back with the Statistics-reset confirmation open", () => {
+  it("cancels the confirmation without deleting anything", async () => {
+    localStorage.setItem("dithar:stats:events:v1", JSON.stringify([]));
+    const { container, unmount } = await mountSettingsScreen();
+    await click(findButtonByText(container, t.statisticsRow));
+    expect(backOverlayCount()).toBe(0);
+    await click(findButtonByText(container, t.resetStatisticsRow));
+    expect(container.querySelector('[role="alertdialog"]')).not.toBeNull();
+    expect(backOverlayCount()).toBe(1);
+
+    await act(async () => {
+      expect(dismissTopBackOverlay()).toBe(true);
+    });
+    expect(container.querySelector('[role="alertdialog"]')).toBeNull();
+    expect(backOverlayCount()).toBe(0);
+    expect(localStorage.getItem("dithar:stats:events:v1")).toBe("[]");
     await unmount();
   });
 });

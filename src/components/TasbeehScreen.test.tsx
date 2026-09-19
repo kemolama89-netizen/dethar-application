@@ -16,6 +16,7 @@ import { PaletteProvider } from "../theme/PaletteContext";
 import { dhikrItems, tasbeehLabels } from "../data/tasbeeh";
 import { loadTasbeehCounters, saveTasbeehCounters } from "../lib/tasbeehCounters";
 import { getTasbeehStats, clearAllStats } from "../lib/stats";
+import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 // Floating Tasbeeh <-> Statistics live sync coverage (see
 // tasbeehCommit.ts's syncLiveCountToNative and this file's own
@@ -639,5 +640,225 @@ describe("TasbeehScreen — selected dhikr sync with Floating Tasbeeh", () => {
     expect(isSelected(container, dhikrItems[1].dhikr_ar)).toBe(true);
     expect(isSelected(container, dhikrItems[4].dhikr_ar)).toBe(false);
     await unmount();
+  });
+});
+
+// Restart/navigation persistence of the screen's own selections (see
+// src/lib/tasbeehSelection.ts): which dhikr is selected and each dhikr's
+// target used to reset to dhikr #1 / blank whenever the screen remounted.
+// "Restart" is simulated the way the counter tests do it — unmount, then
+// mount a fresh instance against the same localStorage.
+describe("TasbeehScreen — selected dhikr and target persistence", () => {
+  const isSelected = (container: HTMLElement, dhikrAr: string) =>
+    findButtonByText(container, dhikrAr).getAttribute("aria-pressed") === "true";
+  const targetField = (container: HTMLElement) => container.querySelector('input[type="text"]') as HTMLInputElement;
+  // The file-level mock always answers "the bubble is on dhikr 1". On a real
+  // device native holds whatever the app last pushed (selectDhikr ->
+  // pushFloatingSelectedDhikr), so behave like that here: a restart then
+  // sees native and the saved selection agree, which is the normal case.
+  beforeEach(() => {
+    let nativeSelected: number = dhikrItems[0].id;
+    vi.mocked(FloatingTasbeeh.setSelectedDhikr).mockImplementation(async ({ dhikrId }) => {
+      nativeSelected = dhikrId;
+    });
+    vi.mocked(FloatingTasbeeh.getSelectedDhikr).mockImplementation(async () => ({ dhikrId: nativeSelected }));
+  });
+  async function typeTarget(container: HTMLElement, value: string) {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!;
+    await act(async () => {
+      setter.call(targetField(container), value);
+      targetField(container).dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+
+  it("a first launch (nothing saved) still starts on the first dhikr with no target", async () => {
+    const { container, unmount } = await mountTasbeehScreen();
+    expect(isSelected(container, dhikrItems[0].dhikr_ar)).toBe(true);
+    expect(targetField(container).value).toBe("");
+    await unmount();
+  });
+
+  it("reopens on the dhikr that was selected, not item 1", async () => {
+    const first = await mountTasbeehScreen();
+    await selectDhikr(first.container, dhikrItems[3].dhikr_ar);
+    await first.unmount();
+
+    const second = await mountTasbeehScreen();
+    expect(isSelected(second.container, dhikrItems[3].dhikr_ar)).toBe(true);
+    expect(isSelected(second.container, dhikrItems[0].dhikr_ar)).toBe(false);
+    await second.unmount();
+  });
+
+  it("keeps each dhikr's own target across a remount, and the selected dhikr with it", async () => {
+    const first = await mountTasbeehScreen();
+    await typeTarget(first.container, "33");
+    await selectDhikr(first.container, dhikrItems[2].dhikr_ar);
+    await typeTarget(first.container, "100");
+    await first.unmount();
+
+    const second = await mountTasbeehScreen();
+    expect(isSelected(second.container, dhikrItems[2].dhikr_ar)).toBe(true);
+    expect(targetField(second.container).value).toBe("100");
+    await selectDhikr(second.container, dhikrItems[0].dhikr_ar);
+    expect(targetField(second.container).value).toBe("33");
+    await second.unmount();
+  });
+
+  it("clearing a target persists as cleared", async () => {
+    const first = await mountTasbeehScreen();
+    await typeTarget(first.container, "33");
+    await typeTarget(first.container, "");
+    await first.unmount();
+
+    const second = await mountTasbeehScreen();
+    expect(targetField(second.container).value).toBe("");
+    await second.unmount();
+  });
+
+  it("Reset and Reset All zero counts but keep the selected dhikr and its target", async () => {
+    const first = await mountTasbeehScreen();
+    await selectDhikr(first.container, dhikrItems[1].dhikr_ar);
+    await typeTarget(first.container, "50");
+    await click(first.container.querySelector(`button[aria-label="${t.incrementAria}"]`) as HTMLButtonElement);
+    await click(findButtonByText(first.container, t.resetAll));
+    await click(findButtonByText(first.container, t.resetAllConfirmConfirm));
+    expect(loadTasbeehCounters()).toEqual({});
+    await first.unmount();
+
+    const second = await mountTasbeehScreen();
+    expect(isSelected(second.container, dhikrItems[1].dhikr_ar)).toBe(true);
+    expect(targetField(second.container).value).toBe("50");
+    await second.unmount();
+  });
+
+  it("ignores a saved selection/target that no longer matches the library or is corrupt", async () => {
+    localStorage.setItem("dithar:tasbeeh:selectedDhikr:v1", "9999");
+    localStorage.setItem("dithar:tasbeeh:targets:v1", "{not json");
+    const { container, unmount } = await mountTasbeehScreen();
+    expect(isSelected(container, dhikrItems[0].dhikr_ar)).toBe(true);
+    expect(targetField(container).value).toBe("");
+    await unmount();
+  });
+
+  it("persists a dhikr adopted from the floating bubble so a restart keeps it", async () => {
+    vi.mocked(FloatingTasbeeh.getSelectedDhikr).mockResolvedValue({ dhikrId: dhikrItems[4].id });
+    const first = await mountTasbeehScreen();
+    expect(isSelected(first.container, dhikrItems[4].dhikr_ar)).toBe(true);
+    await first.unmount();
+
+    vi.mocked(FloatingTasbeeh.getSelectedDhikr).mockResolvedValue({ dhikrId: dhikrItems[4].id });
+    const second = await mountTasbeehScreen();
+    expect(isSelected(second.container, dhikrItems[4].dhikr_ar)).toBe(true);
+    await second.unmount();
+  });
+});
+
+// Celebration state across navigation. The voice path celebrates on
+// `count >= target`, so a dhikr already past its target used to re-celebrate
+// on its first voice completion after every remount (the "already
+// celebrated" marker was component-local and lost). Marker is now persisted.
+describe("TasbeehScreen — celebration state survives navigation", () => {
+  const CELEBRATED_KEY = "dithar:tasbeeh:celebrated:v1";
+  const confettiCount = (container: HTMLElement) => container.querySelectorAll(".dithar-confetti").length;
+  const targetField = (container: HTMLElement) => container.querySelector('input[type="text"]') as HTMLInputElement;
+  const tapButton = (container: HTMLElement) => container.querySelector(`button[aria-label="${t.incrementAria}"]`) as HTMLButtonElement;
+  async function typeTarget(container: HTMLElement, value: string) {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!;
+    await act(async () => {
+      setter.call(targetField(container), value);
+      targetField(container).dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+
+  beforeEach(() => {
+    FakeVoiceRecognition.reset();
+    (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = FakeVoiceRecognition;
+  });
+  afterEach(() => {
+    delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
+  });
+
+  it("reaching a target by tapping records the celebration, and Reset / a changed target clear it", async () => {
+    const id = dhikrItems[0].id;
+    const { container, unmount } = await mountTasbeehScreen();
+    await typeTarget(container, "2");
+    await click(tapButton(container));
+    expect(JSON.parse(localStorage.getItem(CELEBRATED_KEY) ?? "{}")).toEqual({});
+    // Pacing ignores an immediate second tap; seed the count so the next tap reaches the target.
+    await unmount();
+    saveTasbeehCounters({ [id]: 1 });
+    const again = await mountTasbeehScreen();
+    await click(tapButton(again.container));
+    expect(confettiCount(again.container)).toBeGreaterThan(0);
+    expect(JSON.parse(localStorage.getItem(CELEBRATED_KEY)!)).toEqual({ [id]: 2 });
+
+    await typeTarget(again.container, "5");
+    expect(JSON.parse(localStorage.getItem(CELEBRATED_KEY)!)).toEqual({});
+    await again.unmount();
+  });
+
+  it("does not re-celebrate a target on a voice completion after leaving and returning to the screen", async () => {
+    const item = dhikrItems[0];
+    const other = dhikrItems[1];
+    // 1st visit: already at the target and already celebrated for it.
+    saveTasbeehCounters({ [item.id]: 5 });
+    localStorage.setItem("dithar:tasbeeh:targets:v1", JSON.stringify({ [item.id]: "3" }));
+    localStorage.setItem(CELEBRATED_KEY, JSON.stringify({ [item.id]: 3 }));
+
+    const { container, unmount } = await mountTasbeehScreen();
+    await click(findButtonByText(container, t.voiceTasbeeh));
+    await act(async () => {
+      FakeVoiceRecognition.instances[0].fireStart();
+    });
+    FakeVoiceRecognition.instances[0].queueFinalResultOnStop(item.dhikr_ar);
+    await selectDhikr(container, other.dhikr_ar);
+
+    // The completion was credited (count went past the target) ...
+    expect(loadTasbeehCounters()[item.id]).toBeGreaterThan(5);
+    // ... without replaying the celebration.
+    expect(confettiCount(container)).toBe(0);
+    await unmount();
+  });
+
+  it("control: the same voice completion DOES celebrate when that target has not been celebrated yet", async () => {
+    const item = dhikrItems[0];
+    const other = dhikrItems[1];
+    saveTasbeehCounters({ [item.id]: 5 });
+    localStorage.setItem("dithar:tasbeeh:targets:v1", JSON.stringify({ [item.id]: "3" }));
+
+    const { container, unmount } = await mountTasbeehScreen();
+    await click(findButtonByText(container, t.voiceTasbeeh));
+    await act(async () => {
+      FakeVoiceRecognition.instances[0].fireStart();
+    });
+    FakeVoiceRecognition.instances[0].queueFinalResultOnStop(item.dhikr_ar);
+    await selectDhikr(container, other.dhikr_ar);
+
+    expect(confettiCount(container)).toBeGreaterThan(0);
+    await unmount();
+  });
+});
+
+describe("TasbeehScreen — system Back with the Reset All dialog open", () => {
+  it("cancels the confirmation without resetting anything, and unregisters when the screen unmounts", async () => {
+    saveTasbeehCounters({ [dhikrItems[0].id]: 12 });
+    const { container, unmount } = await mountTasbeehScreen();
+    expect(backOverlayCount()).toBe(0);
+    await click(findButtonByText(container, t.resetAll));
+    expect(container.querySelector('[role="alertdialog"]')).not.toBeNull();
+    expect(backOverlayCount()).toBe(1);
+
+    await act(async () => {
+      expect(dismissTopBackOverlay()).toBe(true);
+    });
+    expect(container.querySelector('[role="alertdialog"]')).toBeNull();
+    expect(loadTasbeehCounters()[dhikrItems[0].id]).toBe(12);
+    expect(FloatingTasbeeh.resetAllLiveCounts).not.toHaveBeenCalled();
+
+    // Left open while navigating away: no stale entry is left behind.
+    await click(findButtonByText(container, t.resetAll));
+    expect(backOverlayCount()).toBe(1);
+    await unmount();
+    expect(backOverlayCount()).toBe(0);
   });
 });

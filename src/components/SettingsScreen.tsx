@@ -17,6 +17,7 @@ import { settingsLabels } from "../data/settings";
 import { writtenAdhkarItems } from "../data/written-adhkar";
 import type { WrittenAdhkarCategoryKey, WrittenAdhkarItem } from "../data/written-adhkar";
 import { dhikrItems } from "../data/tasbeeh";
+import { useBackDismiss } from "../lib/backOverlays";
 import {
   addDays,
   clearAllStats,
@@ -267,6 +268,8 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
   const [periodKind, setPeriodKind] = useState<PeriodKind>("daily");
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  // System Back cancels the confirmation, like the backdrop (see lib/backOverlays.ts).
+  useBackDismiss(confirmingReset, () => setConfirmingReset(false));
   // Bumped once after the user confirms "حذف سجل الإحصائيات" — it exists
   // purely to force the data-reading useMemos below (earliest/morning/
   // evening/prayer/tasbeeh) to recompute, since clearAllStats() mutates

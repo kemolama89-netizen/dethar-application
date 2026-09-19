@@ -4,6 +4,7 @@ import { App as CapacitorApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import { useLanguage } from "../theme/LanguageContext";
 import { exitAppLabels } from "../data/exitApp";
+import { useBackDismiss } from "../lib/backOverlays";
 
 // Exit-app control — rendered only in TopBar's `showExitButton` slot (Home
 // screen only, see TopBar.tsx), never on any other screen. Same visual
@@ -26,6 +27,8 @@ export function ExitAppButton() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { language, dir } = useLanguage();
   const t = exitAppLabels[language];
+  // System Back cancels the dialog, like the backdrop (see lib/backOverlays.ts).
+  useBackDismiss(confirmOpen, () => setConfirmOpen(false));
 
   function handleConfirm() {
     setConfirmOpen(false);

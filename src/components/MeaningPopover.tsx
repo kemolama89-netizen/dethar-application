@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
+import { useBackDismiss } from "../lib/backOverlays";
 
 // The one "Meaning" popup implementation shared by every reading card that
 // keeps its full English meaning out of the card itself — originally built
@@ -88,6 +89,9 @@ export function DraggableMeaningCard({
   children: ReactNode;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  // Mounted only while open (callers remount it per open), so System Back
+  // closes it before it navigates — see lib/backOverlays.ts.
+  useBackDismiss(true, onClose);
   // `left`/`width` are fixed once computed (a comfortable reading width,
   // centered, clamped to the phone frame minus margins). `bottom` (not
   // `top`) is what lets the box grow upward to fit its full, uncapped

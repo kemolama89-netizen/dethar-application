@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
+import { useBackDismiss } from "../lib/backOverlays";
 import type { InsightCardDetail } from "./InsightCard";
 
 interface ContentModalProps {
@@ -46,6 +47,8 @@ export function ContentModal({
   citation,
   details,
 }: ContentModalProps) {
+  // System Back closes this before it navigates (see lib/backOverlays.ts).
+  useBackDismiss(open, onClose);
   if (!open) return null;
 
   return (

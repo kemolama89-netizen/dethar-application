@@ -82,21 +82,38 @@ const DEFAULT_SETTINGS: LocationSettingsData = {
   lastPromptedCoordinates: null,
 };
 
+// A coordinate pair is only usable if both parts are real, finite numbers
+// on the globe — a stored NaN/Infinity/out-of-range value (from a corrupt
+// or hand-edited entry) must count as "no saved location" rather than being
+// fed into the prayer-time calculation.
+function isValidLatLon(latitude: unknown, longitude: unknown): boolean {
+  return (
+    typeof latitude === "number" &&
+    typeof longitude === "number" &&
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    latitude >= -90 &&
+    latitude <= 90 &&
+    longitude >= -180 &&
+    longitude <= 180
+  );
+}
+
 function isActiveLocationRecord(value: unknown): value is ActiveLocationRecord {
   if (!value || typeof value !== "object") return false;
   const r = value as Partial<ActiveLocationRecord>;
   return (
     (r.source === "device" || r.source === "manual" || r.source === "fallback") &&
-    typeof r.latitude === "number" &&
-    typeof r.longitude === "number" &&
-    typeof r.timezone === "string"
+    isValidLatLon(r.latitude, r.longitude) &&
+    typeof r.timezone === "string" &&
+    r.timezone !== ""
   );
 }
 
 function isCoordinates(value: unknown): value is Coordinates {
   if (!value || typeof value !== "object") return false;
   const c = value as Partial<Coordinates>;
-  return typeof c.latitude === "number" && typeof c.longitude === "number";
+  return isValidLatLon(c.latitude, c.longitude);
 }
 
 export function loadLocationSettings(): LocationSettingsData {
@@ -183,6 +200,19 @@ export const KUWAIT_FALLBACK_LOCATION: ActiveLocationRecord = {
   cityNameAr: "الكويت",
   cityNameEn: "Kuwait",
 };
+
+// Records the Kuwait fallback as the last-active location ONLY when the
+// app has nothing better persisted — i.e. neither a manual selection nor
+// any previously confirmed (valid) location exists. A failed/denied/
+// timed-out geolocation request, or a runtime with no geolocation at all,
+// must never overwrite a real earlier location with Kuwait: a single
+// indoor GPS timeout would otherwise make every later launch calculate
+// prayer times for Kuwait. See useCoordinates.ts.
+export function saveFallbackLocationIfNoneSaved(): void {
+  const { manualLocation, lastActiveLocation } = loadLocationSettings();
+  if (manualLocation || lastActiveLocation) return;
+  saveLastActiveLocation(KUWAIT_FALLBACK_LOCATION);
+}
 
 // Synchronous, side-effect-free resolution of "what location record is
 // currently active", from PERSISTED state alone: manual override, else
