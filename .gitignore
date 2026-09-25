@@ -27,3 +27,6 @@ dist-ssr
 *.apk
 *.aab
 *.zip
+
+# Local debugging output (voice logs, screen recordings, transcripts) — never commit
+debug-logs/
