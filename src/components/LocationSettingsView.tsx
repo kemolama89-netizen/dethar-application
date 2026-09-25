@@ -1,11 +1,15 @@
-import { useMemo, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, MapPin, Search } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { Check, ChevronLeft, ChevronRight, LocateFixed, MapPin, Search } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { settingsLabels } from "../data/settings";
 import { CITIES } from "../data/cities";
 import type { CityRecord } from "../data/cities";
 import { resolveActiveLocationRecord, saveManualLocation } from "../lib/locationSettings";
 import type { ActiveLocationRecord } from "../lib/locationSettings";
+import { detectMyLocation, openAppLocationSettings } from "../lib/deviceLocation";
+import { isLocationPermissionNativeAvailable } from "../lib/locationPermissionNative";
+
+type DetectStatus = "idle" | "detecting" | "success" | "denied" | "blocked" | "unavailable";
 
 function cityToRecord(city: CityRecord): ActiveLocationRecord {
   return {
@@ -24,7 +28,9 @@ function cityToRecord(city: CityRecord): ActiveLocationRecord {
 // and deliberately does NOT use the useCoordinates() hook: that hook's
 // job is to actively REQUEST device geolocation, which this screen must
 // never do just by being opened (the request belongs to Home/
-// PrayerTimesPanel only). Instead this keeps its own local, reactive copy
+// PrayerTimesPanel only). The one exception is the explicit
+// "تحديد موقعي تلقائيًا" button, which runs the same device-location flow
+// (deviceLocation.ts) on the user's tap. Instead this keeps its own local, reactive copy
 // of "what's currently active", seeded from resolveActiveLocationRecord()
 // (a synchronous, side-effect-free read of persisted state) and updated
 // immediately on every action here — so selecting a city or resetting to
@@ -56,10 +62,34 @@ export function LocationSettingsView({ onBack }: { onBack: () => void }) {
     setActive(record);
   }
 
-  function useAutomaticLocation() {
-    saveManualLocation(null);
-    setActive(resolveActiveLocationRecord());
+  const [detect, setDetect] = useState<DetectStatus>("idle");
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  async function handleDetect() {
+    if (detect === "detecting") return;
+    setDetect("detecting");
+    const result = await detectMyLocation();
+    if (result.kind === "success") setActive(result.record);
+    setDetect(result.kind);
   }
+
+  function handleChooseManual() {
+    searchRef.current?.focus();
+    searchRef.current?.scrollIntoView?.({ block: "center", behavior: "smooth" });
+  }
+
+  const detectMessage =
+    detect === "detecting"
+      ? t.locationDetecting
+      : detect === "success"
+        ? t.locationDetectSuccess
+        : detect === "denied"
+          ? t.locationDetectDenied
+          : detect === "blocked"
+            ? t.locationDetectBlocked
+            : detect === "unavailable"
+              ? t.locationDetectUnavailable
+              : null;
 
   const activeCityName = language === "ar" ? active.cityNameAr : active.cityNameEn;
   const sourceLabel =
@@ -104,21 +134,55 @@ export function LocationSettingsView({ onBack }: { onBack: () => void }) {
           {sourceLabel}
         </p>
 
-        {active.source === "manual" && (
-          <button
-            type="button"
-            onClick={useAutomaticLocation}
-            className="mt-1 self-start text-[12.5px] font-medium underline underline-offset-2"
-            style={{ color: "var(--color-gold)" }}
-          >
-            {t.locationUseAutomatic}
-          </button>
+      </div>
+
+      <div className="mt-3 flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => void handleDetect()}
+          disabled={detect === "detecting"}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-[14px] font-semibold"
+          style={{ borderColor: "var(--color-gold)", background: "var(--color-primary)", color: "var(--color-gold)" }}
+        >
+          <LocateFixed size={17} strokeWidth={1.8} />
+          {t.locationDetectAuto}
+        </button>
+        <button
+          type="button"
+          onClick={handleChooseManual}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-[14px] font-semibold"
+          style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
+        >
+          <Search size={16} strokeWidth={1.8} />
+          {t.locationChooseManual}
+        </button>
+
+        {detectMessage && (
+          <div role="status" data-detect-status={detect} className="flex flex-col gap-2">
+            <p
+              className="text-[12px] leading-[1.6]"
+              style={{ color: detect === "success" ? "var(--color-primary)" : "var(--color-text-muted)" }}
+            >
+              {detectMessage}
+            </p>
+            {detect === "blocked" && isLocationPermissionNativeAvailable() && (
+              <button
+                type="button"
+                onClick={() => void openAppLocationSettings().catch(() => {})}
+                className="self-start rounded-full border px-3 py-1 text-[12px] font-medium"
+                style={{ borderColor: "var(--color-gold)", color: "var(--color-text-primary)" }}
+              >
+                {t.locationOpenAppSettings}
+              </button>
+            )}
+          </div>
         )}
       </div>
 
       <div className="mt-3 flex items-center gap-2 rounded-2xl border px-3 py-2" style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}>
         <Search size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
         <input
+          ref={searchRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

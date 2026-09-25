@@ -21,6 +21,7 @@
 // `text_en` a faithful, plain-meaning translation.
 
 import stagingAdhkarData from "./dithar-adhkar-cards.json";
+import type { QuranRef } from "../lib/quranRef";
 
 export type WrittenAdhkarCategoryKey = "morning" | "evening" | "prayer" | "misc";
 
@@ -92,6 +93,13 @@ export interface WrittenAdhkarItem {
    * fixed-target ring behavior unchanged.
    */
   unboundedCount?: boolean;
+  /**
+   * Set ONLY for cards whose text is itself Quran recitation (Ayat
+   * al-Kursi and the three Quls) — see QURAN_REFS below. Quran audio for
+   * these resolves through the selected Quran reciter; every other card is
+   * non-Quran adhkar with its own fixed audio and has no quranRef.
+   */
+  quranRef?: QuranRef;
 }
 
 export const writtenAdhkarCategoryLabels: Record<WrittenAdhkarCategoryKey, { ar: string; en: string }> = {
@@ -770,6 +778,30 @@ const PRAYER_SCOPE: Record<string, PrayerScope> = {
 // automatically, since both come from this same staging id.
 const UNBOUNDED_COUNT_IDS = new Set<string>(["morning_023"]);
 
+// Quranic cards, keyed by staging id (so each applies to both its Morning
+// and Evening rendering, like the tables above). Each ref is established by
+// the card's own data, never inferred:
+//   - morning_001 / prayer_006 (Ayat al-Kursi): source_reference
+//     "Qur'an 2:255" and title "آية الكرسي".
+//   - morning_002 / prayer_005 (al-Ikhlas), morning_002b / prayer_005b
+//     (al-Falaq), morning_002c / prayer_005c (an-Nas): the card title names
+//     the surah ("سورة الإخلاص" etc.) and the text is that complete surah.
+//     The text additionally opens with the basmala, which is not an ayah of
+//     these surahs, so it is not part of the ref.
+// Hadith-sourced adhkar that merely contain Quranic wording (e.g.
+// morning_009, "حسبي الله لا إله إلا هو..." ×7) are adhkar, not Quran
+// recitation, and deliberately have no ref.
+const QURAN_REFS: Record<string, QuranRef> = {
+  morning_001: { surah: 2, fromAyah: 255, toAyah: 255 },
+  prayer_006: { surah: 2, fromAyah: 255, toAyah: 255 },
+  morning_002: { surah: 112, fromAyah: 1, toAyah: 4 },
+  prayer_005: { surah: 112, fromAyah: 1, toAyah: 4 },
+  morning_002b: { surah: 113, fromAyah: 1, toAyah: 5 },
+  prayer_005b: { surah: 113, fromAyah: 1, toAyah: 5 },
+  morning_002c: { surah: 114, fromAyah: 1, toAyah: 6 },
+  prayer_005c: { surah: 114, fromAyah: 1, toAyah: 6 },
+};
+
 function toWrittenItem(
   card: StagingCard,
   opts?: {
@@ -797,6 +829,7 @@ function toWrittenItem(
     source_en,
     transliteration_en: english.transliteration_en,
     unboundedCount: UNBOUNDED_COUNT_IDS.has(card.id) || undefined,
+    quranRef: QURAN_REFS[card.id],
   };
 }
 

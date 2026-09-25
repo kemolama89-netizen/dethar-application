@@ -19,6 +19,7 @@ import { SettingsScreen } from "./SettingsScreen";
 import { LanguageProvider } from "../theme/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
+import { QuranReciterProvider } from "../theme/QuranReciterContext";
 import { settingsLabels } from "../data/settings";
 import { addDays, clearAllStats, recordFloatingTasbeehRepetition, todayLocalDate } from "../lib/stats";
 
@@ -41,7 +42,9 @@ async function mountStatistics() {
       <LanguageProvider>
         <ThemeProvider>
           <PaletteProvider>
-            <SettingsScreen onNavigateHome={() => {}} onNavigateToTasbeeh={() => {}} onNavigateToWritten={() => {}} />
+            <QuranReciterProvider>
+              <SettingsScreen onNavigateHome={() => {}} onNavigateToTasbeeh={() => {}} onNavigateToWritten={() => {}} />
+            </QuranReciterProvider>
           </PaletteProvider>
         </ThemeProvider>
       </LanguageProvider>,

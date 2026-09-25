@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Coordinates } from "./prayerTimes";
-import { getDeviceTimeZone } from "./dateTime";
 import { loadLocationSettings, resolveActiveLocationRecord, saveLastActiveLocation, saveFallbackLocationIfNoneSaved } from "./locationSettings";
 import type { ActiveLocationRecord, LocationSource } from "./locationSettings";
-import { estimateCountryFromCoordinates } from "./reverseGeocode";
+import { positionToDeviceRecord } from "./deviceLocation";
 
 export interface CoordinatesState {
   coordinates: Coordinates;
@@ -96,16 +95,8 @@ export function useCoordinates(): CoordinatesState {
         // user picked a city in Settings from another mounted instance
         // before this one's fix ever resolved) — never overwrite it.
         if (loadLocationSettings().manualLocation) return;
-        const record: ActiveLocationRecord = {
-          source: "device",
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          timezone: getDeviceTimeZone(),
-          // Step 7: best-effort offline country estimate for this fix —
-          // `undefined` when too far from every bundled city (see
-          // reverseGeocode.ts), same as before this step.
-          countryCode: estimateCountryFromCoordinates({ latitude: position.coords.latitude, longitude: position.coords.longitude }),
-        };
+        // Same record builder Settings' "تحديد موقعي تلقائيًا" uses (deviceLocation.ts).
+        const record = positionToDeviceRecord(position);
         saveLastActiveLocation(record);
         setState(recordToState(record));
       },

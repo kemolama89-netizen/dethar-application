@@ -65,39 +65,45 @@ describe("getNextPrayer", () => {
 });
 
 describe("getRemainingTime", () => {
-  it("splits into whole hours and minutes", () => {
-    const target = new Date("2026-09-14T15:13:00Z");
-    const now = new Date("2026-09-14T13:00:00Z"); // 2h13m before
-    expect(getRemainingTime(target, now)).toEqual({ hours: 2, minutes: 13 });
+  it("splits into whole hours, minutes and seconds", () => {
+    const target = new Date("2026-09-14T15:13:27Z");
+    const now = new Date("2026-09-14T13:00:00Z"); // 2h13m27s before
+    expect(getRemainingTime(target, now)).toEqual({ hours: 2, minutes: 13, seconds: 27 });
   });
 
-  it("floors rather than rounds — 59.9 minutes still reads as 59, not 60", () => {
+  it("floors rather than rounds — 59.9 seconds still reads as 59, not 60", () => {
     const target = new Date("2026-09-14T13:00:00.000Z");
-    const now = new Date("2026-09-14T12:00:00.900Z"); // 59 min 59.1 sec before
-    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 59 });
+    const now = new Date("2026-09-14T12:59:00.100Z"); // 59.9 sec before
+    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 0, seconds: 59 });
   });
 
   it("shows 00 hours (not omitted) when under one hour remains", () => {
     const target = new Date("2026-09-14T13:30:00Z");
     const now = new Date("2026-09-14T13:00:00Z");
-    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 30 });
+    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 30, seconds: 0 });
+  });
+
+  it("crosses a minute boundary correctly (59 -> 00 seconds, minute increments)", () => {
+    const target = new Date("2026-09-14T13:01:00Z");
+    const now = new Date("2026-09-14T13:00:00.500Z"); // 59.5s before
+    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 0, seconds: 59 });
   });
 
   it("crosses an hour boundary correctly (59 -> 00 minutes, hour increments)", () => {
     const target = new Date("2026-09-14T14:00:00Z");
     const now = new Date("2026-09-14T13:00:01Z"); // 59m59s before
-    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 59 });
+    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 59, seconds: 59 });
   });
 
   it("crosses midnight correctly (large hour count, still accurate)", () => {
     const target = new Date("2026-09-15T04:13:00Z");
     const now = new Date("2026-09-14T22:00:00Z");
-    expect(getRemainingTime(target, now)).toEqual({ hours: 6, minutes: 13 });
+    expect(getRemainingTime(target, now)).toEqual({ hours: 6, minutes: 13, seconds: 0 });
   });
 
   it("never returns negative values, even for a target already in the past", () => {
     const target = new Date("2026-09-14T10:00:00Z");
     const now = new Date("2026-09-14T11:00:00Z");
-    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 0 });
+    expect(getRemainingTime(target, now)).toEqual({ hours: 0, minutes: 0, seconds: 0 });
   });
 });

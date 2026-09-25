@@ -53,6 +53,38 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!-- Scheduled Evening Audio Adhkar (audioadhkar/). The alarm
+             receiver starts the media-playback service at the user's
+             chosen time; the reschedule receiver re-arms that alarm after
+             a reboot, an app update, or a time/zone change. None exported:
+             only this app (AlarmManager / the system broadcasts above)
+             reaches them. -->
+        <service
+            android:name=".audioadhkar.AudioAdhkarPlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <receiver
+            android:name=".audioadhkar.AudioAdhkarAlarmReceiver"
+            android:exported="false" />
+
+        <!-- One-minute pre-playback warning: posts a notification only. -->
+        <receiver
+            android:name=".audioadhkar.AudioAdhkarWarningReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".audioadhkar.AudioAdhkarRescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
     <!-- Required on Android 11+ (API 30+) package-visibility rules for
@@ -124,4 +156,14 @@
          automatically — no separate runtime prompt of its own) closes that
          gap. -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!-- Scheduled Evening Audio Adhkar: background media playback with
+         system media controls (mediaPlayback foreground service), an
+         on-time daily alarm (SCHEDULE_EXACT_ALARM — user-granted
+         "Alarms & reminders" on Android 12+; an exact alarm is also what
+         lets the service start while DITHAR is in the background), and a
+         wake lock so playback continues with the screen off. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 </manifest>

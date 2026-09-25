@@ -59,6 +59,25 @@
      width, without JS measuring the DOM. */
   --tasbeeh-circle-radius: clamp(76px, 21vw, 90px);
 
+  /* Home Screen short-viewport responsiveness (Batch 5 fix) — the
+     LogoHeader top margin and the logo's own BUDGET/DISPLAY sizing (see
+     BrandLogo.tsx) read from these tokens instead of a fixed value (the
+     rest of the Home Screen's short-viewport trims — section gaps, card
+     padding — use plain Tailwind `[@media(max-height:...)]:` variant
+     classes directly instead, since those don't need a computed value
+     shared across files the way BrandLogo.tsx's marginTop formula does),
+     so a single `@media (max-height: ...)` override below trims them
+     ONLY on short viewports. On a normal/tall viewport these resolve to
+     the exact same values the Home Screen already used, so nothing there
+     changes at all. BUDGET/DISPLAY keep exactly the same relationship
+     BrandLogo.tsx's own marginTop formula depends on (DISPLAY the larger
+     rendered size, BUDGET the smaller reserved flow-footprint) — only the
+     two media-query tiers below change which literal clamp() each
+     resolves to. */
+  --home-header-mt: 1.125rem; /* 18px — matches LogoHeader's existing mt-4.5 */
+  --logo-budget: clamp(78px, 21vw, 100px);
+  --logo-display: clamp(111.6px, calc(25.2vw + 18px), 138px);
+
   color-scheme: light;
 
   /* Written Adhkar — dedicated premium reading identity (men). Deliberately
@@ -96,6 +115,40 @@
      correct dark-on-light pairing) instead of --wa-on-page/-muted, which
      stay reserved for text drawn on the reader's dark page. */
   --wa-category-bg: linear-gradient(180deg, #faf8f2 0%, #f5f2ea 100%);
+}
+
+/* Home Screen short-viewport responsiveness (Batch 5 fix) — see the
+   --home-header-mt/--logo-* tokens' own doc comment above. Two stacked
+   tiers, both keyed on viewport HEIGHT (never width, so this never
+   engages on a narrow-but-tall phone in portrait) — moderate for common
+   short phones (e.g. a 360x800 Android), an additional, more aggressive
+   trim layered on top for the shortest real devices still in use (e.g. a
+   375x667 iPhone SE). Neither tier touches font-size/line-clamp/
+   line-height anywhere, and neither removes any element — only the gaps
+   around them and the logo's own reserved size shrink. App.tsx/
+   InsightCard.tsx mirror these exact two breakpoints (860px/700px) via
+   their own `[@media(max-height:...)]:` utility classes for the
+   section-gap/card-padding trims that don't need a token here. */
+@media (max-height: 860px) {
+  :root {
+    --home-header-mt: 0.375rem; /* 6px */
+    /* Lower vw coefficient than the default (21vw -> 14vw), not just a
+       lower clamp() ceiling — at a real phone's ~360-400px width the
+       default's 21vw term already clamps to its own minimum, so only
+       shrinking the bounds (an earlier version of this fix) barely moved
+       the actual rendered size. This tier needs to visibly shrink the
+       logo at those exact widths, not just at the untested extremes. */
+    --logo-budget: clamp(46px, 14vw, 58px);
+    --logo-display: clamp(66px, calc(20vw + 2px), 84px);
+  }
+}
+
+@media (max-height: 700px) {
+  :root {
+    --home-header-mt: 0.125rem; /* 2px */
+    --logo-budget: clamp(36px, 11vw, 44px);
+    --logo-display: clamp(50px, calc(16vw + 2px), 62px);
+  }
 }
 
 [data-theme="women"] {

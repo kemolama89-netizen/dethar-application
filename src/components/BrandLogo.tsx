@@ -37,16 +37,19 @@ const INTRINSIC_SIZE: Record<string, { width: number; height: number }> = {
 //   below it (featured hadith, both cards, prayer panel, bottom nav) —
 //   never moves.
 //
-// DISPLAY is exactly 1.2x the prior DISPLAY clamp at every width (93->111.6,
-// 115->138, and the shared 21vw coefficient scaled to 25.2vw + 18px) — a
-// uniform ~20% size increase. Because the marginTop formula below always
-// nets out to exactly BUDGET regardless of DISPLAY's value (DISPLAY +
-// marginTop = BUDGET, algebraically), growing DISPLAY only ever extends the
-// image upward from its already-anchored bottom edge — it can never add
-// flow height. That's also what supplies the requested "move it up" as a
-// pure side effect of the size increase, with no separate offset needed.
-const BUDGET = "clamp(78px,21vw,100px)";
-const DISPLAY = "clamp(111.6px,calc(25.2vw + 18px),138px)";
+// Both now read from --logo-budget/--logo-display (index.css) instead of
+// a literal clamp() string — same values as before on a normal/tall
+// viewport (the tokens' own default), but trimmed by index.css's short-
+// viewport media queries on a shorter phone (Batch 5's responsive Home
+// Screen fix), without this component needing to know about that at all.
+// Because the marginTop formula below always nets out to exactly BUDGET
+// regardless of DISPLAY's value (DISPLAY + marginTop = BUDGET,
+// algebraically), this stays correct for WHATEVER the two tokens resolve
+// to — growing OR shrinking DISPLAY only ever extends/retracts the image
+// from its already-anchored bottom edge; it can never add flow height
+// beyond BUDGET.
+const BUDGET = "var(--logo-budget)";
+const DISPLAY = "var(--logo-display)";
 
 // Extra upward nudge on top of the BUDGET/DISPLAY anchoring above — pulls
 // the image a small, fixed amount further up than its BUDGET-anchored

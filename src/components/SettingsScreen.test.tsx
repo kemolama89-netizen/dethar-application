@@ -15,6 +15,7 @@ import { SettingsScreen } from "./SettingsScreen";
 import { LanguageProvider } from "../theme/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
+import { QuranReciterProvider } from "../theme/QuranReciterContext";
 import { settingsLabels, calculationMethodLabels, madhabLabels } from "../data/settings";
 import { loadCalculationOverrides } from "../lib/calculationSettings";
 import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
@@ -32,7 +33,9 @@ async function mountSettingsScreen() {
       <LanguageProvider>
         <ThemeProvider>
           <PaletteProvider>
-            <SettingsScreen onNavigateHome={() => {}} onNavigateToTasbeeh={() => {}} onNavigateToWritten={() => {}} />
+            <QuranReciterProvider>
+              <SettingsScreen onNavigateHome={() => {}} onNavigateToTasbeeh={() => {}} onNavigateToWritten={() => {}} />
+            </QuranReciterProvider>
           </PaletteProvider>
         </ThemeProvider>
       </LanguageProvider>,

@@ -1,7 +1,11 @@
 package com.dithar.app.voicerecognition
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -66,6 +70,42 @@ class VoiceRecognitionPlugin : Plugin() {
     private var pendingStartRunnable: Runnable? = null
     private var lastRecognizerCreateAtMs: Long = 0L
 
+    // BLUETOOTH MIC ROUTING — see BluetoothMicRouting.kt's own doc comment
+    // for the "does this actually work" caveat: AudioManager.startBluetoothSco
+    // is the only public Android API for requesting that voice input route
+    // through a Bluetooth headset's SCO microphone, but whether the
+    // RecognitionService bound to SpeechRecognizer (typically the Google
+    // app, a separate process this plugin does not control) actually
+    // honors that request is undocumented and NOT guaranteed by the
+    // platform. This is the smallest reliable attempt possible: request the
+    // route only when a Bluetooth SCO input device is actually present,
+    // track whether WE requested it (scoRequested) so it is torn down
+    // exactly once and never left dangling, and never let any part of this
+    // throw into the recognition session lifecycle — on any failure this
+    // silently falls back to whatever the OS default input already is (the
+    // phone mic), exactly matching desired behavior A/C/D from the Batch 5
+    // brief.
+    private val audioManager: AudioManager by lazy { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
+    private var scoRequested = false
+
+    // Tracks live Bluetooth SCO connect/disconnect so a headset that drops
+    // mid-session is reflected in `scoRequested` instead of leaving it
+    // stale — the next startSession() then re-evaluates availability from
+    // scratch (isBluetoothScoInputAvailable) rather than assuming the SCO
+    // link this plugin last requested is still up. Registered in load(),
+    // unregistered in handleOnDestroy() — same lifecycle pairing this
+    // plugin already uses for everything else it owns.
+    private val scoStateReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(receivedContext: Context?, intent: Intent?) {
+                val state = intent?.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, AudioManager.SCO_AUDIO_STATE_ERROR)
+                Log.d(TAG, "bluetoothSco state changed state=$state scoRequested=$scoRequested")
+                if (state == AudioManager.SCO_AUDIO_STATE_DISCONNECTED || state == AudioManager.SCO_AUDIO_STATE_ERROR) {
+                    scoRequested = false
+                }
+            }
+        }
+
     // TEMPORARY DIAGNOSTIC — added 2026-09-19 to investigate
     // ERROR_TOO_MANY_REQUESTS still recurring despite the restart-spacing
     // throttle (see doStartSession/doCreateAndStart). identityHashCode lets
@@ -95,6 +135,130 @@ class VoiceRecognitionPlugin : Plugin() {
                 "tRealtime=${SystemClock.elapsedRealtime()} sessionId=$sessionId activeSessionId=$activeSessionId recognizerNonNull=${recognizer != null}" +
                 (if (extra.isEmpty()) "" else " $extra"),
         )
+    }
+
+    override fun load() {
+        super.load()
+        try {
+            context.registerReceiver(scoStateReceiver, IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED))
+        } catch (e: Exception) {
+            // Best-effort only — never block plugin load over this; a
+            // failure here just means SCO disconnects won't be observed
+            // live, not that recognition itself breaks.
+            Log.w(TAG, "failed to register bluetoothSco state receiver", e)
+        }
+    }
+
+    // Bluetooth SCO input availability check — see BluetoothMicRouting.kt.
+    // Wrapped defensively: AudioManager.getDevices is a real device/OS call
+    // (unlike the pure decision function it feeds), so any unexpected
+    // failure here must never propagate into the recognition path — it
+    // just means this session proceeds without attempting Bluetooth
+    // routing, i.e. the phone mic, satisfying desired behavior A.
+    private fun isBluetoothScoInputAvailable(): Boolean =
+        try {
+            val types = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).map { it.type }
+            BluetoothMicRouting.hasBluetoothScoInput(types)
+        } catch (e: Exception) {
+            Log.w(TAG, "bluetoothSco availability check failed", e)
+            false
+        }
+
+    // Requests the Bluetooth SCO audio route ONLY when a headset mic is
+    // actually available right now, and only once per feature-session
+    // (idempotent via scoRequested — an ordinary restart between dhikr
+    // target switches must not repeatedly toggle SCO on/off, which would
+    // add latency and an audible click on some headsets). Desired behavior
+    // B: attempts the route when available; behavior A: a no-op — and thus
+    // silently the phone mic — when no Bluetooth headset mic is present.
+    private fun startBluetoothScoIfAvailable() {
+        if (scoRequested) return
+        if (!isBluetoothScoInputAvailable()) return
+        try {
+            audioManager.startBluetoothSco()
+            audioManager.isBluetoothScoOn = true
+            scoRequested = true
+            Log.d(TAG, "bluetoothSco route requested")
+        } catch (e: Exception) {
+            // Never fatal — desired behavior D: connecting/disconnecting a
+            // headset must not break Voice Tasbeeh. Falls back to whatever
+            // input is already active.
+            Log.w(TAG, "bluetoothSco route request failed, falling back to default mic", e)
+            scoRequested = false
+        }
+    }
+
+    // Releases the Bluetooth SCO route — called only from a REAL teardown
+    // (hardTeardownRecognizer), never on an ordinary restart, mirroring
+    // that method's own recognizer-reuse reasoning: the SCO link should
+    // stay up across a dhikr target switch, not be torn down and
+    // re-requested on every restart.
+    private fun stopBluetoothScoIfRequested() {
+        if (!scoRequested) return
+        try {
+            audioManager.isBluetoothScoOn = false
+            audioManager.stopBluetoothSco()
+        } catch (e: Exception) {
+            Log.w(TAG, "bluetoothSco route teardown failed (non-fatal)", e)
+        } finally {
+            scoRequested = false
+        }
+    }
+
+    // LISTENING START/STOP CHIME SUPPRESSION — the audible tone the user
+    // hears on every restart is NOT played by this app (grep confirms no
+    // app-side Audio/MediaPlayer/SoundPool/beep code exists anywhere in
+    // this codebase, web or native). It's the platform's own default
+    // android.speech.RecognitionService implementation (normally the
+    // Google app SpeechRecognizer.createSpeechRecognizer(context) binds
+    // to) playing its built-in start/stop earcons on every
+    // startListening()/end-of-session pair — behavior owned entirely by
+    // that separate, out-of-process service, with no documented
+    // SpeechRecognizer/RecognizerIntent extra to disable it. Since this
+    // plugin's restart cadence means a fresh startListening() call (and
+    // thus a fresh earcon pair) fires on every dhikr repetition/no-speech
+    // cycle — not just on a genuine target switch — that's exactly why
+    // it reads as constant/"especially noticeable" during normal use.
+    //
+    // Mitigation, not a guaranteed fix: several community reports for this
+    // exact platform behavior mute AudioManager.STREAM_MUSIC (the stream
+    // most commonly reported to carry these earcons) for the duration of
+    // an active recognition session; there is no OFFICIAL Android
+    // documentation confirming that stream on every OEM/Android version.
+    // Kept muted continuously from the first startSession() of a feature-
+    // session through to hardTeardownRecognizer() (not toggled on every
+    // ordinary restart — see stopBluetoothScoIfRequested's own reasoning
+    // for the identical lifecycle choice) rather than bracketed tightly
+    // around each individual startListening() call, since the earcons'
+    // exact native timing relative to each callback is not something this
+    // plugin can observe. KNOWN TRADE-OFF: this also silences any OTHER
+    // app's music/media on STREAM_MUSIC for as long as Voice Tasbeeh is
+    // actively listening — there is no way to mute only the recognizer's
+    // own earcon and nothing else through the public AudioManager API.
+    private var startupChimeMuted = false
+
+    private fun muteListeningChimeIfNeeded() {
+        if (startupChimeMuted) return
+        try {
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
+            startupChimeMuted = true
+            Log.d(TAG, "listening chime mute requested (STREAM_MUSIC)")
+        } catch (e: Exception) {
+            // Never fatal — recognition itself must keep working even if
+            // this specific mitigation can't be applied on this device.
+            Log.w(TAG, "failed to mute listening chime (non-fatal)", e)
+        }
+    }
+
+    private fun unmuteListeningChimeIfMuted() {
+        if (!startupChimeMuted) return
+        try {
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
+        } catch (e: Exception) {
+            Log.w(TAG, "failed to restore STREAM_MUSIC volume after voice session (non-fatal)", e)
+        } finally {
+            startupChimeMuted = false
+        }
     }
 
     @PluginMethod
@@ -212,6 +376,15 @@ class VoiceRecognitionPlugin : Plugin() {
             // SpeechRecognizer object alive for doCreateAndStart to reuse,
             // instead of destroying it here.
             resetForRestart()
+            // BLUETOOTH MIC ROUTING — see startBluetoothScoIfAvailable's own
+            // comment. Attempted on every session start (first start AND
+            // every later restart) but only actually requests the route
+            // once (scoRequested guard) — cheap to call here unconditionally.
+            startBluetoothScoIfAvailable()
+            // LISTENING CHIME SUPPRESSION — see muteListeningChimeIfNeeded's
+            // own comment. Same "attempt on every start, only actually acts
+            // once" idempotent pattern as the Bluetooth routing call above.
+            muteListeningChimeIfNeeded()
             activeSessionId = sessionId
 
             val elapsedSinceLastCreate = SystemClock.elapsedRealtime() - lastRecognizerCreateAtMs
@@ -442,6 +615,8 @@ class VoiceRecognitionPlugin : Plugin() {
     private fun hardTeardownRecognizer() {
         pendingStartRunnable?.let { mainHandler.removeCallbacks(it) }
         pendingStartRunnable = null
+        stopBluetoothScoIfRequested()
+        unmuteListeningChimeIfMuted()
         val hadRecognizer = recognizer != null
         // TEMPORARY DIAGNOSTIC — see pluginInstanceId's own comment above.
         lifecycleLog("hardTeardownRecognizer:entry", activeSessionId, "hadRecognizer=$hadRecognizer")
@@ -468,6 +643,12 @@ class VoiceRecognitionPlugin : Plugin() {
         // against the very next startSession's own instance id.
         lifecycleLog("handleOnDestroy", activeSessionId)
         activity.runOnUiThread { hardTeardownRecognizer() }
+        try {
+            context.unregisterReceiver(scoStateReceiver)
+        } catch (e: Exception) {
+            // Never registered, or already unregistered — harmless.
+            Log.w(TAG, "bluetoothSco state receiver unregister failed (non-fatal)", e)
+        }
         super.handleOnDestroy()
     }
 

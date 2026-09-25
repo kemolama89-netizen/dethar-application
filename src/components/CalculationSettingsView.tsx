@@ -14,8 +14,9 @@ const MADHAB_IDS: MadhabId[] = ["shafi", "hanafi"];
 // One selectable row — reused for both the Method and Madhab sections,
 // same visual language (gold border + check icon) LocationSettingsView's
 // own city rows already use, so this reads as part of the same Settings
-// architecture rather than a new pattern.
-function OptionRow({ label, selected, onSelect }: { label: string; selected: boolean; onSelect: () => void }) {
+// architecture rather than a new pattern. Also used by
+// QuranReciterSettingsView.
+export function OptionRow({ label, selected, onSelect }: { label: string; selected: boolean; onSelect: () => void }) {
   return (
     <button
       type="button"

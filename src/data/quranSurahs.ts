@@ -1,0 +1,145 @@
+// DITHAR — the 114 surahs: canonical number, Arabic name as spelled in this
+// app's own Quranic datasets (see wamdat.ts / misc-library.ts), and ayah
+// count. Ayah counts follow the Kufan count used by the Hafs 'an 'Asim
+// mushaf (6,236 ayahs in total; al-Fatihah counts the basmala as ayah 1) —
+// the same numbering every per-ayah Quran audio source is keyed by, and the
+// numbering this app's own "[الآية N]" / "الآية N" references already use.
+//
+// Pure reference data: used only to turn a surah NAME into its number and to
+// bounds-check a QuranRef (see src/lib/quranRef.ts). Never displayed as-is.
+export interface SurahInfo {
+  number: number;
+  nameAr: string;
+  ayahCount: number;
+}
+
+export const SURAHS: readonly SurahInfo[] = [
+  { number: 1, nameAr: "الفاتحة", ayahCount: 7 },
+  { number: 2, nameAr: "البقرة", ayahCount: 286 },
+  { number: 3, nameAr: "آل عمران", ayahCount: 200 },
+  { number: 4, nameAr: "النساء", ayahCount: 176 },
+  { number: 5, nameAr: "المائدة", ayahCount: 120 },
+  { number: 6, nameAr: "الأنعام", ayahCount: 165 },
+  { number: 7, nameAr: "الأعراف", ayahCount: 206 },
+  { number: 8, nameAr: "الأنفال", ayahCount: 75 },
+  { number: 9, nameAr: "التوبة", ayahCount: 129 },
+  { number: 10, nameAr: "يونس", ayahCount: 109 },
+  { number: 11, nameAr: "هود", ayahCount: 123 },
+  { number: 12, nameAr: "يوسف", ayahCount: 111 },
+  { number: 13, nameAr: "الرعد", ayahCount: 43 },
+  { number: 14, nameAr: "إبراهيم", ayahCount: 52 },
+  { number: 15, nameAr: "الحجر", ayahCount: 99 },
+  { number: 16, nameAr: "النحل", ayahCount: 128 },
+  { number: 17, nameAr: "الإسراء", ayahCount: 111 },
+  { number: 18, nameAr: "الكهف", ayahCount: 110 },
+  { number: 19, nameAr: "مريم", ayahCount: 98 },
+  { number: 20, nameAr: "طه", ayahCount: 135 },
+  { number: 21, nameAr: "الأنبياء", ayahCount: 112 },
+  { number: 22, nameAr: "الحج", ayahCount: 78 },
+  { number: 23, nameAr: "المؤمنون", ayahCount: 118 },
+  { number: 24, nameAr: "النور", ayahCount: 64 },
+  { number: 25, nameAr: "الفرقان", ayahCount: 77 },
+  { number: 26, nameAr: "الشعراء", ayahCount: 227 },
+  { number: 27, nameAr: "النمل", ayahCount: 93 },
+  { number: 28, nameAr: "القصص", ayahCount: 88 },
+  { number: 29, nameAr: "العنكبوت", ayahCount: 69 },
+  { number: 30, nameAr: "الروم", ayahCount: 60 },
+  { number: 31, nameAr: "لقمان", ayahCount: 34 },
+  { number: 32, nameAr: "السجدة", ayahCount: 30 },
+  { number: 33, nameAr: "الأحزاب", ayahCount: 73 },
+  { number: 34, nameAr: "سبأ", ayahCount: 54 },
+  { number: 35, nameAr: "فاطر", ayahCount: 45 },
+  { number: 36, nameAr: "يس", ayahCount: 83 },
+  { number: 37, nameAr: "الصافات", ayahCount: 182 },
+  { number: 38, nameAr: "ص", ayahCount: 88 },
+  { number: 39, nameAr: "الزمر", ayahCount: 75 },
+  { number: 40, nameAr: "غافر", ayahCount: 85 },
+  { number: 41, nameAr: "فصلت", ayahCount: 54 },
+  { number: 42, nameAr: "الشورى", ayahCount: 53 },
+  { number: 43, nameAr: "الزخرف", ayahCount: 89 },
+  { number: 44, nameAr: "الدخان", ayahCount: 59 },
+  { number: 45, nameAr: "الجاثية", ayahCount: 37 },
+  { number: 46, nameAr: "الأحقاف", ayahCount: 35 },
+  { number: 47, nameAr: "محمد", ayahCount: 38 },
+  { number: 48, nameAr: "الفتح", ayahCount: 29 },
+  { number: 49, nameAr: "الحجرات", ayahCount: 18 },
+  { number: 50, nameAr: "ق", ayahCount: 45 },
+  { number: 51, nameAr: "الذاريات", ayahCount: 60 },
+  { number: 52, nameAr: "الطور", ayahCount: 49 },
+  { number: 53, nameAr: "النجم", ayahCount: 62 },
+  { number: 54, nameAr: "القمر", ayahCount: 55 },
+  { number: 55, nameAr: "الرحمن", ayahCount: 78 },
+  { number: 56, nameAr: "الواقعة", ayahCount: 96 },
+  { number: 57, nameAr: "الحديد", ayahCount: 29 },
+  { number: 58, nameAr: "المجادلة", ayahCount: 22 },
+  { number: 59, nameAr: "الحشر", ayahCount: 24 },
+  { number: 60, nameAr: "الممتحنة", ayahCount: 13 },
+  { number: 61, nameAr: "الصف", ayahCount: 14 },
+  { number: 62, nameAr: "الجمعة", ayahCount: 11 },
+  { number: 63, nameAr: "المنافقون", ayahCount: 11 },
+  { number: 64, nameAr: "التغابن", ayahCount: 18 },
+  { number: 65, nameAr: "الطلاق", ayahCount: 12 },
+  { number: 66, nameAr: "التحريم", ayahCount: 12 },
+  { number: 67, nameAr: "الملك", ayahCount: 30 },
+  { number: 68, nameAr: "القلم", ayahCount: 52 },
+  { number: 69, nameAr: "الحاقة", ayahCount: 52 },
+  { number: 70, nameAr: "المعارج", ayahCount: 44 },
+  { number: 71, nameAr: "نوح", ayahCount: 28 },
+  { number: 72, nameAr: "الجن", ayahCount: 28 },
+  { number: 73, nameAr: "المزمل", ayahCount: 20 },
+  { number: 74, nameAr: "المدثر", ayahCount: 56 },
+  { number: 75, nameAr: "القيامة", ayahCount: 40 },
+  { number: 76, nameAr: "الإنسان", ayahCount: 31 },
+  { number: 77, nameAr: "المرسلات", ayahCount: 50 },
+  { number: 78, nameAr: "النبأ", ayahCount: 40 },
+  { number: 79, nameAr: "النازعات", ayahCount: 46 },
+  { number: 80, nameAr: "عبس", ayahCount: 42 },
+  { number: 81, nameAr: "التكوير", ayahCount: 29 },
+  { number: 82, nameAr: "الانفطار", ayahCount: 19 },
+  { number: 83, nameAr: "المطففين", ayahCount: 36 },
+  { number: 84, nameAr: "الانشقاق", ayahCount: 25 },
+  { number: 85, nameAr: "البروج", ayahCount: 22 },
+  { number: 86, nameAr: "الطارق", ayahCount: 17 },
+  { number: 87, nameAr: "الأعلى", ayahCount: 19 },
+  { number: 88, nameAr: "الغاشية", ayahCount: 26 },
+  { number: 89, nameAr: "الفجر", ayahCount: 30 },
+  { number: 90, nameAr: "البلد", ayahCount: 20 },
+  { number: 91, nameAr: "الشمس", ayahCount: 15 },
+  { number: 92, nameAr: "الليل", ayahCount: 21 },
+  { number: 93, nameAr: "الضحى", ayahCount: 11 },
+  { number: 94, nameAr: "الشرح", ayahCount: 8 },
+  { number: 95, nameAr: "التين", ayahCount: 8 },
+  { number: 96, nameAr: "العلق", ayahCount: 19 },
+  { number: 97, nameAr: "القدر", ayahCount: 5 },
+  { number: 98, nameAr: "البينة", ayahCount: 8 },
+  { number: 99, nameAr: "الزلزلة", ayahCount: 8 },
+  { number: 100, nameAr: "العاديات", ayahCount: 11 },
+  { number: 101, nameAr: "القارعة", ayahCount: 11 },
+  { number: 102, nameAr: "التكاثر", ayahCount: 8 },
+  { number: 103, nameAr: "العصر", ayahCount: 3 },
+  { number: 104, nameAr: "الهمزة", ayahCount: 9 },
+  { number: 105, nameAr: "الفيل", ayahCount: 5 },
+  { number: 106, nameAr: "قريش", ayahCount: 4 },
+  { number: 107, nameAr: "الماعون", ayahCount: 7 },
+  { number: 108, nameAr: "الكوثر", ayahCount: 3 },
+  { number: 109, nameAr: "الكافرون", ayahCount: 6 },
+  { number: 110, nameAr: "النصر", ayahCount: 3 },
+  { number: 111, nameAr: "المسد", ayahCount: 5 },
+  { number: 112, nameAr: "الإخلاص", ayahCount: 4 },
+  { number: 113, nameAr: "الفلق", ayahCount: 5 },
+  { number: 114, nameAr: "الناس", ayahCount: 6 },
+];
+
+const SURAH_NUMBER_BY_NAME: ReadonlyMap<string, number> = new Map(SURAHS.map((s) => [s.nameAr, s.number]));
+
+// Exact-match lookup only — no fuzzy matching, no stripping of diacritics
+// or "سورة" prefixes. A name this app's data spells differently from the
+// table above returns `undefined` (and so stays unresolved) rather than
+// being silently guessed at.
+export function surahNumberFromArabicName(nameAr: string): number | undefined {
+  return SURAH_NUMBER_BY_NAME.get(nameAr.trim());
+}
+
+export function getSurahAyahCount(surah: number): number | undefined {
+  return SURAHS[surah - 1]?.ayahCount;
+}

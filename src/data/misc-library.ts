@@ -30,6 +30,7 @@
 // Silsilah Da'ifah 6003) — not a settled grade, so it does not enter here.
 //
 import { dhikrLanguageLabels } from "./dhikr-language-labels";
+import type { QuranRef } from "../lib/quranRef";
 import miscGeneralDuas from "../assets/illustrations/dithar-misc-general-duas.webp";
 import miscIstighfarTaubah from "../assets/illustrations/dithar-misc-istighfar-taubah.webp";
 import miscProtection from "../assets/illustrations/dithar-misc-protection.webp";
@@ -364,6 +365,12 @@ export interface MiscDuaItem {
    */
   source_ar?: string;
   isQuranic?: boolean;
+  /**
+   * Machine-readable Quran reference for Quran audio — present exactly
+   * when `isQuranic` is true (see MISC_QURAN_REFS). Never set on hadith
+   * duas, even ones that quote Quranic wording.
+   */
+  quranRef?: QuranRef;
   /**
    * The Master file's "المناسبة" line, shown only when present — introduced
    * for the "العبادة الموسمية" (seasonal) category, section 20, where
@@ -1907,10 +1914,44 @@ const MISC_ENGLISH_METADATA: Record<
   },
 };
 
+// Quran references for every `isQuranic` item, keyed by id — additive, like
+// the English layers above, so the Arabic literals stay untouched. Surah and
+// ayah numbers are exactly the ones each item's own `source_ar` states
+// ("القرآن الكريم — سورة …، الآية N"); misc-library.test.ts cross-checks
+// every entry against that string. `excerpt: true` marks a dua quoted
+// without the rest of its ayah (e.g. 2:201 omits its opening "وَمِنْهُم
+// مَّن يَقُولُ", and 2:286 is split across three separate duas) — the ref
+// still names the containing ayah; only 14:40, 14:41 and 3:8 are quoted as
+// complete ayahs.
+const MISC_QURAN_REFS: Record<string, QuranRef> = {
+  "rabbana-atina": { surah: 2, fromAyah: 201, toAyah: 201, excerpt: true },
+  "la-ilaha-illa-anta-subhanaka": { surah: 21, fromAyah: 87, toAyah: 87, excerpt: true },
+  "rabbi-hab-li-min-ladunka-dhurriyyatan": { surah: 3, fromAyah: 38, toAyah: 38, excerpt: true },
+  "rabbi-ijalni-muqim-al-salah": { surah: 14, fromAyah: 40, toAyah: 40 },
+  "rabbana-hab-lana-min-azwajina": { surah: 25, fromAyah: 74, toAyah: 74, excerpt: true },
+  "rabbana-la-tuakhidhna": { surah: 2, fromAyah: 286, toAyah: 286, excerpt: true },
+  "rabbana-wala-tahmil-alayna-isran": { surah: 2, fromAyah: 286, toAyah: 286, excerpt: true },
+  "rabbana-wala-tuhammilna": { surah: 2, fromAyah: 286, toAyah: 286, excerpt: true },
+  "rabbana-dhalamna-anfusana": { surah: 7, fromAyah: 23, toAyah: 23, excerpt: true },
+  "rabbana-hab-lana-min-ladunka-rahmatan": { surah: 18, fromAyah: 10, toAyah: 10, excerpt: true },
+  "rabbi-ishrah-li-sadri": { surah: 20, fromAyah: 25, toAyah: 26, excerpt: true },
+  "rabbi-zidni-ilman": { surah: 20, fromAyah: 114, toAyah: 114, excerpt: true },
+  "rabbi-ighfir-li-waliwalidayya": { surah: 14, fromAyah: 41, toAyah: 41 },
+  "rabbi-inni-lima-anzalta": { surah: 28, fromAyah: 24, toAyah: 24, excerpt: true },
+  "rabbana-afrigh-alayna-sabran-tawaffana": { surah: 7, fromAyah: 126, toAyah: 126, excerpt: true },
+  "rabbana-afrigh-alayna-sabran-thabbit": { surah: 2, fromAyah: 250, toAyah: 250, excerpt: true },
+  "rabbana-la-tuzigh-qulubana": { surah: 3, fromAyah: 8, toAyah: 8 },
+  "rabbana-taqabbal-minna": { surah: 2, fromAyah: 127, toAyah: 127, excerpt: true },
+  "rabbana-ighfir-lana-waliikhwanina": { surah: 59, fromAyah: 10, toAyah: 10, excerpt: true },
+  "rabbana-alayka-tawakkalna": { surah: 60, fromAyah: 4, toAyah: 4, excerpt: true },
+  "rabbana-atmim-lana-nurana": { surah: 66, fromAyah: 8, toAyah: 8, excerpt: true },
+};
+
 export const MISC_DUAS: MiscDuaItem[] = MISC_DUAS_BASE.map((item) => {
   const en = MISC_ENGLISH_CONTENT[item.id];
   const meta = MISC_ENGLISH_METADATA[item.id];
-  return { ...item, ...en, ...meta };
+  const quranRef = item.isQuranic ? MISC_QURAN_REFS[item.id] : undefined;
+  return quranRef ? { ...item, ...en, ...meta, quranRef } : { ...item, ...en, ...meta };
 });
 
 // Per-category item counts, computed ONCE here (module load) rather than by

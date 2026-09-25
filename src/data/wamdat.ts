@@ -12,6 +12,9 @@
 // expected. `insightAr`/`insightEn` are the Arabic working reflection and
 // its corresponding English rendering — not a translation of the Quran
 // verse in `ayah`, and not an official Quran translation.
+import { surahNumberFromArabicName } from "./quranSurahs";
+import { isValidQuranRef } from "../lib/quranRef";
+import type { QuranRef } from "../lib/quranRef";
 
 export type WamdaEntry = {
   id: number;
@@ -4220,6 +4223,32 @@ export function getWamdaVerseText(entry: WamdaEntry): string {
 export function getWamdaVerseReference(entry: WamdaEntry): string {
   const match = entry.ayah.match(AYAH_NUMBER_RE);
   return match ? `سورة ${entry.surah} – الآية ${match[1]}` : `سورة ${entry.surah}`;
+}
+
+// Machine-readable Quran reference for Quran audio (see src/lib/quranRef.ts),
+// derived ONLY from what each entry itself states: its `surah` name (exact
+// match against quranSurahs.ts) plus the trailing marker in `ayah`, which
+// the dataset writes in three forms:
+//   "[الآية 186]"                — one ayah
+//   "[الآية 1-2]"                — an ayah range
+//   "[الآية 124 - آل عمران]"      — one ayah, surah repeated (id 183); the
+//                                  repeated name must equal `surah`
+// Anything else — an unknown surah name, no marker at all (ids 1 and 2,
+// both al-Fatihah), a range out of order, or an ayah past the surah's end —
+// returns `null` and the entry simply has no Quran audio. Nothing is ever
+// inferred from the verse text itself. The display helpers above are
+// deliberately left unchanged.
+const AYAH_MARKER_RE = /\[الآية\s*(\d+)(?:\s*-\s*(\d+))?(?:\s*-\s*([^\]\d][^\]]*?))?\s*\]\s*$/;
+
+export function getWamdaQuranRef(entry: WamdaEntry): QuranRef | null {
+  const surah = surahNumberFromArabicName(entry.surah);
+  if (surah === undefined) return null;
+  const match = entry.ayah.match(AYAH_MARKER_RE);
+  if (!match) return null;
+  const [, from, to, repeatedSurahName] = match;
+  if (repeatedSurahName !== undefined && repeatedSurahName.trim() !== entry.surah) return null;
+  const ref: QuranRef = { surah, fromAyah: Number(from), toAyah: Number(to ?? from) };
+  return isValidQuranRef(ref) ? ref : null;
 }
 
 // English rendering of the Tafsir/source citation — `source` has no

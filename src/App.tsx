@@ -3,6 +3,7 @@ import { useScreenNavigation } from "./lib/useScreenNavigation";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
 import { PaletteProvider } from "./theme/PaletteContext";
+import { QuranReciterProvider } from "./theme/QuranReciterContext";
 import { DeviceFrame } from "./components/DeviceFrame";
 import { AppShell } from "./components/AppShell";
 import { TopBar } from "./components/TopBar";
@@ -16,7 +17,7 @@ import { ContentModal } from "./components/ContentModal";
 import { LocationChangePrompt } from "./components/LocationChangePrompt";
 import { useLocationChangeDetector } from "./lib/useLocationChangeDetector";
 import { BookOpen, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
-import { MosqueDomeIcon, TasbihBeadsIcon } from "./icons/CustomIcons";
+import { MosqueDomeIcon } from "./icons/CustomIcons";
 import { labels } from "./data/content";
 import { WAMDAT, getWamdaVerseText, getWamdaVerseReference, getWamdaSourceCitation } from "./data/wamdat";
 import { HADITHS, getHadithDetailFields } from "./data/hadith";
@@ -31,7 +32,9 @@ import {
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
+import type { AudioAdhkarList } from "./components/AudioAdhkarScreen";
 import { startFloatingOpenRouteRequests, startFloatingTasbeehSync } from "./lib/floatingTasbeehSync";
+import { isAudioAdhkarNativeAvailable } from "./lib/audioAdhkarNative";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -58,6 +61,7 @@ const loadMiscLibraryScreen = () =>
   import("./components/MiscLibraryScreen").then((m) => ({ default: m.MiscLibraryScreen }));
 const loadMiscCategoryScreen = () =>
   import("./components/MiscCategoryScreen").then((m) => ({ default: m.MiscCategoryScreen }));
+const loadAudioAdhkarModule = () => import("./components/AudioAdhkarScreen");
 
 const TasbeehScreen = lazy(loadTasbeehScreen);
 const WrittenAdhkarScreen = lazy(loadWrittenAdhkarScreen);
@@ -66,6 +70,9 @@ const WrittenAdhkarSearchScreen = lazy(loadWrittenAdhkarSearchScreen);
 const SettingsScreen = lazy(loadSettingsScreen);
 const MiscLibraryScreen = lazy(loadMiscLibraryScreen);
 const MiscCategoryScreen = lazy(loadMiscCategoryScreen);
+const AudioAdhkarScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarScreen })));
+const AudioMiscCategoriesScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioMiscCategoriesScreen })));
+const AudioAdhkarListScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarListScreen })));
 
 // Fetches a lazy screen's chunk ahead of the user actually navigating to
 // it, once the browser is idle (never competing with the current screen's
@@ -122,10 +129,12 @@ function HomeScreen({
   onNavigateToTasbeeh,
   onNavigateToWritten,
   onNavigateToSettings,
+  onNavigateToAudio,
 }: {
   onNavigateToTasbeeh: () => void;
   onNavigateToWritten: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToAudio: () => void;
 }) {
   const { language, dir } = useLanguage();
   const t = labels[language];
@@ -338,7 +347,7 @@ function HomeScreen({
       <AppShell>
         <TopBar showExitButton />
         <LogoHeader />
-        <DateTimeStrip className="mt-1" />
+        <DateTimeStrip className="mt-1 [@media(max-height:860px)]:mt-0" />
 
         <InsightCard
           variant="quran"
@@ -350,10 +359,10 @@ function HomeScreen({
           citation={insight.citation}
           readMoreLabel={t.readMore}
           onReadMore={() => setOpenCard("quran")}
-          className="mt-1"
+          className="mt-1 [@media(max-height:860px)]:mt-0"
         />
 
-        <div className="mt-1 flex items-center gap-3 self-start">
+        <div className="mt-1 flex items-center gap-3 self-start [@media(max-height:860px)]:mt-0">
           <button
             type="button"
             onClick={handlePreviousFlash}
@@ -388,10 +397,10 @@ function HomeScreen({
           details={hadithDetails}
           readMoreLabel={t.showDetails}
           onReadMore={() => setOpenCard("hadith")}
-          className="mt-1"
+          className="mt-1 [@media(max-height:860px)]:mt-0"
         />
 
-        <div className="mt-1 flex items-center gap-3 self-start">
+        <div className="mt-1 flex items-center gap-3 self-start [@media(max-height:860px)]:mt-0">
           <button
             type="button"
             onClick={handlePreviousHadith}
@@ -417,44 +426,19 @@ function HomeScreen({
           </button>
         </div>
 
-        <PrayerTimesPanel key={locationChange.refreshToken} date={date} className="mt-1" />
-
-        {/* Floating Tasbeeh placeholder — the real feature (a native Android
-            overlay bubble; see src/lib/floatingTasbeehSync.ts) isn't wired
-            up on web yet, so this is a non-interactive "coming soon"
-            stand-in only. It reuses the exact circle treatment BottomNav
-            already uses for its own Tasbeeh tab (h-11 w-11 rounded-full,
-            --color-primary/--color-gold, same TasbihBeadsIcon) plus a
-            shadow for a "floating" read, sitting in its own row right
-            above the nav's Tasbeeh tab rather than as an overlay, so it can
-            never cover any existing card/text on any viewport. */}
-        <div className="mt-1 flex justify-end" aria-hidden="true">
-          <div
-            className="flex items-center gap-1.5 rounded-full border py-1 ps-1 pe-2.5"
-            style={{
-              background: "var(--color-surface)",
-              borderColor: "var(--color-gold-soft)",
-              boxShadow: "0 8px 16px -4px rgba(var(--color-shadow-rgb), 0.5)",
-            }}
-          >
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-full"
-              style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
-            >
-              <TasbihBeadsIcon size={15} />
-            </span>
-            <span className="text-[11px] font-medium" style={{ color: "var(--color-primary)" }}>
-              قريبًا
-            </span>
-          </div>
-        </div>
+        <PrayerTimesPanel
+          key={locationChange.refreshToken}
+          date={date}
+          className="mt-1 [@media(max-height:860px)]:mt-0"
+        />
 
         <BottomNav
-          className="mt-1"
+          className="mt-1 [@media(max-height:860px)]:mt-0"
           onSelect={(key) => {
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onNavigateToWritten();
             if (key === "settings") onNavigateToSettings();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>
@@ -495,7 +479,7 @@ function HomeScreen({
   );
 }
 
-type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings";
+type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings" | "audio" | "audio-misc" | "audio-list";
 
 // Minimal in-memory screen switcher — no router dependency added. Screens
 // don't keep their own transient state across a switch (theme/language are
@@ -535,6 +519,15 @@ function AppRouter() {
   // two screens (the category tiles, the bottom-nav "written" tab) so a
   // stale target from a previous search never lingers into a normal visit.
   const [searchTargetItemId, setSearchTargetItemId] = useState<string | null>(null);
+  // Which list the Audio Adhkar list screen shows — same pattern as
+  // `writtenCategory` above.
+  const [audioList, setAudioList] = useState<AudioAdhkarList>({ kind: "written", key: "morning" });
+  const audioNav = {
+    onNavigateHome: () => setScreen("home"),
+    onNavigateToTasbeeh: () => setScreen("tasbeeh"),
+    onNavigateToWritten: () => setScreen("written"),
+    onNavigateToSettings: () => setScreen("settings"),
+  };
 
   // The Floating Tasbeeh menu's "الإعدادات" row asks the app to open its
   // existing Settings screen — routed through this same screen switcher,
@@ -689,6 +682,54 @@ function AppRouter() {
       </div>
     );
   }
+  if (screen === "audio") {
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <Suspense fallback={<ScreenFallback />}>
+          <AudioAdhkarScreen
+            {...audioNav}
+            onSelectCategory={(key) => {
+              if (key === "misc") {
+                setScreen("audio-misc");
+                return;
+              }
+              setAudioList({ kind: "written", key });
+              setScreen("audio-list");
+            }}
+          />
+        </Suspense>
+      </div>
+    );
+  }
+  if (screen === "audio-misc") {
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <Suspense fallback={<ScreenFallback />}>
+          <AudioMiscCategoriesScreen
+            {...audioNav}
+            onBack={() => setScreen("audio")}
+            onSelectCategory={(key) => {
+              setAudioList({ kind: "misc", key });
+              setScreen("audio-list");
+            }}
+          />
+        </Suspense>
+      </div>
+    );
+  }
+  if (screen === "audio-list") {
+    return (
+      <div key={screen} className="dithar-app-transition">
+        <Suspense fallback={<ScreenFallback />}>
+          <AudioAdhkarListScreen
+            {...audioNav}
+            list={audioList}
+            onBack={() => setScreen(audioList.kind === "misc" ? "audio-misc" : "audio")}
+          />
+        </Suspense>
+      </div>
+    );
+  }
   if (screen === "settings") {
     return (
       <div key={screen} className="dithar-app-transition">
@@ -708,6 +749,7 @@ function AppRouter() {
         onNavigateToTasbeeh={() => setScreen("tasbeeh")}
         onNavigateToWritten={() => setScreen("written")}
         onNavigateToSettings={() => setScreen("settings")}
+        onNavigateToAudio={() => setScreen("audio")}
       />
     </div>
   );
@@ -724,11 +766,30 @@ export default function App() {
     startFloatingTasbeehSync();
   }, []);
 
+  // Android only: re-arms scheduled Evening Audio Adhkar from saved
+  // settings and mirrors the native background player's state (see
+  // lib/eveningAudioSchedule.ts). Loaded lazily so the adhkar data stays
+  // out of the startup bundle.
+  useEffect(() => {
+    if (!isAudioAdhkarNativeAvailable()) return;
+    let cancelled = false;
+    let stop: (() => void) | undefined;
+    void import("./lib/eveningAudioSchedule").then((m) => {
+      if (!cancelled) stop = m.startEveningAudioNativeSync();
+    });
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
+  }, []);
+
   return (
     <LanguageProvider>
       <ThemeProvider>
         <PaletteProvider>
-          <AppRouter />
+          <QuranReciterProvider>
+            <AppRouter />
+          </QuranReciterProvider>
         </PaletteProvider>
       </ThemeProvider>
     </LanguageProvider>

@@ -33,15 +33,19 @@ export function getNextPrayer(todayTimes: PrayerTimesResult, tomorrowFajr: Date,
 export interface RemainingTime {
   hours: number;
   minutes: number;
+  seconds: number;
 }
 
-// Floors to whole minutes (never rounds) so e.g. "1 minute remaining"
-// doesn't flip to "0" while there are still 40 seconds left — the display
-// only ever undercounts by under a minute, never overcounts. Clamped at 0
-// so a stale `target` in the past (there shouldn't be one, by
-// construction of getNextPrayer) can never show a negative countdown.
+// Floors to whole seconds (never rounds) so e.g. "1 minute remaining"
+// doesn't flip to "0" while there are still 400ms left — the display only
+// ever undercounts by under a second, never overcounts. Clamped at 0 so a
+// stale `target` in the past (there shouldn't be one, by construction of
+// getNextPrayer) can never show a negative countdown. `useNextPrayerCountdown`
+// re-derives this every second, so `seconds` here is what actually makes the
+// live countdown tick rather than sitting still for up to 59s at a time.
 export function getRemainingTime(target: Date, now: Date): RemainingTime {
   const totalMs = Math.max(0, target.getTime() - now.getTime());
-  const totalMinutes = Math.floor(totalMs / 60_000);
-  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 };
+  const totalSeconds = Math.floor(totalMs / 1_000);
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60, seconds: totalSeconds % 60 };
 }

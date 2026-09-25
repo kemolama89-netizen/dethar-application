@@ -9,6 +9,7 @@
 // per-field notes below. Where an English rendering is marked as not
 // sourced from an approved in-project citation, treat it as a DRAFT
 // pending your explicit sign-off, not as verified.
+import type { QuranRef } from "../lib/quranRef";
 
 export type Language = "ar" | "en";
 
@@ -38,9 +39,10 @@ export const labels = {
     // grammatically correct in both languages.
     prayerReminderNotificationBody: "حان الآن وقت صلاة {prayer}",
     // Next Prayer + live countdown (see useNextPrayerCountdown.ts). "{h}"/
-    // "{m}" are replaced with zero-padded numbers.
+    // "{m}"/"{s}" are replaced with zero-padded numbers, "{s}" ticking live
+    // every second.
     nextPrayerHeading: "الصلاة القادمة",
-    nextPrayerCountdown: "متبقي {h} ساعة و {m} دقيقة",
+    nextPrayerCountdown: "متبقي {h} ساعة و {m} دقيقة و {s} ثانية",
     // Location-change confirmation prompt (see useLocationChangeDetector.ts
     // / LocationChangePrompt.tsx) — shown only when the device's own
     // timezone genuinely diverges from the active (non-manual) location,
@@ -83,7 +85,7 @@ export const labels = {
     prayerReminderNotificationTitle: "It's time to pray",
     prayerReminderNotificationBody: "It's now time for {prayer} prayer",
     nextPrayerHeading: "Next Prayer",
-    nextPrayerCountdown: "{h} hours and {m} minutes remaining",
+    nextPrayerCountdown: "{h} hours, {m} minutes and {s} seconds remaining",
     locationChangeTitle: "Your location appears to have changed.",
     locationChangeBody: "Please update your location to keep prayer times accurate.",
     locationChangeConfirm: "Update location",
@@ -150,6 +152,9 @@ export const insightCardContent = {
     body: "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.",
     citation: "(Quran 13:28 — Sahih International)",
   },
+  // Established by the citation above ("الرعد: 28"). The Arabic body is
+  // only the closing clause of 13:28, hence `excerpt`.
+  quranRef: { surah: 13, fromAyah: 28, toAyah: 28, excerpt: true } satisfies QuranRef,
 };
 
 // Hadith card — same hadith as the featured quote (Sahih al-Bukhari 6407),

@@ -138,7 +138,8 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
 
   const countdownText = t.nextPrayerCountdown
     .replace("{h}", pad2(nextPrayer.remaining.hours))
-    .replace("{m}", pad2(nextPrayer.remaining.minutes));
+    .replace("{m}", pad2(nextPrayer.remaining.minutes))
+    .replace("{s}", pad2(nextPrayer.remaining.seconds));
 
   return (
     <div

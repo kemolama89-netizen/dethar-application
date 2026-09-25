@@ -65,19 +65,36 @@ describe("useNextPrayerCountdown", () => {
     vi.setSystemTime(new Date("2026-09-14T13:00:00Z")); // between Dhuhr and Asr
     const { unmount } = await mount(TODAY, TOMORROW_FAJR);
     expect(latest?.key).toBe("asr");
-    expect(latest?.remaining).toEqual({ hours: 2, minutes: 13 });
+    expect(latest?.remaining).toEqual({ hours: 2, minutes: 13, seconds: 0 });
     await unmount();
   });
 
   it("ticks live — the countdown decreases as fake time advances, without any prop change", async () => {
     vi.setSystemTime(new Date("2026-09-14T13:00:00Z"));
     const { unmount } = await mount(TODAY, TOMORROW_FAJR);
-    expect(latest?.remaining).toEqual({ hours: 2, minutes: 13 });
+    expect(latest?.remaining).toEqual({ hours: 2, minutes: 13, seconds: 0 });
 
     await act(async () => {
       vi.advanceTimersByTime(60_000); // +1 minute
     });
-    expect(latest?.remaining).toEqual({ hours: 2, minutes: 12 });
+    expect(latest?.remaining).toEqual({ hours: 2, minutes: 12, seconds: 0 });
+    await unmount();
+  });
+
+  it("ticks every second — the seconds field itself updates live, not just minutes", async () => {
+    vi.setSystemTime(new Date("2026-09-14T13:00:00Z"));
+    const { unmount } = await mount(TODAY, TOMORROW_FAJR);
+    expect(latest?.remaining).toEqual({ hours: 2, minutes: 13, seconds: 0 });
+
+    await act(async () => {
+      vi.advanceTimersByTime(1_000); // +1 second
+    });
+    expect(latest?.remaining).toEqual({ hours: 2, minutes: 12, seconds: 59 });
+
+    await act(async () => {
+      vi.advanceTimersByTime(3_000); // +3 more seconds
+    });
+    expect(latest?.remaining).toEqual({ hours: 2, minutes: 12, seconds: 56 });
     await unmount();
   });
 
@@ -85,7 +102,7 @@ describe("useNextPrayerCountdown", () => {
     vi.setSystemTime(new Date("2026-09-14T15:12:59Z")); // 1s before Asr
     const { unmount } = await mount(TODAY, TOMORROW_FAJR);
     expect(latest?.key).toBe("asr");
-    expect(latest?.remaining).toEqual({ hours: 0, minutes: 0 });
+    expect(latest?.remaining).toEqual({ hours: 0, minutes: 0, seconds: 1 });
 
     await act(async () => {
       vi.advanceTimersByTime(1_000); // crosses Asr's instant exactly

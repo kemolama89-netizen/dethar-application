@@ -4,6 +4,7 @@
 // is Home-Screen-specific.
 import type { CalculationMethodId } from "../lib/calculationMethods";
 import type { MadhabId } from "../lib/resolveCalculationSettings";
+import type { QuranReciterStyle } from "./quranReciters";
 
 export const settingsLabels = {
   ar: {
@@ -76,6 +77,14 @@ export const settingsLabels = {
     locationSourceDevice: "عبر تحديد موقع الجهاز",
     locationSourceFallback: "الموقع الافتراضي",
     locationUseAutomatic: "استخدام الموقع التلقائي",
+    locationDetectAuto: "تحديد موقعي تلقائيًا",
+    locationChooseManual: "اختيار الموقع يدويًا",
+    locationDetecting: "جارٍ تحديد موقعك…",
+    locationDetectSuccess: "تم تحديد موقعك بنجاح",
+    locationDetectDenied: "لم يُمنح إذن الموقع. اضغط «تحديد موقعي تلقائيًا» مرة أخرى للسماح به.",
+    locationDetectBlocked: "إذن الموقع مطلوب لتحديد موقعك تلقائيًا، وقد تم رفضه. فعّل إذن «الموقع» لتطبيق دِثار من إعدادات الهاتف.",
+    locationOpenAppSettings: "فتح إعدادات التطبيق",
+    locationDetectUnavailable: "تعذّر تحديد موقعك. تأكد من تفعيل خدمة الموقع في الهاتف ثم حاول مرة أخرى.",
     locationSearchPlaceholder: "ابحث عن مدينة أو دولة",
     locationNoResults: "لا توجد نتائج مطابقة",
     calculationRow: "طريقة الحساب والمذهب",
@@ -85,6 +94,10 @@ export const settingsLabels = {
     calculationMadhabSectionTitle: "المذهب الفقهي",
     calculationAutomaticLabel: "تلقائي (حسب الدولة)",
     calculationAutomaticResolvedHint: (name: string) => `يُستخدم حاليًا: ${name}`,
+    quranReciterRow: "القارئ",
+    quranReciterPageTitle: "القارئ",
+    quranReciterSectionTitle: "اختر القارئ لتلاوة الآيات القرآنية",
+    quranReciterAudioPendingNote: "ستُتاح التلاوة الصوتية في تحديث قادم. سيُحفظ اختيارك ويُستخدم تلقائيًا عند توفرها.",
   },
   en: {
     screenTitle: "Settings",
@@ -156,6 +169,14 @@ export const settingsLabels = {
     locationSourceDevice: "Via device location",
     locationSourceFallback: "Default location",
     locationUseAutomatic: "Use automatic location",
+    locationDetectAuto: "Detect my location automatically",
+    locationChooseManual: "Choose location manually",
+    locationDetecting: "Detecting your location…",
+    locationDetectSuccess: "Your location was detected successfully",
+    locationDetectDenied: "Location permission wasn't granted. Tap “Detect my location automatically” again to allow it.",
+    locationDetectBlocked: "Location permission is required to detect your location and was denied. Enable “Location” for DITHAR in your phone's settings.",
+    locationOpenAppSettings: "Open app settings",
+    locationDetectUnavailable: "Couldn't detect your location. Make sure location services are on, then try again.",
     locationSearchPlaceholder: "Search for a city or country",
     locationNoResults: "No matching results",
     calculationRow: "Calculation Method & Madhab",
@@ -165,6 +186,10 @@ export const settingsLabels = {
     calculationMadhabSectionTitle: "Madhab",
     calculationAutomaticLabel: "Automatic (by country)",
     calculationAutomaticResolvedHint: (name: string) => `Currently using: ${name}`,
+    quranReciterRow: "Quran Reciter",
+    quranReciterPageTitle: "Quran Reciter",
+    quranReciterSectionTitle: "Choose the reciter for Quranic verses",
+    quranReciterAudioPendingNote: "Quran audio will be available in an upcoming update. Your choice is saved and will be used automatically.",
   },
 };
 
@@ -196,4 +221,11 @@ export const calculationMethodLabels: Record<CalculationMethodId, { ar: string; 
 export const madhabLabels: Record<MadhabId, { ar: string; en: string }> = {
   shafi: { ar: "الشافعي (وغالبية المذاهب)", en: "Shafi'i (and most schools)" },
   hanafi: { ar: "الحنفي", en: "Hanafi" },
+};
+
+// Localized recitation-style names for the Quran reciter picker (see
+// quranReciters.ts's own QuranReciterStyle type).
+export const quranReciterStyleLabels: Record<QuranReciterStyle, { ar: string; en: string }> = {
+  murattal: { ar: "مرتّل", en: "Murattal" },
+  mujawwad: { ar: "مجوّد", en: "Mujawwad" },
 };

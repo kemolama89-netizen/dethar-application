@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Bell, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, Compass, MapPin, Palette, Trash2 } from "lucide-react";
+import { AudioLines, BarChart3, Bell, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, Compass, MapPin, Palette, Trash2, Volume2 } from "lucide-react";
 import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
 import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
 import { loadNotificationSettings, saveNotificationSettings } from "../lib/notificationSettings";
@@ -11,7 +11,11 @@ import { BottomNav } from "./BottomNav";
 import { AppearanceSettings } from "./AppearanceSettings";
 import { LocationSettingsView } from "./LocationSettingsView";
 import { CalculationSettingsView } from "./CalculationSettingsView";
+import { QuranReciterSettingsView } from "./QuranReciterSettingsView";
+import { AudioAdhkarSettingsView } from "./AudioAdhkarSettingsView";
+import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
 import { useLanguage } from "../theme/LanguageContext";
+import { useQuranReciter } from "../theme/QuranReciterContext";
 import { navLabels } from "../data/content";
 import { settingsLabels } from "../data/settings";
 import { writtenAdhkarItems } from "../data/written-adhkar";
@@ -38,7 +42,7 @@ interface SettingsScreenProps {
   onNavigateToWritten: () => void;
 }
 
-type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "notifications" | "location" | "calculation";
+type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "notifications" | "location" | "calculation" | "quran-reciter" | "audio-adhkar";
 
 type PeriodKind = "daily" | "weekly" | "monthly" | "yearly" | "custom" | "all";
 
@@ -835,6 +839,7 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
   const nav = navLabels[language];
   const t = settingsLabels[language];
   const [view, setView] = useState<SettingsView>("menu");
+  const { selectedReciter } = useQuranReciter();
   const ForwardIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
 
   return (
@@ -853,6 +858,10 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
           <LocationSettingsView onBack={() => setView("menu")} />
         ) : view === "calculation" ? (
           <CalculationSettingsView onBack={() => setView("menu")} />
+        ) : view === "quran-reciter" ? (
+          <QuranReciterSettingsView onBack={() => setView("menu")} />
+        ) : view === "audio-adhkar" ? (
+          <AudioAdhkarSettingsView onBack={() => setView("menu")} />
         ) : (
           <div className="flex flex-1 flex-col">
             <h1 className="mt-2 text-center text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}>
@@ -993,6 +1002,52 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                   </span>
                   <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
                     {t.calculationRowHint}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("quran-reciter")}
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <AudioLines size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {t.quranReciterRow}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {selectedReciter.name[language]}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("audio-adhkar")}
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <Volume2 size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {audioAdhkarSettingsLabels[language].row}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {audioAdhkarSettingsLabels[language].rowHint}
                   </span>
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />

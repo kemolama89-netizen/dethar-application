@@ -82,7 +82,12 @@ export function InsightCard({
 
   return (
     <div
-      className={`rounded-2xl border p-1.5 sm:p-2 ${className}`}
+      // p-1.5/sm:p-2 unchanged from before on a normal/tall viewport; the
+      // two bracketed height-media variants trim padding further ONLY on
+      // a short viewport (Batch 5's responsive Home Screen fix) — plain
+      // Tailwind classes (not an inline style) so `sm:p-2`'s width-based
+      // override still wins at ≥640px exactly as it always did.
+      className={`rounded-2xl border p-1.5 sm:p-2 [@media(max-height:860px)]:p-0.5 ${className}`}
       style={{
         background: "var(--color-surface)",
         borderColor: "var(--color-gold-soft)",
