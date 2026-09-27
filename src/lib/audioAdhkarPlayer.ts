@@ -2,7 +2,7 @@
 // state in audioAdhkarPlayback.ts (the ONE state — this module only drives
 // it, it keeps none of its own besides the in-flight playback token).
 //
-// Scope: Evening only. A dhikr is playable when it is in an enabled
+// Scope: Morning and Evening. A dhikr is playable when it is in an enabled
 // collection AND has a recorded (generated) file per the existing
 // Morning/Evening audio mapping (morningEveningAudio.ts). Quranic items
 // are never played here (the Quran reciter path comes later), and a dhikr
@@ -12,7 +12,9 @@
 // advances ONLY from the audio engine's `onEnded` for that exact playback,
 // and each playback's `onEnded` can count at most once (see `playOnce`).
 // Renders, navigation, loading/progress events and pause/resume never
-// advance it.
+// advance it. Between two repetitions of the same dhikr — any dhikr — the
+// player waits REPETITION_PAUSE_MS (see pauseBeforeNextRepetition); after
+// the final repetition it doesn't wait.
 //
 // Scheduled (background) Evening playback is played by the Android
 // service instead (android/.../audioadhkar/); its reported state is
@@ -22,23 +24,25 @@
 import type { WrittenAdhkarItem } from "../data/written-adhkar";
 import { getDefaultQuranReciter } from "../data/quranReciters";
 import { resolveMorningEveningAudio } from "./morningEveningAudio";
-import { pauseAudio, playUrlQueue, resumeAudio, stopAudio } from "./audioEngine";
-import { audioAdhkarPlayback, getNowPlaying } from "./audioAdhkarPlayback";
+import { pauseAudio, playSilence, playUrlQueue, resumeAudio, stopAudio } from "./audioEngine";
+import { audioAdhkarPlayback, getNowPlaying, pauseBeforeNextRepetition } from "./audioAdhkarPlayback";
 import { AudioAdhkarNative } from "./audioAdhkarNative";
 import type { NativeAudioAdhkarState } from "./audioAdhkarNative";
 import type { AudioAdhkarCollection } from "./audioAdhkarPlayback";
+import { getUserRepeatCount } from "./audioUserRepeat";
 
 /**
  * How many times the audio plays a Morning/Evening dhikr — its existing
- * written repetition count; null for a dhikr with no fixed count
- * (unboundedCount).
+ * written repetition count. A dhikr with no fixed count (unboundedCount)
+ * plays the count the user chose for it (audioUserRepeat.ts); null until
+ * they choose, and then it does not play.
  */
 export function audioRepetitionTotal(item: WrittenAdhkarItem): number | null {
-  return item.unboundedCount ? null : (item.repeat ?? 1);
+  return item.unboundedCount ? getUserRepeatCount(item.id) : (item.repeat ?? 1);
 }
 
-/** Collections whose recordings are connected. Morning and Various come later. */
-export const AUDIO_ENABLED_COLLECTIONS: readonly AudioAdhkarCollection[] = ["evening"];
+/** Collections whose recordings are connected. Various comes later. */
+export const AUDIO_ENABLED_COLLECTIONS: readonly AudioAdhkarCollection[] = ["morning", "evening"];
 
 export interface AudioAdhkarSource {
   key: string;
@@ -72,14 +76,40 @@ function playOnce(source: AudioAdhkarSource) {
       // Consume this playback's token first: a duplicate/late "ended" for
       // the same playback now fails isCurrent() and can't advance again.
       current = { source, token: -1 };
-      audioAdhkarPlayback.repetitionEnded();
-      if (getNowPlaying()?.status === "playing") playOnce(source);
-      else current = null;
+      const pauseMs = pauseBeforeNextRepetition(getNowPlaying());
+      if (pauseMs > 0) {
+        pauseThenPlay(source, pauseMs);
+      } else {
+        current = null;
+        audioAdhkarPlayback.repetitionEnded(); // the final one → "finished"
+      }
     },
     onError: () => {
       if (!isCurrent()) return;
       current = null;
       audioAdhkarPlayback.stop();
+    },
+    onInterrupted: () => {
+      if (!isCurrent()) return;
+      current = null;
+      audioAdhkarPlayback.stop();
+    },
+  });
+}
+
+/**
+ * The silence between repetitions: holds the audio (pausable,
+ * interruptible), then advances to the next repetition as it starts.
+ */
+function pauseThenPlay(source: AudioAdhkarSource, pauseMs: number) {
+  const token = ++nextToken;
+  current = { source, token };
+  const isCurrent = () => current?.token === token;
+  playSilence("adhkar", source.key, pauseMs, {
+    onEnded: () => {
+      if (!isCurrent()) return;
+      audioAdhkarPlayback.repetitionEnded();
+      playOnce(source);
     },
     onInterrupted: () => {
       if (!isCurrent()) return;
@@ -121,16 +151,22 @@ export function applyNativePlaybackState(state: NativeAudioAdhkarState | null): 
   }
 }
 
-/** Starts this dhikr from repetition 1. False (nothing plays, state untouched) when it has no recording. */
+/**
+ * Starts this dhikr from repetition 1. False (nothing plays, state
+ * untouched) when it has no recording, or no count has been chosen for a
+ * dhikr without a fixed one.
+ */
 export function startAudioAdhkar(collection: AudioAdhkarCollection, item: WrittenAdhkarItem): boolean {
   const source = getAudioAdhkarSource(collection, item);
   if (!source) return false;
+  const total = audioRepetitionTotal(item);
+  if (total === null) return false;
   if (nativeActive) {
     // Only one session: an in-app start ends the scheduled one.
     nativeActive = false;
     AudioAdhkarNative.stop().catch(ignore);
   }
-  audioAdhkarPlayback.startDhikr({ collection, itemId: item.id }, audioRepetitionTotal(item));
+  audioAdhkarPlayback.startDhikr({ collection, itemId: item.id }, total);
   playOnce(source);
   return true;
 }

@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AudioElementLike } from "./audioEngine";
-import { claimAudio, getActiveAudio, pauseAudio, playUrlQueue, resumeAudio, setAudioElementFactory, stopAudio } from "./audioEngine";
+import { claimAudio, getActiveAudio, pauseAudio, playSilence, playUrlQueue, resumeAudio, setAudioElementFactory, stopAudio } from "./audioEngine";
 
 class FakeAudio implements AudioElementLike {
   src = "";
@@ -67,5 +67,46 @@ describe("onInterrupted", () => {
     stopAudio();
     expect(ended).toBe(1);
     expect(interrupted).toBe(0);
+  });
+});
+
+describe("playSilence", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    stopAudio();
+    vi.useRealTimers();
+  });
+
+  it("holds the audio for exactly its duration, then releases it and calls onEnded", () => {
+    const events: string[] = [];
+    playSilence("adhkar", "adhkar:x", 3_000, { onEnded: () => events.push("ended") });
+    expect(getActiveAudio()).toEqual({ channel: "adhkar", key: "adhkar:x" });
+    vi.advanceTimersByTime(2_999);
+    expect(events).toEqual([]);
+    vi.advanceTimersByTime(1);
+    expect(events).toEqual(["ended"]);
+    expect(getActiveAudio()).toBeNull();
+  });
+
+  it("pause freezes the remaining time; resume continues it", () => {
+    const events: string[] = [];
+    playSilence("adhkar", "adhkar:x", 3_000, { onEnded: () => events.push("ended") });
+    vi.advanceTimersByTime(1_000);
+    expect(pauseAudio("adhkar:x")).toBe(true);
+    vi.advanceTimersByTime(10_000);
+    expect(events).toEqual([]);
+    expect(resumeAudio("adhkar:x")).toBe(true);
+    vi.advanceTimersByTime(1_999);
+    expect(events).toEqual([]);
+    vi.advanceTimersByTime(1);
+    expect(events).toEqual(["ended"]);
+  });
+
+  it("another source claiming the audio interrupts it; it never ends later", () => {
+    const events: string[] = [];
+    playSilence("adhkar", "adhkar:x", 3_000, { onEnded: () => events.push("ended"), onInterrupted: () => events.push("interrupted") });
+    claimAudio("quran", "quran:y", () => {});
+    vi.advanceTimersByTime(10_000);
+    expect(events).toEqual(["interrupted"]);
   });
 });

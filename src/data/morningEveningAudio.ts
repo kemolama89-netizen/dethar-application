@@ -16,6 +16,10 @@
 //       the item exists in only one list, or its spoken text differs
 //       between the two (e.g. أصبحنا / أمسينا)
 //
+// A recording that keeps its original (Arabic) file name lists that name in
+// MORNING_EVENING_AUDIO_FILE_NAMES; it still lives in the audioId's folder
+// (shared/, morning/ or evening/), and a shared one is still ONE file.
+//
 // Quranic items (those with a `quranRef`) never appear here: they play
 // through the selected Quran reciter.
 //
@@ -24,5 +28,29 @@ export type MorningEveningCategory = "morning" | "evening";
 export const GENERATED_MORNING_EVENING_AUDIO_IDS: readonly string[] = [
   "evening/morning_003", // أمسينا وأمسى الملك لله
   "shared/morning_005", // اللهم أنت ربي لا إله إلا أنت (سيد الاستغفار)
+  "shared/morning_008", // اللهم عافني في بدني
+  "shared/morning_009", // حسبي الله لا إله إلا هو
+  "shared/morning_010", // اللهم إني أسألك العفو والعافية
+  "shared/morning_011", // اللهم عالم الغيب والشهادة
+  "shared/morning_012", // بسم الله الذي لا يضر مع اسمه شيء
+  "shared/morning_013", // رضيت بالله ربا
   "evening/morning_016", // أمسينا على فطرة الإسلام
+  "shared/morning_017", // سبحان الله وبحمده
+  "shared/morning_018", // لا إله إلا الله وحده لا شريك له
+  "shared/morning_023", // اللهم صل على محمد (الصلاة الإبراهيمية)
+  "evening/evening_001", // أعوذ بكلمات الله التامات
 ];
+
+/** audioId → file name, for recordings kept under their original name (default: `{dhikrId}.mp3`). */
+export const MORNING_EVENING_AUDIO_FILE_NAMES: Readonly<Record<string, string>> = {
+  "shared/morning_008": "اللهم عافني في بدني.mp3",
+  "shared/morning_009": "حسبي الله.mp3",
+  "shared/morning_010": "اللهم اني اسالك العفو و العافية.mp3",
+  "shared/morning_011": "اللهم عالم الغيب والشهادة.mp3",
+  "shared/morning_012": "بسم الله الذي لا يضر.mp3",
+  "shared/morning_013": "رضيت بالله ربا.mp3",
+  "shared/morning_017": "سبحان الله وبحمده.mp3",
+  "shared/morning_018": "لا اله الا الله وحده لا شريك له.mp3",
+  "shared/morning_023": "اللهم صل على محمد.mp3",
+  "evening/evening_001": "اعوذ بكلمات التامات.mp3",
+};

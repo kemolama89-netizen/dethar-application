@@ -27,6 +27,8 @@ import {
   stopAudioAdhkar,
 } from "../lib/audioAdhkarPlayer";
 import type { AudioAdhkarCollection, AudioAdhkarNowPlaying, AudioAdhkarPlaybackState } from "../lib/audioAdhkarPlayback";
+import { USER_REPEAT_MAX, USER_REPEAT_MIN, setUserRepeatCount, useUserRepeatCount } from "../lib/audioUserRepeat";
+import { syncEveningAudioSchedule } from "../lib/eveningAudioSchedule";
 
 // Audio Adhkar ("الأذكار المسموعة") — the same Morning,
 // Evening and Various adhkar the Written section shows (see
@@ -308,6 +310,8 @@ const playerLabels = {
     nowPlaying: "يُشغَّل الآن",
     paused: "متوقف مؤقتًا",
     notRecorded: "لا يتوفر تسجيل صوتي بعد",
+    playCount: "عدد مرات التشغيل",
+    chooseCount: "اختر",
   },
   en: {
     listen: "Listen",
@@ -316,6 +320,8 @@ const playerLabels = {
     nowPlaying: "Now playing",
     paused: "Paused",
     notRecorded: "No recording yet",
+    playCount: "Times to play",
+    chooseCount: "Choose",
   },
 };
 
@@ -347,11 +353,15 @@ function AudioPlayerControl({
 }) {
   const { language } = useLanguage();
   const labels = playerLabels[language];
+  const userCount = useUserRepeatCount(item.id);
   const source = getAudioAdhkarSource(collection, item);
   if (!AUDIO_ENABLED_COLLECTIONS.includes(collection)) return <AudioPlayerSlot />;
   if (!source) return <AudioPlayerSlot label={labels.notRecorded} />;
 
   const status = playback?.status;
+  const active = status === "playing" || status === "paused";
+  // No fixed count: the user picks how many times it plays; until then it can't start.
+  const needsCount = item.unboundedCount === true && userCount === null && !active;
   const [Icon, action, onClick] =
     status === "playing"
       ? [Pause, labels.pause, pauseAudioAdhkar]
@@ -369,17 +379,44 @@ function AudioPlayerControl({
       <button
         type="button"
         onClick={onClick}
+        disabled={needsCount}
         aria-label={action}
-        className="flex h-8 items-center gap-1.5 rounded-full px-3 text-[11.5px] font-semibold"
+        className="flex h-8 items-center gap-1.5 rounded-full px-3 text-[11.5px] font-semibold disabled:opacity-50"
         style={{ background: "var(--wa-gold)", color: "var(--wa-surface)" }}
       >
         <Icon size={14} strokeWidth={2} aria-hidden="true" />
         {action}
       </button>
-      {(status === "playing" || status === "paused") && (
+      {active && (
         <span className="text-[11px]" style={{ color: "var(--wa-ink-muted)" }} aria-live="polite">
           {status === "playing" ? labels.nowPlaying : labels.paused}
         </span>
+      )}
+      {item.unboundedCount && (
+        <label className="ms-auto flex items-center gap-1.5 text-[11px]" style={{ color: "var(--wa-ink-muted)" }}>
+          <span>{labels.playCount}</span>
+          <select
+            data-user-repeat-count=""
+            value={userCount ?? ""}
+            disabled={active}
+            onChange={(e) => {
+              setUserRepeatCount(item.id, e.target.value ? Number(e.target.value) : null);
+              // The scheduled Evening playlist includes this dhikr only once it has a count.
+              void syncEveningAudioSchedule().catch(() => {});
+            }}
+            className="h-7 rounded-full px-2 text-[11.5px] font-semibold"
+            style={{ background: "var(--wa-surface)", color: "var(--wa-ink)", boxShadow: "inset 0 0 0 1px var(--wa-gold-soft)" }}
+          >
+            <option value="" disabled>
+              {labels.chooseCount}
+            </option>
+            {Array.from({ length: USER_REPEAT_MAX - USER_REPEAT_MIN + 1 }, (_, i) => USER_REPEAT_MIN + i).map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
       )}
     </div>
   );
@@ -467,6 +504,8 @@ function WrittenItemCard({ item, collection, playback, openInfo, onToggleInfo }:
   const { language } = useLanguage();
   const mine = playbackFor(playback, { collection, itemId: item.id });
   const isActive = mine?.status === "playing" || mine?.status === "paused";
+  // Re-renders the indicator's total when the user changes a chosen count.
+  useUserRepeatCount(item.id);
   const t = writtenAdhkarLabels[language];
   const isEn = language === "en";
   const title = isEn ? item.title_en : item.title_ar;

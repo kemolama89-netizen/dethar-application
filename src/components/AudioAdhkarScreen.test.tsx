@@ -13,6 +13,7 @@ import { PaletteProvider } from "../theme/PaletteContext";
 import { writtenAdhkarItems } from "../data/written-adhkar";
 import { MISC_CATEGORY_ORDER, MISC_DUAS } from "../data/misc-library";
 import { LANGUAGE_STORAGE_KEY } from "../lib/appearancePreferences";
+import { getUserRepeatCount, setUserRepeatCount } from "../lib/audioUserRepeat";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -215,17 +216,39 @@ describe("Evening audio player", () => {
   });
   afterEach(() => act(() => stopAudio()));
 
-  it("offers Listen on exactly the three recorded Evening dhikr", () => {
+  it("offers Listen on exactly the recorded Evening dhikr", () => {
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
     const withPlayer = writtenAdhkarItems.evening.filter((i) => playerButton(i.id)).map((i) => i.id);
-    expect(withPlayer).toEqual(["morning_003", "morning_005", "morning_016"]);
+    expect(withPlayer).toEqual(["morning_003", "morning_005", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_016", "morning_017", "morning_018", "morning_023", "evening_001"]);
     const unrecorded = writtenAdhkarItems.evening.find((i) => !withPlayer.includes(i.id))!;
     expect(card(unrecorded.id).textContent).toContain("لا يتوفر تسجيل صوتي بعد");
   });
 
-  it("offers no player in Morning or Various", () => {
+  it("offers Listen on exactly the recorded Morning dhikr", () => {
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
-    expect(container.querySelector("[data-audio-player-slot] button")).toBeNull();
+    const withPlayer = writtenAdhkarItems.morning.filter((i) => playerButton(i.id)).map((i) => i.id);
+    expect(withPlayer).toEqual(["morning_005", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_017", "morning_018", "morning_023"]);
+  });
+
+  it("morning_023: Listen is disabled until the user picks a count; the pick sets the total", () => {
+    setUserRepeatCount("morning_023", null);
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
+    const select = card("morning_023").querySelector<HTMLSelectElement>("[data-user-repeat-count]")!;
+    expect(select.value).toBe("");
+    expect(playerButton("morning_023")!.disabled).toBe(true);
+    act(() => {
+      select.value = "4";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect(getUserRepeatCount("morning_023")).toBe(4);
+    expect(playerButton("morning_023")!.disabled).toBe(false);
+    click(playerButton("morning_023")!);
+    expect(getNowPlaying()).toMatchObject({ itemId: "morning_023", repetition: 1, total: 4, status: "playing" });
+    expect(select.disabled).toBe(true);
+    setUserRepeatCount("morning_023", null);
+  });
+
+  it("offers no player in Various", () => {
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "misc", key: "istighfar" }} onBack={noop} />);
     expect(container.querySelector("[data-audio-player-slot] button")).toBeNull();
   });

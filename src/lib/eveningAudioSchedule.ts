@@ -21,18 +21,24 @@ import type { EveningAudioSettings } from "./eveningAudioSettings";
 /** Where Capacitor packages the built web app (dist/ → assets/public/) inside the APK. */
 const APK_WEB_ASSETS_DIR = "public/";
 
-/** The scheduled Evening playlist: every Evening dhikr that has its own recording, in order. */
+/**
+ * The scheduled Evening playlist: every Evening dhikr that has its own
+ * recording, in order. A dhikr without a fixed count joins only once the
+ * user has chosen its count — its repetitions are never assumed.
+ */
 export function buildEveningAudioPlaylist(): NativePlaylistItem[] {
   return writtenAdhkarItems.evening.flatMap((item) => {
     const source = getAudioAdhkarSource("evening", item) && getMorningEveningAudioSource("evening", item);
     if (!source || source.kind !== "generated") return [];
+    const repetitions = audioRepetitionTotal(item);
+    if (repetitions === null) return [];
     return [
       {
         dhikrId: item.id,
         title: item.title_ar ?? getSpokenText(item.text_ar),
         text: getSpokenText(item.text_ar),
         assetPath: `${APK_WEB_ASSETS_DIR}${source.path}`,
-        repetitions: audioRepetitionTotal(item) ?? 1,
+        repetitions,
       },
     ];
   });

@@ -21,6 +21,26 @@
 // exactly like in-app playback, from this one state.
 import { useSyncExternalStore } from "react";
 
+/**
+ * The silence between two repetitions of the same dhikr — for EVERY
+ * dhikr, Morning and Evening, in-app and scheduled. Never after the final
+ * repetition. The Android player uses the same value
+ * (SilenceGap.SILENCE_MILLIS; a test keeps the two equal).
+ */
+export const REPETITION_PAUSE_MS = 3_000;
+
+/**
+ * How long to wait after the current repetition ends, before the next
+ * playback: the repetition pause when another repetition of the same
+ * dhikr follows, otherwise 0 (it was the final one — nothing follows).
+ * Pass the state BEFORE advancing; like the Android player, the counter
+ * moves on only when the next repetition actually starts.
+ */
+export function pauseBeforeNextRepetition(state: AudioAdhkarPlaybackState): number {
+  const next = afterRepetitionEnded(state);
+  return next !== null && next.status !== "finished" ? REPETITION_PAUSE_MS : 0;
+}
+
 /** Which Audio Adhkar list a dhikr is being played from — ids repeat across Morning/Evening. */
 export type AudioAdhkarCollection = "morning" | "evening" | "misc";
 

@@ -30,7 +30,8 @@ vi.mock("@capacitor/app", () => ({ App: { addListener: vi.fn(async () => ({ remo
 import { writtenAdhkarItems } from "../data/written-adhkar";
 import { buildEveningAudioPlaylist, startEveningAudioNativeSync, syncEveningAudioSchedule } from "./eveningAudioSchedule";
 import { saveEveningAudioSettings } from "./eveningAudioSettings";
-import { getNowPlaying } from "./audioAdhkarPlayback";
+import { setUserRepeatCount } from "./audioUserRepeat";
+import { REPETITION_PAUSE_MS, getNowPlaying } from "./audioAdhkarPlayback";
 import { applyNativePlaybackState, pauseAudioAdhkar, resumeAudioAdhkar, startAudioAdhkar, stopAudioAdhkar } from "./audioAdhkarPlayer";
 import { setAudioElementFactory, stopAudio } from "./audioEngine";
 
@@ -49,18 +50,71 @@ afterEach(() => {
   stopAudio();
 });
 
+describe("scheduled Android playback uses the same repetition pause", () => {
+  const sources = import.meta.glob<string>("/android/app/src/main/java/com/dithar/app/audioadhkar/*.kt", {
+    query: "?raw",
+    import: "default",
+    eager: true,
+  });
+  const kt = (name: string) => sources[`/android/app/src/main/java/com/dithar/app/audioadhkar/${name}`];
+
+  it("SilenceGap.SILENCE_MILLIS equals REPETITION_PAUSE_MS (3 s)", () => {
+    const m = /const val SILENCE_MILLIS = ([\d_]+)L/.exec(kt("AudioAdhkarLogic.kt"));
+    expect(Number(m?.[1].replaceAll("_", ""))).toBe(REPETITION_PAUSE_MS);
+    expect(REPETITION_PAUSE_MS).toBe(3_000);
+  });
+
+  it("pauses after a repetition that is followed by another, never after the final one", () => {
+    const service = kt("AudioAdhkarPlaybackService.kt");
+    expect(service).toMatch(/Step\.NEXT_REPETITION, PlaybackCursor\.Step\.NEXT_DHIKR -> startSilence\(\)/);
+    expect(service).toMatch(/Step\.FINISHED -> finishSession\(\)/);
+    expect(kt("AudioAdhkarLogic.kt")).toMatch(/repetition < item\.repetitions -> Step\.NEXT_REPETITION/);
+  });
+
+  it("hands native each dhikr's own repetition count, Morning/Evening rules unchanged", () => {
+    for (const p of buildEveningAudioPlaylist()) {
+      const item = writtenAdhkarItems.evening.find((i) => i.id === p.dhikrId)!;
+      expect(p.repetitions, p.dhikrId).toBe(item.repeat ?? 1);
+    }
+  });
+});
+
 describe("Evening playlist", () => {
-  it("is exactly the three recorded Evening dhikr, in Evening order, from the existing mapping", () => {
+  it("adds morning_023 only once its count is chosen, with exactly that many repetitions", () => {
+    try {
+      expect(buildEveningAudioPlaylist().some((p) => p.dhikrId === "morning_023")).toBe(false);
+      setUserRepeatCount("morning_023", 5);
+      const playlist = buildEveningAudioPlaylist();
+      expect(playlist.map((p) => p.dhikrId).slice(-2)).toEqual(["morning_023", "evening_001"]);
+      expect(playlist.find((p) => p.dhikrId === "morning_023")).toMatchObject({
+        assetPath: "public/audio/adhkar/shared/اللهم صل على محمد.mp3",
+        repetitions: 5,
+      });
+    } finally {
+      setUserRepeatCount("morning_023", null);
+    }
+  });
+
+  it("is exactly the recorded Evening dhikr, in Evening order, from the existing mapping", () => {
     const playlist = buildEveningAudioPlaylist();
-    expect(playlist.map((p) => p.dhikrId)).toEqual(["morning_003", "morning_005", "morning_016"]);
+    expect(playlist.map((p) => p.dhikrId)).toEqual(["morning_003", "morning_005", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_016", "morning_017", "morning_018", "evening_001"]);
     expect(playlist.map((p) => p.assetPath)).toEqual([
       "public/audio/adhkar/evening/morning_003.mp3",
       "public/audio/adhkar/shared/morning_005.mp3",
+      "public/audio/adhkar/shared/اللهم عافني في بدني.mp3",
+      "public/audio/adhkar/shared/حسبي الله.mp3",
+      "public/audio/adhkar/shared/اللهم اني اسالك العفو و العافية.mp3",
+      "public/audio/adhkar/shared/اللهم عالم الغيب والشهادة.mp3",
+      "public/audio/adhkar/shared/بسم الله الذي لا يضر.mp3",
+      "public/audio/adhkar/shared/رضيت بالله ربا.mp3",
       "public/audio/adhkar/evening/morning_016.mp3",
+      "public/audio/adhkar/shared/سبحان الله وبحمده.mp3",
+      "public/audio/adhkar/shared/لا اله الا الله وحده لا شريك له.mp3",
+      "public/audio/adhkar/evening/اعوذ بكلمات التامات.mp3",
     ]);
     for (const p of playlist) expect(publicFiles[`/${p.assetPath}`], p.assetPath).toBeDefined();
     expect(playlist[0].title).toBe("أمسينا وأمسى الملك لله");
-    expect(playlist[2].title).toBe("أمسينا على فطرة الإسلام");
+    expect(playlist[8].title).toBe("أمسينا على فطرة الإسلام");
     expect(playlist[1].text.replace(/[\u064B-\u065F\u0670]/g, "").startsWith("اللهم أنت ربي")).toBe(true);
   });
 

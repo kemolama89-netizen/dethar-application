@@ -95,6 +95,62 @@ export function resumeAudio(key: string): boolean {
   return true;
 }
 
+/**
+ * A timed silence that holds the audio like a file would: it can be paused
+ * and resumed (the remaining time freezes), and anything else claiming the
+ * audio interrupts it. Used for the pause between Audio Adhkar repetitions,
+ * so nothing else slips in and Pause/Resume/Stop work the same during it.
+ */
+export function playSilence(
+  channel: AudioChannel,
+  key: string,
+  durationMs: number,
+  options: Pick<PlayUrlQueueOptions, "onEnded" | "onInterrupted"> = {},
+): void {
+  let active = true;
+  let remaining = durationMs;
+  let startedAt = Date.now();
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const finish = () => {
+    if (!active) return;
+    active = false;
+    timer = null;
+    releaseAudio(key);
+    options.onEnded?.();
+  };
+  const run = () => {
+    startedAt = Date.now();
+    timer = setTimeout(finish, remaining);
+  };
+  const clear = () => {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+  };
+
+  claimAudio(
+    channel,
+    key,
+    () => {
+      if (!active) return;
+      active = false;
+      clear();
+      options.onInterrupted?.();
+    },
+    {
+      pause: () => {
+        if (!active || timer === null) return;
+        clear();
+        remaining = Math.max(0, remaining - (Date.now() - startedAt));
+      },
+      resume: () => {
+        if (active && timer === null) run();
+      },
+    },
+  );
+  run();
+}
+
 function safeStop(target: Owner) {
   try {
     target.stop();

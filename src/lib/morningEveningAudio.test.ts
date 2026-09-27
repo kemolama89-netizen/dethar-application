@@ -3,9 +3,10 @@ import { writtenAdhkarItems } from "../data/written-adhkar";
 import type { WrittenAdhkarItem } from "../data/written-adhkar";
 import type { QuranReciter } from "../data/quranReciters";
 import { getDefaultQuranReciter } from "../data/quranReciters";
-import { GENERATED_MORNING_EVENING_AUDIO_IDS } from "../data/morningEveningAudio";
+import { GENERATED_MORNING_EVENING_AUDIO_IDS, MORNING_EVENING_AUDIO_FILE_NAMES } from "../data/morningEveningAudio";
 import type { MorningEveningCategory } from "../data/morningEveningAudio";
 import {
+  generatedAdhkarAudioPath,
   getMorningEveningAudioAssets,
   getMorningEveningAudioSource,
   getSpokenText,
@@ -108,7 +109,10 @@ describe("audio assets", () => {
     expect(assets.filter((a) => a.audioId.startsWith("shared/"))).toHaveLength(11);
     expect(assets.filter((a) => a.audioId.startsWith("morning/"))).toHaveLength(7);
     expect(assets.filter((a) => a.audioId.startsWith("evening/"))).toHaveLength(7);
-    for (const a of assets) expect(a.path).toBe(`audio/adhkar/${a.audioId}.mp3`);
+    for (const a of assets) {
+      const fileName = MORNING_EVENING_AUDIO_FILE_NAMES[a.audioId] ?? `${a.audioId.split("/")[1]}.mp3`;
+      expect(a.path).toBe(`audio/adhkar/${a.audioId.split("/")[0]}/${fileName}`);
+    }
   });
 
   it("shares a file only when Morning and Evening spoken text is exactly identical", () => {
@@ -138,7 +142,7 @@ describe("audio assets", () => {
     expect(getMorningEveningAudioSource("morning", find("morning", "morning_009"))).toEqual({
       kind: "generated",
       audioId: "shared/morning_009",
-      path: "audio/adhkar/shared/morning_009.mp3",
+      path: "audio/adhkar/shared/حسبي الله.mp3",
     });
   });
 });
@@ -253,5 +257,24 @@ describe("generated-audio manifest", () => {
   it("only lists audioIds the current content actually needs", () => {
     const needed = new Set(getMorningEveningAudioAssets().map((a) => a.audioId));
     for (const id of GENERATED_MORNING_EVENING_AUDIO_IDS) expect(needed.has(id), id).toBe(true);
+  });
+
+  it("names a file only for listed audioIds, and every listed file exists under public/", () => {
+    const files = import.meta.glob("/public/audio/adhkar/**/*.mp3");
+    for (const id of Object.keys(MORNING_EVENING_AUDIO_FILE_NAMES)) expect(GENERATED_MORNING_EVENING_AUDIO_IDS, id).toContain(id);
+    for (const id of GENERATED_MORNING_EVENING_AUDIO_IDS) {
+      const path = `/public/${generatedAdhkarAudioPath(id)}`;
+      expect(files[path], path).toBeDefined();
+    }
+  });
+
+  it("URL-encodes Arabic file names in the playback URL", () => {
+    const res = resolveMorningEveningAudio("evening", find("evening", "morning_009"), getDefaultQuranReciter());
+    expect(res).toEqual({
+      status: "ready",
+      kind: "generated",
+      key: "adhkar:shared/morning_009",
+      urls: [`/${encodeURI("audio/adhkar/shared/حسبي الله.mp3")}`],
+    });
   });
 });

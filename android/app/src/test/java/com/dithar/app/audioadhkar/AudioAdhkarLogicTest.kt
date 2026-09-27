@@ -120,6 +120,24 @@ class AudioAdhkarLogicTest {
         )
     }
 
+    /** Same rules as the in-app player (REPETITION_PAUSE_MS in audioAdhkarPlayback.ts). */
+    @Test
+    fun aMultiRepeatDhikrPausesBetweenItsRepetitionsButNotAfterTheLast() {
+        val c = PlaybackCursor(listOf(item("a", 3)))
+        assertEquals(PlaybackCursor.Step.NEXT_REPETITION, c.complete(c.beginPlayback())) // → silence
+        c.advance()
+        assertEquals(PlaybackCursor.Step.NEXT_REPETITION, c.complete(c.beginPlayback())) // → silence
+        c.advance()
+        assertEquals(PlaybackCursor.Step.FINISHED, c.complete(c.beginPlayback())) // final: no silence
+    }
+
+    @Test
+    fun aSingleRepeatDhikrHasNoRepetitionPause() {
+        val c = PlaybackCursor(listOf(item("a", 1)))
+        assertEquals(PlaybackCursor.Step.FINISHED, c.complete(c.beginPlayback()))
+        assertFalse(c.advance())
+    }
+
     @Test
     fun theSilenceIsThreeSeconds() {
         assertEquals(3_000L, SilenceGap.SILENCE_MILLIS)

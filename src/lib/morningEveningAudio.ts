@@ -25,7 +25,7 @@
 import type { QuranReciter } from "../data/quranReciters";
 import { writtenAdhkarItems } from "../data/written-adhkar";
 import type { WrittenAdhkarItem } from "../data/written-adhkar";
-import { GENERATED_MORNING_EVENING_AUDIO_IDS } from "../data/morningEveningAudio";
+import { GENERATED_MORNING_EVENING_AUDIO_IDS, MORNING_EVENING_AUDIO_FILE_NAMES } from "../data/morningEveningAudio";
 import type { MorningEveningCategory } from "../data/morningEveningAudio";
 import type { QuranRef } from "./quranRef";
 import { playQuranRef, quranAudioKey, resolveQuranAudio } from "./quranAudio";
@@ -88,9 +88,10 @@ export function isAudioSafeDhikrId(id: string): boolean {
   return SAFE_ID_RE.test(id);
 }
 
-/** Deterministic path, relative to the app's base URL. */
+/** Deterministic path, relative to the app's base URL (unencoded — also the APK asset path). */
 export function generatedAdhkarAudioPath(audioId: string): string {
-  return `audio/adhkar/${audioId}.mp3`;
+  const fileName = MORNING_EVENING_AUDIO_FILE_NAMES[audioId];
+  return fileName ? `audio/adhkar/${audioId.split("/")[0]}/${fileName}` : `audio/adhkar/${audioId}.mp3`;
 }
 
 export interface AdhkarAudioAsset {
@@ -196,7 +197,7 @@ export function resolveMorningEveningAudio(
     status: "ready",
     kind: "generated",
     key: `adhkar:${source.audioId}`,
-    urls: [`${import.meta.env.BASE_URL}${source.path}`],
+    urls: [`${import.meta.env.BASE_URL}${encodeURI(source.path)}`],
   };
 }
 
