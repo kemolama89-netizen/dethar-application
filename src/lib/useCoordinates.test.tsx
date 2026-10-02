@@ -49,6 +49,7 @@ const KUWAIT_FALLBACK_STATE = {
   countryCode: "KW",
   cityNameAr: "الكويت",
   cityNameEn: "Kuwait",
+  detecting: false,
 };
 
 beforeEach(() => {
@@ -60,13 +61,29 @@ afterEach(() => {
 });
 
 describe("useCoordinates — no manual location set", () => {
-  it("starts on the Kuwait City fallback before any geolocation result lands", async () => {
+  it("a brand-new user is 'detecting' — never presented as Kuwait — until geolocation answers", async () => {
+    let requested = 0;
     Object.defineProperty(navigator, "geolocation", {
       configurable: true,
-      value: { getCurrentPosition: () => {} }, // never resolves in this test
+      value: { getCurrentPosition: () => void requested++ }, // never resolves in this test (e.g. the permission prompt is still open)
     });
     const { unmount } = await mount();
-    expect(latest).toEqual(KUWAIT_FALLBACK_STATE);
+    expect(requested).toBe(1); // asked straight away, on first load
+    expect(latest?.detecting).toBe(true);
+    expect(loadLocationSettings().lastActiveLocation).toBeNull(); // nothing written while pending
+    await unmount();
+  });
+
+  it("a brand-new user in Egypt gets Egypt, not Kuwait", async () => {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 30.0444, longitude: 31.2357 } } as GeolocationPosition), // Cairo
+      },
+    });
+    const { unmount } = await mount();
+    expect(latest).toMatchObject({ detecting: false, source: "device", countryCode: "EG", coordinates: { latitude: 30.0444, longitude: 31.2357 } });
+    expect(loadLocationSettings().lastActiveLocation).toMatchObject({ source: "device", countryCode: "EG" });
     await unmount();
   });
 
@@ -87,6 +104,7 @@ describe("useCoordinates — no manual location set", () => {
       // Step 7: this exactly matches cities.ts's own London entry, so the
       // offline reverse-geocode estimate resolves to the United Kingdom.
       countryCode: "GB",
+      detecting: false,
     });
     await unmount();
   });
@@ -105,6 +123,7 @@ describe("useCoordinates — no manual location set", () => {
       coordinates: { latitude: 0, longitude: -160 },
       timezone: getDeviceTimeZone(),
       source: "device",
+      detecting: false,
     });
     expect(latest?.countryCode).toBeUndefined();
     await unmount();
@@ -144,7 +163,7 @@ describe("useCoordinates — no manual location set", () => {
       value: { getCurrentPosition: () => {} }, // never resolves in this test — only the INITIAL state matters here
     });
     const { unmount } = await mount();
-    expect(latest).toEqual({ coordinates: { latitude: 48.8566, longitude: 2.3522 }, timezone: "Europe/Paris", source: "device" });
+    expect(latest).toEqual({ coordinates: { latitude: 48.8566, longitude: 2.3522 }, timezone: "Europe/Paris", source: "device", detecting: false });
     await unmount();
   });
 });
@@ -174,6 +193,7 @@ describe("useCoordinates — a manual location is set", () => {
       countryCode: "JP",
       cityNameAr: "طوكيو",
       cityNameEn: "Tokyo",
+      detecting: false,
     });
     await unmount();
   });
@@ -289,23 +309,40 @@ describe("useCoordinates — GPS failure never overwrites a valid saved location
     await unmount();
   });
 
-  it("first launch (nothing saved) + GPS failure still records the Kuwait fallback, so the location-change detector has its baseline", async () => {
+  it("first launch (nothing saved) + GPS failure uses the Kuwait fallback — but never saves it, so the next launch detects again", async () => {
     geolocationErrors(1);
     const { unmount } = await mount();
     expect(latest).toEqual(KUWAIT_FALLBACK_STATE);
-    expect(loadLocationSettings().lastActiveLocation).toEqual({
-      source: "fallback",
-      latitude: KUWAIT_CITY_COORDINATES.latitude,
-      longitude: KUWAIT_CITY_COORDINATES.longitude,
-      timezone: KUWAIT_TIMEZONE,
-      countryCode: "KW",
-      cityNameAr: "الكويت",
-      cityNameEn: "Kuwait",
-    });
+    expect(loadLocationSettings().lastActiveLocation).toBeNull();
     await unmount();
   });
 
-  it("an unusable saved location (out-of-range coordinates) counts as 'nothing saved': Kuwait is used and recorded", async () => {
+  it.each([
+    ["denied", 1],
+    ["unavailable", 2],
+    ["timed out", 3],
+  ])("Kuwait is the fallback only once detection has failed (%s)", async (_name, code) => {
+    geolocationErrors(code);
+    const { unmount } = await mount();
+    expect(latest).toEqual(KUWAIT_FALLBACK_STATE);
+    expect(latest?.source).toBe("fallback"); // shown as the default location, never as detected
+    await unmount();
+  });
+
+  it("a stale Kuwait record saved by an older version is not this user's location: he is detected again", async () => {
+    localStorage.setItem(
+      "dithar:location:settings:v1",
+      JSON.stringify({ manualLocation: null, lastActiveLocation: { ...KUWAIT_FALLBACK_STATE, ...KUWAIT_CITY_COORDINATES, coordinates: undefined } }),
+    );
+    let requested = 0;
+    Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition: () => void requested++ } });
+    const { unmount } = await mount();
+    expect(latest?.detecting).toBe(true);
+    expect(requested).toBe(1);
+    await unmount();
+  });
+
+  it("an unusable saved location (out-of-range coordinates) counts as 'nothing saved': Kuwait is used, not recorded", async () => {
     localStorage.setItem(
       "dithar:location:settings:v1",
       JSON.stringify({ manualLocation: null, lastActiveLocation: { source: "device", latitude: 999, longitude: 2, timezone: "Europe/Paris" } }),
@@ -313,7 +350,7 @@ describe("useCoordinates — GPS failure never overwrites a valid saved location
     geolocationErrors(1);
     const { unmount } = await mount();
     expect(latest).toEqual(KUWAIT_FALLBACK_STATE);
-    expect(loadLocationSettings().lastActiveLocation?.source).toBe("fallback");
+    expect(loadLocationSettings().lastActiveLocation).toBeNull();
     await unmount();
   });
 

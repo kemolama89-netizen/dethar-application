@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Coordinates } from "./prayerTimes";
-import { loadLocationSettings, resolveActiveLocationRecord, saveLastActiveLocation, saveFallbackLocationIfNoneSaved } from "./locationSettings";
+import { KUWAIT_FALLBACK_LOCATION, loadLocationSettings, resolveKnownLocationRecord, saveLastActiveLocation } from "./locationSettings";
 import type { ActiveLocationRecord, LocationSource } from "./locationSettings";
 import { positionToDeviceRecord } from "./deviceLocation";
 
@@ -28,10 +28,16 @@ export interface CoordinatesState {
   countryCode?: string;
   cityNameAr?: string;
   cityNameEn?: string;
+  /** True while this user's location is still being detected for the first
+   *  time (nothing manual or previously detected is known yet). The other
+   *  fields then hold the Kuwait fallback only as a placeholder — callers
+   *  must not present or schedule anything for it as if it were detected. */
+  detecting: boolean;
 }
 
 function recordToState(record: ActiveLocationRecord): CoordinatesState {
   return {
+    detecting: false,
     coordinates: { latitude: record.latitude, longitude: record.longitude },
     timezone: record.timezone,
     source: record.source,
@@ -52,9 +58,10 @@ function recordToState(record: ActiveLocationRecord): CoordinatesState {
 //      override) changes it.
 //   2. Otherwise, a live device GPS fix, when the browser's Geolocation
 //      API grants one.
-//   3. Otherwise, the Kuwait City fallback (unchanged from before this
-//      step; a valid previously-confirmed location always wins over it, and
-//      a failed GPS request never overwrites that saved location) — paired with Kuwait's own fixed zone, NOT the device's
+//   3. Otherwise — only once detection has actually FAILED (denied,
+//      unavailable, timed out) — the Kuwait City fallback, held in memory
+//      and never persisted (a previously-confirmed location always wins
+//      over it), paired with Kuwait's own fixed zone, NOT the device's
 //      reported timezone: without a real fix the device could physically
 //      be anywhere (this exact mismatch showed up in earlier testing — a
 //      dev container reporting UTC while calculating for Kuwait produced
@@ -63,26 +70,32 @@ function recordToState(record: ActiveLocationRecord): CoordinatesState {
 // IP geolocation is deliberately NOT implemented here (reserved as a
 // later, lower-priority tertiary fallback only, per the approved plan).
 //
-// Initial state comes from resolveActiveLocationRecord() (manual, else
-// the last CONFIRMED location of any source, else Kuwait) — a better
-// first guess than always flashing back to Kuwait on every app restart
-// for a returning device-GPS user, while still never itself triggering a
-// geolocation request (only the effect below does that). Whatever
-// actually becomes active here (a device fix or the Kuwait fallback —
-// NOT a manual pick, which is already persisted by whoever set it) is
-// also recorded via saveLastActiveLocation, so a later step can compare
+// Initial state comes from resolveKnownLocationRecord() (manual, else the
+// last CONFIRMED device fix) — a returning user starts from his own known
+// location. A brand-new user has none: the state is `detecting` (never
+// Kuwait presented as his location) until the request below answers.
+// A device fix that becomes active (NOT a manual pick, which is already
+// persisted by whoever set it, and never the Kuwait fallback) is also
+// recorded via saveLastActiveLocation, so a later step can compare
 // "the last location we confirmed" against a freshly-read device
 // timezone to detect a genuine relocation, without needing to duplicate
 // any of this hook's own resolution logic.
 export function useCoordinates(): CoordinatesState {
-  const [state, setState] = useState<CoordinatesState>(() => recordToState(resolveActiveLocationRecord()));
+  const [state, setState] = useState<CoordinatesState>(() => {
+    const known = resolveKnownLocationRecord();
+    return known ? recordToState(known) : { ...recordToState(KUWAIT_FALLBACK_LOCATION), detecting: true };
+  });
 
   useEffect(() => {
     // A manual selection is sticky — skip requesting geolocation
     // entirely rather than fetching a fix that would never be used.
     if (loadLocationSettings().manualLocation) return;
+    // Detection failed or isn't possible: keep a previously confirmed
+    // location if there is one, else (and only then) use the Kuwait
+    // fallback — in memory, never saved as this user's location.
+    const applyFallback = () => setState((current) => (current.detecting ? recordToState(KUWAIT_FALLBACK_LOCATION) : current));
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      saveFallbackLocationIfNoneSaved();
+      applyFallback();
       return;
     }
 
@@ -101,15 +114,14 @@ export function useCoordinates(): CoordinatesState {
         setState(recordToState(record));
       },
       () => {
-        // Denied, unavailable, or timed out — keep whatever is already
-        // active (the initial state: the last confirmed location, else the
-        // Kuwait fallback — see resolveActiveLocationRecord). Kuwait is
-        // only RECORDED when nothing valid is saved yet; it must never
-        // replace a real previously-confirmed location, or one transient
-        // GPS failure would change every later launch's prayer times.
-        if (!cancelled) saveFallbackLocationIfNoneSaved();
+        // Denied, unavailable, or timed out — keep a previously confirmed
+        // location; only a user with none falls back to Kuwait. Nothing is
+        // persisted: the next launch tries to detect again, and one
+        // transient failure never changes a later launch's location.
+        if (!cancelled) applyFallback();
       },
-      { maximumAge: 30 * 60 * 1000, timeout: 10_000 },
+      // The same fix timeout as Settings' "تحديد موقعي تلقائيًا" (deviceLocation.ts).
+      { maximumAge: 30 * 60 * 1000, timeout: 20_000 },
     );
 
     return () => {

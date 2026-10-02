@@ -290,3 +290,32 @@ describe("PrayerTimesPanel — Step 9: sanity", () => {
     expect(KUWAIT_CITY_COORDINATES.longitude).toBeCloseTo(47.9774, 3);
   });
 });
+
+describe("PrayerTimesPanel — a brand-new user is never shown Kuwait while his location is being detected", () => {
+  const original = navigator.geolocation;
+  afterEach(() => Object.defineProperty(navigator, "geolocation", { value: original, configurable: true }));
+
+  it("while the first detection is pending: 'detecting…', no Kuwait, no times", async () => {
+    resetLocationSettingsForTesting();
+    Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition: () => {} } }); // the permission prompt is still open
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain("جارٍ تحديد موقعك");
+    expect(container.textContent).not.toContain("الكويت");
+    expect(container.textContent).toContain("--:--");
+    await unmount();
+  });
+
+  it("once detection fails, Kuwait is used — and labelled as the default location, not as detected", async () => {
+    resetLocationSettingsForTesting();
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: { getCurrentPosition: (_s: PositionCallback, error: PositionErrorCallback) => error({ code: 1, message: "denied" } as GeolocationPositionError) },
+    });
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain("الكويت");
+    expect(container.textContent).toContain("الموقع الافتراضي");
+    expect(container.textContent).not.toContain("--:--");
+    await unmount();
+  });
+});
+
