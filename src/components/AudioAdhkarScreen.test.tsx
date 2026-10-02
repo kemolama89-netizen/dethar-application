@@ -18,7 +18,7 @@ import { getUserRepeatCount, setUserRepeatCount } from "../lib/audioUserRepeat";
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 const noop = () => {};
-const nav = { onNavigateHome: noop, onNavigateToTasbeeh: noop, onNavigateToWritten: noop, onNavigateToSettings: noop };
+const nav = { onNavigateHome: noop, onNavigateToTasbeeh: noop, onNavigateToWritten: noop, onNavigateToSettings: noop, onNavigateToAudio: noop };
 
 let container: HTMLDivElement;
 let root: ReturnType<typeof createRoot>;
@@ -219,15 +219,16 @@ describe("Evening audio player", () => {
   it("offers Listen on exactly the recorded Evening dhikr", () => {
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
     const withPlayer = writtenAdhkarItems.evening.filter((i) => playerButton(i.id)).map((i) => i.id);
-    expect(withPlayer).toEqual(["morning_003", "morning_005", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_016", "morning_017", "morning_018", "morning_023", "evening_001"]);
-    const unrecorded = writtenAdhkarItems.evening.find((i) => !withPlayer.includes(i.id))!;
-    expect(card(unrecorded.id).textContent).toContain("لا يتوفر تسجيل صوتي بعد");
+    expect(withPlayer).toEqual(["morning_001", "morning_002", "morning_002b", "morning_002c", "morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_014", "morning_015", "morning_016", "morning_017", "morning_018", "morning_023", "evening_001"]);
+    // Every Evening dhikr now has audio: none shows the "no recording yet" note.
+    expect(withPlayer).toHaveLength(writtenAdhkarItems.evening.length);
+    expect(container.textContent).not.toContain("لا يتوفر تسجيل صوتي بعد");
   });
 
   it("offers Listen on exactly the recorded Morning dhikr", () => {
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
     const withPlayer = writtenAdhkarItems.morning.filter((i) => playerButton(i.id)).map((i) => i.id);
-    expect(withPlayer).toEqual(["morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_015", "morning_016", "morning_017", "morning_018", "morning_020", "morning_023"]);
+    expect(withPlayer).toEqual(["morning_001", "morning_002", "morning_002b", "morning_002c", "morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_014", "morning_015", "morning_016", "morning_017", "morning_018", "morning_020", "morning_023"]);
   });
 
   it("morning_023: Listen is disabled until the user picks a count; the pick sets the total", () => {

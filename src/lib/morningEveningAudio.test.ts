@@ -186,12 +186,16 @@ describe("resolution", () => {
     expect(resolveMorningEveningAudio("evening", ayatAlKursi, fakeReciter("reciter-a"))).toEqual(a);
   });
 
-  it("reports Quranic items as unavailable while no reciter audio is configured", () => {
-    expect(resolveMorningEveningAudio("morning", ayatAlKursi, getDefaultQuranReciter())).toEqual({
-      status: "unavailable",
+  it("resolves Quranic items to the reciter's bundled ayah files — the same in Morning and Evening", () => {
+    const m = resolveMorningEveningAudio("morning", ayatAlKursi, getDefaultQuranReciter());
+    const e = resolveMorningEveningAudio("evening", find("evening", "morning_001"), getDefaultQuranReciter());
+    expect(m).toEqual({
+      status: "ready",
       kind: "quran",
-      reason: "audio-source-not-configured",
+      key: "quran:abdulbasit-murattal:2:255",
+      urls: ["/audio/quran/abdulbasit-murattal/basmala.mp3", "/audio/quran/abdulbasit-murattal/002255.mp3"],
     });
+    expect(e).toEqual(m);
   });
 
   it("resolves Morning and Evening to the same shared file, independent of the reciter", () => {
@@ -209,7 +213,8 @@ describe("resolution", () => {
   });
 
   it("reports items without a generated file as unavailable, and unknown items as unknown", () => {
-    expect(resolveMorningEveningAudio("morning", find("morning", "morning_014"), getDefaultQuranReciter())).toEqual({
+    // Every Morning/Evening dhikr has a recording now — an audioId missing from the manifest is "not generated".
+    expect(resolveMorningEveningAudio("evening", find("evening", "morning_006"), getDefaultQuranReciter(), { generated: [] })).toEqual({
       status: "unavailable",
       kind: "generated",
       reason: "asset-not-generated",
@@ -247,7 +252,9 @@ describe("playback through the shared engine", () => {
   });
 
   it("plays nothing while the item's audio is unavailable", () => {
-    expect(playMorningEveningAudio("morning", find("morning", "morning_014"), getDefaultQuranReciter()).status).toBe("unavailable");
+    // A Quranic item whose reciter has no audio source is unavailable.
+    const silent = { ...getDefaultQuranReciter(), audio: { kind: "unconfigured" as const } };
+    expect(playMorningEveningAudio("evening", find("evening", "morning_001"), silent).status).toBe("unavailable");
     expect(fake.played).toEqual([]);
     expect(getActiveAudio()).toBeNull();
   });
