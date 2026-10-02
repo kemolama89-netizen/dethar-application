@@ -34,7 +34,15 @@ export type CalculationMethodId =
 
 const METHOD_FACTORIES: Readonly<Record<CalculationMethodId, () => CalculationParameters>> = {
   MuslimWorldLeague: CalculationMethod.MuslimWorldLeague, // Fajr 18°, Isha 17°
-  Egyptian: CalculationMethod.Egyptian, // Egyptian General Authority of Survey — Fajr 19.5°, Isha 17.5°
+  // Egyptian General Authority of Survey — Fajr 19.5°, Isha 17.5°. Dhuhr is
+  // true midday: adhan's own Egyptian preset adds a +1 min Dhuhr
+  // adjustment that the Egyptian Survey / Dar al-Ifta timetables don't use
+  // (verified against Dar al-Ifta's Cairo table — see calculationMethods.test.ts).
+  Egyptian: () => {
+    const params = CalculationMethod.Egyptian();
+    params.methodAdjustments = { ...params.methodAdjustments, dhuhr: 0 };
+    return params;
+  },
   Karachi: CalculationMethod.Karachi, // University of Islamic Sciences, Karachi — Fajr 18°, Isha 18°
   UmmAlQura: CalculationMethod.UmmAlQura, // Umm al-Qura University, Makkah — Fajr 18.5°, Isha 90 min after Maghrib
   Dubai: CalculationMethod.Dubai, // Fajr/Isha 18.2°, + method-specific minute adjustments

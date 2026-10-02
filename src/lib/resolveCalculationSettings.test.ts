@@ -232,13 +232,16 @@ describe("resolveCalculationSettings — timezone as a second country signal (me
     expect(resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }).madhab).toBe(Madhab.Shafi);
   });
 
-  it("no minute offsets or rounding change: Luxor + Africa/Cairo equals adhan's own Egyptian method exactly", () => {
+  it("no minute offsets or rounding change: Luxor + Africa/Cairo equals adhan's own Egyptian method (Dhuhr as true midday)", () => {
     const date = new Date(2026, 9, 2);
     const reference = CalculationMethod.Egyptian();
+    reference.methodAdjustments = { ...reference.methodAdjustments, dhuhr: 0 }; // the Egyptian Survey definition (calculationMethods.ts)
     reference.madhab = Madhab.Shafi;
     const ours = calculatePrayerTimes(date, LUXOR, resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }));
     const theirs = calculatePrayerTimes(date, LUXOR, reference);
     for (const k of Object.keys(theirs) as (keyof typeof theirs)[]) expect(formatPrayerTime(ours[k], "Africa/Cairo"), k).toBe(formatPrayerTime(theirs[k], "Africa/Cairo"));
-    expect(reference.adjustments).toEqual(resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }).adjustments); // no added adjustments
+    const params = resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" });
+    expect(params.adjustments).toEqual(reference.adjustments); // no added adjustments
+    expect(params.methodAdjustments).toEqual(reference.methodAdjustments);
   });
 });
