@@ -19,6 +19,7 @@ interface MiscCategoryScreenProps {
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToAudio: () => void;
   /**
    * Set ONLY when arriving here from the global Written Adhkar search (see
    * WrittenAdhkarSearchScreen / App.tsx) — the specific dua to scroll
@@ -42,6 +43,7 @@ export function MiscCategoryScreen({
   onNavigateHome,
   onNavigateToTasbeeh,
   onNavigateToSettings,
+  onNavigateToAudio,
   targetItemId,
 }: MiscCategoryScreenProps) {
   const { language, dir } = useLanguage();
@@ -140,6 +142,7 @@ export function MiscCategoryScreen({
             // category grid, not just one step up.
             if (key === "written") onNavigateToWrittenRoot();
             if (key === "settings") onNavigateToSettings();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>

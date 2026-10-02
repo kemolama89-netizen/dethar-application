@@ -40,6 +40,7 @@ interface SettingsScreenProps {
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
   onNavigateToWritten: () => void;
+  onNavigateToAudio: () => void;
 }
 
 type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "notifications" | "location" | "calculation" | "quran-reciter" | "audio-adhkar";
@@ -834,7 +835,7 @@ function NotificationsView({ onBack }: { onBack: () => void }) {
 // per spec. BottomNav's own "settings" nav item is what lands here; this
 // screen keeps that item active and lets the other four keys navigate away
 // exactly like every other screen already does.
-export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToWritten }: SettingsScreenProps) {
+export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToWritten, onNavigateToAudio }: SettingsScreenProps) {
   const { language, dir } = useLanguage();
   const nav = navLabels[language];
   const t = settingsLabels[language];
@@ -1063,6 +1064,7 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
             if (key === "home") onNavigateHome();
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onNavigateToWritten();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>

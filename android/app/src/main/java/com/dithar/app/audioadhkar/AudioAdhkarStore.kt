@@ -68,6 +68,11 @@ class AudioAdhkarStore(context: Context) {
         get() = parsePlaylist(prefs.getString(KEY_PLAYLIST, null))
         set(value) = prefs.edit().putString(KEY_PLAYLIST, serializePlaylist(value)).apply()
 
+    /** Position of the Quran reciter rotation (see AudioAdhkarRotation): the next Quranic recitation's reciter. */
+    var quranRotationIndex: Int
+        get() = prefs.getInt(KEY_QURAN_ROTATION, 0)
+        set(value) = prefs.edit().putInt(KEY_QURAN_ROTATION, value).apply()
+
     companion object {
         private const val PREFS_NAME = "dithar_audio_adhkar"
         private const val KEY_ENABLED = "evening_enabled"
@@ -77,6 +82,7 @@ class AudioAdhkarStore(context: Context) {
         private const val KEY_PLAYLIST = "evening_playlist"
         private const val KEY_LAST_WARNED = "evening_last_warned_occurrence"
         private const val KEY_EVENTS = "evening_events"
+        private const val KEY_QURAN_ROTATION = "quran_rotation_index"
         private const val MAX_EVENTS = 20
 
         fun serializePlaylist(items: List<PlaylistItem>): String {
@@ -87,7 +93,8 @@ class AudioAdhkarStore(context: Context) {
                         .put("dhikrId", item.dhikrId)
                         .put("title", item.title)
                         .put("text", item.text)
-                        .put("assetPath", item.assetPath)
+                        .also { putRecitation(it, item.recitation) }
+                        .put("rotation", JSONArray(item.rotation.map { putRecitation(JSONObject(), it) }))
                         .put("repetitions", item.repetitions),
                 )
             }
@@ -98,19 +105,47 @@ class AudioAdhkarStore(context: Context) {
             if (raw.isNullOrEmpty()) return emptyList()
             return try {
                 val array = JSONArray(raw)
-                (0 until array.length()).map { i ->
-                    val obj = array.getJSONObject(i)
-                    PlaylistItem(
-                        dhikrId = obj.getString("dhikrId"),
-                        title = obj.getString("title"),
-                        text = obj.getString("text"),
-                        assetPath = obj.getString("assetPath"),
-                        repetitions = obj.getInt("repetitions").coerceAtLeast(1),
-                    )
-                }
+                (0 until array.length()).map { i -> parseItem(array.getJSONObject(i)) }
             } catch (_: Exception) {
                 emptyList()
             }
         }
+
+        /**
+         * One playlist item as sent by JS (AudioAdhkarPlugin) or stored here.
+         * A playlist saved before multi-file items had a single "assetPath".
+         */
+        fun parseItem(obj: JSONObject): PlaylistItem {
+            val rotation = obj.optJSONArray("rotation")?.let { array ->
+                (0 until array.length()).map { parseRecitation(array.getJSONObject(it)) }
+            }
+                // A playlist saved before per-repetition files: plain file lists.
+                ?: obj.optJSONArray("rotationAssetPaths")?.let { array ->
+                    (0 until array.length()).map { Recitation(strings(array.getJSONArray(it))) }
+                }
+                ?: emptyList()
+            return PlaylistItem(
+                dhikrId = obj.getString("dhikrId"),
+                title = obj.getString("title"),
+                text = obj.getString("text"),
+                recitation = parseRecitation(obj),
+                repetitions = obj.getInt("repetitions").coerceAtLeast(1),
+                rotation = rotation,
+            )
+        }
+
+        private fun parseRecitation(obj: JSONObject): Recitation {
+            val paths = obj.optJSONArray("assetPaths")?.let(::strings) ?: listOf(obj.getString("assetPath"))
+            require(paths.isNotEmpty()) { "playlist item without audio" }
+            val repeat = obj.optJSONArray("repeatAssetPaths")?.let(::strings)?.takeIf { it.isNotEmpty() } ?: paths
+            return Recitation(paths, repeat, obj.optLong("repeatStartMillis", 0L).coerceAtLeast(0L))
+        }
+
+        private fun putRecitation(obj: JSONObject, recitation: Recitation): JSONObject = obj
+            .put("assetPaths", JSONArray(recitation.assetPaths))
+            .put("repeatAssetPaths", JSONArray(recitation.repeatAssetPaths))
+            .put("repeatStartMillis", recitation.repeatStartMillis)
+
+        private fun strings(array: JSONArray): List<String> = (0 until array.length()).map { array.getString(it) }
     }
 }

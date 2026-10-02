@@ -64,7 +64,7 @@ async function mountTasbeehScreen() {
       <LanguageProvider>
         <ThemeProvider>
           <PaletteProvider>
-            <TasbeehScreen onNavigateHome={() => {}} onNavigateToWritten={() => {}} onNavigateToSettings={() => {}} />
+            <TasbeehScreen onNavigateHome={() => {}} onNavigateToWritten={() => {}} onNavigateToSettings={() => {}} onNavigateToAudio={() => {}} />
           </PaletteProvider>
         </ThemeProvider>
       </LanguageProvider>,

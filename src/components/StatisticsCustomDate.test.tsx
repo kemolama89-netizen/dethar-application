@@ -43,7 +43,7 @@ async function mountStatistics() {
         <ThemeProvider>
           <PaletteProvider>
             <QuranReciterProvider>
-              <SettingsScreen onNavigateHome={() => {}} onNavigateToTasbeeh={() => {}} onNavigateToWritten={() => {}} />
+              <SettingsScreen onNavigateHome={() => {}} onNavigateToTasbeeh={() => {}} onNavigateToWritten={() => {}} onNavigateToAudio={() => {}} />
             </QuranReciterProvider>
           </PaletteProvider>
         </ThemeProvider>

@@ -42,9 +42,11 @@ export interface AudioAdhkarNavProps {
   onNavigateToTasbeeh: () => void;
   onNavigateToWritten: () => void;
   onNavigateToSettings: () => void;
+  /** The Audio Adhkar main screen (from a sub-screen; a no-op on it). */
+  onNavigateToAudio: () => void;
 }
 
-function AudioBottomNav({ onNavigateHome, onNavigateToTasbeeh, onNavigateToWritten, onNavigateToSettings }: AudioAdhkarNavProps) {
+function AudioBottomNav({ onNavigateHome, onNavigateToTasbeeh, onNavigateToWritten, onNavigateToSettings, onNavigateToAudio }: AudioAdhkarNavProps) {
   return (
     <BottomNav
       className="mt-3"
@@ -54,6 +56,7 @@ function AudioBottomNav({ onNavigateHome, onNavigateToTasbeeh, onNavigateToWritt
         if (key === "tasbih") onNavigateToTasbeeh();
         if (key === "written") onNavigateToWritten();
         if (key === "settings") onNavigateToSettings();
+        if (key === "audio") onNavigateToAudio();
       }}
     />
   );

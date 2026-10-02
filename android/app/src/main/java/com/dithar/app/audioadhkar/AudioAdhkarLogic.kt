@@ -66,14 +66,68 @@ object AudioAdhkarSchedule {
         occurrence > 0 && occurrence == scheduledOccurrence && occurrence > lastWarnedOccurrence && !sessionActive && nowMillis < occurrence
 }
 
+/** What one dhikr plays, as paths inside the APK's assets. Always bundled: no network. */
+data class Recitation(
+    /**
+     * The files the FIRST repetition plays, back to back — e.g.
+     * ["public/audio/adhkar/evening/morning_003.mp3"], or a Quranic
+     * recitation: the reciter's own basmala (when it opens a surah), then
+     * its ayah files in order.
+     */
+    val assetPaths: List<String>,
+    /** The files later repetitions play — no basmala a second time. */
+    val repeatAssetPaths: List<String> = assetPaths,
+    /** Later repetitions start this far into their first file (past a basmala inside it). */
+    val repeatStartMillis: Long = 0L,
+)
+
 data class PlaylistItem(
     val dhikrId: String,
     val title: String,
     val text: String,
-    /** Path inside the APK's assets, e.g. "public/audio/adhkar/evening/morning_003.mp3". */
-    val assetPath: String,
+    val recitation: Recitation,
     val repetitions: Int,
-)
+    /**
+     * Quranic dhikr in Automatic Rotation mode: each rotation reciter's
+     * [Recitation] (his own basmala and ayahs), in rotation order
+     * ([AudioAdhkarRotation] picks one per session). Empty otherwise.
+     */
+    val rotation: List<Recitation> = emptyList(),
+) {
+    /** The files repetition [repetition] (1-based) plays. */
+    fun filesFor(repetition: Int): List<String> = if (repetition > 1) recitation.repeatAssetPaths else recitation.assetPaths
+
+    /** Where in its first file repetition [repetition] starts. */
+    fun startMillisFor(repetition: Int): Long = if (repetition > 1) recitation.repeatStartMillis else 0L
+}
+
+/**
+ * Automatic reciter rotation for the Quranic dhikr of a scheduled session —
+ * the native twin of quranReciterSelection.ts: each Quranic recitation
+ * takes the next reciter in turn, wrapping around, from a persisted
+ * position ([AudioAdhkarStore.quranRotationIndex]). Applied once when the
+ * session starts, so a recitation keeps one reciter for all of its ayahs
+ * and repetitions.
+ */
+object AudioAdhkarRotation {
+    /** The playlist this session plays, and the rotation position to persist for the next one. */
+    data class Applied(val items: List<PlaylistItem>, val nextIndex: Int)
+
+    fun apply(items: List<PlaylistItem>, startIndex: Int): Applied {
+        var index = startIndex.coerceAtLeast(0)
+        val resolved = items.map { item ->
+            val choices = item.rotation.filter { it.assetPaths.isNotEmpty() }
+            if (choices.isEmpty()) {
+                item
+            } else {
+                val slot = index % choices.size
+                index = (slot + 1) % choices.size
+                item.copy(recitation = choices[slot])
+            }
+        }
+        return Applied(resolved, index)
+    }
+}
 
 /**
  * Where a playback session is: which dhikr, which repetition. Each single
@@ -175,6 +229,6 @@ class SilenceGap(private val lengthMillis: Long = SILENCE_MILLIS) {
     }
 
     companion object {
-        const val SILENCE_MILLIS = 3_000L
+        const val SILENCE_MILLIS = 1_500L
     }
 }

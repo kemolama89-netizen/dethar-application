@@ -47,7 +47,7 @@ class AudioAdhkarLogicTest {
         assertFalse(AudioAdhkarSchedule.shouldFire(occ, occ, 0L, sessionActive = true))
     }
 
-    private fun item(id: String, reps: Int) = PlaylistItem(id, id, "", "public/audio/adhkar/evening/$id.mp3", reps)
+    private fun item(id: String, reps: Int) = PlaylistItem(id, id, "", Recitation(listOf("public/audio/adhkar/evening/$id.mp3")), reps)
 
     @Test
     fun cursorStartsAtFirstDhikrRepetitionOne() {
@@ -139,22 +139,73 @@ class AudioAdhkarLogicTest {
     }
 
     @Test
-    fun theSilenceIsThreeSeconds() {
-        assertEquals(3_000L, SilenceGap.SILENCE_MILLIS)
+    fun theSilenceIsOneAndAHalfSeconds() {
+        assertEquals(1_500L, SilenceGap.SILENCE_MILLIS)
         val gap = SilenceGap()
-        assertEquals(3_000L, gap.start(now = 10_000L))
+        assertEquals(1_500L, gap.start(now = 10_000L))
         assertTrue(gap.active)
         gap.clear()
         assertFalse(gap.active)
+    }
+
+    /**
+     * A whole scheduled session, driven exactly as AudioAdhkarPlaybackService
+     * drives it: each playback completes once (a Quranic recitation's ayah
+     * files are ONE playback), NEXT_REPETITION and NEXT_DHIKR are followed by
+     * the SilenceGap (the service's `NEXT_REPETITION, NEXT_DHIKR ->
+     * startSilence()`), FINISHED ends the session with no silence.
+     */
+    private fun sessionTimeline(items: List<PlaylistItem>): List<String> {
+        val cursor = PlaybackCursor(items)
+        val gap = SilenceGap()
+        val timeline = mutableListOf<String>()
+        var now = 0L
+        while (true) {
+            cursor.advance()
+            val item = cursor.current ?: break
+            val files = item.filesFor(cursor.repetition)
+            timeline += "play ${item.dhikrId}#${cursor.repetition} (${files.size} file${if (files.size > 1) "s, back to back" else ""})"
+            when (cursor.complete(cursor.beginPlayback())) {
+                PlaybackCursor.Step.NEXT_REPETITION, PlaybackCursor.Step.NEXT_DHIKR -> {
+                    val silence = gap.start(now)
+                    timeline += "silence $silence ms"
+                    now += silence
+                    gap.clear()
+                }
+                PlaybackCursor.Step.FINISHED -> break
+                PlaybackCursor.Step.IGNORED -> error("a playback completed twice")
+            }
+        }
+        return timeline
+    }
+
+    @Test
+    fun scheduledQueueSeparatesRepetitionsAndDifferentAdhkarBy1500msAndNothingAfterTheLast() {
+        val ikhlas = PlaylistItem("morning_002", "", "", Recitation(ikhlas("husary-murattal")), 2)
+        val timeline = sessionTimeline(listOf(item("morning_003", 2), ikhlas, item("evening_001", 1)))
+        assertEquals(
+            listOf(
+                "play morning_003#1 (1 file)",
+                "silence 1500 ms", // repeat 1 → repeat 2
+                "play morning_003#2 (1 file)",
+                "silence 1500 ms", // Dhikr A → Dhikr B
+                "play morning_002#1 (4 files, back to back)", // ayahs 112:1-4: no silence between them
+                "silence 1500 ms",
+                "play morning_002#2 (4 files, back to back)",
+                "silence 1500 ms",
+                "play evening_001#1 (1 file)", // final item: nothing after it
+            ),
+            timeline,
+        )
     }
 
     @Test
     fun pausingDuringTheSilenceFreezesItsRemainingTime() {
         val gap = SilenceGap()
         gap.start(now = 10_000L)
-        gap.pause(now = 11_200L) // 1.2 s of silence elapsed
-        assertEquals(1_800L, gap.remainingMillis)
-        assertEquals(1_800L, gap.resume(now = 60_000L)) // a long pause doesn't eat into it
+        gap.pause(now = 10_600L) // 0.6 s of silence elapsed
+        assertEquals(900L, gap.remainingMillis)
+        assertEquals(900L, gap.resume(now = 60_000L)) // a long pause doesn't eat into it
         assertNull(gap.resume(now = 60_001L)) // already running
     }
 
@@ -165,9 +216,61 @@ class AudioAdhkarLogicTest {
 
     @Test
     fun playlistRoundTripsThroughStorage() {
-        val items = listOf(PlaylistItem("morning_003", "أمسينا وأمسى الملك لله", "نص", "public/audio/adhkar/evening/morning_003.mp3", 1))
+        val items = listOf(
+            PlaylistItem("morning_003", "أمسينا وأمسى الملك لله", "نص", Recitation(listOf("public/audio/adhkar/evening/morning_003.mp3")), 1),
+            PlaylistItem("morning_002", "سورة الإخلاص", "نص", withBasmala("husary-murattal"), 3, rotation = RECITERS.map(::withBasmala)),
+            PlaylistItem("morning_002b", "سورة الفلق", "نص", Recitation(ikhlas("banna-murattal"), ikhlas("banna-murattal"), 5_020L), 3),
+        )
         assertEquals(items, AudioAdhkarStore.parsePlaylist(AudioAdhkarStore.serializePlaylist(items)))
         assertEquals(emptyList<PlaylistItem>(), AudioAdhkarStore.parsePlaylist("not json"))
+    }
+
+    @Test
+    fun aPlaylistSavedBeforeMultiFileItemsStillLoads() {
+        val old = """[{"dhikrId":"morning_003","title":"t","text":"x","assetPath":"public/audio/adhkar/evening/morning_003.mp3","repetitions":1}]"""
+        assertEquals(
+            listOf(PlaylistItem("morning_003", "t", "x", Recitation(listOf("public/audio/adhkar/evening/morning_003.mp3")), 1)),
+            AudioAdhkarStore.parsePlaylist(old),
+        )
+    }
+
+    // ---- Quran reciter rotation ---------------------------------------------
+
+    private val RECITERS = listOf("abdulbasit-murattal", "minshawi-murattal", "husary-murattal", "alafasy-murattal", "sudais-murattal")
+    private fun ikhlas(reciter: String) = (1..4).map { "public/audio/quran/$reciter/11200$it.mp3" }
+    private fun kursi(reciter: String) = listOf("public/audio/quran/$reciter/002255.mp3")
+    private fun basmala(reciter: String) = "public/audio/quran/$reciter/basmala.mp3"
+    /** A recitation as JS sends it: the reciter's own basmala, then the ayahs — the same files every repetition. */
+    private fun withBasmala(reciter: String) = Recitation(listOf(basmala(reciter)) + ikhlas(reciter))
+
+    private fun rotating(id: String, files: (String) -> List<String>) =
+        PlaylistItem(id, id, "", Recitation(files(RECITERS[0])), 1, rotation = RECITERS.map { Recitation(files(it)) })
+
+    @Test
+    fun rotationGivesEachQuranicRecitationTheNextReciterAndPersistsThePosition() {
+        val playlist = listOf(rotating("morning_001", ::kursi), item("morning_003", 1), rotating("morning_002", ::ikhlas))
+        val first = AudioAdhkarRotation.apply(playlist, startIndex = 3)
+        assertEquals(kursi("alafasy-murattal"), first.items[0].recitation.assetPaths)
+        assertEquals(playlist[1], first.items[1]) // non-Quran items are untouched
+        assertEquals(ikhlas("sudais-murattal"), first.items[2].recitation.assetPaths)
+        assertEquals(0, first.nextIndex) // wraps around
+        val next = AudioAdhkarRotation.apply(playlist, first.nextIndex)
+        assertEquals(kursi("abdulbasit-murattal"), next.items[0].recitation.assetPaths)
+        assertEquals(ikhlas("minshawi-murattal"), next.items[2].recitation.assetPaths)
+    }
+
+    @Test
+    fun rotationKeepsAllAyahsOfOneRecitationWithOneReciter() {
+        val applied = AudioAdhkarRotation.apply(listOf(rotating("morning_002", ::ikhlas)), startIndex = 2)
+        assertEquals(ikhlas("husary-murattal"), applied.items.single().recitation.assetPaths)
+    }
+
+    @Test
+    fun withoutRotationThePlaylistAndPositionAreUnchanged() {
+        val playlist = listOf(PlaylistItem("morning_002", "t", "", Recitation(ikhlas("husary-murattal")), 3), item("morning_003", 1))
+        val applied = AudioAdhkarRotation.apply(playlist, startIndex = 4)
+        assertEquals(playlist, applied.items)
+        assertEquals(4, applied.nextIndex)
     }
 
     // ---- one-minute pre-playback warning ----------------------------------
@@ -243,5 +346,67 @@ class AudioAdhkarLogicTest {
         // Showing the warning records only lastWarnedOccurrence; playback's own guard is independent.
         val occ = at(25, 22, 30)
         assertTrue(AudioAdhkarSchedule.shouldFire(occ, occ, lastFiredOccurrence = 0L, sessionActive = false))
+    }
+
+    // ---- basmala: once, at the start, in the reciter's own voice --------------
+
+    @Test
+    fun theBasmalaPlaysBeforeEveryRepetitionNeverBetweenAyahs() {
+        val item = PlaylistItem("morning_002", "", "", withBasmala("husary-murattal"), 3)
+        for (repetition in 1..3) {
+            assertEquals(listOf(basmala("husary-murattal")) + ikhlas("husary-murattal"), item.filesFor(repetition))
+            assertEquals(0L, item.startMillisFor(repetition))
+        }
+        assertEquals(
+            listOf(
+                "play morning_002#1 (5 files, back to back)", // his basmala → 112:1 → … → 112:4
+                "silence 1500 ms",
+                "play morning_002#2 (5 files, back to back)", // his basmala again
+                "silence 1500 ms",
+                "play morning_002#3 (5 files, back to back)",
+            ),
+            sessionTimeline(listOf(item)),
+        )
+    }
+
+    @Test
+    fun ayatAlKursiStartsWithTheReciterBasmala() {
+        val item = PlaylistItem("morning_001", "", "", Recitation(listOf(basmala("banna-murattal")) + kursi("banna-murattal")), 1)
+        assertEquals(listOf(basmala("banna-murattal"), "public/audio/quran/banna-murattal/002255.mp3"), item.filesFor(1))
+    }
+
+    @Test
+    fun aBasmalaInsideTheFirstAyahFilePlaysEveryRepetitionWithNothingAdded() {
+        val item = PlaylistItem("morning_002", "", "", Recitation(ikhlas("banna-murattal")), 3)
+        for (repetition in 1..3) {
+            assertEquals(ikhlas("banna-murattal"), item.filesFor(repetition)) // his own basmala, from the file
+            assertEquals(0L, item.startMillisFor(repetition)) // from its start, every time
+        }
+    }
+
+    @Test
+    fun laterRepetitionFilesAndOffsetAreHonouredWhenGiven() {
+        val item = PlaylistItem("x", "", "", Recitation(listOf("a", "b"), listOf("b"), 1_000L), 2)
+        assertEquals(listOf("a", "b"), item.filesFor(1))
+        assertEquals(listOf("b"), item.filesFor(2))
+        assertEquals(1_000L, item.startMillisFor(2))
+    }
+
+    @Test
+    fun rotationGivesEachRecitationItsOwnReciterBasmala() {
+        val playlist = listOf(PlaylistItem("morning_002", "", "", withBasmala(RECITERS[0]), 1, rotation = RECITERS.map(::withBasmala)))
+        for ((i, reciter) in RECITERS.withIndex()) {
+            val files = AudioAdhkarRotation.apply(playlist, startIndex = i).items.single().filesFor(1)
+            assertEquals(basmala(reciter), files.first())
+            assertTrue(files.all { "/$reciter/" in it }) // never another reciter's voice
+        }
+    }
+
+    @Test
+    fun aPlaylistSavedWithPlainRotationListsStillLoads() {
+        val old = """[{"dhikrId":"morning_002","title":"t","text":"x","assetPaths":["a1","a2"],"rotationAssetPaths":[["a1","a2"],["b1","b2"]],"repetitions":3}]"""
+        val item = AudioAdhkarStore.parsePlaylist(old).single()
+        assertEquals(Recitation(listOf("a1", "a2")), item.recitation)
+        assertEquals(listOf(Recitation(listOf("a1", "a2")), Recitation(listOf("b1", "b2"))), item.rotation)
     }
 }

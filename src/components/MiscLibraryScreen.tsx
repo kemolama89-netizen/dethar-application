@@ -46,6 +46,7 @@ interface MiscLibraryScreenProps {
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToAudio: () => void;
 }
 
 // `className` is the one prop every icon here actually shares — the four
@@ -184,6 +185,7 @@ export function MiscLibraryScreen({
   onNavigateHome,
   onNavigateToTasbeeh,
   onNavigateToSettings,
+  onNavigateToAudio,
 }: MiscLibraryScreenProps) {
   const { language, dir } = useLanguage();
   const t = miscLibraryLabels[language];
@@ -354,6 +356,7 @@ export function MiscLibraryScreen({
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onBack();
             if (key === "settings") onNavigateToSettings();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>

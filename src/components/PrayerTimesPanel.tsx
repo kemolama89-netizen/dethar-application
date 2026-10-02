@@ -8,6 +8,7 @@ import { addOneLocalDay, calculatePrayerTimes, formatPrayerTime } from "../lib/p
 import { resolveCalculationSettings } from "../lib/resolveCalculationSettings";
 import { loadCalculationOverrides } from "../lib/calculationSettings";
 import { getCountryName } from "../data/cities";
+import { settingsLabels } from "../data/settings";
 import { useNextPrayerCountdown } from "../lib/useNextPrayerCountdown";
 import { usePrayerReminder } from "../lib/usePrayerReminder";
 
@@ -82,7 +83,7 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
   const { language, dir } = useLanguage();
   const t = labels[language];
   const names = prayerNames[language];
-  const { coordinates, timezone, countryCode, cityNameAr, cityNameEn } = useCoordinates();
+  const { coordinates, timezone, countryCode, cityNameAr, cityNameEn, source, detecting } = useCoordinates();
   // The visible "current location" label — sourced from the SAME active
   // location record the calculation below reads (useCoordinates), never
   // a static placeholder string. "City, Country" when both are known
@@ -92,14 +93,21 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
   // offer); raw coordinates only for the rare device fix too far from
   // every bundled city (reverseGeocode.ts's MAX_MATCH_DISTANCE_KM) to
   // resolve even a country. Never hardcodes "Kuwait".
+  //
+  // While this user's location is still being detected for the first time
+  // nothing is shown for it (never the Kuwait placeholder); the Kuwait
+  // fallback, once detection has failed, is labelled as the default
+  // location — never presented as detected.
   const locationLabel = useMemo(() => {
+    if (detecting) return settingsLabels[language].locationDetecting;
     const cityName = language === "ar" ? cityNameAr : cityNameEn;
     const countryName = countryCode ? getCountryName(countryCode, language) : undefined;
-    if (cityName && countryName && countryName !== cityName) return `${cityName}, ${countryName}`;
-    if (cityName) return cityName;
-    if (countryName) return countryName;
-    return `${coordinates.latitude.toFixed(2)}, ${coordinates.longitude.toFixed(2)}`;
-  }, [language, cityNameAr, cityNameEn, countryCode, coordinates]);
+    const place =
+      cityName && countryName && countryName !== cityName
+        ? `${cityName}, ${countryName}`
+        : (cityName ?? countryName ?? `${coordinates.latitude.toFixed(2)}, ${coordinates.longitude.toFixed(2)}`);
+    return source === "fallback" ? `${place} · ${settingsLabels[language].locationSourceFallback}` : place;
+  }, [language, cityNameAr, cityNameEn, countryCode, coordinates, source, detecting]);
   // Step 6: the user's explicit method/madhab overrides (Settings >
   // Calculation Method), read once per mount — same "full remount on
   // screen switch" convention useLocationChangeDetector.ts's own doc
@@ -119,8 +127,8 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
   // Kuwait (a manually-selected city, or a country-resolved device fix)
   // or an explicit override now changes which method is used.
   const times = useMemo(
-    () => calculatePrayerTimes(date, coordinates, resolveCalculationSettings({ coordinates, country: countryCode }, overrides)),
-    [date, coordinates, countryCode, overrides],
+    () => calculatePrayerTimes(date, coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides)),
+    [date, coordinates, countryCode, timezone, overrides],
   );
   // Only Fajr is ever needed from tomorrow (the after-Isha wraparound
   // case — see nextPrayer.ts), but calculatePrayerTimes computing the
@@ -128,13 +136,14 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
   // one call site simple rather than adding a Fajr-only variant.
   const tomorrowFajr = useMemo(
     () =>
-      calculatePrayerTimes(addOneLocalDay(date), coordinates, resolveCalculationSettings({ coordinates, country: countryCode }, overrides))
+      calculatePrayerTimes(addOneLocalDay(date), coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides))
         .fajr,
-    [date, coordinates, countryCode, overrides],
+    [date, coordinates, countryCode, timezone, overrides],
   );
 
   const nextPrayer = useNextPrayerCountdown(times, tomorrowFajr);
-  const reminder = usePrayerReminder(times, timezone, language);
+  // Nothing is scheduled for the placeholder while the location is still being detected.
+  const reminder = usePrayerReminder(times, timezone, language, detecting);
 
   const countdownText = t.nextPrayerCountdown
     .replace("{h}", pad2(nextPrayer.remaining.hours))
@@ -187,7 +196,7 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
                 className="w-full truncate text-center font-bold"
                 style={{ direction: "ltr", fontSize: "clamp(8.5px, 2.1vw, 10.5px)" }}
               >
-                {formatPrayerTime(times[key], timezone)}
+                {detecting ? "--:--" : formatPrayerTime(times[key], timezone)}
               </span>
             </div>
           );
@@ -215,14 +224,16 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
           </p>
         )}
 
-        <div className="flex items-center justify-between gap-2">
-          <span className="min-w-0 truncate">
-            {t.nextPrayerHeading}: {names[nextPrayer.key]}
-          </span>
-          <span className="shrink-0" style={{ direction: "ltr" }}>
-            {countdownText}
-          </span>
-        </div>
+        {!detecting && (
+          <div className="flex items-center justify-between gap-2">
+            <span className="min-w-0 truncate">
+              {t.nextPrayerHeading}: {names[nextPrayer.key]}
+            </span>
+            <span className="shrink-0" style={{ direction: "ltr" }}>
+              {countdownText}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

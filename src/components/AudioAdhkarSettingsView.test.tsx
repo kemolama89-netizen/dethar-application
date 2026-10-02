@@ -64,10 +64,10 @@ describe("Settings → إعدادات الأذكار الصوتية → أذكا
     expect(loadEveningAudioSettings()).toEqual({ eveningAudioEnabled: false, eveningAudioStartTime: "22:12" });
   });
 
-  it("shows the recorded Evening playlist and the Android-only note on the web", async () => {
+  it("shows the Evening playlist (Quranic and recorded dhikr) and the Android-only note on the web", async () => {
     await click(button("أذكار المساء"));
     const ids = [...container.querySelectorAll("[data-playlist-id]")].map((el) => el.getAttribute("data-playlist-id"));
-    expect(ids).toEqual(["morning_003", "morning_005", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_016", "morning_017", "morning_018", "evening_001"]);
+    expect(ids).toEqual(["morning_001", "morning_002", "morning_002b", "morning_002c", "morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_014", "morning_015", "morning_016", "morning_017", "morning_018", "evening_001"]);
     expect(container.textContent).toContain("متاحان في تطبيق أندرويد فقط");
   });
 });

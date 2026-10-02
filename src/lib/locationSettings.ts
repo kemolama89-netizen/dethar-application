@@ -125,7 +125,12 @@ export function loadLocationSettings(): LocationSettingsData {
     const obj = parsed as Partial<LocationSettingsData>;
     return {
       manualLocation: isActiveLocationRecord(obj.manualLocation) ? obj.manualLocation : null,
-      lastActiveLocation: isActiveLocationRecord(obj.lastActiveLocation) ? obj.lastActiveLocation : null,
+      // Only a real device fix counts as an automatically CONFIRMED
+      // location. A stored "fallback" (Kuwait) record — written by older
+      // versions whenever detection failed — is ignored: it was never
+      // detected, so it must never stand in for this user's location or
+      // serve as the change detector's baseline.
+      lastActiveLocation: isActiveLocationRecord(obj.lastActiveLocation) && obj.lastActiveLocation.source === "device" ? obj.lastActiveLocation : null,
       lastPromptedTimezone: typeof obj.lastPromptedTimezone === "string" ? obj.lastPromptedTimezone : null,
       lastPromptedCoordinates: isCoordinates(obj.lastPromptedCoordinates) ? obj.lastPromptedCoordinates : null,
     };
@@ -201,25 +206,12 @@ export const KUWAIT_FALLBACK_LOCATION: ActiveLocationRecord = {
   cityNameEn: "Kuwait",
 };
 
-// Records the Kuwait fallback as the last-active location ONLY when the
-// app has nothing better persisted — i.e. neither a manual selection nor
-// any previously confirmed (valid) location exists. A failed/denied/
-// timed-out geolocation request, or a runtime with no geolocation at all,
-// must never overwrite a real earlier location with Kuwait: a single
-// indoor GPS timeout would otherwise make every later launch calculate
-// prayer times for Kuwait. See useCoordinates.ts.
-export function saveFallbackLocationIfNoneSaved(): void {
-  const { manualLocation, lastActiveLocation } = loadLocationSettings();
-  if (manualLocation || lastActiveLocation) return;
-  saveLastActiveLocation(KUWAIT_FALLBACK_LOCATION);
-}
-
 // Synchronous, side-effect-free resolution of "what location record is
 // currently active", from PERSISTED state alone: manual override, else
-// the last AUTOMATICALLY confirmed location (a previous device GPS fix,
-// or the Kuwait fallback — never a manual pick, see saveManualLocation's
-// own doc comment — a better initial guess than jumping straight back to
-// Kuwait on every app restart), else the Kuwait fallback outright.
+// the last AUTOMATICALLY confirmed location (a previous device GPS fix —
+// never a manual pick, see saveManualLocation's own doc comment), else
+// the Kuwait fallback (source "fallback": the default, never presented as
+// detected). The Kuwait fallback itself is never persisted.
 //
 // Deliberately does NOT trigger a live geolocation request — see
 // useCoordinates.ts for the one hook that does that, and is the only
@@ -228,8 +220,13 @@ export function saveFallbackLocationIfNoneSaved(): void {
 // Settings > Location's live display) that must never themselves prompt
 // for GPS permission just by rendering.
 export function resolveActiveLocationRecord(): ActiveLocationRecord {
+  return resolveKnownLocationRecord() ?? KUWAIT_FALLBACK_LOCATION;
+}
+
+/** The manual pick, else the last confirmed device fix — or null when neither exists yet (nothing known about this user's location). */
+export function resolveKnownLocationRecord(): ActiveLocationRecord | null {
   const { manualLocation, lastActiveLocation } = loadLocationSettings();
-  return manualLocation ?? lastActiveLocation ?? KUWAIT_FALLBACK_LOCATION;
+  return manualLocation ?? lastActiveLocation;
 }
 
 // TEST/DEV-ONLY: wipes this module's ENTIRE persisted state (manual

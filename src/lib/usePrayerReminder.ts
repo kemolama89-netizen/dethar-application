@@ -56,14 +56,15 @@ function buildEntries(times: PrayerTimesResult, timezone: string, language: Lang
 // `toggle()` action below, never from this effect — so a re-render (or a
 // times/language change) never re-prompts for a permission the user
 // already answered.
-export function usePrayerReminder(times: PrayerTimesResult, timezone: string, language: Language): UsePrayerReminderResult {
+/** `paused`: schedule nothing for now (e.g. while the location is still being detected). */
+export function usePrayerReminder(times: PrayerTimesResult, timezone: string, language: Language, paused = false): UsePrayerReminderResult {
   const [enabled, setEnabled] = useState(() => loadPrayerReminderSettings().enabled);
   const [available] = useState(() => isNotificationsAvailable());
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || paused) return;
     void scheduleReminders("prayer", buildEntries(times, timezone, language));
-  }, [enabled, times, timezone, language]);
+  }, [enabled, paused, times, timezone, language]);
 
   // Called once per explicit tap — never automatically, never in a loop.
   // The ON branch only requests permission and flips `enabled`; the

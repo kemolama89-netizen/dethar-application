@@ -8,7 +8,7 @@
 // Capacitor.isNativePlatform() genuinely returns false, so
 // isFloatingTasbeehAvailable() is false and the view falls back to the
 // "coming soon" card exactly as an iOS or plain-web user would see it.
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, vi } from "vitest";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { SettingsScreen } from "./SettingsScreen";
@@ -24,7 +24,7 @@ import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 const t = settingsLabels.ar; // LanguageProvider's own initial language
 
-async function mountSettingsScreen() {
+async function mountSettingsScreen(onNavigateToAudio: () => void = () => {}) {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
@@ -34,7 +34,12 @@ async function mountSettingsScreen() {
         <ThemeProvider>
           <PaletteProvider>
             <QuranReciterProvider>
-              <SettingsScreen onNavigateHome={() => {}} onNavigateToTasbeeh={() => {}} onNavigateToWritten={() => {}} />
+              <SettingsScreen
+                onNavigateHome={() => {}}
+                onNavigateToTasbeeh={() => {}}
+                onNavigateToWritten={() => {}}
+                onNavigateToAudio={onNavigateToAudio}
+              />
             </QuranReciterProvider>
           </PaletteProvider>
         </ThemeProvider>
@@ -66,6 +71,17 @@ async function click(el: HTMLElement) {
 
 beforeEach(() => {
   localStorage.clear();
+});
+
+describe("SettingsScreen — bottom navigation", () => {
+  it("the Audio Adhkar tab opens Audio Adhkar directly", async () => {
+    const onNavigateToAudio = vi.fn();
+    const { container, unmount } = await mountSettingsScreen(onNavigateToAudio);
+    const tab = Array.from(container.querySelectorAll("nav button")).find((b) => b.textContent?.includes("الأذكار المسموعة"))!;
+    await act(async () => (tab as HTMLButtonElement).click());
+    expect(onNavigateToAudio).toHaveBeenCalledTimes(1);
+    await unmount();
+  });
 });
 
 describe("SettingsScreen — Floating Tasbeeh entry", () => {

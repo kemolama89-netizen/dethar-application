@@ -98,6 +98,10 @@ export const settingsLabels = {
     quranReciterPageTitle: "القارئ",
     quranReciterSectionTitle: "اختر القارئ لتلاوة الآيات القرآنية",
     quranReciterAudioPendingNote: "ستُتاح التلاوة الصوتية في تحديث قادم. سيُحفظ اختيارك ويُستخدم تلقائيًا عند توفرها.",
+    quranReciterModeSectionTitle: "طريقة اختيار القارئ",
+    quranReciterModeSpecific: "قارئ محدد",
+    quranReciterModeRotation: "التناوب التلقائي",
+    quranReciterRotationNote: "تتناوب التلاوات بين القرّاء بالترتيب التالي، قارئٌ لكل تلاوة، وتُكمل كل تلاوة بصوت قارئها نفسه.",
   },
   en: {
     screenTitle: "Settings",
@@ -190,6 +194,10 @@ export const settingsLabels = {
     quranReciterPageTitle: "Quran Reciter",
     quranReciterSectionTitle: "Choose the reciter for Quranic verses",
     quranReciterAudioPendingNote: "Quran audio will be available in an upcoming update. Your choice is saved and will be used automatically.",
+    quranReciterModeSectionTitle: "Reciter mode",
+    quranReciterModeSpecific: "Specific reciter",
+    quranReciterModeRotation: "Automatic rotation",
+    quranReciterRotationNote: "Recitations rotate through the reciters in this order — one reciter per recitation, which finishes in that same voice.",
   },
 };
 

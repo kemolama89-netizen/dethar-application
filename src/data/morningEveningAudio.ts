@@ -26,17 +26,29 @@
 export type MorningEveningCategory = "morning" | "evening";
 
 export const GENERATED_MORNING_EVENING_AUDIO_IDS: readonly string[] = [
+  "morning/morning_003", // أصبحنا وأصبح الملك لله
   "evening/morning_003", // أمسينا وأمسى الملك لله
-  "shared/morning_005", // اللهم أنت ربي لا إله إلا أنت (سيد الاستغفار)
+  "morning/morning_004", // اللهم بك أصبحنا
+  "evening/morning_004", // اللهم بك أمسينا
+  "shared/morning_005",// اللهم أنت ربي لا إله إلا أنت (سيد الاستغفار)
+  "morning/morning_006", // اللهم إني أصبحت أشهدك
+  "evening/morning_006", // اللهم إني أمسيت أشهدك
+  "morning/morning_007", // اللهم ما أصبح بي من نعمة
+  "evening/morning_007", // اللهم ما أمسى بي من نعمة
   "shared/morning_008", // اللهم عافني في بدني
   "shared/morning_009", // حسبي الله لا إله إلا هو
   "shared/morning_010", // اللهم إني أسألك العفو والعافية
   "shared/morning_011", // اللهم عالم الغيب والشهادة
   "shared/morning_012", // بسم الله الذي لا يضر مع اسمه شيء
   "shared/morning_013", // رضيت بالله ربا
+  "shared/morning_014", // يا حي يا قيوم برحمتك أستغيث
+  "morning/morning_015", // أصبحنا وأصبح الملك لله رب العالمين
+  "evening/morning_015", // أمسينا وأمسى الملك لله رب العالمين
+  "morning/morning_016", // أصبحنا على فطرة الإسلام
   "evening/morning_016", // أمسينا على فطرة الإسلام
   "shared/morning_017", // سبحان الله وبحمده
   "shared/morning_018", // لا إله إلا الله وحده لا شريك له
+  "morning/morning_020", // سبحان الله وبحمده عدد خلقه
   "shared/morning_023", // اللهم صل على محمد (الصلاة الإبراهيمية)
   "evening/evening_001", // أعوذ بكلمات الله التامات
 ];

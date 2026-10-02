@@ -527,6 +527,7 @@ function AppRouter() {
     onNavigateToTasbeeh: () => setScreen("tasbeeh"),
     onNavigateToWritten: () => setScreen("written"),
     onNavigateToSettings: () => setScreen("settings"),
+    onNavigateToAudio: () => setScreen("audio"),
   };
 
   // The Floating Tasbeeh menu's "الإعدادات" row asks the app to open its
@@ -582,6 +583,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToWritten={() => setScreen("written")}
             onNavigateToSettings={() => setScreen("settings")}
+            onNavigateToAudio={() => setScreen("audio")}
           />
         </Suspense>
       </div>
@@ -595,6 +597,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
+            onNavigateToAudio={() => setScreen("audio")}
             onSelectCategory={(key) => {
               // "Miscellaneous Adhkar & Duas" is now the richer Dithar
               // Library (landing + category grid + search) built from
@@ -624,6 +627,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
+            onNavigateToAudio={() => setScreen("audio")}
             onBackToCategories={() => setScreen("written")}
             targetItemId={searchTargetItemId ?? undefined}
           />
@@ -640,6 +644,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
+            onNavigateToAudio={() => setScreen("audio")}
             onSelectResult={handleSelectSearchResult}
           />
         </Suspense>
@@ -655,6 +660,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
+            onNavigateToAudio={() => setScreen("audio")}
             onSelectCategory={(key) => {
               setSearchTargetItemId(null);
               setMiscCategory(key);
@@ -676,6 +682,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToSettings={() => setScreen("settings")}
+            onNavigateToAudio={() => setScreen("audio")}
             targetItemId={searchTargetItemId ?? undefined}
           />
         </Suspense>
@@ -738,6 +745,7 @@ function AppRouter() {
             onNavigateHome={() => setScreen("home")}
             onNavigateToTasbeeh={() => setScreen("tasbeeh")}
             onNavigateToWritten={() => setScreen("written")}
+            onNavigateToAudio={() => setScreen("audio")}
           />
         </Suspense>
       </div>

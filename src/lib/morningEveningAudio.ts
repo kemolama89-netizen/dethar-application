@@ -29,6 +29,7 @@ import { GENERATED_MORNING_EVENING_AUDIO_IDS, MORNING_EVENING_AUDIO_FILE_NAMES }
 import type { MorningEveningCategory } from "../data/morningEveningAudio";
 import type { QuranRef } from "./quranRef";
 import { playQuranRef, quranAudioKey, resolveQuranAudio } from "./quranAudio";
+import type { QuranRepeatPlayback } from "./quranAudio";
 import { playUrlQueue } from "./audioEngine";
 import type { PlayUrlQueueOptions } from "./audioEngine";
 
@@ -171,8 +172,8 @@ export function getMorningEveningAudioSource(
 // ---------------------------------------------------------------------
 
 export type MorningEveningAudioResolution =
-  | { status: "ready"; kind: "quran" | "generated"; key: string; urls: string[] }
-  | { status: "unavailable"; kind: "quran"; reason: "reciter-unavailable" | "audio-source-not-configured" }
+  | { status: "ready"; kind: "quran" | "generated"; key: string; urls: string[]; repeat?: QuranRepeatPlayback }
+  | { status: "unavailable"; kind: "quran"; reason: "reciter-unavailable" | "audio-source-not-configured" | "ayah-not-bundled" }
   | { status: "unavailable"; kind: "generated"; reason: "asset-not-generated" }
   | { status: "invalid-ref"; kind: "quran" }
   | { status: "unknown-item" };
@@ -187,7 +188,10 @@ export function resolveMorningEveningAudio(
   if (!source) return { status: "unknown-item" };
   if (source.kind === "quran") {
     const res = resolveQuranAudio(source.ref, reciter);
-    if (res.status === "ready") return { status: "ready", kind: "quran", key: quranAudioKey(res.reciterId, res.ref), urls: res.urls };
+    if (res.status === "ready") {
+      const ready = { status: "ready", kind: "quran", key: quranAudioKey(res.reciterId, res.ref), urls: res.urls } as const;
+      return res.repeat ? { ...ready, repeat: res.repeat } : ready;
+    }
     if (res.status === "unavailable") return { status: "unavailable", kind: "quran", reason: res.reason };
     return { status: "invalid-ref", kind: "quran" };
   }

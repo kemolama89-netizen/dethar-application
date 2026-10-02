@@ -22,12 +22,15 @@
 import { useSyncExternalStore } from "react";
 
 /**
- * The silence between two repetitions of the same dhikr — for EVERY
- * dhikr, Morning and Evening, in-app and scheduled. Never after the final
- * repetition. The Android player uses the same value
+ * The silence between two playbacks — between repetitions of the same
+ * dhikr, and (in a scheduled session, which plays one dhikr after another)
+ * between two different adhkar. For EVERY dhikr, Morning, Evening and
+ * Various, in-app and scheduled. Never after the final repetition of the
+ * final dhikr, and never between the ayah files of one Quranic recitation
+ * (those are one playback). The Android player uses the same value
  * (SilenceGap.SILENCE_MILLIS; a test keeps the two equal).
  */
-export const REPETITION_PAUSE_MS = 3_000;
+export const REPETITION_PAUSE_MS = 1_500;
 
 /**
  * How long to wait after the current repetition ends, before the next

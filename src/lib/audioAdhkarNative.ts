@@ -16,12 +16,32 @@ export interface NativeAudioAdhkarState {
   count: number;
 }
 
-export interface NativePlaylistItem {
+/** What one dhikr plays, as paths inside the APK assets. Always bundled files: no network. */
+export interface NativeRecitation {
+  /**
+   * The files the FIRST repetition plays, back to back — e.g.
+   * ["public/audio/adhkar/evening/morning_003.mp3"], or a Quranic
+   * recitation: the reciter's own basmala (when it opens a surah) then its
+   * ayah files ["public/audio/quran/husary-murattal/basmala.mp3", ".../112001.mp3", …].
+   */
+  assetPaths: string[];
+  /** The files later repetitions play (no basmala again); usually = assetPaths. */
+  repeatAssetPaths: string[];
+  /** Later repetitions start this far into their first file (past an in-file basmala); usually 0. */
+  repeatStartMillis: number;
+}
+
+export interface NativePlaylistItem extends NativeRecitation {
   dhikrId: string;
   title: string;
   text: string;
-  /** Path inside the APK assets, e.g. "public/audio/adhkar/evening/morning_003.mp3". */
-  assetPath: string;
+  /**
+   * Quranic dhikr in Automatic Rotation mode: every rotation reciter's
+   * recitation (his own basmala and ayahs), in rotation order. The service
+   * gives each Quranic recitation of a session the next one in turn
+   * (AudioAdhkarRotation). Empty otherwise — the fields above play.
+   */
+  rotation: NativeRecitation[];
   repetitions: number;
 }
 

@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 //
-// C6 — validation of stored locations and the "record Kuwait only when
-// nothing valid is saved" rule (see saveFallbackLocationIfNoneSaved).
+// C6 — validation of stored locations, and the Kuwait fallback is never a
+// stored (let alone "detected") location for anyone.
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   KUWAIT_FALLBACK_LOCATION,
   loadLocationSettings,
   resolveActiveLocationRecord,
-  saveFallbackLocationIfNoneSaved,
+  resolveKnownLocationRecord,
   saveLastActiveLocation,
   saveManualLocation,
 } from "./locationSettings";
@@ -19,30 +19,20 @@ beforeEach(() => {
   localStorage.clear();
 });
 
-describe("saveFallbackLocationIfNoneSaved", () => {
-  it("records Kuwait when nothing is saved", () => {
-    saveFallbackLocationIfNoneSaved();
-    expect(loadLocationSettings().lastActiveLocation).toEqual(KUWAIT_FALLBACK_LOCATION);
-  });
-
-  it("does not overwrite a saved device location", () => {
-    saveLastActiveLocation(PARIS);
-    saveFallbackLocationIfNoneSaved();
-    expect(loadLocationSettings().lastActiveLocation).toEqual(PARIS);
-    expect(resolveActiveLocationRecord()).toEqual(PARIS);
-  });
-
-  it("does not write anything when a manual location exists", () => {
-    saveManualLocation({ ...PARIS, source: "manual" });
-    saveFallbackLocationIfNoneSaved();
+describe("a stored Kuwait fallback is never treated as this user's location", () => {
+  it("a 'fallback' record persisted by an older version is ignored — it was never detected", () => {
+    localStorage.setItem(KEY, JSON.stringify({ manualLocation: null, lastActiveLocation: KUWAIT_FALLBACK_LOCATION, lastPromptedTimezone: null, lastPromptedCoordinates: null }));
     expect(loadLocationSettings().lastActiveLocation).toBeNull();
+    expect(resolveKnownLocationRecord()).toBeNull(); // nothing known → the app detects instead of assuming Kuwait
+    expect(resolveActiveLocationRecord()).toEqual(KUWAIT_FALLBACK_LOCATION); // only as the labelled default
+    expect(resolveActiveLocationRecord().source).toBe("fallback");
   });
 
-  it("does not touch an already-saved fallback record either (no needless rewrite)", () => {
-    saveLastActiveLocation(KUWAIT_FALLBACK_LOCATION);
-    const before = localStorage.getItem(KEY);
-    saveFallbackLocationIfNoneSaved();
-    expect(localStorage.getItem(KEY)).toBe(before);
+  it("a saved device fix and a manual pick are still known locations", () => {
+    saveLastActiveLocation(PARIS);
+    expect(resolveKnownLocationRecord()).toEqual(PARIS);
+    saveManualLocation({ ...PARIS, source: "manual" });
+    expect(resolveKnownLocationRecord()?.source).toBe("manual");
   });
 });
 
