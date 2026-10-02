@@ -227,7 +227,7 @@ describe("Evening audio player", () => {
   it("offers Listen on exactly the recorded Morning dhikr", () => {
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
     const withPlayer = writtenAdhkarItems.morning.filter((i) => playerButton(i.id)).map((i) => i.id);
-    expect(withPlayer).toEqual(["morning_005", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_017", "morning_018", "morning_023"]);
+    expect(withPlayer).toEqual(["morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_015", "morning_016", "morning_017", "morning_018", "morning_020", "morning_023"]);
   });
 
   it("morning_023: Listen is disabled until the user picks a count; the pick sets the total", () => {

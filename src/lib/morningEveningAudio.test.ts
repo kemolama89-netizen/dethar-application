@@ -209,7 +209,7 @@ describe("resolution", () => {
   });
 
   it("reports items without a generated file as unavailable, and unknown items as unknown", () => {
-    expect(resolveMorningEveningAudio("morning", find("morning", "morning_006"), getDefaultQuranReciter())).toEqual({
+    expect(resolveMorningEveningAudio("morning", find("morning", "morning_014"), getDefaultQuranReciter())).toEqual({
       status: "unavailable",
       kind: "generated",
       reason: "asset-not-generated",
@@ -247,7 +247,7 @@ describe("playback through the shared engine", () => {
   });
 
   it("plays nothing while the item's audio is unavailable", () => {
-    expect(playMorningEveningAudio("morning", find("morning", "morning_006"), getDefaultQuranReciter()).status).toBe("unavailable");
+    expect(playMorningEveningAudio("morning", find("morning", "morning_014"), getDefaultQuranReciter()).status).toBe("unavailable");
     expect(fake.played).toEqual([]);
     expect(getActiveAudio()).toBeNull();
   });

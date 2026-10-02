@@ -93,12 +93,13 @@ describe("Evening recordings map to the right dhikr", () => {
     for (const item of writtenAdhkarItems.evening.filter((i) => i.quranRef)) expect(getAudioAdhkarSource("evening", item)).toBeNull();
   });
 
-  it("enables Morning with only the shared recordings; أصبحنا wordings stay unrecorded", () => {
+  it("enables Morning: every non-Quranic Morning dhikr is playable except morning_014", () => {
     expect(AUDIO_ENABLED_COLLECTIONS).toEqual(["morning", "evening"]);
     const playable = writtenAdhkarItems.morning.filter((i) => getAudioAdhkarSource("morning", i)).map((i) => i.id);
-    expect(playable).toEqual(["morning_005", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_017", "morning_018", "morning_023"]);
-    expect(getAudioAdhkarSource("morning", morning("morning_003"))).toBeNull();
-    expect(getAudioAdhkarSource("morning", morning("morning_016"))).toBeNull();
+    expect(playable).toEqual([
+      "morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_015", "morning_016", "morning_017", "morning_018", "morning_020", "morning_023",
+    ]);
+    expect(getAudioAdhkarSource("morning", morning("morning_014"))).toBeNull();
   });
 
   it("does not enable Various", () => {
@@ -112,6 +113,54 @@ describe("Evening recordings map to the right dhikr", () => {
     expect(startAudioAdhkar("evening", unrecorded)).toBe(false);
     expect(getNowPlaying()).toBeNull();
     expect(fake.played).toEqual([]);
+  });
+});
+
+// The Morning-only recordings (أصبحنا wordings) — each upload verified by
+// transcription; their Evening counterparts are worded differently, so each
+// file serves Morning alone and the Evening item keeps its own file (or none).
+const MORNING_RECORDINGS = [
+  { upload: "اصبحنا واصبح الملك لله.mp3", id: "morning_003", opening: "رب أسألك خير ما في هذا اليوم", repeat: 1 },
+  { upload: "اللهم بك اصبحنا.mp3", id: "morning_004", opening: "اللهم بك أصبحنا، وبك أمسينا", repeat: 1 },
+  { upload: "اللهم اني اصبحت.mp3", id: "morning_006", opening: "اللهم إني أصبحت أشهدك", repeat: 4 },
+  { upload: "اللهم ما اصبح بي من نعمة.mp3", id: "morning_007", opening: "اللهم ما أصبح بي من نعمة", repeat: 1 },
+  { upload: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينْ.mp3", id: "morning_015", opening: "أصبحنا وأصبح الملك لله رب العالمين", repeat: 1 },
+  { upload: "أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامْ.mp3", id: "morning_016", opening: "أصبحنا على فطرة الإسلام", repeat: 1 },
+  { upload: "سُبْحَانَ اللَّهِ وَبِحَمْدِهْ، عَدَدَ خَلْقِهْ.mp3", id: "morning_020", opening: "عدد خلقه، ورضا نفسه", repeat: 3 },
+];
+
+describe("Morning recordings map to the right dhikr", () => {
+  for (const r of MORNING_RECORDINGS) {
+    it(`${r.upload} → morning ${r.id} (Morning only, ×${r.repeat})`, () => {
+      const item = morning(r.id);
+      expect(stripMarks(item.text_ar)).toContain(stripMarks(r.opening));
+      const url = `/audio/adhkar/morning/${r.id}.mp3`;
+      expect(getAudioAdhkarSource("morning", item)?.urls).toEqual([url]);
+      expect(bytes(`public${url}`)).toBeTruthy();
+      expect(bytes(`public${url}`)).toBe(bytes(`ASSETS/audio/adhkar/${r.upload}`));
+      expect(audioRepetitionTotal(item)).toBe(r.repeat);
+      const eveningItem = writtenAdhkarItems.evening.find((i) => i.id === r.id);
+      if (eveningItem) expect(getAudioAdhkarSource("evening", eveningItem)?.urls ?? []).not.toContain(url);
+    });
+  }
+
+  it("leaves the Evening morning_016 recording on its own file", () => {
+    expect(getAudioAdhkarSource("evening", evening("morning_016"))?.urls).toEqual(["/audio/adhkar/evening/morning_016.mp3"]);
+    expect(bytes("public/audio/adhkar/evening/morning_016.mp3")).toBe(bytes("ASSETS/audio/adhkar/evening_003.mp3"));
+  });
+
+  it("morning_006 plays 4 times with the 3 s pause between repetitions, then finishes", () => {
+    expect(startAudioAdhkar("morning", morning("morning_006"))).toBe(true);
+    fake.end();
+    vi.advanceTimersByTime(REPETITION_PAUSE_MS - 1);
+    expect(fake.played).toHaveLength(1);
+    vi.advanceTimersByTime(1);
+    expect(fake.played).toHaveLength(2);
+    endThenPause();
+    endThenPause();
+    expect(fake.played).toEqual(Array(4).fill("/audio/adhkar/morning/morning_006.mp3"));
+    fake.end();
+    expect(getNowPlaying()).toMatchObject({ itemId: "morning_006", repetition: 4, total: 4, status: "finished" });
   });
 });
 
