@@ -32,6 +32,7 @@ import type { CalculationMethodId } from "./calculationMethods";
 import { getCalculationParameters } from "./calculationMethods";
 import { getCalculationMethodForCountry } from "./countryCalculationMethod";
 import { getMadhabForCountry } from "./countryMadhab";
+import { countryForTimezone } from "../data/timezoneCountries";
 
 // adhan's own Madhab runtime values are the lowercase strings "shafi"/
 // "hanafi" (see node_modules/adhan/lib/esm/Madhab.js) — reused directly
@@ -47,6 +48,12 @@ export interface ActiveLocation {
    *  ONLY; the astronomical calculation itself always uses `coordinates`,
    *  never a country's capital or any other proxy for the real location. */
   country?: string;
+  /** The location's IANA timezone — for a device fix, the device's own.
+   *  A SECOND signal used ONLY to choose the calculation method when
+   *  `country` is unknown (e.g. a fix too far from every bundled city):
+   *  "Africa/Cairo" still means Egypt. Never changes the coordinates, the
+   *  displayed place, or the Asr (madhab) choice. */
+  timezone?: string;
 }
 
 export interface CalculationOverrides {
@@ -81,7 +88,9 @@ export function resolveCalculationSettings(
   location: ActiveLocation,
   overrides: CalculationOverrides = {},
 ): CalculationParameters {
-  const methodId = overrides.method ?? getCalculationMethodForCountry(location.country);
+  // An explicit user choice always wins; else the location's country, else
+  // the country its timezone identifies (method only — see ActiveLocation).
+  const methodId = overrides.method ?? getCalculationMethodForCountry(location.country ?? countryForTimezone(location.timezone));
   const params = getCalculationParameters(methodId);
 
   const madhabId = overrides.madhab ?? getMadhabForCountry(location.country);

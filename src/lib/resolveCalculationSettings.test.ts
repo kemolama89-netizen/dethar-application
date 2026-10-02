@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { CalculationMethod, Madhab } from "adhan";
 import { resolveCalculationSettings } from "./resolveCalculationSettings";
+import { estimateCountryFromCoordinates } from "./reverseGeocode";
 import { KUWAIT_CITY_COORDINATES, calculatePrayerTimes, formatPrayerTime } from "./prayerTimes";
 
 const KUWAIT_TZ = "Asia/Kuwait";
@@ -183,4 +184,61 @@ describe("resolveCalculationSettings — Step 8: high-latitude handling never pr
       }
     });
   }
+});
+
+describe("resolveCalculationSettings — timezone as a second country signal (method only)", () => {
+  const LUXOR = { latitude: 25.6872, longitude: 32.6396 }; // > 300 km from every bundled city: no nearest-city country
+  const method = (p: { method: string | null }) => p.method;
+
+  it("Egypt coordinates + Africa/Cairo → Egyptian (country known)", () => {
+    expect(method(resolveCalculationSettings({ coordinates: { latitude: 30.0444, longitude: 31.2357 }, country: "EG", timezone: "Africa/Cairo" }))).toBe("Egyptian");
+  });
+
+  it("Egypt coordinates OUTSIDE the bundled-city dataset + Africa/Cairo → Egyptian (was Muslim World League)", () => {
+    expect(estimateCountryFromCoordinates(LUXOR)).toBeUndefined(); // nearest-city detection can't tell
+    expect(method(resolveCalculationSettings({ coordinates: LUXOR }))).toBe("MuslimWorldLeague"); // without the timezone
+    expect(method(resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }))).toBe("Egyptian");
+    expect(method(resolveCalculationSettings({ coordinates: LUXOR, timezone: "Egypt" }))).toBe("Egyptian"); // legacy alias
+  });
+
+  it("Kuwait + Asia/Kuwait → Kuwait; Riyadh → Umm al-Qura; Dubai → Dubai", () => {
+    expect(method(resolveCalculationSettings({ coordinates: KUWAIT_CITY_COORDINATES, timezone: "Asia/Kuwait" }))).toBe("Kuwait");
+    expect(method(resolveCalculationSettings({ coordinates: KUWAIT_CITY_COORDINATES, country: "KW", timezone: "Asia/Kuwait" }))).toBe("Kuwait");
+    expect(method(resolveCalculationSettings({ coordinates: { latitude: 24.7, longitude: 46.7 }, timezone: "Asia/Riyadh" }))).toBe("UmmAlQura");
+    expect(method(resolveCalculationSettings({ coordinates: { latitude: 25.2, longitude: 55.3 }, timezone: "Asia/Dubai" }))).toBe("Dubai");
+  });
+
+  it("an explicit Settings override always wins over both country and timezone", () => {
+    expect(method(resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }, { method: "Kuwait" }))).toBe("Kuwait");
+    expect(method(resolveCalculationSettings({ coordinates: LUXOR, country: "EG", timezone: "Africa/Cairo" }, { method: "MuslimWorldLeague" }))).toBe("MuslimWorldLeague");
+  });
+
+  it("the location's own country (nearest-city detection, manual pick) wins over the timezone", () => {
+    // e.g. a traveller in Makkah whose phone is still on Cairo time
+    expect(method(resolveCalculationSettings({ coordinates: { latitude: 21.4225, longitude: 39.8262 }, country: "SA", timezone: "Africa/Cairo" }))).toBe("UmmAlQura");
+  });
+
+  it("a timezone that names no country changes nothing", () => {
+    for (const timezone of [undefined, "", "UTC", "Etc/GMT-3", "Not/AZone"]) {
+      expect(method(resolveCalculationSettings({ coordinates: LUXOR, timezone }))).toBe("MuslimWorldLeague");
+    }
+  });
+
+  it("never touches Asr: the madhab still follows only the location's own country", () => {
+    // Turkey's timezone picks Diyanet for the METHOD, but with no known country Asr stays Standard/Shafi'i.
+    const p = resolveCalculationSettings({ coordinates: { latitude: 39.9, longitude: 32.85 }, timezone: "Europe/Istanbul" });
+    expect(p.method).toBe("Turkey");
+    expect(p.madhab).toBe(Madhab.Shafi);
+    expect(resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }).madhab).toBe(Madhab.Shafi);
+  });
+
+  it("no minute offsets or rounding change: Luxor + Africa/Cairo equals adhan's own Egyptian method exactly", () => {
+    const date = new Date(2026, 9, 2);
+    const reference = CalculationMethod.Egyptian();
+    reference.madhab = Madhab.Shafi;
+    const ours = calculatePrayerTimes(date, LUXOR, resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }));
+    const theirs = calculatePrayerTimes(date, LUXOR, reference);
+    for (const k of Object.keys(theirs) as (keyof typeof theirs)[]) expect(formatPrayerTime(ours[k], "Africa/Cairo"), k).toBe(formatPrayerTime(theirs[k], "Africa/Cairo"));
+    expect(reference.adjustments).toEqual(resolveCalculationSettings({ coordinates: LUXOR, timezone: "Africa/Cairo" }).adjustments); // no added adjustments
+  });
 });

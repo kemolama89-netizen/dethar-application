@@ -20,7 +20,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { PrayerTimesPanel } from "./PrayerTimesPanel";
 import { LanguageProvider } from "../theme/LanguageContext";
-import { saveManualLocation, resetLocationSettingsForTesting } from "../lib/locationSettings";
+import { saveManualLocation, saveLastActiveLocation, resetLocationSettingsForTesting } from "../lib/locationSettings";
 import { resolveCalculationSettings } from "../lib/resolveCalculationSettings";
 import { calculatePrayerTimes, formatPrayerTime, KUWAIT_CITY_COORDINATES } from "../lib/prayerTimes";
 import { prayerOrder } from "../data/content";
@@ -319,3 +319,22 @@ describe("PrayerTimesPanel — a brand-new user is never shown Kuwait while his 
   });
 });
 
+
+describe("PrayerTimesPanel — the device timezone picks the method when the country is unknown", () => {
+  const original = navigator.geolocation;
+  afterEach(() => Object.defineProperty(navigator, "geolocation", { value: original, configurable: true }));
+
+  it("a device fix in Luxor (no bundled city nearby) on Africa/Cairo is calculated with the Egyptian method; the label is unchanged", async () => {
+    resetLocationSettingsForTesting();
+    const LUXOR = { latitude: 25.6872, longitude: 32.6396 };
+    saveLastActiveLocation({ source: "device", ...LUXOR, timezone: "Africa/Cairo" }); // no countryCode: nearest-city detection couldn't tell
+    Object.defineProperty(navigator, "geolocation", { configurable: true, value: undefined });
+    const { container, unmount } = await mount();
+    const egyptian = expectedFormattedTimes(LUXOR, "EG", "Africa/Cairo");
+    const mwl = expectedFormattedTimes(LUXOR, undefined, "Africa/Cairo");
+    expect(egyptian.fajr).not.toBe(mwl.fajr); // the method genuinely matters here
+    for (const key of prayerOrder) expect(container.textContent, key).toContain(egyptian[key]);
+    expect(container.textContent).toContain("25.69, 32.64"); // displayed place: still the coordinates, not "Egypt"
+    await unmount();
+  });
+});

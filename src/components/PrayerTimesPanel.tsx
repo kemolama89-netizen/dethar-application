@@ -127,8 +127,8 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
   // Kuwait (a manually-selected city, or a country-resolved device fix)
   // or an explicit override now changes which method is used.
   const times = useMemo(
-    () => calculatePrayerTimes(date, coordinates, resolveCalculationSettings({ coordinates, country: countryCode }, overrides)),
-    [date, coordinates, countryCode, overrides],
+    () => calculatePrayerTimes(date, coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides)),
+    [date, coordinates, countryCode, timezone, overrides],
   );
   // Only Fajr is ever needed from tomorrow (the after-Isha wraparound
   // case — see nextPrayer.ts), but calculatePrayerTimes computing the
@@ -136,9 +136,9 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
   // one call site simple rather than adding a Fajr-only variant.
   const tomorrowFajr = useMemo(
     () =>
-      calculatePrayerTimes(addOneLocalDay(date), coordinates, resolveCalculationSettings({ coordinates, country: countryCode }, overrides))
+      calculatePrayerTimes(addOneLocalDay(date), coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides))
         .fajr,
-    [date, coordinates, countryCode, overrides],
+    [date, coordinates, countryCode, timezone, overrides],
   );
 
   const nextPrayer = useNextPrayerCountdown(times, tomorrowFajr);
