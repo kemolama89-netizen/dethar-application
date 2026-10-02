@@ -38,6 +38,7 @@ export const GENERATED_MORNING_EVENING_AUDIO_IDS: readonly string[] = [
   "shared/morning_011", // اللهم عالم الغيب والشهادة
   "shared/morning_012", // بسم الله الذي لا يضر مع اسمه شيء
   "shared/morning_013", // رضيت بالله ربا
+  "shared/morning_014", // يا حي يا قيوم برحمتك أستغيث
   "morning/morning_015", // أصبحنا وأصبح الملك لله رب العالمين
   "morning/morning_016", // أصبحنا على فطرة الإسلام
   "evening/morning_016", // أمسينا على فطرة الإسلام
