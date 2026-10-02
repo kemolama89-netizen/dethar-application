@@ -53,10 +53,34 @@ describe("resolveQuranAudio", () => {
     ]);
   });
 
-  it("reports unconfigured reciters as unavailable (phase 1 registry)", () => {
+  it("reports an unconfigured reciter as unavailable", () => {
+    const res = resolveQuranAudio({ surah: 1, fromAyah: 1, toAyah: 7 }, { ...RECITER_A, audio: { kind: "unconfigured" } });
+    expect(res).toMatchObject({ status: "unavailable", reason: "audio-source-not-configured", reciterId: "test-a" });
+  });
+
+  it("resolves a bundled reciter to its local files — his own basmala, then one file per ayah in order — never a network URL", () => {
     const reciter = getDefaultQuranReciter();
-    const res = resolveQuranAudio({ surah: 1, fromAyah: 1, toAyah: 7 }, reciter);
-    expect(res).toMatchObject({ status: "unavailable", reason: "audio-source-not-configured", reciterId: reciter.id });
+    const ayahs = [1, 2, 3, 4, 5].map((a) => `/audio/quran/abdulbasit-murattal/11300${a}.mp3`);
+    expect(resolveQuranAudio({ surah: 113, fromAyah: 1, toAyah: 5 }, reciter)).toEqual({
+      status: "ready",
+      reciterId: "abdulbasit-murattal",
+      ref: { surah: 113, fromAyah: 1, toAyah: 5 },
+      urls: ["/audio/quran/abdulbasit-murattal/basmala.mp3", ...ayahs], // the same for every repetition
+    });
+    // Ayat al-Kursi starts with his basmala too.
+    expect(resolveQuranAudio({ surah: 2, fromAyah: 255, toAyah: 255 }, reciter)).toEqual({
+      status: "ready",
+      reciterId: "abdulbasit-murattal",
+      ref: { surah: 2, fromAyah: 255, toAyah: 255 },
+      urls: ["/audio/quran/abdulbasit-murattal/basmala.mp3", "/audio/quran/abdulbasit-murattal/002255.mp3"],
+    });
+  });
+
+  it("reports ayahs outside the bundle as unavailable instead of guessing a file", () => {
+    const reciter = getDefaultQuranReciter();
+    expect(resolveQuranAudio({ surah: 1, fromAyah: 1, toAyah: 7 }, reciter)).toMatchObject({ status: "unavailable", reason: "ayah-not-bundled" });
+    // A range only partly in the bundle is not played either.
+    expect(resolveQuranAudio({ surah: 2, fromAyah: 254, toAyah: 255 }, reciter)).toMatchObject({ status: "unavailable", reason: "ayah-not-bundled" });
   });
 
   it("reports a retired reciter as unavailable", () => {

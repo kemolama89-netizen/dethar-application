@@ -3,12 +3,17 @@
 // it, it keeps none of its own besides the in-flight playback token).
 //
 // Scope: Morning and Evening. A dhikr is playable when it is in an enabled
-// collection AND has a recorded (generated) file per the existing
-// Morning/Evening audio mapping (morningEveningAudio.ts). Quranic items
-// are never played here (the Quran reciter path comes later), and a dhikr
-// without its own recording is simply unavailable — never substituted.
+// collection AND has audio per the existing Morning/Evening audio mapping
+// (morningEveningAudio.ts): a non-Quran dhikr its recorded (generated)
+// file; a Quranic one (with a `quranRef`) the bundled per-ayah recitation
+// of the reciter picked by quranReciterSelection.ts — chosen once as the
+// dhikr starts and kept for all its ayahs and repetitions. A dhikr without
+// audio is simply unavailable — never substituted.
 //
-// Repetition: each repetition plays the dhikr's file once. The state
+// Repetition: each repetition plays the dhikr's audio once — for a
+// Quranic dhikr, all its ayah files as ONE continuous Web Audio stream
+// (webAudioSequence.ts: decoded up front, scheduled back to back — no
+// pause and no load wait between ayahs). The state
 // advances ONLY from the audio engine's `onEnded` for that exact playback,
 // and each playback's `onEnded` can count at most once (see `playOnce`).
 // Renders, navigation, loading/progress events and pause/resume never
@@ -22,9 +27,13 @@
 // while it is active the Play/Pause/Resume here control it, so only one
 // Evening session ever plays.
 import type { WrittenAdhkarItem } from "../data/written-adhkar";
-import { getDefaultQuranReciter } from "../data/quranReciters";
+import type { QuranReciter } from "../data/quranReciters";
+import { peekQuranReciterForPlayback, takeQuranReciterForPlayback } from "./quranReciterSelection";
 import { resolveMorningEveningAudio } from "./morningEveningAudio";
 import { pauseAudio, playSilence, playUrlQueue, resumeAudio, stopAudio } from "./audioEngine";
+import { playAudioSequence } from "./webAudioSequence";
+import type { QuranRepeatPlayback } from "./quranAudio";
+import type { AudioChannel } from "./audioEngine";
 import { audioAdhkarPlayback, getNowPlaying, pauseBeforeNextRepetition } from "./audioAdhkarPlayback";
 import { AudioAdhkarNative } from "./audioAdhkarNative";
 import type { NativeAudioAdhkarState } from "./audioAdhkarNative";
@@ -46,15 +55,30 @@ export const AUDIO_ENABLED_COLLECTIONS: readonly AudioAdhkarCollection[] = ["mor
 
 export interface AudioAdhkarSource {
   key: string;
+  /** The first repetition's files. */
   urls: string[];
+  /** Repetitions after the first, when they differ (a Quranic recitation's basmala plays only once). */
+  repeat?: QuranRepeatPlayback;
+  /** "quran" for a Quranic recitation (a reciter change stops it), else "adhkar". */
+  channel: AudioChannel;
 }
 
-/** The recording for this dhikr in this collection, or null when it has none (yet). */
-export function getAudioAdhkarSource(collection: AudioAdhkarCollection, item: WrittenAdhkarItem): AudioAdhkarSource | null {
+/**
+ * The audio for this dhikr in this collection, or null when it has none
+ * (yet). A Quranic dhikr resolves for `reciter` — by default the one its
+ * next recitation would use, without advancing a rotation.
+ */
+export function getAudioAdhkarSource(
+  collection: AudioAdhkarCollection,
+  item: WrittenAdhkarItem,
+  reciter: QuranReciter = peekQuranReciterForPlayback(),
+): AudioAdhkarSource | null {
   if (!AUDIO_ENABLED_COLLECTIONS.includes(collection) || collection === "misc") return null;
-  if (item.quranRef) return null;
-  const res = resolveMorningEveningAudio(collection, item, getDefaultQuranReciter());
-  return res.status === "ready" && res.kind === "generated" ? { key: res.key, urls: res.urls } : null;
+  const res = resolveMorningEveningAudio(collection, item, reciter);
+  if (res.status !== "ready") return null;
+  const source: AudioAdhkarSource = { key: res.key, urls: res.urls, channel: res.kind === "quran" ? "quran" : "adhkar" };
+  if (res.repeat) source.repeat = res.repeat;
+  return source;
 }
 
 interface Current {
@@ -70,7 +94,12 @@ function playOnce(source: AudioAdhkarSource) {
   const token = ++nextToken;
   current = { source, token };
   const isCurrent = () => current?.token === token;
-  playUrlQueue("adhkar", source.key, source.urls, {
+  const play = source.channel === "quran" ? playAudioSequence : playUrlQueue;
+  // The repetition about to play: the first plays `urls` (with a Quranic
+  // recitation's basmala); later ones play `repeat` (without it).
+  const later = (getNowPlaying()?.repetition ?? 1) > 1 && source.repeat;
+  play(source.channel, source.key, later ? source.repeat!.urls : source.urls, {
+    startAt: later ? source.repeat!.startAt : 0,
     onEnded: () => {
       if (!isCurrent()) return;
       // Consume this playback's token first: a duplicate/late "ended" for
@@ -105,7 +134,7 @@ function pauseThenPlay(source: AudioAdhkarSource, pauseMs: number) {
   const token = ++nextToken;
   current = { source, token };
   const isCurrent = () => current?.token === token;
-  playSilence("adhkar", source.key, pauseMs, {
+  playSilence(source.channel, source.key, pauseMs, {
     onEnded: () => {
       if (!isCurrent()) return;
       audioAdhkarPlayback.repetitionEnded();
@@ -129,8 +158,9 @@ export function applyNativePlaybackState(state: NativeAudioAdhkarState | null): 
   if (state?.active) {
     if (current) {
       // In-app playback yields to the scheduled session.
+      const { channel } = current.source;
       current = null;
-      stopAudio("adhkar");
+      stopAudio(channel);
     }
     nativeActive = true;
     audioAdhkarPlayback.mirror({
@@ -157,10 +187,13 @@ export function applyNativePlaybackState(state: NativeAudioAdhkarState | null): 
  * dhikr without a fixed one.
  */
 export function startAudioAdhkar(collection: AudioAdhkarCollection, item: WrittenAdhkarItem): boolean {
-  const source = getAudioAdhkarSource(collection, item);
-  if (!source) return false;
+  if (!getAudioAdhkarSource(collection, item)) return false;
   const total = audioRepetitionTotal(item);
   if (total === null) return false;
+  // Only now, as it really starts, does a Quranic dhikr take its reciter
+  // (advancing a rotation); that one source then serves every repetition.
+  const source = getAudioAdhkarSource(collection, item, item.quranRef ? takeQuranReciterForPlayback() : undefined);
+  if (!source) return false;
   if (nativeActive) {
     // Only one session: an in-app start ends the scheduled one.
     nativeActive = false;
@@ -200,8 +233,9 @@ export function resumeAudioAdhkar(): void {
 export function stopAudioAdhkar(): void {
   if (nativeActive) return;
   if (current) {
+    const { channel } = current.source;
     current = null;
-    stopAudio("adhkar");
+    stopAudio(channel);
   }
   audioAdhkarPlayback.stop();
 }

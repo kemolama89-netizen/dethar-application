@@ -8,11 +8,15 @@ import { OptionRow } from "./CalculationSettingsView";
 // single source of truth for the selected reciter; it persists the choice
 // itself). Same header and OptionRow pattern as CalculationSettingsView.
 // Affects Quran recitation only; non-Quran adhkar audio never reads it.
+// Mode: one specific reciter (pick below), or automatic rotation through
+// all of them (the list then shows the rotation order). The recitations'
+// source (EveryAyah.com) is recorded per reciter in quranReciters.ts, not
+// shown here.
 export function QuranReciterSettingsView({ onBack }: { onBack: () => void }) {
   const { language, dir } = useLanguage();
   const t = settingsLabels[language];
   const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
-  const { selectedReciterId, setSelectedReciterId, reciters } = useQuranReciter();
+  const { selectedReciterId, setSelectedReciterId, mode, setMode, reciters } = useQuranReciter();
   const hasConfiguredAudio = reciters.some((r) => r.audio.kind !== "unconfigured");
 
   return (
@@ -36,17 +40,40 @@ export function QuranReciterSettingsView({ onBack }: { onBack: () => void }) {
       <div className="mt-4 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-2">
         <div className="flex flex-col gap-1.5">
           <p className="px-1 text-[12.5px] font-semibold" style={{ color: "var(--color-text-muted)" }}>
-            {t.quranReciterSectionTitle}
+            {t.quranReciterModeSectionTitle}
           </p>
-          {reciters.map((reciter) => (
-            <OptionRow
-              key={reciter.id}
-              label={`${reciter.name[language]} — ${quranReciterStyleLabels[reciter.style][language]}`}
-              selected={reciter.id === selectedReciterId}
-              onSelect={() => setSelectedReciterId(reciter.id)}
-            />
-          ))}
+          <OptionRow label={t.quranReciterModeSpecific} selected={mode === "specific"} onSelect={() => setMode("specific")} />
+          <OptionRow label={t.quranReciterModeRotation} selected={mode === "rotation"} onSelect={() => setMode("rotation")} />
         </div>
+
+        {mode === "specific" ? (
+          <div className="flex flex-col gap-1.5">
+            <p className="px-1 text-[12.5px] font-semibold" style={{ color: "var(--color-text-muted)" }}>
+              {t.quranReciterSectionTitle}
+            </p>
+            {reciters.map((reciter) => (
+              <OptionRow
+                key={reciter.id}
+                label={`${reciter.name[language]} — ${quranReciterStyleLabels[reciter.style][language]}`}
+                selected={reciter.id === selectedReciterId}
+                onSelect={() => setSelectedReciterId(reciter.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5" data-rotation-order="">
+            <p className="px-1 text-[11.5px] leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+              {t.quranReciterRotationNote}
+            </p>
+            <ol className="flex flex-col gap-1 px-1 text-[13px]" style={{ color: "var(--color-text-primary)" }}>
+              {reciters.map((reciter, i) => (
+                <li key={reciter.id}>
+                  {i + 1}. {reciter.name[language]} — {quranReciterStyleLabels[reciter.style][language]}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         {!hasConfiguredAudio && (
           <p className="px-1 text-[11.5px] leading-relaxed" style={{ color: "var(--color-text-muted)" }}>

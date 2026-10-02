@@ -38,8 +38,15 @@ import org.json.JSONObject
  * completion counts once (PlaybackCursor tokens). Pause/resume keep the
  * same dhikr and repetition and continue from the paused position.
  *
+ * One playback = one repetition of a dhikr: its file, or for a Quranic
+ * recitation its ayah files back to back (no silence between ayahs): while
+ * one ayah plays the next is prepared and handed to it with
+ * MediaPlayer.setNextMediaPlayer, so Android starts it gaplessly. In
+ * Automatic Rotation mode each Quranic recitation's reciter is fixed once,
+ * as the session starts (AudioAdhkarRotation).
+ *
  * Every completed playback — including between repetitions of the same
- * dhikr, but not after the session's last one — is followed by 3 seconds
+ * dhikr, but not after the session's last one — is followed by 1.5 seconds
  * of silence (SilenceGap); the next repetition/dhikr only becomes current
  * when its playback starts. A native Handler times the gap, with a
  * partial wake lock so it also holds with the screen off.
@@ -50,6 +57,10 @@ import org.json.JSONObject
 class AudioAdhkarPlaybackService : Service() {
     private var cursor: PlaybackCursor? = null
     private var player: MediaPlayer? = null
+    /** The next file of the current playback, preparing or prepared. */
+    private var nextPlayer: MediaPlayer? = null
+    /** [nextPlayer] once it is chained to [player] (it starts by itself when [player] completes). */
+    private var chainedPlayer: MediaPlayer? = null
     private var prepared = false
     private var paused = false
     private val handler = Handler(Looper.getMainLooper())
@@ -110,7 +121,10 @@ class AudioAdhkarPlaybackService : Service() {
             startForegroundCompat(buildNotification())
             return
         }
-        val items = AudioAdhkarStore(this).eveningPlaylist
+        val store = AudioAdhkarStore(this)
+        val rotation = AudioAdhkarRotation.apply(store.eveningPlaylist, store.quranRotationIndex)
+        store.quranRotationIndex = rotation.nextIndex
+        val items = rotation.items
         val newCursor = PlaybackCursor(items)
         cursor = newCursor
         isSessionActive = true
@@ -131,34 +145,96 @@ class AudioAdhkarPlaybackService : Service() {
         // The pending next repetition/dhikr becomes current only now, as its audio starts.
         c.advance()
         val item = c.current ?: return finishSession()
+        // Repetition 1 plays a Quranic recitation's basmala; later ones don't (PlaylistItem.filesFor).
+        playPart(item.filesFor(c.repetition), c.beginPlayback(), 0, item.startMillisFor(c.repetition))
+    }
+
+    /**
+     * Plays file [part] of this repetition's [files] (from [startMillis] into
+     * it); the last file's completion completes the playback [token].
+     */
+    private fun playPart(files: List<String>, token: Int, part: Int, startMillis: Long = 0L) {
         releasePlayer()
-        val token = c.beginPlayback()
-        prepared = false
-        try {
-            val afd = assets.openFd(item.assetPath)
-            player = MediaPlayer().apply {
+        val mp = newPlayer(files, token, part) ?: return
+        player = mp
+        mp.setOnPreparedListener { p ->
+            val begin = {
+                prepared = true
+                if (!paused) p.start()
+                chainNext(files, token, part + 1)
+            }
+            if (startMillis > 0) {
+                p.setOnSeekCompleteListener { begin() }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) p.seekTo(startMillis, MediaPlayer.SEEK_CLOSEST) else p.seekTo(startMillis.toInt())
+            } else {
+                begin()
+            }
+        }
+        mp.prepareAsync()
+        publish(stateJson())
+    }
+
+    /** A player for file [part] of [files], with its completion and error handling — null (and the session stopped) if the file can't be opened. */
+    private fun newPlayer(files: List<String>, token: Int, part: Int): MediaPlayer? {
+        val assetPath = files[part]
+        return try {
+            val afd = assets.openFd(assetPath)
+            MediaPlayer().apply {
                 setAudioAttributes(audioAttributes)
                 setWakeMode(this@AudioAdhkarPlaybackService, PowerManager.PARTIAL_WAKE_LOCK)
                 setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
                 afd.close()
-                setOnPreparedListener { mp ->
-                    prepared = true
-                    if (!paused) mp.start()
-                }
-                setOnCompletionListener { onPlaybackCompleted(token) }
+                setOnCompletionListener { onPartCompleted(files, token, part) }
                 setOnErrorListener { _, what, extra ->
-                    Log.w(TAG, "playback error $what/$extra for ${item.assetPath}")
+                    Log.w(TAG, "playback error $what/$extra for $assetPath")
                     stopSession()
                     true
                 }
-                prepareAsync()
             }
         } catch (e: Exception) {
-            Log.w(TAG, "cannot play ${item.assetPath}", e)
+            Log.w(TAG, "cannot play $assetPath", e)
             stopSession()
+            null
+        }
+    }
+
+    /** Prepares file [part] while the current one plays, then chains it so Android starts it the instant the current one completes. */
+    private fun chainNext(files: List<String>, token: Int, part: Int) {
+        if (part >= files.size) return
+        val current = player ?: return
+        val next = newPlayer(files, token, part) ?: return
+        nextPlayer = next
+        next.setOnPreparedListener {
+            if (player !== current || nextPlayer !== next) return@setOnPreparedListener
+            try {
+                current.setNextMediaPlayer(next)
+                chainedPlayer = next
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, "cannot chain the next file; it will start on completion", e)
+            }
+        }
+        next.prepareAsync()
+    }
+
+    private fun onPartCompleted(files: List<String>, token: Int, part: Int) {
+        if (part + 1 >= files.size) {
+            onPlaybackCompleted(token)
             return
         }
-        publish(stateJson())
+        val next = chainedPlayer
+        if (next != null && next === nextPlayer) {
+            // Already started by Android, with no gap: it becomes the current player.
+            val finished = player
+            player = next
+            nextPlayer = null
+            chainedPlayer = null
+            prepared = true
+            finished?.let(::releaseQuietly)
+            chainNext(files, token, part + 2)
+        } else {
+            // The next file wasn't ready in time: start it now.
+            playPart(files, token, part + 1)
+        }
     }
 
     private fun onPlaybackCompleted(token: Int) {
@@ -265,9 +341,19 @@ class AudioAdhkarPlaybackService : Service() {
     }
 
     private fun releasePlayer() {
-        player?.run {
+        player?.let(::releaseQuietly)
+        nextPlayer?.let(::releaseQuietly)
+        player = null
+        nextPlayer = null
+        chainedPlayer = null
+        prepared = false
+    }
+
+    private fun releaseQuietly(mp: MediaPlayer) {
+        mp.run {
             setOnCompletionListener(null)
             setOnPreparedListener(null)
+            setOnSeekCompleteListener(null)
             setOnErrorListener(null)
             try {
                 reset()
@@ -275,8 +361,6 @@ class AudioAdhkarPlaybackService : Service() {
             }
             release()
         }
-        player = null
-        prepared = false
     }
 
     // ---- audio focus ------------------------------------------------------

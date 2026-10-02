@@ -2,15 +2,27 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState } fro
 import type { ReactNode } from "react";
 import { getAvailableQuranReciters, getDefaultQuranReciter, getQuranReciterById } from "../data/quranReciters";
 import type { QuranReciter } from "../data/quranReciters";
-import { isSelectableQuranReciterId, loadSelectedQuranReciterId, saveSelectedQuranReciterId } from "../lib/quranAudioPreferences";
+import {
+  isQuranReciterMode,
+  isSelectableQuranReciterId,
+  loadQuranReciterMode,
+  loadSelectedQuranReciterId,
+  saveQuranReciterMode,
+  saveSelectedQuranReciterId,
+} from "../lib/quranAudioPreferences";
+import type { QuranReciterMode } from "../lib/quranAudioPreferences";
 import { stopAudio } from "../lib/audioEngine";
+import { syncEveningAudioSchedule } from "../lib/eveningAudioSchedule";
 
 interface QuranReciterContextValue {
   selectedReciterId: string;
   selectedReciter: QuranReciter;
   /** Ignores ids that aren't a currently available reciter. */
   setSelectedReciterId: (id: string) => void;
-  /** The reciters the user can pick from. */
+  /** "specific" = always the selected reciter; "rotation" = the reciters in turn (quranReciterSelection.ts). */
+  mode: QuranReciterMode;
+  setMode: (mode: QuranReciterMode) => void;
+  /** The reciters the user can pick from (= the rotation, in order). */
   reciters: QuranReciter[];
 }
 
@@ -24,8 +36,10 @@ const QuranReciterContext = createContext<QuranReciterContextValue | null>(null)
 // change. Independent of language/theme/palette — changing one never
 // touches another.
 //
-// Changing the reciter stops any Quran recitation currently playing (it was
-// resolved for the previous reciter); other audio channels are untouched.
+// Changing the reciter or the mode stops any Quran recitation currently
+// playing (it was resolved for the previous choice); other audio channels
+// are untouched. Either change also re-syncs the scheduled Evening
+// playlist, whose Quranic items carry the reciter choice to Android.
 export function QuranReciterProvider({ children }: { children: ReactNode }) {
   const [selectedReciterId, setSelectedReciterIdState] = useState<string>(() => loadSelectedQuranReciterId());
   // Mirrors the state so the setter can compare without a side effect
@@ -38,6 +52,18 @@ export function QuranReciterProvider({ children }: { children: ReactNode }) {
     stopAudio("quran");
     setSelectedReciterIdState(id);
     saveSelectedQuranReciterId(id);
+    void syncEveningAudioSchedule().catch(() => {});
+  }, []);
+
+  const [mode, setModeState] = useState<QuranReciterMode>(() => loadQuranReciterMode());
+  const modeRef = useRef(mode);
+  const setMode = useCallback((next: QuranReciterMode) => {
+    if (!isQuranReciterMode(next) || next === modeRef.current) return;
+    modeRef.current = next;
+    stopAudio("quran");
+    setModeState(next);
+    saveQuranReciterMode(next);
+    void syncEveningAudioSchedule().catch(() => {});
   }, []);
 
   const value = useMemo<QuranReciterContextValue>(
@@ -45,9 +71,11 @@ export function QuranReciterProvider({ children }: { children: ReactNode }) {
       selectedReciterId,
       selectedReciter: getQuranReciterById(selectedReciterId) ?? getDefaultQuranReciter(),
       setSelectedReciterId,
+      mode,
+      setMode,
       reciters: getAvailableQuranReciters(),
     }),
-    [selectedReciterId, setSelectedReciterId],
+    [selectedReciterId, setSelectedReciterId, mode, setMode],
   );
 
   return <QuranReciterContext.Provider value={value}>{children}</QuranReciterContext.Provider>;

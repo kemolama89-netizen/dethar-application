@@ -10,7 +10,7 @@ import { QuranReciterProvider, useQuranReciter } from "./QuranReciterContext";
 import { LanguageProvider } from "./LanguageContext";
 import { QuranReciterSettingsView } from "../components/QuranReciterSettingsView";
 import { DEFAULT_QURAN_RECITER_ID, getAvailableQuranReciters, getQuranReciterById } from "../data/quranReciters";
-import { QURAN_RECITER_STORAGE_KEY } from "../lib/quranAudioPreferences";
+import { QURAN_RECITER_MODE_STORAGE_KEY, QURAN_RECITER_STORAGE_KEY } from "../lib/quranAudioPreferences";
 import { claimAudio, getActiveAudio, stopAudio } from "../lib/audioEngine";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -113,7 +113,10 @@ describe("QuranReciterSettingsView", () => {
         <Probe />
       </>,
     );
-    const rows = Array.from(container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]"));
+    const names = getAvailableQuranReciters().map((r) => r.name.ar);
+    const rows = Array.from(container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]")).filter((b) =>
+      names.some((n) => b.textContent?.includes(n)),
+    );
     expect(rows).toHaveLength(getAvailableQuranReciters().length);
     const other = getQuranReciterById(OTHER_ID)!;
     const otherRow = rows.find((b) => b.textContent?.includes(other.name.ar))!;
@@ -122,5 +125,49 @@ describe("QuranReciterSettingsView", () => {
     expect(otherRow.getAttribute("aria-pressed")).toBe("true");
     expect(latest!.selectedReciterId).toBe(OTHER_ID);
     expect(localStorage.getItem(QURAN_RECITER_STORAGE_KEY)).toBe(OTHER_ID);
+  });
+});
+
+describe("Reciter mode", () => {
+  const modeButton = (label: string) =>
+    Array.from(container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]")).find((b) => b.textContent?.includes(label))!;
+
+  it("defaults to a specific reciter; switching to Automatic Rotation persists, stops Quran audio and shows the order", async () => {
+    await mount(
+      <>
+        <QuranReciterSettingsView onBack={() => {}} />
+        <Probe />
+      </>,
+    );
+    expect(latest!.mode).toBe("specific");
+    expect(modeButton("قارئ محدد").getAttribute("aria-pressed")).toBe("true");
+    expect(container.querySelector("[data-rotation-order]")).toBeNull();
+
+    const stopQuran = vi.fn();
+    claimAudio("quran", "quran:abdulbasit-murattal:2:255", stopQuran);
+    await act(async () => modeButton("التناوب التلقائي").click());
+    expect(latest!.mode).toBe("rotation");
+    expect(localStorage.getItem(QURAN_RECITER_MODE_STORAGE_KEY)).toBe("rotation");
+    expect(stopQuran).toHaveBeenCalledTimes(1);
+    const order = Array.from(container.querySelectorAll("[data-rotation-order] li")).map((li) => li.textContent);
+    expect(order).toHaveLength(10);
+    getAvailableQuranReciters().forEach((r, i) => expect(order[i]).toContain(r.name.ar));
+
+    await unmount();
+    await mount();
+    expect(latest!.mode).toBe("rotation");
+  });
+
+  it("shows no source/website sentence and no 'audio coming' note", async () => {
+    await mount(<QuranReciterSettingsView onBack={() => {}} />);
+    expect(container.textContent).not.toMatch(/EveryAyah/i);
+    expect(container.textContent).not.toContain("ستُتاح التلاوة الصوتية في تحديث قادم");
+  });
+
+  it("lists all 10 reciters in Settings", async () => {
+    await mount(<QuranReciterSettingsView onBack={() => {}} />);
+    for (const name of ["عبد الباسط عبد الصمد", "محمد صديق المنشاوي", "محمود خليل الحصري", "مشاري راشد العفاسي", "عبد الرحمن السديس", "ماهر المعيقلي", "ياسر الدوسري", "ناصر القطامي", "محمود علي البنا", "مصطفى إسماعيل"]) {
+      expect(container.textContent, name).toContain(name);
+    }
   });
 });

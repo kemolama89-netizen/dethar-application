@@ -51,16 +51,7 @@ class AudioAdhkarPlugin : Plugin() {
         val enabled = call.getBoolean("enabled", false) ?: false
         val startMinutes = call.getInt("startMinutes") ?: -1
         val items = call.getArray("playlist") ?: JSArray()
-        val playlist = (0 until items.length()).map { i ->
-            val obj = items.getJSONObject(i)
-            PlaylistItem(
-                dhikrId = obj.getString("dhikrId"),
-                title = obj.getString("title"),
-                text = obj.getString("text"),
-                assetPath = obj.getString("assetPath"),
-                repetitions = obj.getInt("repetitions").coerceAtLeast(1),
-            )
-        }
+        val playlist = (0 until items.length()).map { i -> AudioAdhkarStore.parseItem(items.getJSONObject(i)) }
         store.eveningEnabled = enabled
         store.eveningStartMinutes = startMinutes
         store.eveningPlaylist = playlist
