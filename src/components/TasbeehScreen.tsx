@@ -34,6 +34,7 @@ interface TasbeehScreenProps {
   onNavigateHome: () => void;
   onNavigateToWritten: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToAudio: () => void;
 }
 
 interface Bubble {
@@ -198,7 +199,7 @@ const isKnownDhikrId = (id: number) => dhikrItems.some((d) => d.id === id);
 // targets the user last had, and `celebratedFor` (which target each dhikr
 // has already celebrated) is kept the same way so navigating away and back
 // can't replay a celebration.
-export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateToSettings }: TasbeehScreenProps) {
+export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateToSettings, onNavigateToAudio }: TasbeehScreenProps) {
   const { language } = useLanguage();
   const t = tasbeehLabels[language];
   const nav = navLabels[language];
@@ -988,6 +989,7 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
             if (key === "home") onNavigateHome();
             if (key === "written") onNavigateToWritten();
             if (key === "settings") onNavigateToSettings();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>

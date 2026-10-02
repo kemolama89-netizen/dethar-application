@@ -26,6 +26,7 @@ interface WrittenAdhkarReaderProps {
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToAudio: () => void;
   onBackToCategories: () => void;
   /**
    * Set ONLY when arriving here from a global search result (see
@@ -587,6 +588,7 @@ export function WrittenAdhkarReader({
   onNavigateHome,
   onNavigateToTasbeeh,
   onNavigateToSettings,
+  onNavigateToAudio,
   onBackToCategories,
   targetItemId,
 }: WrittenAdhkarReaderProps) {
@@ -960,6 +962,7 @@ export function WrittenAdhkarReader({
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onBackToCategories();
             if (key === "settings") onNavigateToSettings();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>

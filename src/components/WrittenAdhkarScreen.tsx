@@ -14,6 +14,7 @@ interface WrittenAdhkarScreenProps {
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToAudio: () => void;
   onSelectCategory: (key: WrittenAdhkarCategoryKey) => void;
   onOpenSearch: () => void;
 }
@@ -34,7 +35,7 @@ const CATEGORY_ORDER: WrittenAdhkarCategoryKey[] = ["morning", "evening", "praye
 // control would just be redundant chrome (unlike the Reader below it,
 // which keeps its own back action for the one hop BottomNav can't do:
 // returning to this list without leaving Written Adhkar entirely).
-export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToSettings, onSelectCategory, onOpenSearch }: WrittenAdhkarScreenProps) {
+export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToSettings, onNavigateToAudio, onSelectCategory, onOpenSearch }: WrittenAdhkarScreenProps) {
   const { language } = useLanguage();
   const t = writtenAdhkarLabels[language];
   const nav = navLabels[language];
@@ -121,6 +122,7 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNav
             if (key === "home") onNavigateHome();
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "settings") onNavigateToSettings();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>

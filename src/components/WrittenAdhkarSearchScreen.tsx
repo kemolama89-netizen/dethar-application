@@ -31,6 +31,7 @@ interface WrittenAdhkarSearchScreenProps {
   onNavigateHome: () => void;
   onNavigateToTasbeeh: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToAudio: () => void;
   onSelectResult: (result: WrittenSearchResult) => void;
 }
 
@@ -74,6 +75,7 @@ export function WrittenAdhkarSearchScreen({
   onNavigateHome,
   onNavigateToTasbeeh,
   onNavigateToSettings,
+  onNavigateToAudio,
   onSelectResult,
 }: WrittenAdhkarSearchScreenProps) {
   const { language, dir } = useLanguage();
@@ -212,6 +214,7 @@ export function WrittenAdhkarSearchScreen({
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onBack();
             if (key === "settings") onNavigateToSettings();
+            if (key === "audio") onNavigateToAudio();
           }}
         />
       </AppShell>
