@@ -178,9 +178,8 @@ export function useLocationChangeDetector(): LocationChangeDetectorResult {
         latitude: coords.latitude,
         longitude: coords.longitude,
         timezone,
-        // Step 7: same best-effort offline country estimate
-        // useCoordinates.ts's own device fix uses — `undefined` when too
-        // far from every bundled city (see reverseGeocode.ts).
+        // Same offline GPS → country lookup useCoordinates.ts's own device
+        // fix uses (borders first — see reverseGeocode.ts).
         countryCode: estimateCountryFromCoordinates(coords),
       });
       setRefreshToken((n) => n + 1);

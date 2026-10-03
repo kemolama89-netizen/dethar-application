@@ -35,6 +35,7 @@ import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen
 import type { AudioAdhkarList } from "./components/AudioAdhkarScreen";
 import { startFloatingOpenRouteRequests, startFloatingTasbeehSync } from "./lib/floatingTasbeehSync";
 import { isAudioAdhkarNativeAvailable } from "./lib/audioAdhkarNative";
+import { discardLegacyCalculationOverrides } from "./lib/legacyCalculationSettings";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -167,6 +168,9 @@ function HomeScreen({
   // anchor exists yet (this mount is the genuine first launch); the effect
   // below then persists exactly that value, once.
   const [installationAnchorDateKey] = useState(() => loadInstallationAnchorDateKey() ?? dateKey);
+  // Prayer times are automatic now — drop any method/madhab choice an older
+  // version stored (nothing reads it; this just keeps storage clean).
+  useEffect(() => discardLegacyCalculationOverrides(), []);
   useEffect(() => {
     if (loadInstallationAnchorDateKey() === null) {
       saveInstallationAnchorDateKey(installationAnchorDateKey);

@@ -1,35 +1,24 @@
 // DITHAR — offline coordinate -> country estimation.
 //
-// Step 7 of the global hybrid prayer-time architecture. resolveCalculationSettings.ts
-// (Step 3) already resolves a country-appropriate calculation-method
-// default, but until now that only ever ran for a manually-selected city or
-// the Kuwait fallback — both already carry their own `countryCode` (see
-// locationSettings.ts's ActiveLocationRecord). A raw device GPS fix has
-// NEVER carried one (see useCoordinates.ts's own doc comment: "unknown
-// (omitted) for a raw device GPS fix — no reverse-geocoding exists yet"),
-// so a device-GPS user always fell through to the neutral Muslim World
-// League global default regardless of where they actually are. This module
-// closes that specific gap.
+// Prayer times pick their calculation profile from the location's country
+// (calculationProfiles.ts). A manually-selected city and the Kuwait
+// fallback carry their own `countryCode` (see locationSettings.ts's
+// ActiveLocationRecord); a raw device GPS fix does not — this module
+// determines it, so a device-GPS user gets their country's profile too.
 //
-// Deliberately entirely OFFLINE — reuses the SAME bundled CITIES dataset
-// (see cities.ts's own doc comment: "no network call, no API key, works
-// with no connectivity... this project's existing 'no external service'
-// philosophy") rather than calling a real reverse-geocoding API: no new
-// network dependency, no coordinates ever leave the device, and no new
-// permission/consent surface — the same constraint the wider plan has
-// already set elsewhere (the Step 5 spec's own "Do not add IP
-// geolocation": a live third-party lookup is the same category of thing).
+// PRIMARY: point-in-polygon against bundled country borders
+// (@rapideditor/country-coder — the OpenStreetMap iD editor's offline
+// borders, ISC licence), at territory level so its codes match tzdata's
+// zone.tab (SJ, PR, RE, HK…). Works anywhere on land, however far from a
+// city. FALLBACK ONLY (a fix on no country's territory, e.g. at sea): the
+// nearest bundled city below.
 //
-// APPROXIMATE BY DESIGN — nearest bundled city's own country, never an
-// authoritative boundary/polygon lookup (this app bundles no country
-// border geometry, and adding one is out of scope here). This is
-// proportionate to the precision this codebase already accepts for
-// country -> method resolution (see countryCalculationMethod.ts's own
-// "reasonable, widely-used defaults... NOT independently verified"
-// disclaimer) — being right about the broad region most of the time is
-// enough to pick a calculation method, never a claim of exact
-// administrative-boundary accuracy.
+// Deliberately entirely OFFLINE — the borders and the CITIES dataset are
+// bundled: no network call, no API key, works with no connectivity, and no
+// coordinates ever leave the device.
+import { iso1A2Code } from "@rapideditor/country-coder";
 import { CITIES } from "../data/cities";
+import type { CityRecord } from "../data/cities";
 import type { Coordinates } from "./prayerTimes";
 
 // Earth's mean radius in km — the same haversine estimate
@@ -54,27 +43,38 @@ function haversineDistanceKm(a: Coordinates, b: Coordinates): number {
 // Beyond this distance from EVERY bundled city, the nearest match is too
 // far away to trust as "probably the same country" — returning
 // `undefined` here is always at least as safe as a wrong guess: the
-// caller (useCoordinates.ts) already falls through to the exact same
-// Muslim World League global default this whole gap produced before this
-// step, so an unresolved country is never a regression, only a missed
-// improvement for a location too far from this bundle's sparse (52-city)
-// coverage.
+// profile is then chosen from the location's timezone, else the Muslim
+// World League fallback (see calculationProfiles.ts) — an unresolved
+// country is only a missed improvement for a location too far from this
+// bundle's sparse coverage.
 export const MAX_MATCH_DISTANCE_KM = 300;
 
-// Returns the ISO 3166-1 alpha-2 country code of the CLOSEST bundled city
-// to `coordinates`, or `undefined` when even the closest one is farther
-// than MAX_MATCH_DISTANCE_KM away (see its own doc comment). A pure,
-// synchronous, offline lookup — no I/O, safe to call on every device GPS
-// fix.
-export function estimateCountryFromCoordinates(coordinates: Coordinates): string | undefined {
-  let closestCountry: string | undefined;
-  let closestDistanceKm = Infinity;
+// The closest bundled city to `coordinates` (within MAX_MATCH_DISTANCE_KM)
+// and its distance — a pure, synchronous, offline lookup (no I/O). Only the
+// fallback for a fix on no country's territory (see below).
+function nearestBundledCity(coordinates: Coordinates): { city: CityRecord; distanceKm: number } | undefined {
+  let nearest: { city: CityRecord; distanceKm: number } | undefined;
   for (const city of CITIES) {
     const distanceKm = haversineDistanceKm(coordinates, { latitude: city.latitude, longitude: city.longitude });
-    if (distanceKm < closestDistanceKm) {
-      closestDistanceKm = distanceKm;
-      closestCountry = city.countryCode;
-    }
+    if (!nearest || distanceKm < nearest.distanceKm) nearest = { city, distanceKm };
   }
-  return closestDistanceKm <= MAX_MATCH_DISTANCE_KM ? closestCountry : undefined;
+  return nearest && nearest.distanceKm <= MAX_MATCH_DISTANCE_KM ? nearest : undefined;
+}
+
+// The ISO 3166-1 alpha-2 code of the country/territory whose borders contain
+// `coordinates`, or `undefined` when none does (open sea, Antarctica).
+export function countryAtCoordinates(coordinates: Coordinates): string | undefined {
+  try {
+    return iso1A2Code([coordinates.longitude, coordinates.latitude], { level: "territory" }) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+// The country a GPS fix is in: from the borders, else — only when the fix
+// is on no country's territory — the nearest bundled city's country (within
+// MAX_MATCH_DISTANCE_KM), else `undefined`. A pure, synchronous, offline
+// lookup, safe to call on every device fix.
+export function estimateCountryFromCoordinates(coordinates: Coordinates): string | undefined {
+  return countryAtCoordinates(coordinates) ?? nearestBundledCity(coordinates)?.city.countryCode;
 }

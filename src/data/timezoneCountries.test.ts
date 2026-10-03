@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { countryForTimezone } from "./timezoneCountries";
-import { COUNTRY_CALCULATION_METHOD } from "../lib/countryCalculationMethod";
+import { countryForTimezone, zonesForCountry } from "./timezoneCountries";
+import { COUNTRY_PROFILE } from "../lib/calculationProfiles";
 
 describe("countryForTimezone", () => {
   it.each([
@@ -27,8 +27,21 @@ describe("countryForTimezone", () => {
     for (const zone of [undefined, "", "UTC", "Etc/UTC", "Etc/GMT+2", "Nowhere/Fake"]) expect(countryForTimezone(zone), String(zone)).toBeUndefined();
   });
 
-  it("every country with its own calculation method is reachable from at least one timezone", () => {
-    const reachable = new Set(["Africa/Cairo", "Asia/Kuwait", "Asia/Riyadh", "Asia/Dubai", "Asia/Qatar", "Europe/Istanbul", "America/New_York", "America/Toronto", "Europe/London", "Asia/Kuala_Lumpur", "Asia/Jakarta", "Asia/Singapore", "Asia/Brunei"].map(countryForTimezone));
-    for (const country of Object.keys(COUNTRY_CALCULATION_METHOD)) expect(reachable.has(country), country).toBe(true);
+  it("every country with its own calculation profile is reachable from its own timezones", () => {
+    for (const country of Object.keys(COUNTRY_PROFILE)) {
+      const zones = zonesForCountry(country);
+      expect(zones.length, country).toBeGreaterThan(0);
+      for (const zone of zones) expect(countryForTimezone(zone), zone).toBe(country);
+    }
+  });
+});
+
+describe("zonesForCountry", () => {
+  it("lists a single-zone country's one zone and a multi-zone country's several", () => {
+    expect(zonesForCountry("SA")).toEqual(["Asia/Riyadh"]);
+    expect(zonesForCountry("eg")).toEqual(["Africa/Cairo"]);
+    expect(zonesForCountry("ID")).toEqual(expect.arrayContaining(["Asia/Jakarta", "Asia/Makassar", "Asia/Jayapura"]));
+    expect(zonesForCountry("XX")).toEqual([]);
+    expect(zonesForCountry(undefined)).toEqual([]);
   });
 });

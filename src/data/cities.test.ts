@@ -4,7 +4,7 @@
 // calculation-method table (or its documented MWL fallback) can resolve.
 import { describe, expect, it } from "vitest";
 import { CITIES, getCountryName } from "./cities";
-import { getCalculationMethodForCountry } from "../lib/countryCalculationMethod";
+import { COUNTRY_PROFILE, resolveCalculationProfile } from "../lib/calculationProfiles";
 
 describe("CITIES", () => {
   it("has no duplicate ids", () => {
@@ -45,14 +45,14 @@ describe("CITIES", () => {
     expect(kuwait?.timezone).toBe("Asia/Kuwait");
   });
 
-  it("resolves a sensible calculation method for every mapped-country city (never throws, never an unsupported method)", () => {
+  it("resolves a calculation profile for every city (never throws)", () => {
     for (const city of CITIES) {
-      expect(() => getCalculationMethodForCountry(city.countryCode)).not.toThrow();
+      expect(resolveCalculationProfile({ country: city.countryCode, timezone: city.timezone }).id).toBeTruthy();
     }
   });
 
   it("includes at least one deliberately-unmapped-country city to exercise the MWL fallback", () => {
-    const unmapped = CITIES.filter((c) => getCalculationMethodForCountry(c.countryCode) === "MuslimWorldLeague" && c.countryCode !== "GB");
+    const unmapped = CITIES.filter((c) => !(c.countryCode in COUNTRY_PROFILE));
     expect(unmapped.length).toBeGreaterThan(0);
   });
 });

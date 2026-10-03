@@ -3,13 +3,15 @@ import type { Coordinates } from "./prayerTimes";
 import { KUWAIT_FALLBACK_LOCATION, loadLocationSettings, resolveKnownLocationRecord, saveLastActiveLocation } from "./locationSettings";
 import type { ActiveLocationRecord, LocationSource } from "./locationSettings";
 import { positionToDeviceRecord } from "./deviceLocation";
+import { resolveLocationCountry, resolveLocationTimezone } from "./locationTime";
 
 export interface CoordinatesState {
   coordinates: Coordinates;
-  /** The IANA zone to FORMAT this location's calculated times in — paired
-   *  with `coordinates`, never taken from the device's own clock/timezone
-   *  independently of which coordinates are actually in effect (see the
-   *  comment below). */
+  /** The location's own IANA zone — the calendar day and the clock its
+   *  prayer times are calculated and shown in. Paired with `coordinates`,
+   *  never the device's clock independently of them: for a device fix the
+   *  device zone is used unless it provably belongs to another country
+   *  (see locationTime.ts's resolveLocationTimezone). */
   timezone: string;
   /** "manual" — a persisted, EXPLICIT city choice, sticky until the user
    *  changes or clears it (see locationSettings.ts). "device" — a live
@@ -17,14 +19,12 @@ export interface CoordinatesState {
    *  — Kuwait City, used only when neither of the above is available. */
   source: LocationSource;
   /** ISO 3166-1 alpha-2 — known for "manual" and "fallback" from their own
-   *  stored/fixed record. For "device", populated on a best-effort basis
-   *  by reverseGeocode.ts's offline nearest-bundled-city estimate (Step
-   *  7) — `undefined` when that fix is too far from every bundled city to
-   *  trust (see MAX_MATCH_DISTANCE_KM), in which case
-   *  resolveCalculationSettings.ts's own country tier just falls through
-   *  to the Muslim World League default, exactly as it did before Step 7
-   *  for every device fix. Consumed by PrayerTimesPanel.tsx via
-   *  resolveCalculationSettings (Step 6's wiring). */
+   *  stored/fixed record. For "device", the country whose borders contain
+   *  the fix (offline — see locationTime.ts's resolveLocationCountry);
+   *  `undefined` only for a fix on no country's territory with no other
+   *  signal, in which case the calculation profile is chosen from the
+   *  location's timezone instead, else the global fallback (see
+   *  calculationProfiles.ts). */
   countryCode?: string;
   cityNameAr?: string;
   cityNameEn?: string;
@@ -39,9 +39,9 @@ function recordToState(record: ActiveLocationRecord): CoordinatesState {
   return {
     detecting: false,
     coordinates: { latitude: record.latitude, longitude: record.longitude },
-    timezone: record.timezone,
+    timezone: resolveLocationTimezone(record),
     source: record.source,
-    countryCode: record.countryCode,
+    countryCode: resolveLocationCountry(record),
     cityNameAr: record.cityNameAr,
     cityNameEn: record.cityNameEn,
   };

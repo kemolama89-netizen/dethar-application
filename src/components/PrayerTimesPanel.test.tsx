@@ -2,10 +2,10 @@
 //
 // Step 9 of the global hybrid prayer-time architecture: end-to-end
 // verification that the LIVE component actually wires resolved GPS
-// coordinates + resolved country + the calculation-settings resolver
-// (Steps 3/6/8) together — not just the underlying library functions in
-// isolation (already covered by resolveCalculationSettings.test.ts /
-// prayerTimes.test.ts). Mounts the REAL PrayerTimesPanel (same plain
+// coordinates + resolved country + the automatic calculation profile
+// (calculationProfiles.ts) + the location's own calendar day together —
+// not just the underlying library functions in isolation (already covered
+// by calculationProfiles*.test.ts / prayerTimes.test.ts). Mounts the REAL PrayerTimesPanel (same plain
 // react-dom/client + act pattern as SettingsScreen.test.tsx /
 // InsightCard.test.tsx, no testing-library).
 //
@@ -21,16 +21,17 @@ import { createRoot } from "react-dom/client";
 import { PrayerTimesPanel } from "./PrayerTimesPanel";
 import { LanguageProvider } from "../theme/LanguageContext";
 import { saveManualLocation, saveLastActiveLocation, resetLocationSettingsForTesting } from "../lib/locationSettings";
-import { resolveCalculationSettings } from "../lib/resolveCalculationSettings";
-import { calculatePrayerTimes, formatPrayerTime, KUWAIT_CITY_COORDINATES } from "../lib/prayerTimes";
+import { calculatePrayerDay, formatPrayerTime, KUWAIT_CITY_COORDINATES } from "../lib/prayerTimes";
+import { localDateIn } from "../lib/locationTime";
+import { LEGACY_CALCULATION_SETTINGS_KEY } from "../lib/legacyCalculationSettings";
 import { prayerOrder } from "../data/content";
 import type { PrayerKey } from "../data/content";
 import { CITIES } from "../data/cities";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-// Fixed date — same one prayerTimes.test.ts / resolveCalculationSettings.test.ts
-// already pin their own Kuwait regression values against, so this file's
+// Fixed instant — same one prayerTimes.test.ts already pins its own Kuwait
+// regression values against, so this file's
 // own Kuwait assertion can reuse those exact, already-verified numbers
 // instead of re-deriving them.
 const DATE = new Date("2026-09-14T00:00:00Z");
@@ -58,13 +59,12 @@ async function mount() {
 }
 
 // Independently computes the SAME six times PrayerTimesPanel's own
-// `times` useMemo computes (resolveCalculationSettings -> calculatePrayerTimes
-// -> formatPrayerTime, no override) — used to assert the live-rendered DOM
-// text matches, proving the component's wiring, not just the library
-// functions in isolation.
+// `times` useMemo computes (the location's own calendar day ->
+// calculatePrayerDay -> formatPrayerTime) — used to assert the
+// live-rendered DOM text matches, proving the component's wiring, not just
+// the library functions in isolation.
 function expectedFormattedTimes(coordinates: { latitude: number; longitude: number }, country: string | undefined, timezone: string) {
-  const params = resolveCalculationSettings({ coordinates, country });
-  const times = calculatePrayerTimes(DATE, coordinates, params);
+  const { times } = calculatePrayerDay({ coordinates, timezone, country }, localDateIn(DATE, timezone));
   const formatted: Record<PrayerKey, string> = {} as Record<PrayerKey, string>;
   for (const key of prayerOrder) formatted[key] = formatPrayerTime(times[key], timezone);
   return formatted;
@@ -82,8 +82,8 @@ afterEach(() => {
 describe("PrayerTimesPanel — Step 9: Kuwait remains unchanged", () => {
   it("with no manual location and no geolocation (the Kuwait fallback), renders the exact byte-for-byte-preserved pinned Kuwait times", async () => {
     const { container, unmount } = await mount();
-    // Same pinned values asserted in prayerTimes.test.ts and
-    // resolveCalculationSettings.test.ts's own "Kuwait preservation" tests.
+    // Same pinned values asserted in prayerTimes.test.ts's own "Kuwait
+    // preservation" tests.
     expect(container.textContent).toContain("04:12"); // fajr
     expect(container.textContent).toContain("11:44"); // dhuhr
     expect(container.textContent).toContain("19:12"); // isha
@@ -101,7 +101,7 @@ describe("PrayerTimesPanel — Step 9: worldwide, non-Kuwait locations reach the
   ];
 
   for (const { label, countryCode, latitude, longitude, timezone } of cases) {
-    it(`${label}: the live component renders exactly what resolveCalculationSettings + calculatePrayerTimes independently compute for this country`, async () => {
+    it(`${label}: the live component renders exactly what calculatePrayerDay independently computes for this country`, async () => {
       saveManualLocation({ source: "manual", latitude, longitude, timezone, countryCode });
       const expected = expectedFormattedTimes({ latitude, longitude }, countryCode, timezone);
 
@@ -131,6 +131,34 @@ describe("PrayerTimesPanel — Step 9: changing location to another country chan
     expect(saudiRun.container.textContent).toContain(expectedSaudi.isha);
     expect(saudiRun.container.textContent).not.toContain("19:12");
     await saudiRun.unmount();
+  });
+});
+
+describe("PrayerTimesPanel — automatic profile, location-local day, no overrides", () => {
+  it("a method/madhab choice stored by an older version has no effect on the displayed times", async () => {
+    const turkey = { latitude: 39.9334, longitude: 32.8597, timezone: "Europe/Istanbul", countryCode: "TR" };
+    saveManualLocation({ source: "manual", ...turkey });
+    const expected = expectedFormattedTimes(turkey, "TR", turkey.timezone);
+    // Exactly what the removed Settings screen used to persist.
+    localStorage.setItem(LEGACY_CALCULATION_SETTINGS_KEY, JSON.stringify({ methodOverride: "Egyptian", madhabOverride: "hanafi" }));
+
+    const { container, unmount } = await mount();
+    for (const key of prayerOrder) expect(container.textContent).toContain(expected[key]);
+    await unmount();
+  });
+
+  it("a city in a zone behind the device's day shows ITS calendar day, not the device's", async () => {
+    // DATE is 2026-09-14T00:00Z — still the evening of Sept 13 in New York.
+    const newYork = { latitude: 40.7128, longitude: -74.006, timezone: "America/New_York", countryCode: "US" };
+    saveManualLocation({ source: "manual", ...newYork });
+    const sept13 = calculatePrayerDay({ coordinates: newYork, timezone: newYork.timezone, country: "US" }, { year: 2026, month: 9, day: 13 });
+    const sept14 = calculatePrayerDay({ coordinates: newYork, timezone: newYork.timezone, country: "US" }, { year: 2026, month: 9, day: 14 });
+    const fajr13 = formatPrayerTime(sept13.times.fajr, newYork.timezone);
+    expect(fajr13).not.toBe(formatPrayerTime(sept14.times.fajr, newYork.timezone));
+
+    const { container, unmount } = await mount();
+    expect(container.textContent).toContain(fajr13);
+    await unmount();
   });
 });
 
@@ -320,21 +348,34 @@ describe("PrayerTimesPanel — a brand-new user is never shown Kuwait while his 
 });
 
 
-describe("PrayerTimesPanel — the device timezone picks the method when the country is unknown", () => {
+describe("PrayerTimesPanel — a GPS fix far from every bundled city still gets its country's profile", () => {
   const original = navigator.geolocation;
   afterEach(() => Object.defineProperty(navigator, "geolocation", { value: original, configurable: true }));
 
-  it("a device fix in Luxor (no bundled city nearby) on Africa/Cairo is calculated with the Egyptian method; the label is unchanged", async () => {
+  it("a device fix in Luxor (hundreds of km from any bundled city) is calculated with the Egyptian method and labelled Egypt", async () => {
     resetLocationSettingsForTesting();
     const LUXOR = { latitude: 25.6872, longitude: 32.6396 };
-    saveLastActiveLocation({ source: "device", ...LUXOR, timezone: "Africa/Cairo" }); // no countryCode: nearest-city detection couldn't tell
+    saveLastActiveLocation({ source: "device", ...LUXOR, timezone: "Africa/Cairo" }); // no countryCode stored
     Object.defineProperty(navigator, "geolocation", { configurable: true, value: undefined });
     const { container, unmount } = await mount();
     const egyptian = expectedFormattedTimes(LUXOR, "EG", "Africa/Cairo");
-    const mwl = expectedFormattedTimes(LUXOR, undefined, "Africa/Cairo");
+    // "ZZ" is no country at all — what the fix would get with no country: the Muslim World League fallback.
+    const mwl = expectedFormattedTimes(LUXOR, "ZZ", "Africa/Cairo");
     expect(egyptian.fajr).not.toBe(mwl.fajr); // the method genuinely matters here
     for (const key of prayerOrder) expect(container.textContent, key).toContain(egyptian[key]);
-    expect(container.textContent).toContain("25.69, 32.64"); // displayed place: still the coordinates, not "Egypt"
+    expect(container.textContent).toContain("مصر"); // the borders identify Egypt
+    await unmount();
+  });
+
+  it("a device fix in Tabuk on an unusable device timezone (UTC) is calculated with Umm al-Qura, on Riyadh's clock", async () => {
+    resetLocationSettingsForTesting();
+    const TABUK = { latitude: 28.3835, longitude: 36.5662 };
+    saveLastActiveLocation({ source: "device", ...TABUK, timezone: "UTC" });
+    Object.defineProperty(navigator, "geolocation", { configurable: true, value: undefined });
+    const { container, unmount } = await mount();
+    const expected = expectedFormattedTimes(TABUK, "SA", "Asia/Riyadh");
+    for (const key of prayerOrder) expect(container.textContent, key).toContain(expected[key]);
+    expect(container.textContent).toContain("السعودية");
     await unmount();
   });
 });

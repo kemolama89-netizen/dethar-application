@@ -1,6 +1,6 @@
 // Persistence for the user's selected Quran reciter — the one Quran audio
-// preference. Same conventions as appearancePreferences.ts /
-// calculationSettings.ts: its own storage key, every read/write wrapped so a
+// preference. Same conventions as appearancePreferences.ts: its own
+// storage key, every read/write wrapped so a
 // blocked or full localStorage (private mode, quota) can never throw into
 // the UI, and every read validated against the current registry.
 //

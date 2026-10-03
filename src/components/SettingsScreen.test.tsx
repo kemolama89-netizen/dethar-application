@@ -16,8 +16,7 @@ import { LanguageProvider } from "../theme/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
 import { QuranReciterProvider } from "../theme/QuranReciterContext";
-import { settingsLabels, calculationMethodLabels, madhabLabels } from "../data/settings";
-import { loadCalculationOverrides } from "../lib/calculationSettings";
+import { settingsLabels } from "../data/settings";
 import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -173,112 +172,16 @@ describe("SettingsScreen — Reminders (notifications) entry", () => {
   });
 });
 
-// Step 6 of the global hybrid prayer-time architecture: the Settings UI for
-// the calculation-method/madhab override. No localStorage location override
-// is set up in any of these tests, so resolveActiveLocationRecord() falls
-// through to the Kuwait fallback (countryCode "KW") — the automatic method
-// row's own resolved-value hint is asserted against that, exactly what a
-// fresh install would show.
-describe("SettingsScreen — Calculation Method entry (Step 6)", () => {
-  const automaticMethodRowLabel = `${t.calculationAutomaticLabel} — ${t.calculationAutomaticResolvedHint(calculationMethodLabels.Kuwait.ar)}`;
-
-  it("renders a Calculation Method row on the main menu", async () => {
+// Prayer times are chosen automatically from the location's country
+// (calculationProfiles.ts): Settings no longer offers any calculation-method,
+// madhab or minute control.
+describe("SettingsScreen — no prayer-calculation controls", () => {
+  it("the main menu has no calculation-method or madhab entry", async () => {
     const { container, unmount } = await mountSettingsScreen();
-    expect(() => findButtonByText(container, t.calculationRow)).not.toThrow();
-    await unmount();
-  });
-
-  it("opens the page with both the Method and Madhab sections, Automatic selected by default in each", async () => {
-    const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.calculationRow));
-
-    expect(container.textContent).toContain(t.calculationPageTitle);
-    expect(container.textContent).toContain(t.calculationMethodSectionTitle);
-    expect(container.textContent).toContain(t.calculationMadhabSectionTitle);
-    expect(container.textContent).toContain(calculationMethodLabels.Egyptian.ar); // every supported method is listed
-    expect(container.textContent).toContain(madhabLabels.hanafi.ar);
-
-    // Two "Automatic" rows exist (Method + Madhab) — both start selected
-    // since no override has ever been set.
-    const automaticButtons = Array.from(container.querySelectorAll("button")).filter((b) =>
-      b.textContent?.includes(t.calculationAutomaticLabel),
-    );
-    expect(automaticButtons).toHaveLength(2);
-    for (const b of automaticButtons) expect(b.getAttribute("aria-pressed")).toBe("true");
-
-    expect(loadCalculationOverrides()).toEqual({ method: undefined, madhab: undefined });
-    await unmount();
-  });
-
-  it("the Automatic method row shows what it currently resolves to (Kuwait, the default fallback location)", async () => {
-    const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.calculationRow));
-    expect(() => findButtonByText(container, automaticMethodRowLabel)).not.toThrow();
-    await unmount();
-  });
-
-  it("selecting an explicit method marks it selected, deselects Automatic, and persists — without touching the madhab override", async () => {
-    const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.calculationRow));
-
-    await click(findButtonByText(container, calculationMethodLabels.Egyptian.ar));
-    expect(findButtonByText(container, calculationMethodLabels.Egyptian.ar).getAttribute("aria-pressed")).toBe("true");
-    expect(findButtonByText(container, automaticMethodRowLabel).getAttribute("aria-pressed")).toBe("false");
-    expect(loadCalculationOverrides()).toEqual({ method: "Egyptian", madhab: undefined });
-
-    await unmount();
-  });
-
-  it("selecting a madhab persists independently of the method override — both can be set at once", async () => {
-    const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.calculationRow));
-
-    await click(findButtonByText(container, calculationMethodLabels.Turkey.ar));
-    await click(findButtonByText(container, madhabLabels.hanafi.ar));
-
-    expect(findButtonByText(container, madhabLabels.hanafi.ar).getAttribute("aria-pressed")).toBe("true");
-    expect(loadCalculationOverrides()).toEqual({ method: "Turkey", madhab: "hanafi" });
-
-    await unmount();
-  });
-
-  it("re-selecting Automatic clears the method override back to null", async () => {
-    const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.calculationRow));
-
-    await click(findButtonByText(container, calculationMethodLabels.Qatar.ar));
-    expect(loadCalculationOverrides().method).toBe("Qatar");
-
-    await click(findButtonByText(container, automaticMethodRowLabel));
-    expect(loadCalculationOverrides()).toEqual({ method: undefined, madhab: undefined });
-    expect(findButtonByText(container, automaticMethodRowLabel).getAttribute("aria-pressed")).toBe("true");
-
-    await unmount();
-  });
-
-  it("both overrides persist across remounts", async () => {
-    const first = await mountSettingsScreen();
-    await click(findButtonByText(first.container, t.calculationRow));
-    await click(findButtonByText(first.container, calculationMethodLabels.Dubai.ar));
-    await click(findButtonByText(first.container, madhabLabels.hanafi.ar));
-    await first.unmount();
-
-    const second = await mountSettingsScreen();
-    await click(findButtonByText(second.container, t.calculationRow));
-    expect(findButtonByText(second.container, calculationMethodLabels.Dubai.ar).getAttribute("aria-pressed")).toBe("true");
-    expect(findButtonByText(second.container, madhabLabels.hanafi.ar).getAttribute("aria-pressed")).toBe("true");
-    await second.unmount();
-  });
-
-  it("back button returns to the main Settings menu", async () => {
-    const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.calculationRow));
-    expect(container.textContent).toContain(t.calculationPageTitle);
-
-    const backButton = container.querySelector(`button[aria-label="${t.back}"]`) as HTMLButtonElement;
-    await click(backButton);
-    expect(() => findButtonByText(container, t.calculationRow)).not.toThrow();
-
+    const text = container.textContent ?? "";
+    for (const removed of ["طريقة الحساب", "المذهب", "Calculation Method", "Madhab"]) expect(text).not.toContain(removed);
+    // The location entry — which drives the automatic profile — is still there.
+    expect(() => findButtonByText(container, t.locationRow)).not.toThrow();
     await unmount();
   });
 });

@@ -4,9 +4,8 @@ import { labels, prayerNames, prayerOrder } from "../data/content";
 import type { PrayerKey } from "../data/content";
 import { useLanguage } from "../theme/LanguageContext";
 import { useCoordinates } from "../lib/useCoordinates";
-import { addOneLocalDay, calculatePrayerTimes, formatPrayerTime } from "../lib/prayerTimes";
-import { resolveCalculationSettings } from "../lib/resolveCalculationSettings";
-import { loadCalculationOverrides } from "../lib/calculationSettings";
+import { calculatePrayerDay, formatPrayerTime } from "../lib/prayerTimes";
+import { localDateIn, localDateKey } from "../lib/locationTime";
 import { getCountryName } from "../data/cities";
 import { settingsLabels } from "../data/settings";
 import { useNextPrayerCountdown } from "../lib/useNextPrayerCountdown";
@@ -63,8 +62,9 @@ function ReminderSwitch({ checked, onChange, label }: { checked: boolean; onChan
 // label/value font sizes below use vw-based clamp(), which is width-based
 // and fine to keep.
 //
-// `date` (which LOCAL calendar day to calculate for) comes from the app's
-// existing Date & Time foundation (src/lib/dateTime.ts, via App.tsx) —
+// `date` (the current instant, refreshed every minute) comes from the app's
+// existing Date & Time foundation (src/lib/dateTime.ts, via App.tsx) and is
+// read in the LOCATION's timezone to get the calendar day to calculate —
 // this component never creates its own "now" for THAT purpose (the live
 // countdown below has its own, deliberately finer-grained ticker — see
 // useNextPrayerCountdown.ts's own comment for why that's not a competing
@@ -108,38 +108,18 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
         : (cityName ?? countryName ?? `${coordinates.latitude.toFixed(2)}, ${coordinates.longitude.toFixed(2)}`);
     return source === "fallback" ? `${place} · ${settingsLabels[language].locationSourceFallback}` : place;
   }, [language, cityNameAr, cityNameEn, countryCode, coordinates, source, detecting]);
-  // Step 6: the user's explicit method/madhab overrides (Settings >
-  // Calculation Method), read once per mount — same "full remount on
-  // screen switch" convention useLocationChangeDetector.ts's own doc
-  // comment documents (App.tsx wraps each screen in `key={screen}`), so
-  // navigating away to Settings and back always picks up a just-changed
-  // override without this needing its own storage-change subscription.
-  const overrides = useMemo(() => loadCalculationOverrides(), []);
-  // resolveCalculationSettings (Step 3) turns location + overrides into a
-  // ready-to-use CalculationParameters: an explicit override wins, else
-  // the active location's own country resolves a country-appropriate
-  // default (see countryCalculationMethod.ts), else Muslim World League.
-  // For the Kuwait fallback location (countryCode "KW") this resolves to
-  // the exact same CalculationMethod.Kuwait()+Shafi'i params this file
-  // used to hardcode directly — see resolveCalculationSettings.test.ts's
-  // own "Kuwait preservation" coverage — so today's default Kuwait
-  // behavior is unchanged; only a location whose country genuinely isn't
-  // Kuwait (a manually-selected city, or a country-resolved device fix)
-  // or an explicit override now changes which method is used.
-  const times = useMemo(
-    () => calculatePrayerTimes(date, coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides)),
-    [date, coordinates, countryCode, timezone, overrides],
-  );
-  // Only Fajr is ever needed from tomorrow (the after-Isha wraparound
-  // case — see nextPrayer.ts), but calculatePrayerTimes computing the
-  // other five too is cheap (plain trigonometry, no I/O) and keeps this
-  // one call site simple rather than adding a Fajr-only variant.
-  const tomorrowFajr = useMemo(
-    () =>
-      calculatePrayerTimes(addOneLocalDay(date), coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides))
-        .fajr,
-    [date, coordinates, countryCode, timezone, overrides],
-  );
+  // The location's own calendar day — NOT the device's: `date` is only the
+  // current instant (it ticks every minute), read in the location's
+  // timezone, so the day flips at the location's midnight even when the
+  // device sits in another zone.
+  const dayKey = localDateKey(localDateIn(date, timezone));
+  // One automatic calculation: the location's country picks its profile
+  // (calculationProfiles.ts) — no method, madhab or minute override exists.
+  // Recomputed only when the location or its calendar day changes.
+  const { times, tomorrowFajr } = useMemo(() => {
+    const [year, month, day] = dayKey.split("-").map(Number);
+    return calculatePrayerDay({ coordinates, timezone, country: countryCode }, { year, month, day });
+  }, [dayKey, coordinates, countryCode, timezone]);
 
   const nextPrayer = useNextPrayerCountdown(times, tomorrowFajr);
   // Nothing is scheduled for the placeholder while the location is still being detected.

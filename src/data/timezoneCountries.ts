@@ -6,9 +6,10 @@
 // ("backward" links) that some browsers/devices still report, each naming a
 // single country. Etc/* and other non-country zones are deliberately absent.
 //
-// Used ONLY as a second signal for choosing the prayer calculation method
-// (see resolveCalculationSettings.ts) — never for coordinates, the displayed
-// place, or anything stored.
+// Used as a second signal for choosing the prayer calculation profile (see
+// calculationProfiles.ts) and to check a device zone against the country a
+// GPS fix is in (see locationTime.ts) — never for coordinates, the
+// displayed place, or anything stored.
 
 /** Country -> its zones, exactly as in zone.tab. */
 const ZONES_BY_COUNTRY: Readonly<Record<string, readonly string[]>> = {
@@ -262,6 +263,43 @@ const ZONES_BY_COUNTRY: Readonly<Record<string, readonly string[]>> = {
 };
 
 /** Legacy alias names (tz "backward" links) that map to a single country. */
+/** Each zone's reference point (latitude, longitude) from zone.tab — only for
+ *  countries with more than one zone, where it decides which zone a place
+ *  belongs to when the device's own zone can't be used (see locationTime.ts). */
+const ZONE_REFERENCE_POINTS: Readonly<Record<string, ReadonlyArray<readonly [zone: string, latitude: number, longitude: number]>>> = {
+  AQ: [["Antarctica/McMurdo", -77.83, 166.6], ["Antarctica/Casey", -66.28, 110.52], ["Antarctica/Davis", -68.58, 77.97], ["Antarctica/DumontDUrville", -66.67, 140.02], ["Antarctica/Mawson", -67.6, 62.88], ["Antarctica/Palmer", -64.8, -64.1], ["Antarctica/Rothera", -67.57, -68.13], ["Antarctica/Syowa", -69.01, 39.59], ["Antarctica/Troll", -72.01, 2.53], ["Antarctica/Vostok", -78.4, 106.9]],
+  AR: [["America/Argentina/Buenos_Aires", -34.6, -58.45], ["America/Argentina/Cordoba", -31.4, -64.18], ["America/Argentina/Salta", -24.78, -65.42], ["America/Argentina/Jujuy", -24.18, -65.3], ["America/Argentina/Tucuman", -26.82, -65.22], ["America/Argentina/Catamarca", -28.47, -65.78], ["America/Argentina/La_Rioja", -29.43, -66.85], ["America/Argentina/San_Juan", -31.53, -68.52], ["America/Argentina/Mendoza", -32.88, -68.82], ["America/Argentina/San_Luis", -33.32, -66.35], ["America/Argentina/Rio_Gallegos", -51.63, -69.22], ["America/Argentina/Ushuaia", -54.8, -68.3]],
+  AU: [["Australia/Lord_Howe", -31.55, 159.08], ["Antarctica/Macquarie", -54.5, 158.95], ["Australia/Hobart", -42.88, 147.32], ["Australia/Melbourne", -37.82, 144.97], ["Australia/Sydney", -33.87, 151.22], ["Australia/Broken_Hill", -31.95, 141.45], ["Australia/Brisbane", -27.47, 153.03], ["Australia/Lindeman", -20.27, 149.0], ["Australia/Adelaide", -34.92, 138.58], ["Australia/Darwin", -12.47, 130.83], ["Australia/Perth", -31.95, 115.85], ["Australia/Eucla", -31.72, 128.87]],
+  BR: [["America/Noronha", -3.85, -32.42], ["America/Belem", -1.45, -48.48], ["America/Fortaleza", -3.72, -38.5], ["America/Recife", -8.05, -34.9], ["America/Araguaina", -7.2, -48.2], ["America/Maceio", -9.67, -35.72], ["America/Bahia", -12.98, -38.52], ["America/Sao_Paulo", -23.53, -46.62], ["America/Campo_Grande", -20.45, -54.62], ["America/Cuiaba", -15.58, -56.08], ["America/Santarem", -2.43, -54.87], ["America/Porto_Velho", -8.77, -63.9], ["America/Boa_Vista", 2.82, -60.67], ["America/Manaus", -3.13, -60.02], ["America/Eirunepe", -6.67, -69.87], ["America/Rio_Branco", -9.97, -67.8]],
+  CA: [["America/St_Johns", 47.57, -52.72], ["America/Halifax", 44.65, -63.6], ["America/Glace_Bay", 46.2, -59.95], ["America/Moncton", 46.1, -64.78], ["America/Goose_Bay", 53.33, -60.42], ["America/Blanc-Sablon", 51.42, -57.12], ["America/Toronto", 43.65, -79.38], ["America/Iqaluit", 63.73, -68.47], ["America/Atikokan", 48.76, -91.62], ["America/Winnipeg", 49.88, -97.15], ["America/Resolute", 74.7, -94.83], ["America/Rankin_Inlet", 62.82, -92.08], ["America/Regina", 50.4, -104.65], ["America/Swift_Current", 50.28, -107.83], ["America/Edmonton", 53.55, -113.47], ["America/Cambridge_Bay", 69.11, -105.05], ["America/Inuvik", 68.35, -133.72], ["America/Creston", 49.1, -116.52], ["America/Dawson_Creek", 55.77, -120.23], ["America/Fort_Nelson", 58.8, -122.7], ["America/Whitehorse", 60.72, -135.05], ["America/Dawson", 64.07, -139.42], ["America/Vancouver", 49.27, -123.12]],
+  CD: [["Africa/Kinshasa", -4.3, 15.3], ["Africa/Lubumbashi", -11.67, 27.47]],
+  CL: [["America/Santiago", -33.45, -70.67], ["America/Coyhaique", -45.57, -72.07], ["America/Punta_Arenas", -53.15, -70.92], ["Pacific/Easter", -27.15, -109.43]],
+  CN: [["Asia/Shanghai", 31.23, 121.47], ["Asia/Urumqi", 43.8, 87.58]],
+  CY: [["Asia/Nicosia", 35.17, 33.37], ["Asia/Famagusta", 35.12, 33.95]],
+  DE: [["Europe/Berlin", 52.5, 13.37], ["Europe/Busingen", 47.7, 8.68]],
+  EC: [["America/Guayaquil", -2.17, -79.83], ["Pacific/Galapagos", -0.9, -89.6]],
+  ES: [["Europe/Madrid", 40.4, -3.68], ["Africa/Ceuta", 35.88, -5.32], ["Atlantic/Canary", 28.1, -15.4]],
+  FM: [["Pacific/Chuuk", 7.42, 151.78], ["Pacific/Pohnpei", 6.97, 158.22], ["Pacific/Kosrae", 5.32, 162.98]],
+  GL: [["America/Nuuk", 64.18, -51.73], ["America/Danmarkshavn", 76.77, -18.67], ["America/Scoresbysund", 70.48, -21.97], ["America/Thule", 76.57, -68.78]],
+  ID: [["Asia/Jakarta", -6.17, 106.8], ["Asia/Pontianak", -0.03, 109.33], ["Asia/Makassar", -5.12, 119.4], ["Asia/Jayapura", -2.53, 140.7]],
+  KI: [["Pacific/Tarawa", 1.42, 173.0], ["Pacific/Kanton", -2.78, -171.72], ["Pacific/Kiritimati", 1.87, -157.33]],
+  KZ: [["Asia/Almaty", 43.25, 76.95], ["Asia/Qyzylorda", 44.8, 65.47], ["Asia/Qostanay", 53.2, 63.62], ["Asia/Aqtobe", 50.28, 57.17], ["Asia/Aqtau", 44.52, 50.27], ["Asia/Atyrau", 47.12, 51.93], ["Asia/Oral", 51.22, 51.35]],
+  MH: [["Pacific/Majuro", 7.15, 171.2], ["Pacific/Kwajalein", 9.08, 167.33]],
+  MN: [["Asia/Ulaanbaatar", 47.92, 106.88], ["Asia/Hovd", 48.02, 91.65]],
+  MX: [["America/Mexico_City", 19.4, -99.15], ["America/Cancun", 21.08, -86.77], ["America/Merida", 20.97, -89.62], ["America/Monterrey", 25.67, -100.32], ["America/Matamoros", 25.83, -97.5], ["America/Chihuahua", 28.63, -106.08], ["America/Ciudad_Juarez", 31.73, -106.48], ["America/Ojinaga", 29.57, -104.42], ["America/Mazatlan", 23.22, -106.42], ["America/Bahia_Banderas", 20.8, -105.25], ["America/Hermosillo", 29.07, -110.97], ["America/Tijuana", 32.53, -117.02]],
+  MY: [["Asia/Kuala_Lumpur", 3.17, 101.7], ["Asia/Kuching", 1.55, 110.33]],
+  NZ: [["Pacific/Auckland", -36.87, 174.77], ["Pacific/Chatham", -43.95, -176.55]],
+  PF: [["Pacific/Tahiti", -17.53, -149.57], ["Pacific/Marquesas", -9.0, -139.5], ["Pacific/Gambier", -23.13, -134.95]],
+  PG: [["Pacific/Port_Moresby", -9.5, 147.17], ["Pacific/Bougainville", -6.22, 155.57]],
+  PS: [["Asia/Gaza", 31.5, 34.47], ["Asia/Hebron", 31.53, 35.09]],
+  PT: [["Europe/Lisbon", 38.72, -9.13], ["Atlantic/Madeira", 32.63, -16.9], ["Atlantic/Azores", 37.73, -25.67]],
+  RU: [["Europe/Kaliningrad", 54.72, 20.5], ["Europe/Moscow", 55.76, 37.62], ["Europe/Kirov", 58.6, 49.65], ["Europe/Volgograd", 48.73, 44.42], ["Europe/Astrakhan", 46.35, 48.05], ["Europe/Saratov", 51.57, 46.03], ["Europe/Ulyanovsk", 54.33, 48.4], ["Europe/Samara", 53.2, 50.15], ["Asia/Yekaterinburg", 56.85, 60.6], ["Asia/Omsk", 55.0, 73.4], ["Asia/Novosibirsk", 55.03, 82.92], ["Asia/Barnaul", 53.37, 83.75], ["Asia/Tomsk", 56.5, 84.97], ["Asia/Novokuznetsk", 53.75, 87.12], ["Asia/Krasnoyarsk", 56.02, 92.83], ["Asia/Irkutsk", 52.27, 104.33], ["Asia/Chita", 52.05, 113.47], ["Asia/Yakutsk", 62.0, 129.67], ["Asia/Khandyga", 62.66, 135.55], ["Asia/Vladivostok", 43.17, 131.93], ["Asia/Ust-Nera", 64.56, 143.23], ["Asia/Magadan", 59.57, 150.8], ["Asia/Sakhalin", 46.97, 142.7], ["Asia/Srednekolymsk", 67.47, 153.72], ["Asia/Kamchatka", 53.02, 158.65], ["Asia/Anadyr", 64.75, 177.48]],
+  UA: [["Europe/Simferopol", 44.95, 34.1], ["Europe/Kyiv", 50.43, 30.52]],
+  UM: [["Pacific/Midway", 28.22, -177.37], ["Pacific/Wake", 19.28, 166.62]],
+  US: [["America/New_York", 40.71, -74.01], ["America/Detroit", 42.33, -83.05], ["America/Kentucky/Louisville", 38.25, -85.76], ["America/Kentucky/Monticello", 36.83, -84.85], ["America/Indiana/Indianapolis", 39.77, -86.16], ["America/Indiana/Vincennes", 38.68, -87.53], ["America/Indiana/Winamac", 41.05, -86.6], ["America/Indiana/Marengo", 38.38, -86.34], ["America/Indiana/Petersburg", 38.49, -87.28], ["America/Indiana/Vevay", 38.75, -85.07], ["America/Chicago", 41.85, -87.65], ["America/Indiana/Tell_City", 37.95, -86.76], ["America/Indiana/Knox", 41.3, -86.62], ["America/Menominee", 45.11, -87.61], ["America/North_Dakota/Center", 47.12, -101.3], ["America/North_Dakota/New_Salem", 46.84, -101.41], ["America/North_Dakota/Beulah", 47.26, -101.78], ["America/Denver", 39.74, -104.98], ["America/Boise", 43.61, -116.2], ["America/Phoenix", 33.45, -112.07], ["America/Los_Angeles", 34.05, -118.24], ["America/Anchorage", 61.22, -149.9], ["America/Juneau", 58.3, -134.42], ["America/Sitka", 57.18, -135.3], ["America/Metlakatla", 55.13, -131.58], ["America/Yakutat", 59.55, -139.73], ["America/Nome", 64.5, -165.41], ["America/Adak", 51.88, -176.66], ["Pacific/Honolulu", 21.31, -157.86]],
+  UZ: [["Asia/Samarkand", 39.67, 66.8], ["Asia/Tashkent", 41.33, 69.3]],
+};
+
 const LEGACY_ALIASES: Readonly<Record<string, string>> = {
   "Egypt": "EG",
   "Turkey": "TR",
@@ -315,6 +353,26 @@ const COUNTRY_BY_ZONE: ReadonlyMap<string, string> = new Map([
   ...Object.entries(ZONES_BY_COUNTRY).flatMap(([country, zones]) => zones.map((zone) => [zone, country] as const)),
   ...Object.entries(LEGACY_ALIASES),
 ]);
+
+/** The zone of a multi-zone country whose zone.tab reference point is nearest to the given place (undefined for a single-zone or unknown country). */
+export function nearestZoneInCountry(countryCode: string, latitude: number, longitude: number): string | undefined {
+  const points = ZONE_REFERENCE_POINTS[countryCode.toUpperCase()];
+  if (!points) return undefined;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  // Great-circle (haversine) distance, in radians — only compared, never reported.
+  const distance = (lat: number, lon: number) => {
+    const h = Math.sin(toRad(lat - latitude) / 2) ** 2 + Math.cos(toRad(latitude)) * Math.cos(toRad(lat)) * Math.sin(toRad(lon - longitude) / 2) ** 2;
+    return Math.asin(Math.min(1, Math.sqrt(h)));
+  };
+  let best = points[0];
+  for (const point of points) if (distance(point[1], point[2]) < distance(best[1], best[2])) best = point;
+  return best[0];
+}
+
+/** The canonical zones of a country, exactly as listed in zone.tab ([] when unknown). */
+export function zonesForCountry(countryCode: string | undefined): readonly string[] {
+  return (countryCode && ZONES_BY_COUNTRY[countryCode.toUpperCase()]) || [];
+}
 
 /** The country an IANA timezone belongs to, or undefined when it doesn't identify one (unknown, "UTC", "Etc/…"). */
 export function countryForTimezone(timezone: string | undefined): string | undefined {

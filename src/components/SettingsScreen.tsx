@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AudioLines, BarChart3, Bell, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, Compass, MapPin, Palette, Trash2, Volume2 } from "lucide-react";
+import { AudioLines, BarChart3, Bell, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, MapPin, Palette, Trash2, Volume2 } from "lucide-react";
 import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
 import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
 import { loadNotificationSettings, saveNotificationSettings } from "../lib/notificationSettings";
@@ -10,7 +10,6 @@ import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { AppearanceSettings } from "./AppearanceSettings";
 import { LocationSettingsView } from "./LocationSettingsView";
-import { CalculationSettingsView } from "./CalculationSettingsView";
 import { QuranReciterSettingsView } from "./QuranReciterSettingsView";
 import { AudioAdhkarSettingsView } from "./AudioAdhkarSettingsView";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
@@ -43,7 +42,7 @@ interface SettingsScreenProps {
   onNavigateToAudio: () => void;
 }
 
-type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "notifications" | "location" | "calculation" | "quran-reciter" | "audio-adhkar";
+type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "notifications" | "location" | "quran-reciter" | "audio-adhkar";
 
 type PeriodKind = "daily" | "weekly" | "monthly" | "yearly" | "custom" | "all";
 
@@ -857,8 +856,6 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
           <NotificationsView onBack={() => setView("menu")} />
         ) : view === "location" ? (
           <LocationSettingsView onBack={() => setView("menu")} />
-        ) : view === "calculation" ? (
-          <CalculationSettingsView onBack={() => setView("menu")} />
         ) : view === "quran-reciter" ? (
           <QuranReciterSettingsView onBack={() => setView("menu")} />
         ) : view === "audio-adhkar" ? (
@@ -980,29 +977,6 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                   </span>
                   <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
                     {t.locationRowHint}
-                  </span>
-                </span>
-                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setView("calculation")}
-                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
-                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
-              >
-                <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
-                >
-                  <Compass size={18} strokeWidth={1.8} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                    {t.calculationRow}
-                  </span>
-                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-                    {t.calculationRowHint}
                   </span>
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />

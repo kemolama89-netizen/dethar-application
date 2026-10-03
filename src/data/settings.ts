@@ -2,8 +2,6 @@
 // interface terminology only. Kept alongside the other per-feature label
 // files (writtenAdhkarLabels, tasbeehLabels) rather than content.ts, which
 // is Home-Screen-specific.
-import type { CalculationMethodId } from "../lib/calculationMethods";
-import type { MadhabId } from "../lib/resolveCalculationSettings";
 import type { QuranReciterStyle } from "./quranReciters";
 
 export const settingsLabels = {
@@ -87,13 +85,6 @@ export const settingsLabels = {
     locationDetectUnavailable: "تعذّر تحديد موقعك. تأكد من تفعيل خدمة الموقع في الهاتف ثم حاول مرة أخرى.",
     locationSearchPlaceholder: "ابحث عن مدينة أو دولة",
     locationNoResults: "لا توجد نتائج مطابقة",
-    calculationRow: "طريقة الحساب والمذهب",
-    calculationRowHint: "اختر طريقة حساب المواقيت والمذهب الفقهي",
-    calculationPageTitle: "طريقة الحساب والمذهب",
-    calculationMethodSectionTitle: "طريقة الحساب",
-    calculationMadhabSectionTitle: "المذهب الفقهي",
-    calculationAutomaticLabel: "تلقائي (حسب الدولة)",
-    calculationAutomaticResolvedHint: (name: string) => `يُستخدم حاليًا: ${name}`,
     quranReciterRow: "القارئ",
     quranReciterPageTitle: "القارئ",
     quranReciterSectionTitle: "اختر القارئ لتلاوة الآيات القرآنية",
@@ -183,13 +174,6 @@ export const settingsLabels = {
     locationDetectUnavailable: "Couldn't detect your location. Make sure location services are on, then try again.",
     locationSearchPlaceholder: "Search for a city or country",
     locationNoResults: "No matching results",
-    calculationRow: "Calculation Method & Madhab",
-    calculationRowHint: "Choose the calculation method and madhab",
-    calculationPageTitle: "Calculation Method & Madhab",
-    calculationMethodSectionTitle: "Calculation Method",
-    calculationMadhabSectionTitle: "Madhab",
-    calculationAutomaticLabel: "Automatic (by country)",
-    calculationAutomaticResolvedHint: (name: string) => `Currently using: ${name}`,
     quranReciterRow: "Quran Reciter",
     quranReciterPageTitle: "Quran Reciter",
     quranReciterSectionTitle: "Choose the reciter for Quranic verses",
@@ -201,35 +185,6 @@ export const settingsLabels = {
   },
 };
 
-// Localized display names for every calculation method the registry
-// supports (see calculationMethods.ts's own SUPPORTED_CALCULATION_METHODS)
-// — kept here, not in the lib file, since lib/ is deliberately UI-string-free
-// (same separation the rest of this file already follows for settingsLabels
-// itself). English names follow each method's own commonly-used name;
-// Arabic names are the corresponding standard translation, not an official
-// religious-authority ruling — same "reasonable, widely-used" disclaimer
-// countryCalculationMethod.ts's own table already documents.
-export const calculationMethodLabels: Record<CalculationMethodId, { ar: string; en: string }> = {
-  MuslimWorldLeague: { ar: "رابطة العالم الإسلامي", en: "Muslim World League" },
-  Egyptian: { ar: "الهيئة المصرية العامة للمساحة", en: "Egyptian General Authority of Survey" },
-  Karachi: { ar: "جامعة العلوم الإسلامية - كراتشي", en: "University of Islamic Sciences, Karachi" },
-  UmmAlQura: { ar: "جامعة أم القرى - مكة المكرمة", en: "Umm Al-Qura University, Makkah" },
-  Dubai: { ar: "دبي (الإمارات)", en: "Dubai (UAE)" },
-  MoonsightingCommittee: { ar: "لجنة رؤية الهلال العالمية", en: "Moonsighting Committee Worldwide" },
-  NorthAmerica: { ar: "الجمعية الإسلامية لأمريكا الشمالية (ISNA)", en: "Islamic Society of North America (ISNA)" },
-  Kuwait: { ar: "الكويت", en: "Kuwait" },
-  Qatar: { ar: "قطر", en: "Qatar" },
-  Singapore: { ar: "سنغافورة (MUIS)", en: "Singapore (MUIS)" },
-  Tehran: { ar: "طهران (معهد الجيوفيزياء)", en: "Tehran (Institute of Geophysics)" },
-  Turkey: { ar: "تركيا (ديانت)", en: "Turkey (Diyanet)" },
-};
-
-// Localized display names for the two madhabs resolveCalculationSettings.ts
-// supports (see its own MadhabId type).
-export const madhabLabels: Record<MadhabId, { ar: string; en: string }> = {
-  shafi: { ar: "الشافعي (وغالبية المذاهب)", en: "Shafi'i (and most schools)" },
-  hanafi: { ar: "الحنفي", en: "Hanafi" },
-};
 
 // Localized recitation-style names for the Quran reciter picker (see
 // quranReciters.ts's own QuranReciterStyle type).
