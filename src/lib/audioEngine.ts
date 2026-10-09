@@ -19,7 +19,7 @@
 // (useMiscSpeech.ts, speechSynthesis) is intentionally not wired in yet —
 // it should claim the "tts" channel when real audio playback ships.
 
-export type AudioChannel = "quran" | "adhkar" | "tts";
+export type AudioChannel = "quran" | "adhkar" | "tts" | "adhan";
 
 export interface ActiveAudio {
   channel: AudioChannel;
