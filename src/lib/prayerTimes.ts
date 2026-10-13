@@ -1,37 +1,29 @@
 // DITHAR — Prayer Times calculation engine.
 //
-// Real astronomical calculation via adhan.js (the standard, maintained
-// library for this — see package.json), replacing the original Phase-1
-// placeholder: six hardcoded strings in src/data/content.ts that never
-// changed for date, season, or location (see that file's git history).
+// Real astronomical calculation via adhan.js, run entirely on the device.
+// `calculatePrayerDay` is the app's entry point: given a location
+// (coordinates + its own IANA timezone + country) and that location's
+// calendar day, it picks the location's calculation profile automatically
+// (calculationProfiles.ts), applies the profile's Ramadan rule and
+// rounding, and returns the day's six times as absolute instants.
+// `calculatePrayerTimes` is the lower-level adhan call it builds on.
 //
-// GENERALIZED (global hybrid architecture, Step 2): `calculatePrayerTimes`
-// takes a caller-supplied adhan `CalculationParameters` — method AND
-// madhab are entirely the CALLER's choice, never hardcoded in here. Today
-// there is exactly one caller (PrayerTimesPanel.tsx), and it still
-// explicitly constructs `CalculationMethod.Kuwait()` + `Madhab.Shafi` —
-// so Kuwait's calculated output is UNCHANGED, just moved from being an
-// internal constant to an explicit argument. A later step (the
-// location→country→method resolver — see calculationMethods.ts /
-// countryCalculationMethod.ts, already built but not yet wired in) will
-// make that caller choose dynamically instead.
-//
-// Coordinates are a caller-supplied Coordinates value (see
-// useCoordinates.ts for how the app obtains them — device geolocation
-// with a Kuwait City fallback) — this module has no opinion on where they
-// came from, and never guesses coordinates from timezone. `date` should
-// be the LOCAL calendar date from the app's existing Date & Time
-// foundation (src/lib/dateTime.ts) — adhan reads only the date's local
-// Y/M/D fields, so any Date instance representing the correct local day
-// works.
+// Coordinates come from useCoordinates.ts; this module never guesses them
+// from a timezone. The calendar day must be the LOCATION's (see
+// locationTime.ts), never the device's.
 import {
   Coordinates as AdhanCoordinates,
   HighLatitudeRule,
   PolarCircleResolution,
   PrayerTimes as AdhanPrayerTimes,
+  Rounding,
 } from "adhan";
 import type { CalculationParameters } from "adhan";
 import type { PrayerKey } from "../data/content";
+import { resolveCalculationProfile } from "./calculationProfiles";
+import type { CalculationProfile, RoundingRule } from "./calculationProfiles";
+import { addDays, hijriMonthOf, toAdhanDate } from "./locationTime";
+import type { LocalDate } from "./locationTime";
 
 export interface Coordinates {
   latitude: number;
@@ -66,17 +58,6 @@ export type PrayerTimesResult = Record<PrayerKey, Date>;
 // counts as a prayer, rather than each hand-rolling its own list.
 export type ReminderPrayerKey = Exclude<PrayerKey, "shuruq">;
 export const REMINDER_PRAYER_ORDER: readonly ReminderPrayerKey[] = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
-
-// Local calendar day + 1 — for computing tomorrow's Fajr (see
-// nextPrayer.ts's after-Isha wraparound case). Built from local
-// getters/constructor args (never UTC), consistent with
-// src/lib/dateTime.ts's own "local, never UTC" rule; JS's Date
-// constructor correctly rolls the month/year over on its own (e.g. Dec 31
-// + 1 day -> Jan 1 of the next year), so no manual calendar math is
-// needed here.
-export function addOneLocalDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-}
 
 // `params` is the caller's fully-built adhan CalculationParameters —
 // method and madhab are entirely its choice; this function has no opinion
@@ -121,6 +102,63 @@ export function calculatePrayerTimes(date: Date, coordinates: Coordinates, param
     maghrib: times.maghrib,
     isha: times.isha,
   };
+}
+
+/** A place to calculate for: where it is, the IANA zone it lives in, and (when known) its country. */
+export interface PrayerLocation {
+  coordinates: Coordinates;
+  timezone: string;
+  /** ISO 3166-1 alpha-2; when unknown the timezone's country is used. */
+  country?: string;
+}
+
+export interface PrayerDay {
+  /** The location's own calendar day these times belong to. */
+  localDate: LocalDate;
+  times: PrayerTimesResult;
+  /** Tomorrow's Fajr at the same location — the "next prayer" after Isha. */
+  tomorrowFajr: Date;
+  profile: CalculationProfile;
+  /** True when the profile's Ramadan Isha rule was applied for this day. */
+  ramadanRuleApplied: boolean;
+}
+
+const MINUTE_MS = 60_000;
+
+// Rounds one unrounded engine time per the profile's rule (see
+// RoundingRule). adhan's own rounding is switched off for every profile so
+// this is the only rounding step — which also avoids adhan's Rounding.Up
+// adding a whole minute to a time already exactly on the minute.
+function roundTime(time: Date, rule: RoundingRule, key: PrayerKey): Date {
+  const ms = time.getTime();
+  if (Number.isNaN(ms)) return time;
+  const floor = Math.floor(ms / MINUTE_MS) * MINUTE_MS;
+  const ceil = ms === floor ? floor : floor + MINUTE_MS;
+  if (rule === "up") return new Date(ceil);
+  if (rule === "conservative") return new Date(key === "shuruq" ? floor : ceil);
+  return new Date(ms - floor >= 30_000 ? floor + MINUTE_MS : floor);
+}
+
+function calculateRoundedDay(location: PrayerLocation, localDate: LocalDate, profile: CalculationProfile): { times: PrayerTimesResult; ramadanRuleApplied: boolean } {
+  const params = profile.build();
+  params.rounding = Rounding.None;
+  // A Ramadan rule only ever replaces an interval-based Isha (Umm al-Qura's
+  // 90 → 120 min), judged by the location's own day in the Umm al-Qura calendar.
+  const ramadanRuleApplied = profile.ramadanIshaIntervalMinutes !== undefined && params.ishaInterval > 0 && hijriMonthOf(localDate) === 9;
+  if (ramadanRuleApplied) params.ishaInterval = profile.ramadanIshaIntervalMinutes!;
+  const raw = calculatePrayerTimes(toAdhanDate(localDate), location.coordinates, params);
+  const times = Object.fromEntries((Object.keys(raw) as PrayerKey[]).map((key) => [key, roundTime(raw[key], profile.rounding, key)])) as PrayerTimesResult;
+  return { times, ramadanRuleApplied };
+}
+
+// The whole prayer day for a location: its profile is chosen automatically
+// from `location.country` (else its timezone's country, else the global
+// fallback) — there is no override of any kind.
+export function calculatePrayerDay(location: PrayerLocation, localDate: LocalDate): PrayerDay {
+  const profile = resolveCalculationProfile(location);
+  const today = calculateRoundedDay(location, localDate, profile);
+  const tomorrow = calculateRoundedDay(location, addDays(localDate, 1), profile);
+  return { localDate, times: today.times, tomorrowFajr: tomorrow.times.fajr, profile, ramadanRuleApplied: today.ramadanRuleApplied };
 }
 
 // Renders an absolute instant (a Date from calculatePrayerTimes) as a

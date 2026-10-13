@@ -17,7 +17,7 @@
 //
 // Scheduled (background) Evening playback can't run this JS, so the
 // Android service applies the same rotation itself — see
-// eveningAudioSchedule.ts and AudioAdhkarRotation (AudioAdhkarLogic.kt).
+// audioAdhkarSchedules.ts and AudioAdhkarRotation (AudioAdhkarLogic.kt).
 import { getAvailableQuranReciters, getDefaultQuranReciter, getQuranReciterById } from "../data/quranReciters";
 import type { QuranReciter } from "../data/quranReciters";
 import {

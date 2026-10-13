@@ -22,8 +22,8 @@ export function positionToDeviceRecord(position: Pick<GeolocationPosition, "coor
     latitude,
     longitude,
     timezone: getDeviceTimeZone(),
-    // Best-effort offline country estimate — `undefined` when too far from
-    // every bundled city (see reverseGeocode.ts).
+    // Offline GPS → country (bundled borders; the nearest bundled city only
+    // at sea) — see reverseGeocode.ts.
     countryCode: estimateCountryFromCoordinates({ latitude, longitude }),
   };
 }

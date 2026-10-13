@@ -10,8 +10,18 @@ import type { AudioBufferLike, AudioContextLike, BufferSourceLike } from "./webA
 import { playAudioSequence, setWebAudioForTesting } from "./webAudioSequence";
 import { REPETITION_PAUSE_MS, getNowPlaying } from "./audioAdhkarPlayback";
 import { startAudioAdhkar, stopAudioAdhkar } from "./audioAdhkarPlayer";
+import { resetAudioAdhkarScheduleSettingsMemoryForTesting, saveSectionReciterChoice } from "./audioAdhkarScheduleSettings";
 import { loadQuranRotationIndex, saveQuranReciterMode, saveQuranRotationIndex, saveSelectedQuranReciterId } from "./quranAudioPreferences";
 import { DEFAULT_QURAN_RECITER_ID } from "../data/quranReciters";
+
+// The adhan pause (each adhan + 30 min) arms a stop timer while something
+// plays; these suites count pending timers precisely, so they run without
+// adhan windows. The adhan rule has its own tests (audioAdhkarAdhanPause.test.ts).
+vi.mock("./adhanSuppression", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./adhanSuppression")>()),
+  buildAdhanWindows: () => [],
+}));
+
 
 class FakeSource implements BufferSourceLike {
   buffer: (AudioBufferLike & { url: string }) | null = null;
@@ -94,6 +104,7 @@ afterEach(() => {
   saveSelectedQuranReciterId(DEFAULT_QURAN_RECITER_ID);
   saveQuranReciterMode("specific");
   saveQuranRotationIndex(0);
+  resetAudioAdhkarScheduleSettingsMemoryForTesting();
   vi.useRealTimers();
 });
 
@@ -213,12 +224,13 @@ describe("Quranic adhkar through the Audio Adhkar player", () => {
     expect(fetched).toHaveLength(5); // each file decoded once
   });
 
-  it("keeps the rotation: one reciter per recitation, chosen once", async () => {
+  it("random rotation: one reciter per recitation, chosen once — the app-wide rotation is untouched", async () => {
     saveQuranReciterMode("rotation");
+    saveSectionReciterChoice("morning", "random");
     startAudioAdhkar("morning", morning("morning_002c"));
     await flush();
-    expect(new Set(ctx.sources.map((s) => s.buffer?.url.split("/")[3]))).toEqual(new Set(["abdulbasit-murattal"]));
-    expect(loadQuranRotationIndex()).toBe(1);
+    expect(new Set(ctx.sources.map((s) => s.buffer?.url.split("/")[3])).size).toBe(1);
+    expect(loadQuranRotationIndex()).toBe(0);
   });
 });
 
@@ -286,15 +298,23 @@ describe("basmala — before every repetition, in the reciter's own voice, never
     expect(fetched.some((u) => u.endsWith("/basmala.mp3"))).toBe(false);
   });
 
-  it("Automatic Rotation: each recitation's basmala is that recitation's reciter — no voice mixing", async () => {
-    saveQuranReciterMode("rotation");
+  it("each recitation's basmala is that recitation's reciter — no voice mixing, for every reciter and in random rotation", async () => {
     const order = ["abdulbasit-murattal", "minshawi-murattal", "husary-murattal", "alafasy-murattal", "sudais-murattal", "muaiqly-murattal", "dosari-murattal", "qatami-murattal", "banna-murattal", "mustafaismail-mujawwad"];
     for (const reciter of order) {
+      saveSectionReciterChoice("evening", reciter);
       const from = ctx.sources.length;
       startAudioAdhkar("evening", item("evening", "morning_001"));
       await flush();
       const played = ctx.sources.slice(from).map((s) => s.buffer!.url.split("/").slice(-2).join("/"));
       expect(played, reciter).toEqual(reciter === "sudais-murattal" ? [`${reciter}/002255.mp3`] : [`${reciter}/basmala.mp3`, `${reciter}/002255.mp3`]);
+      stopAudioAdhkar();
+    }
+    saveSectionReciterChoice("evening", "random");
+    for (let i = 0; i < 10; i++) {
+      const from = ctx.sources.length;
+      startAudioAdhkar("evening", item("evening", "morning_001"));
+      await flush();
+      expect(new Set(ctx.sources.slice(from).map((s) => s.buffer!.url.split("/").slice(-2)[0])).size, `random play ${i}`).toBe(1);
       stopAudioAdhkar();
     }
   });

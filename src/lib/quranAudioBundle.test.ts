@@ -3,18 +3,28 @@
 // Quran audio for the Quranic Morning/Evening adhkar: the bundled
 // EveryAyah files, how a reciter is chosen (Specific Reciter / Automatic
 // Rotation) and how a recitation plays through the Audio Adhkar player.
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { writtenAdhkarItems } from "../data/written-adhkar";
 import { QURAN_RECITERS, getAvailableQuranReciters } from "../data/quranReciters";
 import { BUNDLED_QURAN_AYAHS, quranAyahAudioPath } from "../data/quranAudioBundle";
 import { bundledQuranAudio, bundledQuranAudioPaths, resolveQuranAudio } from "./quranAudio";
 import { getMorningEveningAudioSource } from "./morningEveningAudio";
 import { saveQuranReciterMode, saveQuranRotationIndex, saveSelectedQuranReciterId, loadQuranRotationIndex } from "./quranAudioPreferences";
-import { peekQuranReciterForPlayback, takeQuranReciterForPlayback } from "./quranReciterSelection";
+import { takeQuranReciterForPlayback } from "./quranReciterSelection";
 import type { AudioElementLike } from "./audioEngine";
 import { getActiveAudio, setAudioElementFactory, stopAudio } from "./audioEngine";
 import { REPETITION_PAUSE_MS, getNowPlaying } from "./audioAdhkarPlayback";
 import { getAudioAdhkarSource, startAudioAdhkar, stopAudioAdhkar } from "./audioAdhkarPlayer";
+import { peekSectionReciter, saveSectionReciterChoice, setSectionReciterRandomForTesting } from "./audioAdhkarScheduleSettings";
+
+// The adhan pause (each adhan + 30 min) arms a stop timer while something
+// plays; these suites count pending timers precisely, so they run without
+// adhan windows. The adhan rule has its own tests (audioAdhkarAdhanPause.test.ts).
+vi.mock("./adhanSuppression", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./adhanSuppression")>()),
+  buildAdhanWindows: () => [],
+}));
+
 
 // Every bundled Quran file, keyed "/public/audio/quran/{reciter}/{SSSAAA}.mp3"
 // → its bytes as a data URI (loaded on demand).
@@ -166,22 +176,24 @@ describe("Specific Reciter mode", () => {
   });
 });
 
-describe("Automatic Rotation mode", () => {
-  beforeEach(() => saveQuranReciterMode("rotation"));
+describe("Random rotation (a section's reciter set to random)", () => {
+  beforeEach(() => saveSectionReciterChoice("morning", "random"));
+  afterEach(() => setSectionReciterRandomForTesting(null));
 
-  it("gives each recitation the next reciter in order, wrapping around, and persists the position", () => {
+  it("gives each recitation a random reciter — never the same one twice in a row — and every reciter comes up", () => {
     const kursi = item("morning", "morning_001");
     const used: string[] = [];
-    for (let i = 0; i < RECITER_IDS.length + 2; i++) {
+    for (let i = 0; i < 80; i++) {
       startAudioAdhkar("morning", kursi);
       used.push(fake.played.at(-1)!.split("/")[3]);
       stopAudioAdhkar();
     }
-    expect(used).toEqual([...RECITER_IDS, RECITER_IDS[0], RECITER_IDS[1]]);
-    expect(loadQuranRotationIndex()).toBe(2);
+    for (let i = 1; i < used.length; i++) expect(used[i], `recitation ${i + 1}`).not.toBe(used[i - 1]);
+    expect(new Set(used)).toEqual(new Set(RECITER_IDS));
   });
 
-  it("continues from the persisted position", () => {
+  it("the app-wide rotation itself is unchanged: it continues from its persisted position", () => {
+    saveQuranReciterMode("rotation");
     saveQuranRotationIndex(3);
     expect(takeQuranReciterForPlayback().id).toBe("alafasy-murattal");
     expect(takeQuranReciterForPlayback().id).toBe("sudais-murattal");
@@ -193,17 +205,21 @@ describe("Automatic Rotation mode", () => {
     expect(takeQuranReciterForPlayback().id).toBe("abdulbasit-murattal"); // wraps after all 10
   });
 
-  it("looking (rendering, availability, the scheduled playlist) never advances the rotation", () => {
-    saveQuranRotationIndex(1);
+  it("looking (rendering, availability, the scheduled playlist) never draws a new reciter", () => {
+    const shown = peekSectionReciter("morning").id;
     for (let i = 0; i < 3; i++) {
-      expect(peekQuranReciterForPlayback().id).toBe("minshawi-murattal");
+      expect(peekSectionReciter("morning").id).toBe(shown);
       getAudioAdhkarSource("morning", item("morning", "morning_002"));
     }
-    expect(loadQuranRotationIndex()).toBe(1);
+    startAudioAdhkar("morning", item("morning", "morning_001"));
+    expect(fake.played.at(-1)!.split("/")[3]).toBe(shown); // what was shown is what plays
   });
 
   it("keeps ONE reciter for all ayahs and all repetitions of a recitation; pauses 1.5 s only between repetitions", () => {
-    saveQuranRotationIndex(2);
+    // Counting pending timers exactly: keep jsdom's per-write "storage" event timers (the heard-count) out of it.
+    const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {});
+    onTestFinished(() => setItem.mockRestore());
+    setSectionReciterRandomForTesting(() => 0.2); // → Husary (index 2 of 10)
     const ikhlas = QURANIC[1];
     startAudioAdhkar("morning", item("morning", ikhlas.id));
     // jsdom queues a timer per localStorage write (its "storage" event), so
@@ -229,7 +245,6 @@ describe("Automatic Rotation mode", () => {
     const order = ikhlas.stems.map((s) => url("husary-murattal", s));
     const b = url("husary-murattal", "basmala");
     expect(fake.played).toEqual([b, ...order, b, ...order, b, ...order]); // basmala before every repetition, never between ayahs
-    expect(loadQuranRotationIndex()).toBe(3); // advanced once, for the one recitation
   });
 });
 
@@ -257,11 +272,12 @@ describe.each(["banna-murattal", "mustafaismail-mujawwad"])("new reciter %s", (r
     }
   });
 
-  it("is in Automatic Rotation, after the original eight", () => {
+  it("is in the random rotation, after the original eight", () => {
     expect(RECITER_IDS.indexOf(reciterId)).toBeGreaterThanOrEqual(8);
-    saveQuranReciterMode("rotation");
-    saveQuranRotationIndex(RECITER_IDS.indexOf(reciterId));
+    saveSectionReciterChoice("morning", "random");
+    setSectionReciterRandomForTesting(() => (RECITER_IDS.indexOf(reciterId) + 0.5) / RECITER_IDS.length);
     startAudioAdhkar("morning", item("morning", "morning_001"));
+    setSectionReciterRandomForTesting(null);
     expect(fake.played.at(-1)).toBe(url(reciterId, "basmala")); // Ayat al-Kursi starts with his own basmala
   });
 });

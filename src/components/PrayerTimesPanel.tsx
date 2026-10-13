@@ -1,16 +1,16 @@
 import { useMemo } from "react";
-import { MapPin, Bell, Moon, MoonStar, Sunrise, Sun, CloudSun, Sunset } from "lucide-react";
+import { MapPin, Bell, Headphones, Moon, MoonStar, Sunrise, Sun, CloudSun, Sunset } from "lucide-react";
 import { labels, prayerNames, prayerOrder } from "../data/content";
 import type { PrayerKey } from "../data/content";
 import { useLanguage } from "../theme/LanguageContext";
 import { useCoordinates } from "../lib/useCoordinates";
-import { addOneLocalDay, calculatePrayerTimes, formatPrayerTime } from "../lib/prayerTimes";
-import { resolveCalculationSettings } from "../lib/resolveCalculationSettings";
-import { loadCalculationOverrides } from "../lib/calculationSettings";
+import { calculatePrayerDay, formatPrayerTime } from "../lib/prayerTimes";
+import { localDateIn, localDateKey } from "../lib/locationTime";
 import { getCountryName } from "../data/cities";
 import { settingsLabels } from "../data/settings";
 import { useNextPrayerCountdown } from "../lib/useNextPrayerCountdown";
 import { usePrayerReminder } from "../lib/usePrayerReminder";
+import { useAudioAdhkarMaster } from "../lib/useAudioAdhkarMaster";
 
 const PRAYER_ICONS: Record<PrayerKey, typeof Moon> = {
   fajr: Moon,
@@ -26,17 +26,18 @@ function pad2(n: number): string {
 }
 
 // Small track+knob switch — distinct from Settings' own pill-style
-// Enable/Disable button (NotificationsView in SettingsScreen.tsx), used
+// Enable/Disable button (e.g. FloatingTasbeehView in SettingsScreen.tsx), used
 // only here since this card has no room for that button's own text label
 // (the row's existing text, e.g. "تذكير الصلاة", already serves as the
 // label — `role="switch"`/`aria-checked` communicates state instead of a
 // changing text label). Reuses existing color tokens only (--color-gold,
 // --color-primary, --color-primary-contrast) — no new palette entries.
-function ReminderSwitch({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
+function ReminderSwitch({ checked, onChange, label, name }: { checked: boolean; onChange: () => void; label: string; name: string }) {
   return (
     <button
       type="button"
       role="switch"
+      data-switch={name}
       aria-checked={checked}
       aria-label={label}
       onClick={onChange}
@@ -63,8 +64,9 @@ function ReminderSwitch({ checked, onChange, label }: { checked: boolean; onChan
 // label/value font sizes below use vw-based clamp(), which is width-based
 // and fine to keep.
 //
-// `date` (which LOCAL calendar day to calculate for) comes from the app's
-// existing Date & Time foundation (src/lib/dateTime.ts, via App.tsx) —
+// `date` (the current instant, refreshed every minute) comes from the app's
+// existing Date & Time foundation (src/lib/dateTime.ts, via App.tsx) and is
+// read in the LOCATION's timezone to get the calendar day to calculate —
 // this component never creates its own "now" for THAT purpose (the live
 // countdown below has its own, deliberately finer-grained ticker — see
 // useNextPrayerCountdown.ts's own comment for why that's not a competing
@@ -108,42 +110,24 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
         : (cityName ?? countryName ?? `${coordinates.latitude.toFixed(2)}, ${coordinates.longitude.toFixed(2)}`);
     return source === "fallback" ? `${place} · ${settingsLabels[language].locationSourceFallback}` : place;
   }, [language, cityNameAr, cityNameEn, countryCode, coordinates, source, detecting]);
-  // Step 6: the user's explicit method/madhab overrides (Settings >
-  // Calculation Method), read once per mount — same "full remount on
-  // screen switch" convention useLocationChangeDetector.ts's own doc
-  // comment documents (App.tsx wraps each screen in `key={screen}`), so
-  // navigating away to Settings and back always picks up a just-changed
-  // override without this needing its own storage-change subscription.
-  const overrides = useMemo(() => loadCalculationOverrides(), []);
-  // resolveCalculationSettings (Step 3) turns location + overrides into a
-  // ready-to-use CalculationParameters: an explicit override wins, else
-  // the active location's own country resolves a country-appropriate
-  // default (see countryCalculationMethod.ts), else Muslim World League.
-  // For the Kuwait fallback location (countryCode "KW") this resolves to
-  // the exact same CalculationMethod.Kuwait()+Shafi'i params this file
-  // used to hardcode directly — see resolveCalculationSettings.test.ts's
-  // own "Kuwait preservation" coverage — so today's default Kuwait
-  // behavior is unchanged; only a location whose country genuinely isn't
-  // Kuwait (a manually-selected city, or a country-resolved device fix)
-  // or an explicit override now changes which method is used.
-  const times = useMemo(
-    () => calculatePrayerTimes(date, coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides)),
-    [date, coordinates, countryCode, timezone, overrides],
-  );
-  // Only Fajr is ever needed from tomorrow (the after-Isha wraparound
-  // case — see nextPrayer.ts), but calculatePrayerTimes computing the
-  // other five too is cheap (plain trigonometry, no I/O) and keeps this
-  // one call site simple rather than adding a Fajr-only variant.
-  const tomorrowFajr = useMemo(
-    () =>
-      calculatePrayerTimes(addOneLocalDay(date), coordinates, resolveCalculationSettings({ coordinates, country: countryCode, timezone }, overrides))
-        .fajr,
-    [date, coordinates, countryCode, timezone, overrides],
-  );
+  // The location's own calendar day — NOT the device's: `date` is only the
+  // current instant (it ticks every minute), read in the location's
+  // timezone, so the day flips at the location's midnight even when the
+  // device sits in another zone.
+  const dayKey = localDateKey(localDateIn(date, timezone));
+  // One automatic calculation: the location's country picks its profile
+  // (calculationProfiles.ts) — no method, madhab or minute override exists.
+  // Recomputed only when the location or its calendar day changes.
+  const { times, tomorrowFajr } = useMemo(() => {
+    const [year, month, day] = dayKey.split("-").map(Number);
+    return calculatePrayerDay({ coordinates, timezone, country: countryCode }, { year, month, day });
+  }, [dayKey, coordinates, countryCode, timezone]);
 
   const nextPrayer = useNextPrayerCountdown(times, tomorrowFajr);
   // Nothing is scheduled for the placeholder while the location is still being detected.
   const reminder = usePrayerReminder(times, timezone, language, detecting);
+  // Independent of the reminder switch above: every scheduled Audio Adhkar section.
+  const audioAdhkar = useAudioAdhkarMaster();
 
   const countdownText = t.nextPrayerCountdown
     .replace("{h}", pad2(nextPrayer.remaining.hours))
@@ -210,12 +194,24 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
         className="mt-0.5 flex flex-col gap-0.5 border-t pt-px opacity-90"
         style={{ borderColor: "rgba(var(--color-primary-contrast-rgb), 0.15)", fontSize: "clamp(8px, 2.2vw, 10.5px)" }}
       >
-        <div className="flex items-center justify-end gap-2">
-          <span className="flex min-w-0 items-center gap-1">
-            <span className="truncate">{t.prayerReminder}</span>
-            <Bell size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />
+        {/* The toggles row, right above "الصلاة القادمة": the Audio Adhkar
+            master switch at the start edge (right in Arabic) and the prayer
+            reminder at the end edge, where it has always been — each switch
+            at its outer edge (justify-between). Shown while the location is
+            still being detected too. */}
+        <div className="flex items-center justify-between gap-2" data-toggles-row="">
+          <span className="flex min-w-0 items-center gap-1" data-audio-adhkar-toggle="">
+            <ReminderSwitch checked={audioAdhkar.enabled} onChange={audioAdhkar.toggle} label={t.audioAdhkarToggle} name="audio-adhkar" />
+            <Headphones size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} aria-hidden="true" />
+            <span className="truncate">{t.audioAdhkarToggle}</span>
           </span>
-          <ReminderSwitch checked={reminder.enabled} onChange={reminder.toggle} label={t.prayerReminder} />
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="flex min-w-0 items-center gap-1">
+              <span className="truncate">{t.prayerReminder}</span>
+              <Bell size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />
+            </span>
+            <ReminderSwitch checked={reminder.enabled} onChange={reminder.toggle} label={t.prayerReminder} name="prayer-notifications" />
+          </span>
         </div>
 
         {reminder.enabled && !reminder.available && (

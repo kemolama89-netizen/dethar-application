@@ -7,7 +7,7 @@
 // instead of a geocoding API). Coverage is only as good as this list; it
 // is not a claim of global completeness, just a reasonable set of major
 // world cities to search/select from, weighted toward the
-// countries already mapped in countryCalculationMethod.ts plus a few
+// countries with their own calculation profile (calculationProfiles.ts) plus a few
 // deliberately-unmapped examples (e.g. Brazil, Russia) so a user outside
 // every mapped country can still pick a city and correctly fall through
 // to the Muslim World League default there.
@@ -27,7 +27,7 @@ export interface CityRecord {
   nameAr: string;
   nameEn: string;
   /** ISO 3166-1 alpha-2 country code — the SAME code space
-   *  countryCalculationMethod.ts's table keys on. */
+   *  calculationProfiles.ts's COUNTRY_PROFILE keys on. */
   countryCode: string;
   countryNameAr: string;
   countryNameEn: string;
@@ -106,7 +106,7 @@ export const CITIES: readonly CityRecord[] = [
   // Australia
   { id: "sydney", nameAr: "سيدني", nameEn: "Sydney", countryCode: "AU", countryNameAr: "أستراليا", countryNameEn: "Australia", latitude: -33.8688, longitude: 151.2093, timezone: "Australia/Sydney" },
 
-  // Deliberately-unmapped-country examples (see countryCalculationMethod.ts)
+  // Deliberately-unmapped-country examples (see calculationProfiles.ts)
   // — exercise the Muslim World League fallback for manual selection too.
   { id: "sao-paulo", nameAr: "ساو باولو", nameEn: "São Paulo", countryCode: "BR", countryNameAr: "البرازيل", countryNameEn: "Brazil", latitude: -23.5505, longitude: -46.6333, timezone: "America/Sao_Paulo" },
   { id: "moscow", nameAr: "موسكو", nameEn: "Moscow", countryCode: "RU", countryNameAr: "روسيا", countryNameEn: "Russia", latitude: 55.7558, longitude: 37.6173, timezone: "Europe/Moscow" },

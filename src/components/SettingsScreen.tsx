@@ -1,24 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
-import { AudioLines, BarChart3, Bell, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, Compass, MapPin, Palette, Trash2, Volume2 } from "lucide-react";
+import { BarChart3, BellRing, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2 } from "lucide-react";
 import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
 import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
-import { loadNotificationSettings, saveNotificationSettings } from "../lib/notificationSettings";
-import { isNotificationsAvailable, requestNotificationPermission, scheduleReminders, cancelReminders } from "../lib/notificationService";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { AppearanceSettings } from "./AppearanceSettings";
 import { LocationSettingsView } from "./LocationSettingsView";
-import { CalculationSettingsView } from "./CalculationSettingsView";
-import { QuranReciterSettingsView } from "./QuranReciterSettingsView";
 import { AudioAdhkarSettingsView } from "./AudioAdhkarSettingsView";
+import { AudioSettingsView } from "./AudioSettingsView";
+import { PrayerNotificationsSettingsView } from "./PrayerNotificationsSettingsView";
+import { prayerNotificationLabels } from "../data/prayerNotificationLabels";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
+import { AdhanAudioSettingsView } from "./AdhanAudioSettingsView";
+import { adhanAudioLabels } from "../data/adhanAudioLabels";
 import { useLanguage } from "../theme/LanguageContext";
-import { useQuranReciter } from "../theme/QuranReciterContext";
 import { navLabels } from "../data/content";
 import { settingsLabels } from "../data/settings";
-import { writtenAdhkarItems } from "../data/written-adhkar";
+import { writtenAdhkarCategoryLabels, writtenAdhkarItems } from "../data/written-adhkar";
 import type { WrittenAdhkarCategoryKey, WrittenAdhkarItem } from "../data/written-adhkar";
 import { dhikrItems } from "../data/tasbeeh";
 import { useBackDismiss } from "../lib/backOverlays";
@@ -28,6 +28,7 @@ import {
   getEarliestLocalDate,
   getPrayerStats,
   getTasbeehStats,
+  getAudioStats,
   resolveCustomRange,
   getWirdDayStats,
   startOfWeek,
@@ -43,7 +44,7 @@ interface SettingsScreenProps {
   onNavigateToAudio: () => void;
 }
 
-type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "notifications" | "location" | "calculation" | "quran-reciter" | "audio-adhkar";
+type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "audio-settings" | "location" | "audio-adhkar" | "adhan-audio" | "prayer-notifications";
 
 type PeriodKind = "daily" | "weekly" | "monthly" | "yearly" | "custom" | "all";
 
@@ -88,6 +89,27 @@ function toWrittenRows(category: WrittenAdhkarCategoryKey, entries: DhikrBreakdo
     .map((e) => {
       const item = items.find((i) => i.id === e.dhikrId);
       return { id: e.dhikrId, label: item ? writtenLabel(item, language) : e.dhikrId, total: e.total };
+    })
+    .sort((a, b) => b.total - a.total);
+}
+
+// Audio Adhkar rows are keyed "<list>:<dhikrId>" (getAudioStats): Morning/
+// Evening name their Written dhikr, Various its Tasbeeh dhikr — each row
+// prefixed with its list, since the same dhikr can be in Morning and Evening.
+function toAudioRows(entries: DhikrBreakdownEntry[], language: "ar" | "en"): BreakdownRow[] {
+  return entries
+    .map((e) => {
+      const [list, id] = e.dhikrId.split(/:(.*)/s) as [string, string];
+      let label = id;
+      if (list === "misc") {
+        const item = dhikrItems.find((d) => String(d.id) === id);
+        if (item) label = language === "ar" ? item.dhikr_ar : item.dhikr_en;
+      } else if (list === "morning" || list === "evening") {
+        const item = writtenAdhkarItems[list].find((i) => i.id === id);
+        if (item) label = writtenLabel(item, language);
+      }
+      const listName = list === "morning" || list === "evening" || list === "misc" ? writtenAdhkarCategoryLabels[list][language] : list;
+      return { id: e.dhikrId, label: `${listName} — ${label}`, total: e.total };
     })
     .sort((a, b) => b.total - a.total);
 }
@@ -336,11 +358,14 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
   const prayer = useMemo(() => getPrayerStats(selection), [selection, refreshKey]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const tasbeeh = useMemo(() => getTasbeehStats(selection), [selection, refreshKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const audio = useMemo(() => getAudioStats(selection), [selection, refreshKey]);
 
   const morningRows = useMemo(() => toWrittenRows("morning", morning.perDhikr, language), [morning, language]);
   const eveningRows = useMemo(() => toWrittenRows("evening", evening.perDhikr, language), [evening, language]);
   const prayerRows = useMemo(() => toWrittenRows("prayer", prayer.perDhikr, language), [prayer, language]);
   const tasbeehRows = useMemo(() => toTasbeehRows(tasbeeh.perDhikr, language), [tasbeeh, language]);
+  const audioRows = useMemo(() => toAudioRows(audio.perDhikr, language), [audio, language]);
 
   function toggle(key: string) {
     setExpandedKey((prev) => (prev === key ? null : key));
@@ -500,6 +525,14 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
           expanded={expandedKey === "tasbeeh"}
           onToggle={() => toggle("tasbeeh")}
           rows={tasbeehRows}
+          emptyLabel={t.noDataYet}
+        />
+        <StatCategoryCard
+          title={t.audioTitle}
+          headline={t.totalRepetitions(audio.total)}
+          expanded={expandedKey === "audio"}
+          onToggle={() => toggle("audio")}
+          rows={audioRows}
           emptyLabel={t.noDataYet}
         />
 
@@ -703,133 +736,6 @@ function FloatingTasbeehView({ onBack }: { onBack: () => void }) {
   );
 }
 
-// Reminders' Settings entry. Entirely separate from Tasbeeh/Floating
-// Tasbeeh state — this only ever reads/writes notificationSettings.ts and
-// calls notificationService.ts, neither of which either counting system
-// touches. The enable/time preference itself is real and persists
-// regardless of platform (see notificationSettings.ts); only the actual
-// OS-level scheduling (notificationService.ts) is a no-op until a native
-// notification plugin exists — see isNotificationsAvailable's own doc
-// comment for what flips that on with no code change needed here.
-function NotificationsView({ onBack }: { onBack: () => void }) {
-  const { language, dir } = useLanguage();
-  const t = settingsLabels[language];
-  const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
-
-  const [settings, setSettings] = useState(() => loadNotificationSettings());
-  const [available] = useState(() => isNotificationsAvailable());
-
-  function reminderContent() {
-    return { title: t.notificationsReminderTitle, body: t.notificationsReminderBody };
-  }
-
-  // Called once per explicit tap on this toggle — never automatically,
-  // never in a loop — so a permission the user already answered is never
-  // re-prompted.
-  async function handleToggle() {
-    const enabling = !settings.enabled;
-    if (enabling) {
-      await requestNotificationPermission();
-    }
-    const updated = { ...settings, enabled: enabling };
-    setSettings(updated);
-    saveNotificationSettings(updated);
-    if (enabling && updated.times.length > 0) {
-      await scheduleReminders(
-        "dhikr",
-        updated.times.map((time) => ({ time, content: reminderContent() })),
-      );
-    } else {
-      await cancelReminders("dhikr");
-    }
-  }
-
-  async function handleTimeChange(value: string) {
-    const updated = { ...settings, times: value ? [value] : [] };
-    setSettings(updated);
-    saveNotificationSettings(updated);
-    if (settings.enabled) {
-      if (updated.times.length > 0) {
-        await scheduleReminders(
-          "dhikr",
-          updated.times.map((time) => ({ time, content: reminderContent() })),
-        );
-      } else {
-        await cancelReminders("dhikr");
-      }
-    }
-  }
-
-  return (
-    <div className="flex flex-1 flex-col">
-      <div className="mt-1 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onBack}
-          aria-label={t.back}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-          style={{ boxShadow: "inset 0 0 0 1.5px var(--color-gold)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
-        >
-          <BackIcon size={18} strokeWidth={1.8} />
-        </button>
-        <h1 className="min-w-0 flex-1 truncate text-center text-[17px] font-bold" style={{ color: "var(--color-text-primary)" }}>
-          {t.notificationsPageTitle}
-        </h1>
-        <div className="h-9 w-9 shrink-0" aria-hidden="true" />
-      </div>
-
-      <div className="mt-4 flex flex-col gap-3 rounded-2xl border p-4" style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}>
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-              {t.notificationsRow}
-            </p>
-            <p className="mt-0.5 text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-              {settings.enabled ? t.notificationsEnabledStatus : t.notificationsDisabledStatus}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => void handleToggle()}
-            aria-pressed={settings.enabled}
-            aria-label={settings.enabled ? t.notificationsDisableLabel : t.notificationsEnableLabel}
-            className="shrink-0 rounded-full border px-4 py-1.5 text-[12.5px] font-medium"
-            style={{
-              borderColor: settings.enabled ? "var(--color-gold)" : "var(--color-gold-soft)",
-              background: settings.enabled ? "var(--color-primary)" : "var(--color-surface)",
-              color: settings.enabled ? "var(--color-gold)" : "var(--color-text-primary)",
-            }}
-          >
-            {settings.enabled ? t.notificationsDisableLabel : t.notificationsEnableLabel}
-          </button>
-        </div>
-
-        {settings.enabled && (
-          <div className="flex items-center justify-between gap-3">
-            <label htmlFor="notification-reminder-time" className="text-[13px]" style={{ color: "var(--color-text-primary)" }}>
-              {t.notificationsTimeLabel}
-            </label>
-            <input
-              id="notification-reminder-time"
-              type="time"
-              value={settings.times[0] ?? ""}
-              onChange={(e) => void handleTimeChange(e.target.value)}
-              className="rounded-lg border px-2 py-1 text-[13px]"
-              style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
-            />
-          </div>
-        )}
-
-        {!available && (
-          <p className="text-[11.5px] leading-[1.6]" style={{ color: "var(--color-text-muted)" }}>
-            {t.notificationsUnavailableNote}
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // Settings is otherwise empty today — Statistics is its first (and only)
 // section, reached as a sub-view rather than a new main navigation item,
 // per spec. BottomNav's own "settings" nav item is what lands here; this
@@ -840,7 +746,6 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
   const nav = navLabels[language];
   const t = settingsLabels[language];
   const [view, setView] = useState<SettingsView>("menu");
-  const { selectedReciter } = useQuranReciter();
   const ForwardIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
 
   return (
@@ -853,16 +758,16 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
           <AppearanceSettings onBack={() => setView("menu")} />
         ) : view === "floating-tasbeeh" ? (
           <FloatingTasbeehView onBack={() => setView("menu")} />
-        ) : view === "notifications" ? (
-          <NotificationsView onBack={() => setView("menu")} />
+        ) : view === "audio-settings" ? (
+          <AudioSettingsView onBack={() => setView("menu")} />
         ) : view === "location" ? (
           <LocationSettingsView onBack={() => setView("menu")} />
-        ) : view === "calculation" ? (
-          <CalculationSettingsView onBack={() => setView("menu")} />
-        ) : view === "quran-reciter" ? (
-          <QuranReciterSettingsView onBack={() => setView("menu")} />
+        ) : view === "prayer-notifications" ? (
+          <PrayerNotificationsSettingsView onBack={() => setView("menu")} />
         ) : view === "audio-adhkar" ? (
           <AudioAdhkarSettingsView onBack={() => setView("menu")} />
+        ) : view === "adhan-audio" ? (
+          <AdhanAudioSettingsView onBack={() => setView("menu")} />
         ) : (
           <div className="flex flex-1 flex-col">
             <h1 className="mt-2 text-center text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}>
@@ -941,7 +846,8 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
 
               <button
                 type="button"
-                onClick={() => setView("notifications")}
+                onClick={() => setView("audio-settings")}
+                data-settings-row="audio-settings"
                 className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
                 style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
               >
@@ -949,14 +855,38 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
                   style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
                 >
-                  <Bell size={18} strokeWidth={1.8} />
+                  <SlidersHorizontal size={18} strokeWidth={1.8} />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                    {t.notificationsRow}
+                    {t.audioSettingsRow}
                   </span>
                   <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-                    {t.notificationsRowHint}
+                    {t.audioSettingsRowHint}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("prayer-notifications")}
+                data-settings-row="prayer-notifications"
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <BellRing size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {prayerNotificationLabels[language].row}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {prayerNotificationLabels[language].rowHint}
                   </span>
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
@@ -987,52 +917,6 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
 
               <button
                 type="button"
-                onClick={() => setView("calculation")}
-                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
-                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
-              >
-                <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
-                >
-                  <Compass size={18} strokeWidth={1.8} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                    {t.calculationRow}
-                  </span>
-                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-                    {t.calculationRowHint}
-                  </span>
-                </span>
-                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setView("quran-reciter")}
-                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
-                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
-              >
-                <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
-                >
-                  <AudioLines size={18} strokeWidth={1.8} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                    {t.quranReciterRow}
-                  </span>
-                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-                    {selectedReciter.name[language]}
-                  </span>
-                </span>
-                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setView("audio-adhkar")}
                 className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
                 style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
@@ -1049,6 +933,29 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                   </span>
                   <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
                     {audioAdhkarSettingsLabels[language].rowHint}
+                  </span>
+                </span>
+                <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setView("adhan-audio")}
+                className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+              >
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}
+                >
+                  <Megaphone size={18} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    {adhanAudioLabels[language].row}
+                  </span>
+                  <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                    {adhanAudioLabels[language].rowHint}
                   </span>
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />

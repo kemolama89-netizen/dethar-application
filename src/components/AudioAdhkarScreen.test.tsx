@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { act } from "react";
 import type { ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { AudioAdhkarListScreen, AudioAdhkarScreen, AudioMiscCategoriesScreen } from "./AudioAdhkarScreen";
+import { AudioAdhkarListScreen, AudioAdhkarScreen } from "./AudioAdhkarScreen";
 import { audioAdhkarPlayback, getNowPlaying } from "../lib/audioAdhkarPlayback";
 import { setAudioElementFactory, stopAudio } from "../lib/audioEngine";
 import type { AudioElementLike } from "../lib/audioEngine";
@@ -11,9 +11,10 @@ import { LanguageProvider } from "../theme/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
 import { writtenAdhkarItems } from "../data/written-adhkar";
-import { MISC_CATEGORY_ORDER, MISC_DUAS } from "../data/misc-library";
+import { AUDIO_VARIOUS_ITEMS } from "../data/audio-adhkar";
 import { LANGUAGE_STORAGE_KEY } from "../lib/appearancePreferences";
-import { getUserRepeatCount, setUserRepeatCount } from "../lib/audioUserRepeat";
+import { setUserRepeatCount } from "../lib/audioUserRepeat";
+import { commitAudioCompletions, resetAudioAdhkarCountsMemoryForTesting } from "../lib/audioAdhkarCounts";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -80,13 +81,21 @@ describe("AudioAdhkarScreen", () => {
     });
   }
 
-  it("lists each Various category's items, in order, with their exact Arabic text", () => {
-    for (const key of MISC_CATEGORY_ORDER) {
-      render(<AudioAdhkarListScreen {...nav} list={{ kind: "misc", key }} onBack={noop} />);
-      const expected = MISC_DUAS.filter((i) => i.categories.includes(key));
-      expect(renderedIds(), key).toEqual(expected.map((i) => i.id));
-      const text = container.textContent ?? "";
-      for (const item of expected) expect(text).toContain(item.text_ar);
+  it("lists every Tasbeeh dhikr under Various, in order, with its exact Arabic text", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    expect(renderedIds()).toEqual(AUDIO_VARIOUS_ITEMS.map((i) => i.id));
+    expect(renderedIds()).not.toContain("tasbeeh-13");
+    const text = container.textContent ?? "";
+    expect(text).toContain("أذكار وأدعية متفرقة");
+    for (const item of AUDIO_VARIOUS_ITEMS) expect(text).toContain(item.text_ar);
+  });
+
+  it("shows each Various dhikr's virtue and source when it has them", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    for (const item of AUDIO_VARIOUS_ITEMS) {
+      const card = container.querySelector(`[data-dhikr-id="${item.id}"]`)!;
+      if (item.virtue_ar) expect(card.textContent, item.id).toContain(item.virtue_ar);
+      if (item.source_ar) expect(card.textContent, item.id).toContain(item.source_ar);
     }
   });
 });
@@ -113,13 +122,13 @@ describe("AudioAdhkarListScreen secondary information", () => {
 
   it("keeps Transliteration collapsed until its control is tapped", () => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, "en");
-    const item = MISC_DUAS.find((i) => i.englishTransliteration)!;
-    render(<AudioAdhkarListScreen {...nav} list={{ kind: "misc", key: item.categories[0] }} onBack={noop} />);
+    const item = writtenAdhkarItems.morning.find((i) => i.transliteration_en)!;
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
     const card = container.querySelector(`[data-dhikr-id="${item.id}"]`)!;
-    expect(card.textContent).not.toContain(item.englishTransliteration);
+    expect(card.textContent).not.toContain(item.transliteration_en);
 
     click(trigger(card, "Transliteration")!);
-    expect(dialog()?.textContent).toContain(item.englishTransliteration);
+    expect(dialog()?.textContent).toContain(item.transliteration_en);
     click(trigger(card, "Transliteration")!);
     expect(dialog()).toBeNull();
   });
@@ -143,49 +152,31 @@ describe("AudioAdhkarListScreen navigation and repetition status", () => {
     expect(backs).toBe(1);
   });
 
-  it("pins the back arrow on the Various sub-category list too", () => {
-    render(<AudioMiscCategoriesScreen {...nav} onBack={noop} onSelectCategory={noop} />);
+  it("pins the back arrow on the Various list too", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
     const back = [...container.querySelectorAll<HTMLButtonElement>('button[aria-label="رجوع"]')];
     expect(back).toHaveLength(1);
     expect(back[0].className).toContain("sticky");
   });
 
-  const indicator = (id: string) => container.querySelector(`[data-dhikr-id="${id}"] [data-repetition-indicator]`) as HTMLElement;
-
-  it("shows the repetition circle as a status, not a button — one per dhikr", () => {
-    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
-    const all = container.querySelectorAll("[data-repetition-indicator]");
-    expect(all).toHaveLength(writtenAdhkarItems.evening.length);
-    for (const el of all) {
-      expect(el.tagName).not.toBe("BUTTON");
-      expect(el.closest("button")).toBeNull();
-      expect(el.querySelector("button")).toBeNull();
-      expect(el.getAttribute("data-playback-status")).toBe("idle");
+  it("shows no count anywhere — no repetition circle, no «N مرات», no count picker", () => {
+    for (const key of ["morning", "evening"] as const) {
+      render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key }} onBack={noop} />);
+      expect(container.querySelector("[data-repetition-indicator]"), key).toBeNull();
+      expect(container.querySelector("[data-user-repeat-count]"), key).toBeNull();
+      expect(container.textContent, key).not.toMatch(/\d+ مرات|مرة واحدة/);
+      // The text and sources stay.
+      for (const item of writtenAdhkarItems[key]) expect(container.textContent).toContain(item.text_ar);
     }
-  });
-
-  it("tapping the circle changes nothing — only playback state moves it", () => {
-    const item = writtenAdhkarItems.evening.find((i) => (i.repeat ?? 1) === 3 && !i.unboundedCount)!;
-    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
-    const before = indicator(item.id).getAttribute("aria-label");
-    click(indicator(item.id));
-    expect(indicator(item.id).getAttribute("aria-label")).toBe(before);
-
-    act(() => audioAdhkarPlayback.startDhikr({ collection: "evening", itemId: item.id }, 3));
-    expect(indicator(item.id).getAttribute("aria-label")).toBe("التكرار الحالي 1 من 3");
-    act(() => audioAdhkarPlayback.repetitionEnded());
-    expect(indicator(item.id).getAttribute("aria-label")).toBe("التكرار الحالي 2 من 3");
-    act(() => audioAdhkarPlayback.repetitionEnded());
-    expect(indicator(item.id).textContent).toContain("3");
-    act(() => audioAdhkarPlayback.repetitionEnded());
-    expect(indicator(item.id).getAttribute("data-playback-status")).toBe("finished");
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    expect(container.querySelector("[data-repetition-indicator]")).toBeNull();
   });
 
   it("does not light up the same id in the other collection", () => {
     const item = writtenAdhkarItems.morning[0];
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
     act(() => audioAdhkarPlayback.startDhikr({ collection: "evening", itemId: item.id }, 1));
-    expect(indicator(item.id).getAttribute("data-playback-status")).toBe("idle");
+    expect(container.querySelector(`[data-dhikr-id="${item.id}"]`)!.hasAttribute("data-active-dhikr")).toBe(false);
   });
 });
 
@@ -231,35 +222,66 @@ describe("Evening audio player", () => {
     expect(withPlayer).toEqual(["morning_001", "morning_002", "morning_002b", "morning_002c", "morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_014", "morning_015", "morning_016", "morning_017", "morning_018", "morning_020", "morning_023"]);
   });
 
-  it("morning_023: Listen is disabled until the user picks a count; the pick sets the total", () => {
+  it("morning_023 (no fixed count) plays without asking for a count — once, or the count chosen earlier", () => {
     setUserRepeatCount("morning_023", null);
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
-    const select = card("morning_023").querySelector<HTMLSelectElement>("[data-user-repeat-count]")!;
-    expect(select.value).toBe("");
-    expect(playerButton("morning_023")!.disabled).toBe(true);
-    act(() => {
-      select.value = "4";
-      select.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-    expect(getUserRepeatCount("morning_023")).toBe(4);
+    expect(card("morning_023").querySelector("[data-user-repeat-count]")).toBeNull();
     expect(playerButton("morning_023")!.disabled).toBe(false);
     click(playerButton("morning_023")!);
-    expect(getNowPlaying()).toMatchObject({ itemId: "morning_023", repetition: 1, total: 4, status: "playing" });
-    expect(select.disabled).toBe(true);
+    expect(getNowPlaying()).toMatchObject({ itemId: "morning_023", repetition: 1, total: 1, status: "playing" });
+    act(() => stopAudio());
+    setUserRepeatCount("morning_023", 4);
+    click(playerButton("morning_023")!);
+    expect(getNowPlaying()).toMatchObject({ itemId: "morning_023", total: 4 });
     setUserRepeatCount("morning_023", null);
   });
 
-  it("offers no player in Various", () => {
-    render(<AudioAdhkarListScreen {...nav} list={{ kind: "misc", key: "istighfar" }} onBack={noop} />);
-    expect(container.querySelector("[data-audio-player-slot] button")).toBeNull();
+  it("offers Listen on exactly the recorded Various dhikr, each with its own local file", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    const withPlayer = AUDIO_VARIOUS_ITEMS.filter((i) => playerButton(i.id)).map((i) => i.id);
+    expect(withPlayer).toEqual(AUDIO_VARIOUS_ITEMS.map((i) => i.id));
+    for (const item of AUDIO_VARIOUS_ITEMS) {
+      expect(card(item.id).querySelector("[data-audio-player-slot]")!.getAttribute("data-audio-source"), item.id).toBe(`/${item.audio}`);
+    }
+    expect(container.textContent).not.toContain("قريبًا");
   });
 
-  it("Listen → Pause → Resume, with the active card and repetition indicator following playback", () => {
+  it("plays tasbeeh_14.mp3 for «…اللهم اغفر لي، اللهم ارحمني، اللهم ارزقني»", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    expect(card("tasbeeh-14").querySelector("[data-audio-player-slot]")!.getAttribute("data-audio-source")).toBe("/audio/audio-azkar/tasbeeh_14.mp3");
+    click(playerButton("tasbeeh-14")!);
+    expect(getNowPlaying()).toMatchObject({ collection: "misc", itemId: "tasbeeh-14", total: 1, status: "playing" });
+    act(() => ended?.());
+    expect(getNowPlaying()).toMatchObject({ itemId: "tasbeeh-14", status: "finished" });
+  });
+
+  it("plays a Various dhikr once: Listen → Pause → Resume → finished", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    click(playerButton("tasbeeh-10")!);
+    expect(getNowPlaying()).toMatchObject({ collection: "misc", itemId: "tasbeeh-10", repetition: 1, total: 1, status: "playing" });
+    expect(card("tasbeeh-10").hasAttribute("data-active-dhikr")).toBe(true);
+    click(playerButton("tasbeeh-10")!);
+    expect(getNowPlaying()?.status).toBe("paused");
+    click(playerButton("tasbeeh-10")!);
+    expect(getNowPlaying()?.status).toBe("playing");
+    act(() => ended?.());
+    expect(getNowPlaying()).toMatchObject({ itemId: "tasbeeh-10", status: "finished" });
+    expect(card("tasbeeh-10").hasAttribute("data-active-dhikr")).toBe(false);
+  });
+
+  it("starting another Various dhikr replaces the one playing", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    click(playerButton("tasbeeh-1")!);
+    click(playerButton("tasbeeh-16")!);
+    expect(getNowPlaying()).toMatchObject({ itemId: "tasbeeh-16", status: "playing" });
+    expect(card("tasbeeh-1").hasAttribute("data-active-dhikr")).toBe(false);
+  });
+
+  it("Listen → Pause → Resume, with the active card following playback", () => {
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
     click(playerButton("morning_016")!);
     expect(getNowPlaying()).toMatchObject({ collection: "evening", itemId: "morning_016", repetition: 1, status: "playing" });
     expect(card("morning_016").hasAttribute("data-active-dhikr")).toBe(true);
-    expect(card("morning_016").querySelector("[data-repetition-indicator]")!.getAttribute("data-playback-status")).toBe("playing");
     expect(playerButton("morning_016")!.textContent).toBe("إيقاف مؤقت");
 
     click(playerButton("morning_016")!);
@@ -270,7 +292,7 @@ describe("Evening audio player", () => {
     expect(getNowPlaying()).toMatchObject({ repetition: 1, status: "playing" });
 
     act(() => ended?.());
-    expect(card("morning_016").querySelector("[data-repetition-indicator]")!.getAttribute("data-playback-status")).toBe("finished");
+    expect(getNowPlaying()).toMatchObject({ itemId: "morning_016", status: "finished" });
     expect(card("morning_016").hasAttribute("data-active-dhikr")).toBe(false);
   });
 
@@ -281,3 +303,34 @@ describe("Evening audio player", () => {
     expect(getNowPlaying()).toBeNull();
   });
 });
+
+describe("Audio Adhkar heard counts on the cards", () => {
+  const countOf = (id: string) => container.querySelector(`[data-dhikr-id="${id}"] [data-audio-count]`);
+
+  it("every Morning, Evening and Various card shows how many times it was heard — 0 at first", () => {
+    resetAudioAdhkarCountsMemoryForTesting();
+    for (const list of [{ kind: "written", key: "morning" }, { kind: "written", key: "evening" }, { kind: "various" }] as const) {
+      render(<AudioAdhkarListScreen {...nav} list={list} onBack={noop} />);
+      const cards = container.querySelectorAll("[data-dhikr-id]");
+      expect(cards.length).toBeGreaterThan(0);
+      for (const card of cards) expect(card.querySelector("[data-audio-count]")!.textContent).toBe("عدد مرات الاستماع: 0");
+    }
+  });
+
+  it("updates live, per dhikr and per list", () => {
+    resetAudioAdhkarCountsMemoryForTesting();
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    act(() => {
+      commitAudioCompletions([
+        { id: "ui-1", collection: "misc", dhikrId: "tasbeeh-2" },
+        { id: "ui-2", collection: "misc", dhikrId: "tasbeeh-2" },
+        { id: "ui-3", collection: "evening", dhikrId: "morning_005" },
+      ]);
+    });
+    expect(countOf("tasbeeh-2")!.getAttribute("data-audio-count")).toBe("2");
+    expect(countOf("tasbeeh-3")!.getAttribute("data-audio-count")).toBe("0");
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
+    expect(countOf("morning_005")!.getAttribute("data-audio-count")).toBe("0"); // heard in Evening, not Morning
+  });
+});
+

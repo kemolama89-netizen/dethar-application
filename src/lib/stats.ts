@@ -32,7 +32,7 @@ import type { WrittenAdhkarCategoryKey } from "../data/written-adhkar";
 
 const STORAGE_KEY = "dithar:stats:events:v1";
 
-export type StatSource = "written" | "tasbeeh" | "floating"; // future: "audio"
+export type StatSource = "written" | "tasbeeh" | "floating" | "audio";
 
 interface RepetitionEvent {
   ts: number;
@@ -48,6 +48,8 @@ interface RepetitionEvent {
   category?: WrittenAdhkarCategoryKey;
   /** Stable Dhikr id (string form of the Written Adhkar id, or the Tasbeeh numeric id) — never the display text, so re-wording content later doesn't orphan history. */
   dhikrId: string;
+  /** Audio Adhkar only: the completion's unique id — the same completion is never recorded twice. */
+  eventId?: string;
 }
 
 interface WirdCompleteEvent {
@@ -130,7 +132,7 @@ let cache: StatEvent[] | null = null;
 const CORRUPT_BACKUP_KEY = `${STORAGE_KEY}:corrupt-backup`;
 
 const LOCAL_DATE_SHAPE = /^\d{4}-\d{2}-\d{2}$/;
-const STAT_SOURCES: readonly string[] = ["written", "tasbeeh", "floating"];
+const STAT_SOURCES: readonly string[] = ["written", "tasbeeh", "floating", "audio"];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -169,6 +171,7 @@ function sanitizeStoredEvent(value: unknown): StatEvent | null {
     if (dhikrId === null) return null;
     const event: RepetitionEvent = { ts, localDate, localTime, timeZone, kind, source: value.source as StatSource, dhikrId };
     if (typeof value.category === "string") event.category = value.category as WrittenAdhkarCategoryKey;
+    if (typeof value.eventId === "string" && value.eventId !== "") event.eventId = value.eventId;
     return event;
   }
 
@@ -422,6 +425,39 @@ export function recordFloatingTasbeehRepetitions(entries: FloatingTasbeehBatchEn
   if (wrote) persist();
 }
 
+// ---- Audio Adhkar ----------------------------------------------------------
+// One event per repetition whose audio played to its end (in the app, or by
+// the Android background player — see audioAdhkarCounts.ts), tagged with its
+// list ("morning" | "evening" | "misc") and the dhikr's SHARED identity:
+// Morning/Evening use the Written Adhkar id; Various ("misc") uses the
+// Tasbeeh id, since those are the Tasbeeh dhikr — which is why
+// getTasbeehStats counts them too. `eventId` makes recording idempotent:
+// a completion delivered twice (a repeated event, a restart before it was
+// acknowledged) is recorded once.
+
+export interface AudioRepetition {
+  category: "morning" | "evening" | "misc";
+  dhikrId: string;
+  eventId: string;
+  occurredAt?: FloatingTasbeehOccurredAt;
+}
+
+/** Records each not-yet-recorded completion once; returns how many were new. */
+export function recordAudioRepetitions(entries: AudioRepetition[]): number {
+  const events = load();
+  const seen = new Set<string>();
+  for (const e of events) if (e.kind === "repetition" && e.eventId) seen.add(e.eventId);
+  let added = 0;
+  for (const entry of entries) {
+    if (seen.has(entry.eventId)) continue;
+    seen.add(entry.eventId);
+    events.push({ ...(entry.occurredAt ?? nowStamp()), kind: "repetition", source: "audio", category: entry.category, dhikrId: entry.dhikrId, eventId: entry.eventId });
+    added++;
+  }
+  if (added > 0) persist();
+  return added;
+}
+
 // Legacy events recorded before this file tracked explicit local
 // date/time/timezone only had `ts` — this derives the same local date from
 // it (using the device's CURRENT timezone, the best available fallback) so
@@ -565,8 +601,23 @@ export function getTasbeehStats(selection: StatSelection): TasbeehStats {
   // comment above. A user tapping the floating counter must see the exact
   // same running total as tapping inside the app, not a second, separate
   // number.
+  // Audio Adhkar's Various list IS the Tasbeeh dhikr (same ids): a
+  // repetition heard there counts toward the same Tasbeeh totals too.
   const reps = events.filter(
-    (e): e is RepetitionEvent => e.kind === "repetition" && (e.source === "tasbeeh" || e.source === "floating"),
+    (e): e is RepetitionEvent =>
+      e.kind === "repetition" && (e.source === "tasbeeh" || e.source === "floating" || (e.source === "audio" && e.category === "misc")),
   );
   return { total: reps.length, perDhikr: repetitionBreakdown(reps) };
+}
+
+export interface AudioStats {
+  total: number;
+  /** Keyed "<list>:<dhikrId>" (e.g. "evening:morning_005", "misc:3") — Morning and Evening share dhikr. */
+  perDhikr: DhikrBreakdownEntry[];
+}
+
+/** Every Audio Adhkar repetition heard to the end, in the selected period. */
+export function getAudioStats(selection: StatSelection): AudioStats {
+  const reps = inSelection(load(), selection).filter((e): e is RepetitionEvent => e.kind === "repetition" && e.source === "audio");
+  return { total: reps.length, perDhikr: repetitionBreakdown(reps.map((e) => ({ ...e, dhikrId: `${e.category}:${e.dhikrId}` }))) };
 }

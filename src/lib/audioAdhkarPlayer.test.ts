@@ -16,6 +16,15 @@ import {
   stopAudioAdhkar,
 } from "./audioAdhkarPlayer";
 
+// The adhan pause (each adhan + 30 min) arms a stop timer while something
+// plays; these suites count pending timers precisely, so they run without
+// adhan windows. The adhan rule has its own tests (audioAdhkarAdhanPause.test.ts).
+vi.mock("./adhanSuppression", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./adhanSuppression")>()),
+  buildAdhanWindows: () => [],
+}));
+
+
 class FakeAudio implements AudioElementLike {
   src = "";
   played: string[] = [];
@@ -249,11 +258,13 @@ describe("morning_023 — no fixed count, the user chooses how many times it pla
     expect(bytes("public/audio/adhkar/shared/اللهم صل على محمد.mp3")).toBeTruthy();
   });
 
-  it("does not play at all until a count is chosen (never loops, never assumes 1)", () => {
-    expect(audioRepetitionTotal(evening("morning_023"))).toBeNull();
-    expect(startAudioAdhkar("evening", evening("morning_023"))).toBe(false);
-    expect(getNowPlaying()).toBeNull();
-    expect(fake.played).toEqual([]);
+  it("plays once when no count was chosen (Audio Adhkar asks for none), never loops", () => {
+    expect(audioRepetitionTotal(evening("morning_023"))).toBe(1);
+    expect(startAudioAdhkar("evening", evening("morning_023"))).toBe(true);
+    expect(getNowPlaying()).toMatchObject({ itemId: "morning_023", repetition: 1, total: 1, status: "playing" });
+    fake.end();
+    expect(getNowPlaying()).toMatchObject({ status: "finished" });
+    expect(fake.played).toHaveLength(1);
   });
 
   it("plays exactly the chosen number of times, then finishes", () => {

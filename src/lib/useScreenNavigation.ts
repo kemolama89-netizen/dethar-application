@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { App as CapacitorApp } from "@capacitor/app";
+import { exitAppSafely } from "./appExit";
 import { Capacitor } from "@capacitor/core";
 import { backOverlayCount, dismissTopBackOverlay, subscribeBackOverlays } from "./backOverlays";
 
@@ -85,7 +86,7 @@ export function useScreenNavigation<S extends string>(root: S) {
       let handle: { remove: () => Promise<void> } | null = null;
       void CapacitorApp.addListener("backButton", () => {
         if (dismissTopBackOverlay()) return;
-        if (!goBack()) void CapacitorApp.exitApp();
+        if (!goBack()) void exitAppSafely();
       }).then((h) => {
         if (removed) void h.remove();
         else handle = h;

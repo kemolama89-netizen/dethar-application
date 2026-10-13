@@ -19,7 +19,8 @@
 // (useMiscSpeech.ts, speechSynthesis) is intentionally not wired in yet —
 // it should claim the "tts" channel when real audio playback ships.
 
-export type AudioChannel = "quran" | "adhkar" | "tts";
+/** "preview": the short volume sample of Settings → إعدادات الصوت (lib/volumePreview.ts). */
+export type AudioChannel = "quran" | "adhkar" | "tts" | "adhan" | "preview";
 
 export interface ActiveAudio {
   channel: AudioChannel;
@@ -176,6 +177,7 @@ export interface AudioElementLike {
   onerror: (() => void) | null;
   preload?: string;
   currentTime?: number;
+  volume?: number;
 }
 
 let createElement: () => AudioElementLike = () => new Audio() as unknown as AudioElementLike;
@@ -203,6 +205,8 @@ function getStandbyElement(): AudioElementLike | null {
 export interface PlayUrlQueueOptions {
   /** Start the FIRST file this many seconds in (e.g. past a basmala heard on an earlier repetition). */
   startAt?: number;
+  /** The app's own gain for this audio, 0–1 (audioVolumeSettings.ts); default 1. */
+  volume?: number;
   onEnded?: () => void;
   onError?: () => void;
   /** Another source took over, or stopAudio() was called — not called when the queue ends or fails by itself. */
@@ -274,9 +278,11 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
     standbyIndex = index + 1;
   };
 
+  const volume = Math.min(1, Math.max(0, options.volume ?? 1));
   const playCurrent = () => {
     element.onended = onEnded;
     element.onerror = fail;
+    element.volume = volume;
     element.src = urls[index];
     if (index === 0 && options.startAt) element.currentTime = options.startAt;
     start(element, fail);
@@ -299,6 +305,7 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
       finished.onerror = null;
       element = standby;
       standby = finished;
+      element.volume = volume;
       element.onended = onEnded;
       element.onerror = fail;
       start(element, () => {

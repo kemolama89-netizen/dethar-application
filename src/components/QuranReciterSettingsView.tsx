@@ -2,11 +2,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { useQuranReciter } from "../theme/QuranReciterContext";
 import { settingsLabels, quranReciterStyleLabels } from "../data/settings";
-import { OptionRow } from "./CalculationSettingsView";
+import { OptionRow } from "./OptionRow";
 
 // Settings > Quran Reciter — a plain UI over QuranReciterProvider (the
 // single source of truth for the selected reciter; it persists the choice
-// itself). Same header and OptionRow pattern as CalculationSettingsView.
+// itself). Same header and OptionRow pattern as the other Settings sub-pages.
 // Affects Quran recitation only; non-Quran adhkar audio never reads it.
 // Mode: one specific reciter (pick below), or automatic rotation through
 // all of them (the list then shows the rotation order). The recitations'

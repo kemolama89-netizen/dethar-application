@@ -1,7 +1,7 @@
 // Persisted settings for scheduled Evening Audio Adhkar
 // (Settings → إعدادات الأذكار الصوتية → أذكار المساء). Same localStorage
 // pattern as the app's other settings (see prayerReminderSettings.ts).
-// This is the JS source of truth; eveningAudioSchedule.ts pushes it to the
+// This is the JS source of truth; audioAdhkarSchedules.ts pushes it to the
 // native Android scheduler, which keeps its own copy only so the alarm can
 // fire while the app isn't running.
 const STORAGE_KEY = "dithar:audio-adhkar:evening:v1";

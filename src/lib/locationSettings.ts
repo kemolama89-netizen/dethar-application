@@ -150,6 +150,19 @@ function save(data: LocationSettingsData): void {
   }
 }
 
+// Notified after the manual or automatic location is saved — e.g. so
+// scheduled Audio Adhkar can recompute its adhan windows for the new place.
+const locationListeners = new Set<() => void>();
+
+export function subscribeLocationChanges(listener: () => void): () => void {
+  locationListeners.add(listener);
+  return () => locationListeners.delete(listener);
+}
+
+function notifyLocationChanged(): void {
+  for (const listener of locationListeners) listener();
+}
+
 // Sets (or, passed `null`, clears) the sticky manual override.
 // Deliberately does NOT touch `lastActiveLocation` — that field means
 // specifically "the last location the AUTOMATIC (device-GPS/Kuwait-
@@ -165,6 +178,7 @@ function save(data: LocationSettingsData): void {
 export function saveManualLocation(location: ActiveLocationRecord | null): void {
   const current = loadLocationSettings();
   save({ ...current, manualLocation: location });
+  notifyLocationChanged();
 }
 
 // Records whatever became active WITHOUT touching the manual override —
@@ -173,6 +187,7 @@ export function saveManualLocation(location: ActiveLocationRecord | null): void 
 export function saveLastActiveLocation(location: ActiveLocationRecord): void {
   const current = loadLocationSettings();
   save({ ...current, lastActiveLocation: location });
+  notifyLocationChanged();
 }
 
 // Records (or, passed `null`, clears) which device-timezone mismatch the

@@ -12,7 +12,7 @@ import {
 } from "../lib/quranAudioPreferences";
 import type { QuranReciterMode } from "../lib/quranAudioPreferences";
 import { stopAudio } from "../lib/audioEngine";
-import { syncEveningAudioSchedule } from "../lib/eveningAudioSchedule";
+import { syncAudioAdhkarSchedules } from "../lib/audioAdhkarSchedules";
 
 interface QuranReciterContextValue {
   selectedReciterId: string;
@@ -52,7 +52,7 @@ export function QuranReciterProvider({ children }: { children: ReactNode }) {
     stopAudio("quran");
     setSelectedReciterIdState(id);
     saveSelectedQuranReciterId(id);
-    void syncEveningAudioSchedule().catch(() => {});
+    void syncAudioAdhkarSchedules().catch(() => {});
   }, []);
 
   const [mode, setModeState] = useState<QuranReciterMode>(() => loadQuranReciterMode());
@@ -63,7 +63,7 @@ export function QuranReciterProvider({ children }: { children: ReactNode }) {
     stopAudio("quran");
     setModeState(next);
     saveQuranReciterMode(next);
-    void syncEveningAudioSchedule().catch(() => {});
+    void syncAudioAdhkarSchedules().catch(() => {});
   }, []);
 
   const value = useMemo<QuranReciterContextValue>(

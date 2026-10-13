@@ -1,8 +1,8 @@
-// Regression coverage for the offline nearest-bundled-city country
-// estimator (Step 7) — no timers, no storage, no network, just the pure
-// lookup itself.
+// Regression coverage for the offline GPS → country lookup: bundled
+// country borders first, the nearest bundled city only at sea — no timers,
+// no storage, no network, just the pure lookup itself.
 import { describe, expect, it } from "vitest";
-import { estimateCountryFromCoordinates, MAX_MATCH_DISTANCE_KM } from "./reverseGeocode";
+import { countryAtCoordinates, estimateCountryFromCoordinates, MAX_MATCH_DISTANCE_KM } from "./reverseGeocode";
 
 describe("estimateCountryFromCoordinates", () => {
   it("returns the exact bundled city's own country for an exact coordinate match", () => {
@@ -22,25 +22,32 @@ describe("estimateCountryFromCoordinates", () => {
     expect(estimateCountryFromCoordinates(nearLondon)).toBe("GB");
   });
 
-  it("returns undefined when even the closest bundled city is far beyond MAX_MATCH_DISTANCE_KM", () => {
-    // Open Pacific Ocean — thousands of km from every bundled city.
-    expect(estimateCountryFromCoordinates({ latitude: 0, longitude: -160 })).toBeUndefined();
+  it("on land, the country comes from the borders — however far from every bundled city", () => {
+    // Each of these is hundreds of km from the nearest bundled city (or nearer a neighbour's).
+    expect(estimateCountryFromCoordinates({ latitude: 28.3835, longitude: 36.5662 })).toBe("SA"); // Tabuk
+    expect(estimateCountryFromCoordinates({ latitude: 17.5656, longitude: 44.2289 })).toBe("SA"); // Najran
+    expect(estimateCountryFromCoordinates({ latitude: 17.0151, longitude: 54.0924 })).toBe("OM"); // Salalah
+    expect(estimateCountryFromCoordinates({ latitude: 25.6872, longitude: 32.6396 })).toBe("EG"); // Luxor
+    expect(estimateCountryFromCoordinates({ latitude: -2.5337, longitude: 140.7181 })).toBe("ID"); // Jayapura
+    expect(estimateCountryFromCoordinates({ latitude: 61.2181, longitude: -149.9003 })).toBe("US"); // Anchorage
+    expect(estimateCountryFromCoordinates({ latitude: 22.785, longitude: 5.5228 })).toBe("DZ"); // Tamanrasset
+    expect(estimateCountryFromCoordinates({ latitude: 26.4207, longitude: 50.0888 })).toBe("SA"); // Dammam — nearest bundled city is Manama
+    expect(estimateCountryFromCoordinates({ latitude: 1.0456, longitude: 104.0305 })).toBe("ID"); // Batam — nearest bundled city is Singapore
+  });
+
+  it("uses territory-level codes matching tzdata (Svalbard SJ, Puerto Rico PR)", () => {
+    expect(countryAtCoordinates({ latitude: 78.2232, longitude: 15.6267 })).toBe("SJ");
+    expect(countryAtCoordinates({ latitude: 18.4655, longitude: -66.1057 })).toBe("PR");
+  });
+
+  it("at sea, falls back to the nearest bundled city within MAX_MATCH_DISTANCE_KM", () => {
+    const gulf = { latitude: 27.0, longitude: 51.0 }; // open water between Bahrain and Qatar
+    expect(countryAtCoordinates(gulf)).toBeUndefined();
+    expect(["BH", "QA"]).toContain(estimateCountryFromCoordinates(gulf));
     expect(MAX_MATCH_DISTANCE_KM).toBe(300);
   });
 
-  it("distance exactly at the threshold boundary still resolves; just beyond it does not (relative to Kuwait City, the nearest bundled city in this range)", () => {
-    const KUWAIT = { latitude: 29.3759, longitude: 47.9774 };
-    // Pure latitude offsets (no longitude change) so 1 degree is a
-    // constant ~111.32 km regardless of location, unlike longitude which
-    // scales by cos(latitude) — makes the two test points' real distance
-    // to Kuwait City easy to reason about precisely. Baghdad (the next-
-    // nearest bundled city in this direction) is ~370-450 km away from
-    // both points, so Kuwait City stays the nearest match either way and
-    // this test genuinely isolates the MAX_MATCH_DISTANCE_KM cutoff.
-    const justUnder = { latitude: KUWAIT.latitude + 2.5, longitude: KUWAIT.longitude }; // ~278 km
-    const justOver = { latitude: KUWAIT.latitude + 2.9, longitude: KUWAIT.longitude }; // ~323 km
-
-    expect(estimateCountryFromCoordinates(justUnder)).toBe("KW");
-    expect(estimateCountryFromCoordinates(justOver)).toBeUndefined();
+  it("in open ocean far from everything, returns undefined — never a wrong guess", () => {
+    expect(estimateCountryFromCoordinates({ latitude: -40, longitude: -30 })).toBeUndefined(); // South Atlantic
   });
 });

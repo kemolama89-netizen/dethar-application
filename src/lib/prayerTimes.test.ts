@@ -14,12 +14,12 @@
 import { describe, expect, it } from "vitest";
 import { CalculationMethod, Coordinates as AdhanCoordinates, Madhab, PrayerTimes as AdhanPrayerTimes } from "adhan";
 import { calculatePrayerTimes, formatPrayerTime, KUWAIT_CITY_COORDINATES } from "./prayerTimes";
-import { getCalculationParameters } from "./calculationMethods";
+import { CALCULATION_PROFILES } from "./calculationProfiles";
 
 const KUWAIT_TZ = "Asia/Kuwait";
 
-// Exactly what PrayerTimesPanel.tsx's own kuwaitCalculationParams()
-// constructs — a fresh instance per call, since calculatePrayerTimes
+// Kuwait's own adhan parameters (what the bundled "kuwait" profile builds)
+// — a fresh instance per call, since calculatePrayerTimes
 // mutates whatever it's given (see that function's own doc comment).
 function kuwaitParams() {
   const params = CalculationMethod.Kuwait();
@@ -83,14 +83,10 @@ describe("calculatePrayerTimes", () => {
   // --- Step 2: generalized engine — Kuwait behavior preservation ---
 
   describe("generalized engine — Kuwait output is unchanged", () => {
-    it("Kuwait via the app's own kuwaitParams() helper matches the calculationMethods.ts registry's Kuwait entry exactly", () => {
+    it("Kuwait via the app's own kuwaitParams() helper matches the bundled Kuwait profile exactly", () => {
       const date = new Date("2026-09-14T00:00:00Z");
       const viaDirectCall = calculatePrayerTimes(date, KUWAIT_CITY_COORDINATES, kuwaitParams());
-      const viaRegistry = (() => {
-        const params = getCalculationParameters("Kuwait");
-        params.madhab = Madhab.Shafi;
-        return params;
-      })();
+      const viaRegistry = CALCULATION_PROFILES.kuwait.build();
       const viaRegistryResult = calculatePrayerTimes(date, KUWAIT_CITY_COORDINATES, viaRegistry);
       expect(viaRegistryResult).toEqual(viaDirectCall);
     });
@@ -122,16 +118,16 @@ describe("calculatePrayerTimes", () => {
   describe("generalized engine — different CalculationParameters change the result", () => {
     it("Kuwait vs Muslim World League produce different Isha for the same coordinates/date (17.5° vs 17° angle)", () => {
       const date = new Date("2026-09-14T00:00:00Z");
-      const kuwait = calculatePrayerTimes(date, KUWAIT_CITY_COORDINATES, getCalculationParameters("Kuwait"));
-      const mwl = calculatePrayerTimes(date, KUWAIT_CITY_COORDINATES, getCalculationParameters("MuslimWorldLeague"));
+      const kuwait = calculatePrayerTimes(date, KUWAIT_CITY_COORDINATES, CalculationMethod.Kuwait());
+      const mwl = calculatePrayerTimes(date, KUWAIT_CITY_COORDINATES, CalculationMethod.MuslimWorldLeague());
       expect(kuwait.isha.getTime()).not.toBe(mwl.isha.getTime());
     });
 
     it("Shafi'i vs Hanafi madhab produce different Asr for the same coordinates/date/method", () => {
       const date = new Date("2026-09-14T00:00:00Z");
-      const shafiParams = getCalculationParameters("Kuwait");
+      const shafiParams = CalculationMethod.Kuwait();
       shafiParams.madhab = Madhab.Shafi;
-      const hanafiParams = getCalculationParameters("Kuwait");
+      const hanafiParams = CalculationMethod.Kuwait();
       hanafiParams.madhab = Madhab.Hanafi;
 
       const shafi = calculatePrayerTimes(date, KUWAIT_CITY_COORDINATES, shafiParams);
@@ -148,7 +144,7 @@ describe("calculatePrayerTimes", () => {
   describe("high-latitude and polar-circle safety net", () => {
     it("a high-latitude location (Reykjavik, ~64°N) still produces valid, chronologically-ordered times", () => {
       const reykjavik = { latitude: 64.1466, longitude: -21.9426 };
-      const times = calculatePrayerTimes(new Date("2026-06-21T00:00:00Z"), reykjavik, getCalculationParameters("MuslimWorldLeague"));
+      const times = calculatePrayerTimes(new Date("2026-06-21T00:00:00Z"), reykjavik, CalculationMethod.MuslimWorldLeague());
       const order = [times.fajr, times.shuruq, times.dhuhr, times.asr, times.maghrib, times.isha];
       for (const t of order) expect(Number.isNaN(t.getTime())).toBe(false);
       for (let i = 1; i < order.length; i++) {
@@ -158,7 +154,7 @@ describe("calculatePrayerTimes", () => {
 
     it("a true polar-circle location during polar day (Svalbard, ~78°N, summer solstice) does NOT produce invalid (NaN) times — the bug the AqrabBalad default closes", () => {
       const svalbard = { latitude: 78.2232, longitude: 15.6267 };
-      const times = calculatePrayerTimes(new Date("2026-06-21T00:00:00Z"), svalbard, getCalculationParameters("MuslimWorldLeague"));
+      const times = calculatePrayerTimes(new Date("2026-06-21T00:00:00Z"), svalbard, CalculationMethod.MuslimWorldLeague());
       for (const t of [times.fajr, times.shuruq, times.dhuhr, times.asr, times.maghrib, times.isha]) {
         expect(Number.isNaN(t.getTime())).toBe(false);
       }
@@ -169,7 +165,7 @@ describe("calculatePrayerTimes", () => {
       // Deliberately calling adhan directly (bypassing calculatePrayerTimes
       // entirely) with its own untouched default params — this is the
       // "before the fix" baseline this file's own doc comment refers to.
-      const params = getCalculationParameters("MuslimWorldLeague");
+      const params = CalculationMethod.MuslimWorldLeague();
       const raw = new AdhanPrayerTimes(
         new AdhanCoordinates(svalbard.latitude, svalbard.longitude),
         new Date("2026-06-21T00:00:00Z"),

@@ -58,6 +58,8 @@ export interface AudioAdhkarNowPlaying extends AudioAdhkarRef {
   /** Total repetitions, or null when the dhikr has no fixed count. */
   total: number | null;
   status: "playing" | "paused" | "finished";
+  /** The reciter heard now (a Quranic recitation), when reliably known — never guessed. */
+  reciter?: string;
 }
 
 export type AudioAdhkarPlaybackState = AudioAdhkarNowPlaying | null;
@@ -66,8 +68,10 @@ export type AudioAdhkarPlaybackState = AudioAdhkarNowPlaying | null;
 // Pure transitions
 // ---------------------------------------------------------------------
 
-export function startedState(ref: AudioAdhkarRef, total: number | null): AudioAdhkarNowPlaying {
-  return { collection: ref.collection, itemId: ref.itemId, repetition: 1, total, status: "playing" };
+export function startedState(ref: AudioAdhkarRef, total: number | null, reciter?: string): AudioAdhkarNowPlaying {
+  const started: AudioAdhkarNowPlaying = { collection: ref.collection, itemId: ref.itemId, repetition: 1, total, status: "playing" };
+  if (reciter) started.reciter = reciter;
+  return started;
 }
 
 export function afterRepetitionEnded(state: AudioAdhkarPlaybackState): AudioAdhkarPlaybackState {
@@ -103,7 +107,7 @@ export function subscribeAudioAdhkarPlayback(listener: () => void): () => void {
 }
 
 export const audioAdhkarPlayback = {
-  startDhikr: (ref: AudioAdhkarRef, total: number | null) => set(startedState(ref, total)),
+  startDhikr: (ref: AudioAdhkarRef, total: number | null, reciter?: string) => set(startedState(ref, total, reciter)),
   repetitionEnded: () => set(afterRepetitionEnded(state)),
   pause: () => set(withStatus(state, "playing", "paused")),
   resume: () => set(withStatus(state, "paused", "playing")),

@@ -38,10 +38,13 @@ export const labels = {
     // prayerNames below) — never concatenated by hand, so word order stays
     // grammatically correct in both languages.
     prayerReminderNotificationBody: "حان الآن وقت صلاة {prayer}",
+    // A scheduled prayer notification's title: the prayer and its local time (as the Prayer Times card shows it).
+    prayerNotificationTitle: "صلاة {prayer} — {time}",
     // Next Prayer + live countdown (see useNextPrayerCountdown.ts). "{h}"/
     // "{m}"/"{s}" are replaced with zero-padded numbers, "{s}" ticking live
     // every second.
     nextPrayerHeading: "الصلاة القادمة",
+    audioAdhkarToggle: "الأذكار الصوتية التلقائية",
     nextPrayerCountdown: "متبقي {h} ساعة و {m} دقيقة و {s} ثانية",
     // Location-change confirmation prompt (see useLocationChangeDetector.ts
     // / LocationChangePrompt.tsx) — shown only when the device's own
@@ -84,7 +87,9 @@ export const labels = {
     prayerReminderUnavailableNote: "Actual notifications will activate once available in this build.",
     prayerReminderNotificationTitle: "It's time to pray",
     prayerReminderNotificationBody: "It's now time for {prayer} prayer",
+    prayerNotificationTitle: "{prayer} prayer — {time}",
     nextPrayerHeading: "Next Prayer",
+    audioAdhkarToggle: "Automatic Audio Adhkar",
     nextPrayerCountdown: "{h} hours, {m} minutes and {s} seconds remaining",
     locationChangeTitle: "Your location appears to have changed.",
     locationChangeBody: "Please update your location to keep prayer times accurate.",

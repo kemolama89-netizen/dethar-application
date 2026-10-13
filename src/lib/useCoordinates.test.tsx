@@ -87,7 +87,7 @@ describe("useCoordinates — no manual location set", () => {
     await unmount();
   });
 
-  it("upgrades to the device fix (paired with the device's own timezone, not Kuwait's) once geolocation succeeds", async () => {
+  it("upgrades to the device fix (paired with the location's own timezone, not Kuwait's) once geolocation succeeds", async () => {
     Object.defineProperty(navigator, "geolocation", {
       configurable: true,
       value: {
@@ -99,7 +99,10 @@ describe("useCoordinates — no manual location set", () => {
     const { unmount } = await mount();
     expect(latest).toEqual({
       coordinates: { latitude: 51.5072, longitude: -0.1276 },
-      timezone: getDeviceTimeZone(),
+      // The device's zone when it is a United Kingdom zone; otherwise (this
+      // test machine's own zone, e.g. UTC) the UK's single zone — the fix is
+      // in London, so its prayer times are London's.
+      timezone: "Europe/London",
       source: "device",
       // Step 7: this exactly matches cities.ts's own London entry, so the
       // offline reverse-geocode estimate resolves to the United Kingdom.
@@ -109,18 +112,18 @@ describe("useCoordinates — no manual location set", () => {
     await unmount();
   });
 
-  it("a device fix too far from every bundled city (Step 7's offline estimate) has no countryCode — never a wrong guess", async () => {
+  it("a device fix on no country's territory and far from every bundled city has no countryCode — never a wrong guess", async () => {
     Object.defineProperty(navigator, "geolocation", {
       configurable: true,
       value: {
         getCurrentPosition: (success: PositionCallback) => {
-          success({ coords: { latitude: 0, longitude: -160 } } as GeolocationPosition); // open Pacific Ocean
+          success({ coords: { latitude: -40, longitude: -30 } } as GeolocationPosition); // open South Atlantic
         },
       },
     });
     const { unmount } = await mount();
     expect(latest).toEqual({
-      coordinates: { latitude: 0, longitude: -160 },
+      coordinates: { latitude: -40, longitude: -30 },
       timezone: getDeviceTimeZone(),
       source: "device",
       detecting: false,
@@ -163,7 +166,9 @@ describe("useCoordinates — no manual location set", () => {
       value: { getCurrentPosition: () => {} }, // never resolves in this test — only the INITIAL state matters here
     });
     const { unmount } = await mount();
-    expect(latest).toEqual({ coordinates: { latitude: 48.8566, longitude: 2.3522 }, timezone: "Europe/Paris", source: "device", detecting: false });
+    // The stored record predates border lookup (no countryCode): the
+    // coordinates still identify France.
+    expect(latest).toEqual({ coordinates: { latitude: 48.8566, longitude: 2.3522 }, timezone: "Europe/Paris", countryCode: "FR", source: "device", detecting: false });
     await unmount();
   });
 });

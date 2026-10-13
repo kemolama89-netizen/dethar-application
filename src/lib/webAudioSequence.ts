@@ -30,11 +30,18 @@ export interface BufferSourceLike {
   start(when: number, offset?: number): void;
   stop(): void;
 }
+export interface GainNodeLike {
+  gain: { value: number };
+  connect(destination: unknown): unknown;
+  disconnect(): void;
+}
 export interface AudioContextLike {
   readonly currentTime: number;
   readonly state: string;
   readonly destination: unknown;
   createBufferSource(): BufferSourceLike;
+  /** Absent on minimal test fakes: then the sequence plays at full gain. */
+  createGain?(): GainNodeLike;
   decodeAudioData(data: ArrayBuffer): Promise<AudioBufferLike>;
   resume(): Promise<void>;
   suspend(): Promise<void>;
@@ -61,6 +68,7 @@ export function setWebAudioForTesting(options: { createContext?: () => AudioCont
   sharedContext = undefined;
   decoded = new Map();
   previousUrls = [];
+  liveSequences = 0;
 }
 
 /** One AudioContext for the whole app (browsers limit how many may exist). */
@@ -102,6 +110,12 @@ function decodeAll(context: AudioContextLike, urls: readonly string[]): Promise<
   return Promise.all(urls.map((url) => keep.get(url)!));
 }
 
+// Sequences currently holding the context. When the last one ends the
+// context is suspended: a running AudioContext keeps the audio output
+// (and its rendering thread) alive, playing silence — a battery drain for
+// nothing. The next sequence resumes it.
+let liveSequences = 0;
+
 /** How far ahead of "now" the first ayah is scheduled, so it never starts late. */
 const START_LEAD_SECONDS = 0.05;
 
@@ -117,10 +131,25 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
   if (!context) return playUrlQueue(channel, key, urls, options);
 
   let active = true;
+  let live = true;
+  liveSequences += 1;
   const sources: BufferSourceLike[] = [];
+  // The app's own volume (audioVolumeSettings.ts), through one gain node when the context has them.
+  const gain = options.volume !== undefined && options.volume !== 1 && context.createGain ? context.createGain() : null;
+  if (gain) {
+    gain.gain.value = Math.min(1, Math.max(0, options.volume!));
+    gain.connect(context.destination);
+  }
+  const output = gain ?? context.destination;
 
   const halt = () => {
     active = false;
+    if (live) {
+      live = false;
+      liveSequences -= 1;
+      if (liveSequences === 0) void context.suspend().catch(() => {});
+    }
+    gain?.disconnect();
     for (const source of sources) {
       source.onended = null;
       try {
@@ -170,7 +199,7 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
         const offset = i === 0 ? Math.min(options.startAt ?? 0, buffer.duration) : 0;
         const source = context.createBufferSource();
         source.buffer = buffer;
-        source.connect(context.destination);
+        source.connect(output);
         if (i === buffers.length - 1) {
           source.onended = () => {
             if (!active) return;

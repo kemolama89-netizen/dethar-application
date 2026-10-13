@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Power } from "lucide-react";
-import { App as CapacitorApp } from "@capacitor/app";
-import { Capacitor } from "@capacitor/core";
+import { exitAppSafely } from "../lib/appExit";
 import { useLanguage } from "../theme/LanguageContext";
 import { exitAppLabels } from "../data/exitApp";
 import { useBackDismiss } from "../lib/backOverlays";
@@ -32,9 +31,10 @@ export function ExitAppButton() {
 
   function handleConfirm() {
     setConfirmOpen(false);
-    if (Capacitor.isNativePlatform()) {
-      void CapacitorApp.exitApp();
-    }
+    // Closes the UI only; prayer notifications, the adhan and Audio Adhkar
+    // stay scheduled natively. Waits for any schedule change still on its
+    // way to native first (see lib/appExit.ts).
+    void exitAppSafely();
   }
 
   return (

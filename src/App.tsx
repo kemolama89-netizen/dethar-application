@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useScreenNavigation } from "./lib/useScreenNavigation";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
@@ -35,6 +35,8 @@ import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen
 import type { AudioAdhkarList } from "./components/AudioAdhkarScreen";
 import { startFloatingOpenRouteRequests, startFloatingTasbeehSync } from "./lib/floatingTasbeehSync";
 import { isAudioAdhkarNativeAvailable } from "./lib/audioAdhkarNative";
+import { startPrayerNotificationSync, syncPrayerNotifications } from "./lib/prayerNotifications";
+import { discardLegacyCalculationOverrides } from "./lib/legacyCalculationSettings";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -71,7 +73,6 @@ const SettingsScreen = lazy(loadSettingsScreen);
 const MiscLibraryScreen = lazy(loadMiscLibraryScreen);
 const MiscCategoryScreen = lazy(loadMiscCategoryScreen);
 const AudioAdhkarScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarScreen })));
-const AudioMiscCategoriesScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioMiscCategoriesScreen })));
 const AudioAdhkarListScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarListScreen })));
 
 // Fetches a lazy screen's chunk ahead of the user actually navigating to
@@ -167,6 +168,9 @@ function HomeScreen({
   // anchor exists yet (this mount is the genuine first launch); the effect
   // below then persists exactly that value, once.
   const [installationAnchorDateKey] = useState(() => loadInstallationAnchorDateKey() ?? dateKey);
+  // Prayer times are automatic now — drop any method/madhab choice an older
+  // version stored (nothing reads it; this just keeps storage clean).
+  useEffect(() => discardLegacyCalculationOverrides(), []);
   useEffect(() => {
     if (loadInstallationAnchorDateKey() === null) {
       saveInstallationAnchorDateKey(installationAnchorDateKey);
@@ -479,7 +483,7 @@ function HomeScreen({
   );
 }
 
-type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings" | "audio" | "audio-misc" | "audio-list";
+type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings" | "audio" | "audio-list";
 
 // Minimal in-memory screen switcher — no router dependency added. Screens
 // don't keep their own transient state across a switch (theme/language are
@@ -507,6 +511,21 @@ function AppRouter() {
   // screen instead of leaving the app.
   const { screen, navigate: setScreen } = useScreenNavigation<Screen>("home");
   const [writtenCategory, setWrittenCategory] = useState<WrittenAdhkarCategoryKey>("morning");
+
+  // Android only: schedules prayer-time notifications from the saved
+  // choices and keeps them current (launch, return to the app, location
+  // changes — see lib/prayerNotifications.ts); a language change re-syncs
+  // too, since each notification's text is in the interface language.
+  const { language } = useLanguage();
+  useEffect(() => startPrayerNotificationSync(), []);
+  const languageSynced = useRef(language);
+  useEffect(() => {
+    if (languageSynced.current === language) return;
+    languageSynced.current = language;
+    void syncPrayerNotifications(new Date(), language).catch(() => {});
+    // The Misc "paused for prayer" notifications are in the interface language too.
+    if (isAudioAdhkarNativeAvailable()) void import("./lib/audioAdhkarSchedules").then((m) => m.syncAudioAdhkarSchedules()).catch(() => {});
+  }, [language]);
   // Which Misc-library category the detail screen should open — same
   // pattern as `writtenCategory` above, set right before switching to
   // "misc-category" and simply left as-is on the way back.
@@ -696,27 +715,7 @@ function AppRouter() {
           <AudioAdhkarScreen
             {...audioNav}
             onSelectCategory={(key) => {
-              if (key === "misc") {
-                setScreen("audio-misc");
-                return;
-              }
-              setAudioList({ kind: "written", key });
-              setScreen("audio-list");
-            }}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "audio-misc") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <AudioMiscCategoriesScreen
-            {...audioNav}
-            onBack={() => setScreen("audio")}
-            onSelectCategory={(key) => {
-              setAudioList({ kind: "misc", key });
+              setAudioList(key === "misc" ? { kind: "various" } : { kind: "written", key });
               setScreen("audio-list");
             }}
           />
@@ -731,7 +730,7 @@ function AppRouter() {
           <AudioAdhkarListScreen
             {...audioNav}
             list={audioList}
-            onBack={() => setScreen(audioList.kind === "misc" ? "audio-misc" : "audio")}
+            onBack={() => setScreen("audio")}
           />
         </Suspense>
       </div>
@@ -774,16 +773,16 @@ export default function App() {
     startFloatingTasbeehSync();
   }, []);
 
-  // Android only: re-arms scheduled Evening Audio Adhkar from saved
-  // settings and mirrors the native background player's state (see
-  // lib/eveningAudioSchedule.ts). Loaded lazily so the adhkar data stays
+  // Android only: re-arms scheduled Audio Adhkar (Morning, Evening, Misc)
+  // from saved settings and mirrors the native background player's state
+  // (see lib/audioAdhkarSchedules.ts). Loaded lazily so the adhkar data stays
   // out of the startup bundle.
   useEffect(() => {
     if (!isAudioAdhkarNativeAvailable()) return;
     let cancelled = false;
     let stop: (() => void) | undefined;
-    void import("./lib/eveningAudioSchedule").then((m) => {
-      if (!cancelled) stop = m.startEveningAudioNativeSync();
+    void import("./lib/audioAdhkarSchedules").then((m) => {
+      if (!cancelled) stop = m.startAudioAdhkarNativeSync();
     });
     return () => {
       cancelled = true;
