@@ -114,6 +114,7 @@ export const navLabels = {
     audioAdhkar: "الأذكار المسموعة",
     home: "الرئيسية",
     writtenAdhkar: "الأذكار المكتوبة",
+    quran: "المصحف",
     tasbih: "السبحة",
   },
   en: {
@@ -121,6 +122,7 @@ export const navLabels = {
     audioAdhkar: "Audio Adhkar",
     home: "Home",
     writtenAdhkar: "Written Adhkar",
+    quran: "Mushaf",
     tasbih: "Tasbeeh",
   },
 };

@@ -26,6 +26,14 @@ import { AudioAdhkarNative, isAudioAdhkarNativeAvailable } from "../lib/audioAdh
 import type { AudioAdhkarDiagnostics, NativeSection } from "../lib/audioAdhkarNative";
 import { getAvailableQuranReciters } from "../data/quranReciters";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
+import { audioAdhkarOptionLabel } from "../data/audioAdhkarOptionLabels";
+import { dailyDayTimesLabels, occasionLabels, weeklyScheduleLabels } from "../data/scheduleLabels";
+import { WEEKDAYS, loadDailyDayTimes, saveDailyDayTimes } from "../lib/weeklySchedule";
+import { hijriDateOf, loadOccasionSettings, occasionFor, saveOccasionSettings } from "../lib/islamicOccasions";
+import { HIJRI_ADJUSTMENT_MAX, HIJRI_ADJUSTMENT_MIN, loadHijriAdjustment, saveHijriAdjustment } from "../lib/hijriAdjustment";
+import { getDateTimeInfo } from "../lib/dateTime";
+import { REMINDER_SOUNDS, loadReminderSound, previewReminderSound, saveReminderSound, stopReminderSoundPreview } from "../lib/adhkarReminderSounds";
+import type { ReminderSoundChoice } from "../lib/adhkarReminderSounds";
 import { useAudioAdhkarMaster } from "../lib/useAudioAdhkarMaster";
 
 // Settings → إعدادات الأذكار الصوتية: three independent sections —
@@ -44,7 +52,7 @@ function Header({ title, onBack }: { title: string; onBack: () => void }) {
   const { language, dir } = useLanguage();
   const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
   return (
-    <div className="mt-1 flex items-center gap-2">
+    <div className="dithar-sticky-header mt-1 flex items-center gap-2">
       <button
         type="button"
         onClick={onBack}
@@ -311,6 +319,8 @@ async function askForNotificationsOnEnable(enabling: boolean) {
  */
 function AdhkarChecklist({ section, items, onChange }: { section: ScheduleSection; items: { id: string; title: string }[]; onChange: () => void }) {
   const { language } = useLanguage();
+  // Shown in the interface language; saved by id only (audioAdhkarOptionLabels.ts).
+  const label = (item: { id: string; title: string }) => audioAdhkarOptionLabel(section, item.id, language) ?? { title: item.title };
   const t = audioAdhkarSettingsLabels[language];
   const [excluded, setExcluded] = useState<Set<string>>(() => new Set(loadExcludedAdhkar(section)));
   const selected = items.filter((item) => !excluded.has(item.id)).length;
@@ -354,11 +364,221 @@ function AdhkarChecklist({ section, items, onChange }: { section: ScheduleSectio
           <li key={item.id}>
             <label className="flex cursor-pointer items-start gap-2 py-1 text-[13px]" style={primaryText}>
               <input type="checkbox" data-adhkar-id={item.id} checked={!excluded.has(item.id)} onChange={() => toggle(item.id)} className="mt-1 shrink-0" style={{ accentColor: "var(--color-primary)" }} />
-              <span className="line-clamp-2 min-w-0">{item.title}</span>
+              <span className="min-w-0">
+                <span className="line-clamp-2 block" dir={language === "en" ? "ltr" : "rtl"}>
+                  {label(item).title}
+                </span>
+                {label(item).subtitle && (
+                  <span className="line-clamp-1 block text-[11.5px]" style={muted}>
+                    {label(item).subtitle}
+                  </span>
+                )}
+              </span>
             </label>
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Morning/Evening "customize by day": an optional start time per weekday
+ * (empty = the usual start time). Saved by weekday index; the plan stays
+ * inside the section's prayer-time window either way.
+ */
+function DailyDayTimes({ section, onChange }: { section: DailySection; onChange: () => void }) {
+  const { language } = useLanguage();
+  const t = dailyDayTimesLabels[language];
+  const days = weeklyScheduleLabels[language].weekdays;
+  const [times, setTimes] = useState<string[]>(() => loadDailyDayTimes(section));
+  const set = (day: number, value: string) => {
+    const next = times.map((v, i) => (i === day ? value : v));
+    setTimes(next);
+    saveDailyDayTimes(section, next);
+    onChange();
+  };
+  return (
+    <details className="rounded-xl border px-3 py-2" style={{ borderColor: "var(--color-gold-soft)" }} data-day-times={section} open={times.some(Boolean)}>
+      <summary className="cursor-pointer text-[13px] font-medium" style={primaryText}>
+        {t.summary}
+      </summary>
+      <p className="mt-2 text-[11.5px] leading-[1.6]" style={muted}>
+        {t.hint}
+      </p>
+      <div className="mt-2 flex flex-col gap-1.5">
+        {WEEKDAYS.map((day) => (
+          <div key={day} className="flex items-center justify-between gap-3">
+            <label htmlFor={`${section}-day-${day}`} className="text-[12.5px]" style={primaryText}>
+              {days[day]}
+            </label>
+            <div className="flex items-center gap-2">
+              {!times[day] && (
+                <span className="text-[11px]" style={muted}>
+                  {t.usual}
+                </span>
+              )}
+              <input id={`${section}-day-${day}`} type="time" value={times[day]} onChange={(e) => set(day, e.target.value)} className={INPUT_CLASS} style={INPUT_STYLE} />
+              {times[day] && (
+                <button type="button" onClick={() => set(day, "")} className="text-[11px] underline" style={muted}>
+                  {t.clear}
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
+/** Misc: Fridays and Islamic occasions (lib/islamicOccasions.ts) — on/off, the Hijri adjustment, today's status, the evidence. */
+function OccasionsCard({ onChange }: { onChange: () => void }) {
+  const { language } = useLanguage();
+  const t = occasionLabels[language];
+  const [enabled, setEnabled] = useState(() => loadOccasionSettings().enabled);
+  const [adjustment, setAdjustment] = useState(() => loadHijriAdjustment());
+  const now = new Date();
+  const today = enabled ? occasionFor(now, adjustment) : null;
+  const hijriKnown = hijriDateOf(now, adjustment) !== null;
+
+  function toggle() {
+    saveOccasionSettings({ enabled: !enabled });
+    setEnabled(!enabled);
+    onChange();
+  }
+
+  function adjust(days: number) {
+    saveHijriAdjustment(days);
+    setAdjustment(days);
+    onChange();
+  }
+
+  const options: number[] = [];
+  for (let d = HIJRI_ADJUSTMENT_MIN; d <= HIJRI_ADJUSTMENT_MAX; d++) options.push(d);
+  return (
+    <div className="mt-3 flex flex-col gap-3 rounded-2xl border p-4" style={CARD} data-occasions="">
+      <p className="text-[14px] font-semibold" style={primaryText}>
+        {t.title}
+      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[13px]" style={primaryText}>
+          {t.enableRow}
+        </p>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-label={t.enableRow}
+          data-occasions-switch=""
+          onClick={toggle}
+          className="shrink-0 rounded-full border px-4 py-1.5 text-[12.5px] font-medium"
+          style={{
+            borderColor: enabled ? "var(--color-gold)" : "var(--color-gold-soft)",
+            background: enabled ? "var(--color-primary)" : "var(--color-surface)",
+            color: enabled ? "var(--color-gold)" : "var(--color-text-primary)",
+          }}
+        >
+          {enabled ? audioAdhkarSettingsLabels[language].disable : audioAdhkarSettingsLabels[language].enable}
+        </button>
+      </div>
+      <p className="text-[11.5px] leading-[1.7]" style={muted}>
+        {t.intro}
+      </p>
+      <p className="text-[12px] font-medium" style={{ color: "var(--color-primary)" }} data-occasion-today={today ?? "none"}>
+        {today ? t.todayIs(t.names[today], t.details[today].plays) : t.todayNormal}
+      </p>
+      {hijriKnown ? (
+        <p className="text-[11.5px]" style={muted}>
+          {t.todayHijri(getDateTimeInfo(now, language).hijriDate.formatted)}
+        </p>
+      ) : (
+        <p className="text-[11.5px] leading-[1.6]" style={muted} role="status">
+          {t.noCalendar}
+        </p>
+      )}
+      <Row label={t.hijriAdjust} htmlFor="hijri-adjustment">
+        <select id="hijri-adjustment" value={adjustment} onChange={(e) => adjust(Number(e.target.value))} className={`${INPUT_CLASS} max-w-[55%]`} style={INPUT_STYLE}>
+          {options.map((d) => (
+            <option key={d} value={d}>
+              {t.hijriAdjustOption(d)}
+            </option>
+          ))}
+        </select>
+      </Row>
+      <p className="text-[11px] leading-[1.6]" style={muted}>
+        {t.hijriAdjustHint}
+      </p>
+      <details className="text-[11.5px]" style={muted}>
+        <summary className="cursor-pointer text-[12px]" style={primaryText}>
+          {t.evidenceSummary}
+        </summary>
+        <ul className="mt-2 flex flex-col gap-2">
+          {(["friday", "arafah", "dhulhijjah", "eid"] as const).map((key) => (
+            <li key={key} className="leading-[1.7]">
+              <span className="font-semibold" style={primaryText}>
+                {t.names[key]}:
+              </span>{" "}
+              <span dir={language === "en" ? "ltr" : "rtl"}>{t.details[key].plays}</span>
+              <br />
+              <span>{t.details[key].evidence}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 leading-[1.6]">{t.ramadanNote}</p>
+      </details>
+    </div>
+  );
+}
+
+/** Morning/Evening: the calm sound of the one-minute reminder — choose, preview, or turn off. */
+function ReminderSoundRow({ section, onChange }: { section: DailySection; onChange: () => void }) {
+  const { language } = useLanguage();
+  const t = audioAdhkarSettingsLabels[language];
+  const [choice, setChoice] = useState<ReminderSoundChoice>(() => loadReminderSound(section));
+  useEffect(() => stopReminderSoundPreview, []);
+  const id = `${section}-reminder-sound`;
+  return (
+    <div className="flex flex-col gap-1.5" data-reminder-sound={section}>
+      <Row label={t.reminderSound} htmlFor={id}>
+        <div className="flex items-center gap-2">
+          <select
+            id={id}
+            value={choice}
+            onChange={(e) => {
+              const next = e.target.value as ReminderSoundChoice;
+              setChoice(next);
+              saveReminderSound(section, next);
+              onChange();
+              if (next !== "off") previewReminderSound(next);
+              else stopReminderSoundPreview();
+            }}
+            className={`${INPUT_CLASS} max-w-[11rem]`}
+            style={INPUT_STYLE}
+          >
+            {REMINDER_SOUNDS[section].map((sound) => (
+              <option key={sound} value={sound}>
+                {t.reminderSoundNames[sound]}
+              </option>
+            ))}
+            <option value="off">{t.reminderSoundOff}</option>
+          </select>
+          {choice !== "off" && (
+            <button
+              type="button"
+              data-preview-sound=""
+              onClick={() => previewReminderSound(choice)}
+              className="shrink-0 rounded-full border px-2.5 py-1 text-[11.5px] font-medium"
+              style={{ borderColor: "var(--color-gold)", ...primaryText }}
+            >
+              {t.preview}
+            </button>
+          )}
+        </div>
+      </Row>
+      <p className="text-[11px] leading-[1.6]" style={muted}>
+        {t.reminderSoundHint}
+      </p>
     </div>
   );
 }
@@ -407,6 +627,8 @@ function DailyView({ section, onBack }: { section: DailySection; onBack: () => v
             {t.chooseTime}
           </p>
         )}
+        <DailyDayTimes section={section} onChange={apply} />
+        <ReminderSoundRow section={section} onChange={apply} />
         <p className="text-[11.5px] leading-[1.6]" style={muted} data-daily-window={section}>
           {t.dailyWindow[section]}
         </p>
@@ -564,6 +786,8 @@ function MiscView({ onBack }: { onBack: () => void }) {
           {t.miscPlaylist(selected)}
         </p>
       )}
+
+      <OccasionsCard onChange={apply} />
 
       <Diagnostics diagnostics={diagnostics} t={t} />
     </div>

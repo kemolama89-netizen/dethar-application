@@ -36,14 +36,14 @@ import { CITIES } from "../data/cities";
 // instead of re-deriving them.
 const DATE = new Date("2026-09-14T00:00:00Z");
 
-async function mount() {
+async function mount(variant: "compact" | "hero" = "compact") {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
   await act(async () => {
     root.render(
       <LanguageProvider>
-        <PrayerTimesPanel date={DATE} />
+        <PrayerTimesPanel date={DATE} variant={variant} />
       </LanguageProvider>,
     );
   });
@@ -376,6 +376,28 @@ describe("PrayerTimesPanel — a GPS fix far from every bundled city still gets 
     const expected = expectedFormattedTimes(TABUK, "SA", "Asia/Riyadh");
     for (const key of prayerOrder) expect(container.textContent, key).toContain(expected[key]);
     expect(container.textContent).toContain("السعودية");
+    await unmount();
+  });
+});
+
+describe("Home's prominent panel (variant=\"hero\")", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    resetLocationSettingsForTesting();
+  });
+
+  it("keeps every time, the countdown and both switches; the mihrab is decoration only — hidden from screen readers, no direction shown", async () => {
+    const { container, unmount } = await mount("hero");
+    const panel = container.querySelector("[data-prayer-panel='hero']")!;
+    const expected = expectedFormattedTimes(KUWAIT_CITY_COORDINATES, "KW", "Asia/Kuwait");
+    expect(prayerOrder.map((k) => panel.querySelector(`[data-prayer='${k}']`)!.textContent)).toEqual(prayerOrder.map((k) => expect.stringContaining(expected[k])));
+    expect(panel.querySelectorAll("[data-prayer][data-next]")).toHaveLength(1);
+    expect(panel.querySelector("[data-next-prayer-countdown]")).not.toBeNull();
+    expect(panel.querySelector("[data-switch='prayer-notifications']")).not.toBeNull();
+    expect(panel.querySelector("[data-switch='audio-adhkar']")).not.toBeNull();
+    const mihrab = panel.querySelector("[data-mihrab]")!;
+    expect(mihrab.getAttribute("aria-hidden")).toBe("true");
+    expect(panel.textContent).not.toMatch(/القبلة|Qibla|°/);
     await unmount();
   });
 });

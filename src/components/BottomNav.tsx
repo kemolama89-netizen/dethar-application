@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import type { ComponentType } from "react";
-import { Settings, Volume2, Home, BookOpen } from "lucide-react";
+import { Settings, Volume2, Home, BookOpen, BookOpenText } from "lucide-react";
 import { TasbihBeadsIcon } from "../icons/CustomIcons";
 import { navLabels } from "../data/content";
+import { QuranNavContext } from "../lib/quranNav";
 import { useLanguage } from "../theme/LanguageContext";
 
 type IconComponent = ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
@@ -15,16 +16,16 @@ interface NavItem {
 
 // DOM order is fixed (not language-dependent) — direction is handled at
 // the layout level via `dir`, so this same order mirrors correctly on its
-// own: rightmost-first in RTL (Arabic — matches the approved reference:
-// الإعدادات، الأذكار المسموعة، الرئيسية، الأذكار المكتوبة، السبحة) becomes
-// leftmost-first in LTR (English), with الرئيسية/Home always the centered,
-// active item either way. Never manually reversed per language.
+// own: rightmost-first in RTL (Arabic: الأذكار المسموعة، الأذكار المكتوبة،
+// الرئيسية، المصحف، السبحة، الإعدادات) becomes leftmost-first in LTR
+// (English). Never manually reversed per language.
 const NAV_ITEMS: NavItem[] = [
-  { key: "settings", labelKey: "settings", icon: Settings },
   { key: "audio", labelKey: "audioAdhkar", icon: Volume2 },
-  { key: "home", labelKey: "home", icon: Home },
   { key: "written", labelKey: "writtenAdhkar", icon: BookOpen },
+  { key: "home", labelKey: "home", icon: Home },
+  { key: "quran", labelKey: "quran", icon: BookOpenText },
   { key: "tasbih", labelKey: "tasbih", icon: TasbihBeadsIcon },
+  { key: "settings", labelKey: "settings", icon: Settings },
 ];
 
 // AppShell's `justify-between` already lands this at the bottom edge in
@@ -51,10 +52,14 @@ export function BottomNav({
   const active = activeKey ?? internalActive;
   const { language } = useLanguage();
   const labels = navLabels[language];
+  const openQuran = useContext(QuranNavContext);
 
   return (
     <nav
-      className={`sticky bottom-0 z-10 flex w-full min-w-0 max-w-full items-center justify-between rounded-full border px-1.5 py-2.5 pb-[max(0.4rem,env(safe-area-inset-bottom))] ${className}`}
+      // Items top-aligned (not centered): every icon sits on one line and
+      // every label starts on one line, whether a label wraps to two lines
+      // ("الأذكار المسموعة") or not. Spacing scales with the screen width.
+      className={`sticky bottom-0 z-10 flex w-full min-w-0 max-w-full items-start justify-between gap-[clamp(1px,0.6vw,4px)] rounded-full border px-[clamp(5px,1.8vw,10px)] pt-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] ${className}`}
       style={{
         background: "var(--color-surface)",
         borderColor: "var(--color-gold-soft)",
@@ -72,33 +77,31 @@ export function BottomNav({
             onClick={() => {
               setInternalActive(item.key);
               onSelect?.(item.key);
+              if (item.key === "quran" && item.key !== active) openQuran?.();
             }}
             aria-current={isActive ? "page" : undefined}
-            className="flex min-w-0 flex-1 flex-col items-center gap-0.5 py-0.5 text-center font-medium"
+            className="flex min-w-0 flex-1 basis-0 flex-col items-center gap-1 py-0.5 text-center font-medium"
             style={{
               color: isActive ? "var(--color-primary)" : "var(--color-text-muted)",
-              fontSize: "clamp(8.5px, 2.5vw, 10.5px)",
+              fontSize: "clamp(8.5px, 2.35vw, 10.5px)",
+              fontWeight: isActive ? 700 : 500,
             }}
           >
             <span
-              className="flex h-11 w-11 items-center justify-center rounded-full transition-transform"
-              style={
-                isActive
-                  ? {
-                      background: "var(--color-primary)",
-                      color: "var(--color-gold)",
-                      transform: "translateY(-10px)",
-                      boxShadow: "0 8px 16px -4px rgba(var(--color-shadow-rgb), 0.5)",
-                    }
-                  : undefined
-              }
+              className="flex shrink-0 items-center justify-center rounded-full transition-transform"
+              style={{ width: "clamp(34px, 9.6vw, 42px)", height: "clamp(34px, 9.6vw, 42px)", ...(isActive
+                ? {
+                    background: "var(--color-primary)",
+                    color: "var(--color-gold-on-primary)",
+                    transform: "translateY(-10px)",
+                    boxShadow: "0 8px 16px -4px rgba(var(--color-shadow-rgb), 0.5)",
+                  }
+                : {}) }}
             >
               <Icon size={19} strokeWidth={1.7} />
             </span>
-            <span
-              className="w-full px-0.5 leading-[1.15]"
-              style={{ marginTop: isActive ? -6 : 0, wordBreak: "keep-all" }}
-            >
+            {/* The active label stays on the same line as the others (only its icon lifts). */}
+            <span className="w-full px-0.5 leading-[1.2]" style={{ wordBreak: "keep-all" }}>
               {labels[item.labelKey]}
             </span>
           </button>

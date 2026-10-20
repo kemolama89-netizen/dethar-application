@@ -1,10 +1,10 @@
 import { memo, useState } from "react";
-import { BookOpenText, Copy, Heart, Share2, Volume2, VolumeX } from "lucide-react";
+import { BookOpenText, Copy, Heart, Share2 } from "lucide-react";
 import type { MiscDuaItem } from "../data/misc-library";
 import { miscLibraryLabels, miscMeaningLabels } from "../data/misc-library";
 import { useLanguage } from "../theme/LanguageContext";
 import { DraggableMeaningCard } from "./MeaningPopover";
-import { shareText } from "../lib/share";
+import { ShareMenu } from "./ShareMenu";
 
 // The single reading card shared by the category list and search results —
 // per spec section 10: the COMPLETE Arabic text once, a count line (only
@@ -13,7 +13,10 @@ import { shareText } from "../lib/share";
 // overpowered by its citation. No repetition/completion tracking here
 // (this is a read-only reference library, not a daily-wird journey like
 // Written Adhkar) — only lightweight, existing-architecture-compatible
-// actions: copy, favorite, listen. Strict language separation (per this
+// actions: copy, share, favorite. (The former speech-synthesis "Listen"
+// button was removed: it was a silent no-op in Android's WebView, and its
+// icon read as a microphone on a written card — real recitations live in
+// Audio Adhkar.) Strict language separation (per this
 // feature's language-rendering fix): the Arabic text and Arabic
 // metadata are the ONLY content shown when the app language is Arabic —
 // englishMeaning/englishTransliteration never render at all in that mode.
@@ -28,8 +31,6 @@ function MiscDuaCardImpl({
   item,
   isFavorite,
   onToggleFavorite,
-  isSpeaking,
-  onToggleListen,
   onShowMeaning,
 }: {
   item: MiscDuaItem;
@@ -38,10 +39,8 @@ function MiscDuaCardImpl({
   // the parent screens can pass one stable, top-level callback shared by
   // every card — the prerequisite for `memo` below to actually skip
   // re-rendering cards whose own props haven't changed when a sibling
-  // card's favorite/listen state toggles.
+  // card's favorite state toggles.
   onToggleFavorite: (id: string) => void;
-  isSpeaking: boolean;
-  onToggleListen: (id: string, text: string) => void;
   // Passes the button's own DOM node (not just the item) so the caller can
   // measure its actual on-screen position and anchor the Meaning popover to
   // THIS specific card — same convention as WrittenAdhkarReader's own
@@ -64,23 +63,6 @@ function MiscDuaCardImpl({
     }
   }
 
-  // Share always carries the Arabic dua itself — the actual wording — and,
-  // in English mode, its established English meaning alongside it (never a
-  // translation invented on the spot; the same `englishMeaning` already
-  // shown in the Meaning popup), so Arabic content stays Arabic and English
-  // content stays English within the one shared message. Reuses the same
-  // "copied" toast as the Copy button above for the rare fallback path
-  // (no native share sheet available).
-  async function handleShare() {
-    const shareBody = isEn && item.englishMeaning ? `${item.text_ar}\n\n${item.englishMeaning}` : item.text_ar;
-    const shareTitle = occasion || t.screenTitle;
-    const result = await shareText(shareTitle, shareBody);
-    if (result === "copied") {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1400);
-    }
-  }
-
   const sourceLabel = item.isQuranic ? t.sourceLabelQuran : t.sourceLabelHadith;
   // Strict language separation for metadata (per this pass's fix): English
   // mode reads the `_en` counterpart of each field, never the `_ar` value —
@@ -92,6 +74,19 @@ function MiscDuaCardImpl({
   const count = isEn ? item.count_en : item.count_ar;
   const source = isEn ? item.source_en : item.source_ar;
   const note = isEn ? item.note_en : item.note_ar;
+  // Share opens the share sheet (ShareMenu: as text, as an image, or copy):
+  // always the Arabic dua itself — the actual wording — with its source,
+  // and in English mode its established English meaning (the same
+  // `englishMeaning` shown in the Meaning popup, never one invented here).
+  const [shareOpen, setShareOpen] = useState(false);
+  // Its note (how to perform it correctly) goes with it, under the same label as on the card.
+  const shareContent = {
+    kindLabel: occasion || t.screenTitle,
+    textAr: item.text_ar,
+    meaningEn: item.englishMeaning || undefined,
+    reference: source || undefined,
+    sections: note ? [{ label: t.noteLabel, text: note }] : undefined,
+  };
 
   return (
     <div
@@ -178,19 +173,6 @@ function MiscDuaCardImpl({
           )}
           <button
             type="button"
-            onClick={() => onToggleListen(item.id, item.text_ar)}
-            aria-pressed={isSpeaking}
-            aria-label={isSpeaking ? mt.stopListenAria : mt.listenAria}
-            className="flex h-8 w-8 items-center justify-center rounded-full"
-            style={{
-              boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)",
-              color: isSpeaking ? "var(--wa-gold)" : "var(--wa-ink-muted)",
-            }}
-          >
-            {isSpeaking ? <VolumeX size={15} strokeWidth={1.8} /> : <Volume2 size={15} strokeWidth={1.8} />}
-          </button>
-          <button
-            type="button"
             onClick={handleCopy}
             aria-label={t.copyAria}
             className="flex h-8 w-8 items-center justify-center rounded-full"
@@ -200,7 +182,7 @@ function MiscDuaCardImpl({
           </button>
           <button
             type="button"
-            onClick={handleShare}
+            onClick={() => setShareOpen(true)}
             aria-label={mt.shareAria}
             className="flex h-8 w-8 items-center justify-center rounded-full"
             style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
@@ -223,6 +205,8 @@ function MiscDuaCardImpl({
         </div>
       </div>
 
+      <ShareMenu content={shareContent} open={shareOpen} onClose={() => setShareOpen(false)} />
+
       {copied && (
         <span
           className="absolute end-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-medium"
@@ -235,7 +219,7 @@ function MiscDuaCardImpl({
   );
 }
 
-// Memoized so toggling one card's favorite/listen state doesn't re-render
+// Memoized so toggling one card's favorite state doesn't re-render
 // every other card in the list — see the parent screens (MiscCategoryScreen/
 // MiscLibraryScreen) for the matching stable-callback half of this fix.
 export const MiscDuaCard = memo(MiscDuaCardImpl);

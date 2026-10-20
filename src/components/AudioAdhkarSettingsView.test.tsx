@@ -233,4 +233,27 @@ describe("Settings → إعدادات الأذكار الصوتية", () => {
     expect(row("misc").textContent).toContain(en.misc);
     expect(Object.keys(audioAdhkarSettingsLabels.en).sort()).toEqual(Object.keys(audioAdhkarSettingsLabels.ar).sort());
   });
+
+  it("names the options in English in English mode — Various included — while selections stay keyed by id", async () => {
+    // A selection made in Arabic …
+    await click(row("misc"));
+    await click(container.querySelector("[data-adhkar-checklist='misc'] input[data-adhkar-id='tasbeeh-2']")!);
+    const misc = () => container.querySelector("[data-adhkar-checklist='misc']")!;
+    expect(misc().textContent).toContain("سُبْحَانَ اللَّهِ");
+    // … survives switching the interface to English, which shows English names.
+    act(() => root.unmount());
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, "en");
+    mount();
+    await click(row("misc"));
+    expect(misc().textContent).toContain("Subḥāna Allāh");
+    expect(misc().textContent).toContain("Glory be to Allah.");
+    expect(misc().textContent).not.toContain("سُبْحَانَ اللَّهِ وَبِحَمْدِهِ");
+    expect(container.querySelector<HTMLInputElement>("[data-adhkar-checklist='misc'] input[data-adhkar-id='tasbeeh-2']")!.checked).toBe(false);
+    expect(loadExcludedAdhkar("misc")).toEqual(["tasbeeh-2"]);
+    await click(container.querySelector('button[aria-label="Back"]')!);
+    await click(row("morning"));
+    const morning = container.querySelector("[data-adhkar-checklist='morning']")!;
+    expect(morning.textContent).toContain("Ayat al-Kursi");
+    expect(morning.textContent).not.toMatch(/[\u0600-\u06FF]/);
+  });
 });

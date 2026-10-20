@@ -32,12 +32,11 @@ import {
   MISC_CATEGORIES,
   MISC_CATEGORY_COUNTS,
   MISC_DUAS,
-  MISC_FEATURED_IDS,
   miscLibraryLabels,
 } from "../data/misc-library";
 import type { MiscCategoryKey, MiscDuaItem } from "../data/misc-library";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
-import { useMiscSpeech } from "../lib/useMiscSpeech";
+import { getDailyPicks } from "../lib/dailyPicks";
 import { useLanguage } from "../theme/LanguageContext";
 
 interface MiscLibraryScreenProps {
@@ -192,7 +191,6 @@ export function MiscLibraryScreen({
   const [favorites, setFavorites] = useState<Set<string>>(() => loadMiscFavorites());
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
   // Which single item's full Transliteration/Meaning is currently shown,
   // and the specific DOM card it was opened from — shared across both card
   // lists below (search results and featured), which never render at the
@@ -229,10 +227,9 @@ export function MiscLibraryScreen({
     });
   }, [query]);
 
-  const featuredItems = useMemo(
-    () => MISC_FEATURED_IDS.map((id) => MISC_DUAS.find((item) => item.id === id)).filter((item) => item !== undefined),
-    [],
-  );
+  // Three verified duas that change every local day (lib/dailyPicks.ts) —
+  // read once per visit, so they never shift while the screen is open.
+  const featuredItems = useMemo(() => getDailyPicks(), []);
 
   const isSearching = searchOpen && query.trim().length > 0;
 
@@ -301,8 +298,6 @@ export function MiscLibraryScreen({
                     item={item}
                     isFavorite={favorites.has(item.id)}
                     onToggleFavorite={handleToggleFavorite}
-                    isSpeaking={speakingId === item.id}
-                    onToggleListen={toggleSpeech}
                     onShowMeaning={handleShowMeaning}
                   />
                 ))
@@ -310,8 +305,8 @@ export function MiscLibraryScreen({
             </div>
           ) : (
             <>
-              {/* "مختارات اليوم" — a small, FIXED editorial selection (see
-                  MISC_FEATURED_IDS), never random/generated content. */}
+              {/* "مختارات اليوم" — three existing library duas, a new set
+                  each day (see lib/dailyPicks.ts); never generated content. */}
               {featuredItems.length > 0 && (
                 <div className="mt-4">
                   <h2 className="text-[12.5px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--wa-gold)" }}>
@@ -324,8 +319,6 @@ export function MiscLibraryScreen({
                         item={item}
                         isFavorite={favorites.has(item.id)}
                         onToggleFavorite={handleToggleFavorite}
-                        isSpeaking={speakingId === item.id}
-                        onToggleListen={toggleSpeech}
                         onShowMeaning={handleShowMeaning}
                       />
                     ))}

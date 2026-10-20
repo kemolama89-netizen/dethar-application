@@ -6,7 +6,10 @@ import tasbeehLibraryJson from "./tasbeeh-library.json";
 // every other asset in this project). The ASSETS file itself is never
 // touched. src/data/tasbeeh-library.json has since had a religious-content
 // audit applied to its virtue/source fields only — dhikr wording is
-// unchanged. Independent from any future Written Adhkar / Audio Adhkar data
+// unchanged, except two vowelling corrections made letter for letter against
+// the cited sources: id 6 (Sahih al-Bukhari 6403, Sahih Muslim 2691: «… وَهُوَ
+// عَلَى كُلِّ شَيْءٍ قَدِيرٌ») and id 11 (Sahih Muslim 2137: «سُبْحَانَ اللَّهِ …»,
+// no sukun on the lam of the Name). Independent from any future Written Adhkar / Audio Adhkar data
 // source — do not merge.
 export interface DhikrItem {
   id: number;
@@ -79,6 +82,8 @@ export const tasbeehLabels = {
     voiceNoMic: "لم يتم العثور على ميكروفون.",
     voiceUnsupported: "التسبيح الصوتي غير مدعوم في هذا المتصفح.",
     voiceError: "تعذّر بدء التسبيح الصوتي.",
+    recognitionSounds: "أصوات التعرف على الذكر",
+    recognitionSoundsOffHint: "النغمات من خدمة التعرف في أندرويد. عند الإيقاف تُكتم أصوات النظام أثناء الاستماع فقط، ولا تُكتم الإشعارات ولا وسائط التطبيقات الأخرى؛ لذا قد تبقى مسموعة على بعض الأجهزة.",
   },
   en: {
     reminder: "Take your time in remembrance, and let your heart and mind lead your tongue.",
@@ -107,5 +112,7 @@ export const tasbeehLabels = {
     voiceNoMic: "No microphone was found.",
     voiceUnsupported: "Voice Tasbeeh isn't supported in this browser.",
     voiceError: "Couldn't start Voice Tasbeeh.",
+    recognitionSounds: "Recognition Sounds",
+    recognitionSoundsOffHint: "These tones come from Android's speech service. Off mutes system sounds only while listening — never notifications or other apps' media — so on some devices they may still be heard.",
   },
 };

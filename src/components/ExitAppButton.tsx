@@ -85,7 +85,7 @@ export function ExitAppButton() {
             <div className="flex items-start gap-3 p-4">
               <div
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-                style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
+                style={{ background: "var(--color-primary)", color: "var(--color-gold-on-primary)" }}
               >
                 <Power size={19} strokeWidth={1.7} />
               </div>
@@ -109,7 +109,7 @@ export function ExitAppButton() {
                 type="button"
                 onClick={handleConfirm}
                 className="flex-1 rounded-xl px-3 py-2 text-[13px] font-semibold"
-                style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
+                style={{ background: "var(--color-primary)", color: "var(--color-gold-on-primary)" }}
               >
                 {t.confirm}
               </button>

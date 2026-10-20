@@ -16,7 +16,7 @@
 // resume). Without Web Audio (no AudioContext — old browsers, tests), it
 // falls back to playUrlQueue.
 import type { AudioChannel, PlayUrlQueueOptions } from "./audioEngine";
-import { claimAudio, playUrlQueue, releaseAudio } from "./audioEngine";
+import { claimAudio, setPlaybackProgressReader, playUrlQueue, releaseAudio } from "./audioEngine";
 
 /** The parts of the Web Audio API used here (a test seam — jsdom has none). */
 export interface AudioBufferLike {
@@ -187,6 +187,16 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
     },
   );
 
+  // Position from the Web Audio clock (it freezes while the context is
+  // suspended, i.e. paused) against the scheduled start; the total is the
+  // decoded buffers' real length. Unknown until decoding is done.
+  let scheduled: { startTime: number; totalSeconds: number } | null = null;
+  setPlaybackProgressReader(key, () => {
+    if (!scheduled) return { positionMs: 0, durationMs: null, loading: true };
+    const position = Math.min(scheduled.totalSeconds, Math.max(0, context.currentTime - scheduled.startTime));
+    return { positionMs: Math.round(position * 1000), durationMs: Math.round(scheduled.totalSeconds * 1000), loading: false };
+  });
+
   // Resume now — still inside the user's tap — so the browser allows the
   // audio that starts once decoding is done.
   if (context.state !== "running") void context.resume().catch(() => {});
@@ -195,6 +205,9 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
     (buffers) => {
       if (!active) return;
       let at = context.currentTime + START_LEAD_SECONDS;
+      const startTime = at;
+      const totalSeconds = buffers.reduce((sum, buffer, i) => sum + buffer.duration - (i === 0 ? Math.min(options.startAt ?? 0, buffer.duration) : 0), 0);
+      scheduled = { startTime, totalSeconds };
       buffers.forEach((buffer, i) => {
         const offset = i === 0 ? Math.min(options.startAt ?? 0, buffer.duration) : 0;
         const source = context.createBufferSource();
@@ -205,7 +218,7 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
             if (!active) return;
             halt();
             releaseAudio(key);
-            options.onEnded?.();
+            options.onEnded?.({ durationMs: Math.round(totalSeconds * 1000) });
           };
         }
         if (offset > 0) source.start(at, offset);

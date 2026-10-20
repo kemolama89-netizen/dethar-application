@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useScreenNavigation } from "./lib/useScreenNavigation";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
@@ -9,26 +9,20 @@ import { AppShell } from "./components/AppShell";
 import { TopBar } from "./components/TopBar";
 import { LogoHeader } from "./components/LogoHeader";
 import { DateTimeStrip } from "./components/DateTimeStrip";
-import { InsightCard } from "./components/InsightCard";
-import type { InsightCardDetail } from "./components/InsightCard";
 import { PrayerTimesPanel } from "./components/PrayerTimesPanel";
 import { BottomNav } from "./components/BottomNav";
-import { ContentModal } from "./components/ContentModal";
+import { QuranNavContext } from "./lib/quranNav";
+import { DailyProgressCard } from "./components/HomeDashboard";
+import { HomeActivePlayback } from "./components/HomeAudioPlayer";
+import { HomeDailyPicksCard } from "./components/HomeDailyPicksCard";
+import type { DailyPickTarget } from "./components/HomeDailyPicksCard";
+import type { QuranTarget } from "./components/QuranReaderScreen";
+import { loadQuranPosition } from "./lib/quranReading";
 import { LocationChangePrompt } from "./components/LocationChangePrompt";
 import { useLocationChangeDetector } from "./lib/useLocationChangeDetector";
-import { BookOpen, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
-import { MosqueDomeIcon } from "./icons/CustomIcons";
 import { labels } from "./data/content";
-import { WAMDAT, getWamdaVerseText, getWamdaVerseReference, getWamdaSourceCitation } from "./data/wamdat";
-import { HADITHS, getHadithDetailFields } from "./data/hadith";
-import type { HadithDetailKey } from "./data/hadith";
 import { useDateTime } from "./lib/useDateTime";
-import {
-  loadInstallationAnchorDateKey,
-  saveInstallationAnchorDateKey,
-  computeInstallationDayNumber,
-  installationDayToIndex,
-} from "./lib/dailyContentProgress";
+import { loadInstallationAnchorDateKey, saveInstallationAnchorDateKey } from "./lib/dailyContentProgress";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
 import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
@@ -37,6 +31,12 @@ import { startFloatingOpenRouteRequests, startFloatingTasbeehSync } from "./lib/
 import { isAudioAdhkarNativeAvailable } from "./lib/audioAdhkarNative";
 import { startPrayerNotificationSync, syncPrayerNotifications } from "./lib/prayerNotifications";
 import { discardLegacyCalculationOverrides } from "./lib/legacyCalculationSettings";
+import { RemindersNative, isRemindersNativeAvailable } from "./lib/remindersNative";
+import type { ShownReminder } from "./lib/remindersNative";
+import { requestOpenReminder, subscribeOpenReminderRequests } from "./lib/reminderOpenRequests";
+// Eager, not lazy: the launch intro must be in the very first paint, or the Home Screen shows before it.
+import { StartupHadithOverlay } from "./components/StartupHadithOverlay";
+import { dismissStartupOverlay, startupIntroWillShow } from "./lib/startupOverlay";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -64,6 +64,7 @@ const loadMiscLibraryScreen = () =>
 const loadMiscCategoryScreen = () =>
   import("./components/MiscCategoryScreen").then((m) => ({ default: m.MiscCategoryScreen }));
 const loadAudioAdhkarModule = () => import("./components/AudioAdhkarScreen");
+const SpiritualReminderView = lazy(() => import("./components/SpiritualReminderView").then((m) => ({ default: m.SpiritualReminderView })));
 
 const TasbeehScreen = lazy(loadTasbeehScreen);
 const WrittenAdhkarScreen = lazy(loadWrittenAdhkarScreen);
@@ -74,6 +75,8 @@ const MiscLibraryScreen = lazy(loadMiscLibraryScreen);
 const MiscCategoryScreen = lazy(loadMiscCategoryScreen);
 const AudioAdhkarScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarScreen })));
 const AudioAdhkarListScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarListScreen })));
+// The Qur'an reader brings the Mushaf text (~1.3 MB) with it, so it is only loaded when opened.
+const QuranReaderScreen = lazy(() => import("./components/QuranReaderScreen").then((m) => ({ default: m.QuranReaderScreen })));
 
 // Fetches a lazy screen's chunk ahead of the user actually navigating to
 // it, once the browser is idle (never competing with the current screen's
@@ -111,13 +114,6 @@ function ScreenFallback() {
   );
 }
 
-// The Featured Hadith under the logo is never previewed/clamped — it has
-// no modal state here. Both Home cards (Quranic Insight and Hadith) share
-// the same full-content overlay (ContentModal) via this one piece of
-// state — only one can be open at a time, which also matches "opening one
-// closes the other" being the only sane behavior.
-type OpenCard = "quran" | "hadith" | null;
-
 // Resolving `language` -> the right content object happens once, here —
 // InsightCard/PrayerTimesPanel/BottomNav stay simple/localization-agnostic,
 // they just render whatever strings they're given.
@@ -131,13 +127,15 @@ function HomeScreen({
   onNavigateToWritten,
   onNavigateToSettings,
   onNavigateToAudio,
+  onOpenDailyPick,
 }: {
   onNavigateToTasbeeh: () => void;
   onNavigateToWritten: () => void;
   onNavigateToSettings: () => void;
   onNavigateToAudio: () => void;
+  onOpenDailyPick: (pick: DailyPickTarget) => void;
 }) {
-  const { language, dir } = useLanguage();
+  const { language } = useLanguage();
   const t = labels[language];
 
   // Date & Time foundation — device clock + device timezone only (see
@@ -176,11 +174,8 @@ function HomeScreen({
       saveInstallationAnchorDateKey(installationAnchorDateKey);
     }
   }, [installationAnchorDateKey]);
-  // Recomputed every render from the live `dateKey` (never cached) so a
-  // local-midnight rollover while this screen stays mounted is reflected
-  // immediately — `installationAnchorDateKey` itself never changes after
-  // mount, only the gap between it and `dateKey` grows.
-  const installationDayNumber = computeInstallationDayNumber(installationAnchorDateKey, dateKey);
+  // (The anchor is still kept: it is this install's Day 1 for any daily
+  // rotation, even though the Home cards that used it were replaced.)
 
   // Step 5: location-change detection. Runs only while Home is mounted
   // (see useLocationChangeDetector.ts's own comment on this scoping
@@ -191,253 +186,35 @@ function HomeScreen({
   // location instead of staying on its stale mount-time snapshot.
   const locationChange = useLocationChangeDetector();
 
-  // Local state for the "Read more" full-content modal — not global,
-  // just which (if any) card's full content is currently open.
-  const [openCard, setOpenCard] = useState<OpenCard>(null);
-
-  // The Quranic Insight card (لطيفة قرآنية) is DITHAR's "Wamda" (Tafsir
-  // Flash) card. DAILY/PRODUCTION mode: one deterministic flash per
-  // INSTALLATION day (installationDayNumber above, anchored to this
-  // install's first launch — see dailyContentProgress.ts) modulo the
-  // flash count — so a brand-new user always starts at flash #1 no matter
-  // today's date, every user sees the same flash on a given install-day,
-  // and the cycle continues seamlessly past the last flash back to #1.
-  const dayFlashIndex = installationDayToIndex(installationDayNumber, WAMDAT.length);
-
-  // PREVIEW MODE — a permanent manual-review tool (the Previous/Refresh
-  // controls below), NOT a debug-only override: it lets every flash in
-  // the library be walked through and checked without touching the daily
-  // rotation. `isTafsirPreviewMode` starts `false`, so DAILY mode is
-  // always what a fresh mount shows; pressing Refresh/Previous switches
-  // this mount to previewing, and walking Previous all the way back to
-  // today's flash switches it back to daily (see handlePreviousFlash).
-  // Preview state is local to this component instance — it never mutates
-  // dayFlashIndex, and navigating away and back (or reloading) always
-  // returns to the real day-based flash.
-  const [isTafsirPreviewMode, setIsTafsirPreviewMode] = useState(false);
-
-  // Anchored to today's flash (not a fixed 0), so the first Refresh press
-  // steps forward from whatever is actually live today, and Previous can
-  // always walk back down to it. Only ever advances via the button
-  // onClicks below, never on its own.
-  const [previewFlashIndex, setPreviewFlashIndex] = useState(dayFlashIndex);
-
-  // Browsing history of the flashes actually shown by Refresh (not a
-  // numerical id/index walk) — the stack's top always equals
-  // `previewFlashIndex`, and its bottom entry is always the daily flash
-  // this mount started from. Previous pops the top and reveals what's
-  // under it, without pushing anything, so it retraces exactly what the
-  // user saw. Refresh always pushes forward from wherever the stack
-  // currently sits, so going back and then refreshing starts a new path
-  // from that point (the old "future" entries were never kept in the
-  // first place).
-  const [flashHistory, setFlashHistory] = useState<number[]>([dayFlashIndex]);
-  const canGoToPreviousFlash = flashHistory.length > 1;
-
-  function handleRefreshFlash() {
-    setIsTafsirPreviewMode(true);
-    const next = (previewFlashIndex + 1) % WAMDAT.length;
-    setPreviewFlashIndex(next);
-    setFlashHistory((history) => (next === history[history.length - 1] ? history : [...history, next]));
-  }
-
-  function handlePreviousFlash() {
-    if (flashHistory.length <= 1) return;
-    const newHistory = flashHistory.slice(0, -1);
-    setFlashHistory(newHistory);
-    setPreviewFlashIndex(newHistory[newHistory.length - 1]);
-    // Walked all the way back to the daily anchor — hand control back to
-    // dayFlashIndex itself rather than staying pinned to a preview value
-    // that only currently happens to match it: dayFlashIndex keeps
-    // tracking local midnight even if this component stays mounted,
-    // which a frozen preview index never would.
-    if (newHistory.length === 1) setIsTafsirPreviewMode(false);
-  }
-
-  const flashIndex = isTafsirPreviewMode ? previewFlashIndex : dayFlashIndex;
-  const flash = WAMDAT[flashIndex];
-  // Display order requested for the card: verse, then its surah/ayah
-  // reference, then the Wamda insight itself, then the tafsir source —
-  // all four sourced verbatim from this one flash record, so Refresh
-  // (preview) / the new day (production) always swap them together,
-  // never independently. verse/verseReference are derived from the raw
-  // `ayah` field (see getWamdaVerseText/getWamdaVerseReference) since the
-  // dataset stores them combined, unlike the old dataset's separate
-  // fields.
-  // `flash.source` (the tafsir book citation, e.g. "التحرير والتنوير - ابن
-  // عاشور") has no englishSource field in the Wamdat dataset — Arabic
-  // shows it verbatim; English uses getWamdaSourceCitation's own
-  // dictionary of the 17 known classical-work titles this library cites,
-  // and is `undefined` (never the Arabic string under an English label)
-  // for the rare case that dictionary doesn't cover.
-  const insight = {
-    verse: getWamdaVerseText(flash),
-    verseReference: getWamdaVerseReference(flash),
-    body: language === "ar" ? flash.insightAr : flash.insightEn,
-    citation: getWamdaSourceCitation(flash, language),
-  };
-
-  // The Hadith card (حديث نبوي) — same deterministic-installation-day-pick
-  // pattern as the Quranic Insight card above (same shared
-  // `installationDayNumber`), now backed by the 200-entry
-  // dithar_hadith_library_final.json (see src/data/hadith.ts) instead of
-  // the old single static hadith. One Hadith per installation day, same
-  // seamless wrap past the last entry back to #1.
-  const dayHadithIndex = installationDayToIndex(installationDayNumber, HADITHS.length);
-
-  // PREVIEW MODE — same permanent manual-review purpose/behavior as
-  // isTafsirPreviewMode above, kept independent from it (a reviewer can be
-  // mid-preview on one card without affecting the other). Daily mode is
-  // always the default on a fresh mount; Refresh/Previous below switch
-  // into previewing, and Previous walking back to today's Hadith switches
-  // back to daily (see handlePreviousHadith).
-  const [isHadithPreviewMode, setIsHadithPreviewMode] = useState(false);
-
-  // Anchored to today's Hadith, not a fixed 0 — same reasoning as
-  // previewFlashIndex above.
-  const [previewHadithIndex, setPreviewHadithIndex] = useState(dayHadithIndex);
-
-  // Same "browsing history, not a numerical walk" behavior as
-  // flashHistory above — Previous retraces exactly what Refresh actually
-  // showed, and the stack's bottom entry is always the daily anchor.
-  const [hadithHistory, setHadithHistory] = useState<number[]>([dayHadithIndex]);
-  const canGoToPreviousHadith = hadithHistory.length > 1;
-
-  function handleRefreshHadith() {
-    setIsHadithPreviewMode(true);
-    const next = (previewHadithIndex + 1) % HADITHS.length;
-    setPreviewHadithIndex(next);
-    setHadithHistory((history) => (next === history[history.length - 1] ? history : [...history, next]));
-  }
-
-  function handlePreviousHadith() {
-    if (hadithHistory.length <= 1) return;
-    const newHistory = hadithHistory.slice(0, -1);
-    setHadithHistory(newHistory);
-    setPreviewHadithIndex(newHistory[newHistory.length - 1]);
-    // Same daily-handback reasoning as handlePreviousFlash above.
-    if (newHistory.length === 1) setIsHadithPreviewMode(false);
-  }
-
-  const hadithIndex = isHadithPreviewMode ? previewHadithIndex : dayHadithIndex;
-  const hadithEntry = HADITHS[hadithIndex];
-  const hadith = {
-    body: language === "ar" ? hadithEntry.textAr : hadithEntry.textEn,
-  };
-
-  // The Hadith's structured takhrij/details (Source, Hadith No., Grade,
-  // Grading Source, Narrator) — see getHadithDetailFields's own doc
-  // comment for exactly how much of this resolves in English (a field is
-  // omitted, never shown half-translated, when its dictionary doesn't
-  // cover a given entry). `hadithDetails` existing/non-empty is what shows
-  // the Hadith card's "Show More" button (InsightCard.tsx) — never Hadith
-  // text length, which fixes short Hadiths not exposing their (fully
-  // available, Arabic) details before this change. The rows themselves are
-  // rendered by ContentModal, once the full-content overlay is open.
-  const hadithDetailLabels: Record<HadithDetailKey, string> = {
-    source: t.detailSource,
-    reference: t.detailReference,
-    grade: t.detailGrade,
-    gradingSource: t.detailGradingSource,
-    narrator: t.detailNarrator,
-  };
-  const hadithDetails: InsightCardDetail[] = getHadithDetailFields(hadithEntry, language).map((field) => ({
-    label: hadithDetailLabels[field.key],
-    value: field.value,
-  }));
-
   return (
-    <DeviceFrame scrollLocked={openCard !== null || locationChange.pending !== null}>
+    <DeviceFrame scrollLocked={locationChange.pending !== null}>
       <AppShell>
         <TopBar showExitButton />
         <LogoHeader />
-        <DateTimeStrip className="mt-1 [@media(max-height:860px)]:mt-0" />
+        <DateTimeStrip className="mt-1 [@media(max-height:940px)]:mt-0" />
 
-        <InsightCard
-          variant="quran"
-          icon={<BookOpen size={19} strokeWidth={1.7} />}
-          title={t.insightTitle}
-          verse={insight.verse}
-          verseReference={insight.verseReference}
-          body={insight.body}
-          citation={insight.citation}
-          readMoreLabel={t.readMore}
-          onReadMore={() => setOpenCard("quran")}
-          className="mt-1 [@media(max-height:860px)]:mt-0"
-        />
-
-        <div className="mt-1 flex items-center gap-3 self-start [@media(max-height:860px)]:mt-0">
-          <button
-            type="button"
-            onClick={handlePreviousFlash}
-            disabled={!canGoToPreviousFlash}
-            aria-label="Previous Tafsir Flash"
-            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-            style={{
-              color: canGoToPreviousFlash ? "var(--color-gold)" : "var(--color-text-muted)",
-              opacity: canGoToPreviousFlash ? 1 : 0.45,
-            }}
-          >
-            {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
-            Previous Tafsir Flash (preview test)
-          </button>
-          <button
-            type="button"
-            onClick={handleRefreshFlash}
-            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-            style={{ color: "var(--color-gold)" }}
-          >
-            <RefreshCw size={12} strokeWidth={2} />
-            Refresh Tafsir Flash (preview test) — {flashIndex + 1}/{WAMDAT.length}
-          </button>
+        {/* The Quranic Insight and Hadith cards used to sit here; their
+            content now reaches the user through the widget, reminders and
+            the full-screen reflection (lib/reminderContent.ts — the Wamdat
+            Lataif and the Hadith library are unchanged). In their place: */}
+        {/* The dashboard fills the height between the header and the bottom
+            navigation: today's progress right under the header, then the
+            «مختارات اليوم» card (it opens today's dua itself), and the prayer
+            times — the main panel — growing to take all the room left
+            (the dhikr player and Qur'an cards that used to sit here are
+            gone: the Mushaf has its own item in the navigation, and the
+            player's controls appear only while something actually plays).
+            On a short phone everything keeps its minimum size (and the
+            screen scrolls inside its frame if it must). */}
+        <div className="flex min-h-0 flex-1 flex-col gap-1.5 py-1 [@media(min-height:820px)]:gap-2.5 [@media(min-height:820px)]:py-1.5" data-home-dashboard="">
+          <DailyProgressCard />
+          <HomeDailyPicksCard onOpen={onOpenDailyPick} />
+          <HomeActivePlayback />
+          <PrayerTimesPanel key={locationChange.refreshToken} date={date} variant="hero" className="flex-1" />
         </div>
-
-        <InsightCard
-          variant="hadith"
-          icon={<MosqueDomeIcon size={19} />}
-          title={t.hadithTitle}
-          attribution={t.hadithAttribution}
-          body={hadith.body}
-          details={hadithDetails}
-          readMoreLabel={t.showDetails}
-          onReadMore={() => setOpenCard("hadith")}
-          className="mt-1 [@media(max-height:860px)]:mt-0"
-        />
-
-        <div className="mt-1 flex items-center gap-3 self-start [@media(max-height:860px)]:mt-0">
-          <button
-            type="button"
-            onClick={handlePreviousHadith}
-            disabled={!canGoToPreviousHadith}
-            aria-label="Previous Hadith"
-            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-            style={{
-              color: canGoToPreviousHadith ? "var(--color-gold)" : "var(--color-text-muted)",
-              opacity: canGoToPreviousHadith ? 1 : 0.45,
-            }}
-          >
-            {dir === "rtl" ? <ChevronRight size={12} strokeWidth={2} /> : <ChevronLeft size={12} strokeWidth={2} />}
-            Previous Hadith (preview test)
-          </button>
-          <button
-            type="button"
-            onClick={handleRefreshHadith}
-            className="flex items-center gap-1 text-[11px] font-medium underline underline-offset-2"
-            style={{ color: "var(--color-gold)" }}
-          >
-            <RefreshCw size={12} strokeWidth={2} />
-            Refresh Hadith (preview test) — {hadithIndex + 1}/{HADITHS.length}
-          </button>
-        </div>
-
-        <PrayerTimesPanel
-          key={locationChange.refreshToken}
-          date={date}
-          className="mt-1 [@media(max-height:860px)]:mt-0"
-        />
 
         <BottomNav
-          className="mt-1 [@media(max-height:860px)]:mt-0"
+          className="mt-auto pt-1.5"
           onSelect={(key) => {
             if (key === "tasbih") onNavigateToTasbeeh();
             if (key === "written") onNavigateToWritten();
@@ -446,29 +223,6 @@ function HomeScreen({
           }}
         />
       </AppShell>
-
-      <ContentModal
-        open={openCard === "quran"}
-        onClose={() => setOpenCard(null)}
-        closeLabel={t.close}
-        icon={<BookOpen size={19} strokeWidth={1.7} />}
-        title={t.insightTitle}
-        verse={insight.verse}
-        verseReference={insight.verseReference}
-        body={insight.body}
-        citation={insight.citation}
-      />
-
-      <ContentModal
-        open={openCard === "hadith"}
-        onClose={() => setOpenCard(null)}
-        closeLabel={t.close}
-        icon={<MosqueDomeIcon size={19} />}
-        title={t.hadithTitle}
-        attribution={t.hadithAttribution}
-        body={hadith.body}
-        details={hadithDetails}
-      />
 
       <LocationChangePrompt
         open={locationChange.pending !== null}
@@ -483,7 +237,7 @@ function HomeScreen({
   );
 }
 
-type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings" | "audio" | "audio-list";
+type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings" | "audio" | "audio-list" | "quran";
 
 // Minimal in-memory screen switcher — no router dependency added. Screens
 // don't keep their own transient state across a switch (theme/language are
@@ -525,6 +279,8 @@ function AppRouter() {
     void syncPrayerNotifications(new Date(), language).catch(() => {});
     // The Misc "paused for prayer" notifications are in the interface language too.
     if (isAudioAdhkarNativeAvailable()) void import("./lib/audioAdhkarSchedules").then((m) => m.syncAudioAdhkarSchedules()).catch(() => {});
+    // So are reminders, the widget's text and the end-of-day summary.
+    if (isRemindersNativeAvailable()) void import("./lib/remindersSync").then((m) => Promise.all([m.syncReminders({ withPool: true }), m.syncSummary()])).catch(() => {});
   }, [language]);
   // Which Misc-library category the detail screen should open — same
   // pattern as `writtenCategory` above, set right before switching to
@@ -541,6 +297,11 @@ function AppRouter() {
   // Which list the Audio Adhkar list screen shows — same pattern as
   // `writtenCategory` above.
   const [audioList, setAudioList] = useState<AudioAdhkarList>({ kind: "written", key: "morning" });
+  // The navigation's المصحف item (on every screen, through QuranNavContext).
+  // The reader opens at the saved reading position — read each time the
+  // section opens (also when Back returns to it), never a stale copy — or
+  // at the beginning of the Mushaf before any reading.
+  const openQuran = useCallback(() => setScreen("quran"), [setScreen]);
   const audioNav = {
     onNavigateHome: () => setScreen("home"),
     onNavigateToTasbeeh: () => setScreen("tasbeeh"),
@@ -594,171 +355,249 @@ function AppRouter() {
     }
   }, [screen]);
 
-  if (screen === "tasbeeh") {
+  // Every screen's BottomNav reaches the Mushaf through this one provider.
+  const routed = (() => {
+    if (screen === "tasbeeh") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <TasbeehScreen
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToWritten={() => setScreen("written")}
+              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToAudio={() => setScreen("audio")}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "written") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <WrittenAdhkarScreen
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToAudio={() => setScreen("audio")}
+              onSelectCategory={(key) => {
+                // "Miscellaneous Adhkar & Duas" is now the richer Dithar
+                // Library (landing + category grid + search) built from
+                // ASSETS/dithar_master_content_library.md, rather than the
+                // old flat single-reader list — every other category is
+                // completely unaffected and still opens the existing reader.
+                setSearchTargetItemId(null);
+                if (key === "misc") {
+                  setScreen("misc-library");
+                  return;
+                }
+                setWrittenCategory(key);
+                setScreen("written-reader");
+              }}
+              onOpenSearch={() => setScreen("written-search")}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "written-reader") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <WrittenAdhkarReader
+              category={writtenCategory}
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToAudio={() => setScreen("audio")}
+              onBackToCategories={() => setScreen("written")}
+              targetItemId={searchTargetItemId ?? undefined}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "written-search") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <WrittenAdhkarSearchScreen
+              onBack={() => setScreen("written")}
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToAudio={() => setScreen("audio")}
+              onSelectResult={handleSelectSearchResult}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "misc-library") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <MiscLibraryScreen
+              onBack={() => setScreen("written")}
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToAudio={() => setScreen("audio")}
+              onSelectCategory={(key) => {
+                setSearchTargetItemId(null);
+                setMiscCategory(key);
+                setScreen("misc-category");
+              }}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "misc-category") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <MiscCategoryScreen
+              categoryKey={miscCategory}
+              onBack={() => setScreen("misc-library")}
+              onNavigateToWrittenRoot={() => setScreen("written")}
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToAudio={() => setScreen("audio")}
+              targetItemId={searchTargetItemId ?? undefined}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "audio") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <AudioAdhkarScreen
+              {...audioNav}
+              onSelectCategory={(key) => {
+                setAudioList(key === "misc" ? { kind: "various" } : { kind: "written", key });
+                setScreen("audio-list");
+              }}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "audio-list") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <AudioAdhkarListScreen
+              {...audioNav}
+              list={audioList}
+              onBack={() => setScreen("audio")}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "quran") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <QuranReaderScreen
+              start={quranStart()}
+              onBack={() => setScreen("home")}
+              onNavigate={(key) => {
+                if (key === "home") setScreen("home");
+                if (key === "tasbih") setScreen("tasbeeh");
+                if (key === "written") setScreen("written");
+                if (key === "settings") setScreen("settings");
+                if (key === "audio") setScreen("audio");
+              }}
+            />
+          </Suspense>
+        </div>
+      );
+    }
+    if (screen === "settings") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <SettingsScreen
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+              onNavigateToWritten={() => setScreen("written")}
+              onNavigateToAudio={() => setScreen("audio")}
+            />
+          </Suspense>
+        </div>
+      );
+    }
     return (
       <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <TasbeehScreen
-            onNavigateHome={() => setScreen("home")}
-            onNavigateToWritten={() => setScreen("written")}
-            onNavigateToSettings={() => setScreen("settings")}
-            onNavigateToAudio={() => setScreen("audio")}
-          />
-        </Suspense>
+        <HomeScreen
+          onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+          onNavigateToWritten={() => setScreen("written")}
+          onNavigateToSettings={() => setScreen("settings")}
+          onNavigateToAudio={() => setScreen("audio")}
+          // «مختارات اليوم» opens like a tapped notification: the same
+          // full-screen view, on the very dua the card shows.
+          onOpenDailyPick={(pick) =>
+            requestOpenReminder({
+              id: `dua:${pick.id}`,
+              commentId: null,
+              shown: { category: "dua", title: "", text: pick.text, meaning: "", detail: "", source: pick.source, commentText: null },
+            })
+          }
+        />
       </div>
     );
-  }
-  if (screen === "written") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <WrittenAdhkarScreen
-            onNavigateHome={() => setScreen("home")}
-            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-            onNavigateToSettings={() => setScreen("settings")}
-            onNavigateToAudio={() => setScreen("audio")}
-            onSelectCategory={(key) => {
-              // "Miscellaneous Adhkar & Duas" is now the richer Dithar
-              // Library (landing + category grid + search) built from
-              // ASSETS/dithar_master_content_library.md, rather than the
-              // old flat single-reader list — every other category is
-              // completely unaffected and still opens the existing reader.
-              setSearchTargetItemId(null);
-              if (key === "misc") {
-                setScreen("misc-library");
-                return;
-              }
-              setWrittenCategory(key);
-              setScreen("written-reader");
-            }}
-            onOpenSearch={() => setScreen("written-search")}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "written-reader") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <WrittenAdhkarReader
-            category={writtenCategory}
-            onNavigateHome={() => setScreen("home")}
-            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-            onNavigateToSettings={() => setScreen("settings")}
-            onNavigateToAudio={() => setScreen("audio")}
-            onBackToCategories={() => setScreen("written")}
-            targetItemId={searchTargetItemId ?? undefined}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "written-search") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <WrittenAdhkarSearchScreen
-            onBack={() => setScreen("written")}
-            onNavigateHome={() => setScreen("home")}
-            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-            onNavigateToSettings={() => setScreen("settings")}
-            onNavigateToAudio={() => setScreen("audio")}
-            onSelectResult={handleSelectSearchResult}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "misc-library") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <MiscLibraryScreen
-            onBack={() => setScreen("written")}
-            onNavigateHome={() => setScreen("home")}
-            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-            onNavigateToSettings={() => setScreen("settings")}
-            onNavigateToAudio={() => setScreen("audio")}
-            onSelectCategory={(key) => {
-              setSearchTargetItemId(null);
-              setMiscCategory(key);
-              setScreen("misc-category");
-            }}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "misc-category") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <MiscCategoryScreen
-            categoryKey={miscCategory}
-            onBack={() => setScreen("misc-library")}
-            onNavigateToWrittenRoot={() => setScreen("written")}
-            onNavigateHome={() => setScreen("home")}
-            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-            onNavigateToSettings={() => setScreen("settings")}
-            onNavigateToAudio={() => setScreen("audio")}
-            targetItemId={searchTargetItemId ?? undefined}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "audio") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <AudioAdhkarScreen
-            {...audioNav}
-            onSelectCategory={(key) => {
-              setAudioList(key === "misc" ? { kind: "various" } : { kind: "written", key });
-              setScreen("audio-list");
-            }}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "audio-list") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <AudioAdhkarListScreen
-            {...audioNav}
-            list={audioList}
-            onBack={() => setScreen("audio")}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-  if (screen === "settings") {
-    return (
-      <div key={screen} className="dithar-app-transition">
-        <Suspense fallback={<ScreenFallback />}>
-          <SettingsScreen
-            onNavigateHome={() => setScreen("home")}
-            onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-            onNavigateToWritten={() => setScreen("written")}
-            onNavigateToAudio={() => setScreen("audio")}
-          />
-        </Suspense>
-      </div>
-    );
-  }
+  })();
+  return <QuranNavContext.Provider value={openQuran}>{routed}</QuranNavContext.Provider>;
+}
+
+/** Where the Qur'an section opens: the saved reading position, or the beginning of the Mushaf. */
+function quranStart(): QuranTarget {
+  const saved = loadQuranPosition();
+  return saved ? { surah: saved.surah, ayah: saved.ayah } : { surah: 1, ayah: 1 };
+}
+
+// A reminder notification or the home-screen widget opened the app (Android):
+// that reminder is shown full screen over whatever screen is open
+// (SpiritualReminderView; lib/remindersSync.ts keeps native in step).
+function ReminderOverlayHost() {
+  // The reminder to show, as the widget/notification showed it: its id, the
+  // DITHAR comment shown with it, and the very strings it drew (so exactly
+  // that content opens — lib/reminderOpen.ts).
+  const [openReminder, setOpenReminder] = useState<{ id: string; commentId: string | null; shown?: ShownReminder } | null>(null);
+  const closeReminder = useCallback(() => setOpenReminder(null), []);
+  // The reminder the user tapped is what they came for: the launch intro steps aside at once.
+  useEffect(() => {
+    if (openReminder) dismissStartupOverlay();
+  }, [openReminder]);
+  // In-app requests (Home's «مختارات اليوم») take the very same path as a tapped notification.
+  useEffect(
+    () => subscribeOpenReminderRequests(({ id, commentId, shown }) => setOpenReminder({ id, commentId, shown })),
+    [],
+  );
+  useEffect(() => {
+    if (!isRemindersNativeAvailable()) return;
+    const handle = RemindersNative.addListener("openReminder", ({ id, commentId, shown }) => setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined }));
+    void RemindersNative.consumeLaunchReminder()
+      .then(({ id, commentId, shown }) => id && setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined }))
+      .catch(() => {});
+    return () => void handle.then((h) => h.remove());
+  }, []);
+  if (!openReminder) return null;
   return (
-    <div key={screen} className="dithar-app-transition">
-      <HomeScreen
-        onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-        onNavigateToWritten={() => setScreen("written")}
-        onNavigateToSettings={() => setScreen("settings")}
-        onNavigateToAudio={() => setScreen("audio")}
+    <Suspense fallback={null}>
+      <SpiritualReminderView
+        key={`${openReminder.id}|${openReminder.commentId ?? ""}|${openReminder.shown?.text ?? ""}`}
+        itemId={openReminder.id}
+        commentId={openReminder.commentId}
+        shownAs={openReminder.shown}
+        onClose={closeReminder}
       />
-    </div>
+    </Suspense>
   );
 }
 
@@ -790,12 +629,42 @@ export default function App() {
     };
   }, []);
 
+  // Android only: reminders, the home-screen widget and the end-of-day
+  // summary (lib/remindersSync.ts), loaded lazily like the schedules above.
+  useEffect(() => {
+    if (!isRemindersNativeAvailable()) return;
+    let cancelled = false;
+    let stop: (() => void) | undefined;
+    void import("./lib/remindersSync").then((m) => {
+      if (!cancelled) stop = m.startRemindersSync();
+    });
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
+  }, []);
+
+  // With the launch intro, the Home Screen mounts once the intro's text is on
+  // screen (so the two never compete for the first frames); without it, at once.
+  const [homeMounted, setHomeMounted] = useState(() => !startupIntroWillShow());
+  const mountHome = useCallback(() => setHomeMounted(true), []);
+  // The first screen has painted (one frame after it mounted): the launch
+  // intro may leave as soon as its brief display is over.
+  const [appReady, setAppReady] = useState(false);
+  useEffect(() => {
+    if (!homeMounted) return;
+    const frame = window.requestAnimationFrame(() => setAppReady(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [homeMounted]);
+
   return (
     <LanguageProvider>
       <ThemeProvider>
         <PaletteProvider>
           <QuranReciterProvider>
-            <AppRouter />
+            {homeMounted && <AppRouter />}
+            <ReminderOverlayHost />
+            <StartupHadithOverlay appReady={appReady} onShown={mountHome} />
           </QuranReciterProvider>
         </PaletteProvider>
       </ThemeProvider>

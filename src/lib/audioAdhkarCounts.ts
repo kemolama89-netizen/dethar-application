@@ -12,8 +12,8 @@
 // the same completion delivered twice — a repeated event, an app restart
 // before the native queue was acknowledged — counts once.
 import { useSyncExternalStore } from "react";
-import { recordAudioRepetitions } from "./stats";
-import type { AudioRepetition } from "./stats";
+import { recordAudioListening, recordAudioRepetitions, recordListenedSessions } from "./stats";
+import type { AudioListeningPiece, AudioRepetition } from "./stats";
 
 export type AudioCountCollection = "morning" | "evening" | "misc";
 
@@ -97,6 +97,12 @@ export interface AudioCompletion {
   /** When the audio finished (epoch millis) and the device's time zone then — omitted for "now". */
   at?: number;
   timeZone?: string;
+  /** The listening session it belongs to (one «استماع» or one scheduled session), when known. */
+  sessionId?: string;
+  /** The real length of what played (its files' measured duration), when known — never estimated. */
+  durationMs?: number | null;
+  /** The dhikr's title as the player showed it, when known. */
+  title?: string;
 }
 
 /**
@@ -125,18 +131,124 @@ export function commitAudioCompletions(completions: AudioCompletion[]): number {
       dhikrId: statsDhikrId(c.collection, c.dhikrId),
       eventId: c.id,
       occurredAt: c.at !== undefined ? localStamp(c.at, c.timeZone ?? "") : undefined,
+      sessionId: c.sessionId || undefined,
+      durationMs: typeof c.durationMs === "number" && Number.isFinite(c.durationMs) && c.durationMs > 0 ? Math.round(c.durationMs) : undefined,
+      title: c.title || undefined,
     })),
   );
   for (const listener of listeners) listener();
   return fresh.length;
 }
 
+// ---- listening that stopped before the end -----------------------------------
+
+/** A playback that stopped before its recording's end, and how long it really played. */
+export interface AudioListening {
+  /** Unique per playback — the same id is only ever taken in once. */
+  id: string;
+  collection: AudioCountCollection;
+  dhikrId: string;
+  /** When it stopped (epoch millis) and the device's time zone then — omitted for "now". */
+  at?: number;
+  timeZone?: string;
+  /** How long it played, ms: the player's position when it stopped (never estimated). */
+  listenedMs: number;
+  sessionId?: string;
+  title?: string;
+}
+
+/**
+ * Splits [at − listenedMs, at] at local midnight(s) in `timeZone`, latest
+ * piece first: a playback that crossed into a new day gives each day the
+ * time it really played on it. (Pauses aren't known here, so the span is
+ * taken as continuous — it can only move time between adjacent days.)
+ */
+export function splitAtLocalMidnight(at: number, listenedMs: number, timeZone: string): { at: number; ms: number }[] {
+  const dateOf = (t: number) => localStamp(t, timeZone).localDate;
+  const pieces: { at: number; ms: number }[] = [];
+  let end = at;
+  let start = at - listenedMs;
+  for (let guard = 0; end > start && guard < 4; guard++) {
+    const day = dateOf(end - 1);
+    if (dateOf(start) === day) {
+      pieces.push({ at: end, ms: end - start });
+      return pieces;
+    }
+    // The first instant of `day`: the smallest t in (start, end] with dateOf(t) === day.
+    let lo = start;
+    let hi = end - 1;
+    while (hi - lo > 1) {
+      const mid = Math.floor((lo + hi) / 2);
+      if (dateOf(mid) === day) hi = mid;
+      else lo = mid;
+    }
+    pieces.push({ at: end, ms: end - hi });
+    end = hi;
+  }
+  if (end > start) pieces.push({ at: end, ms: end - start });
+  return pieces;
+}
+
+/** Takes in stopped-early listening: each playback not seen before adds its time (never a repetition). Returns how many were new. */
+export function commitAudioListening(entries: AudioListening[]): number {
+  const pieces: AudioListeningPiece[] = [];
+  for (const e of entries) {
+    if (!(typeof e.listenedMs === "number" && Number.isFinite(e.listenedMs) && e.listenedMs > 0)) continue;
+    const at = e.at ?? Date.now();
+    const zone = e.timeZone ?? "";
+    splitAtLocalMidnight(at, Math.round(e.listenedMs), zone).forEach((piece, part) =>
+      pieces.push({
+        category: e.collection,
+        dhikrId: statsDhikrId(e.collection, e.dhikrId),
+        eventId: e.id,
+        part,
+        // Stamped just inside its own day (a piece ending exactly at midnight belongs to the day before).
+        occurredAt: localStamp(piece.at - 1, zone),
+        listenedMs: piece.ms,
+        sessionId: e.sessionId || undefined,
+        title: e.title || undefined,
+      }),
+    );
+  }
+  const added = recordAudioListening(pieces);
+  if (added > 0) for (const listener of listeners) listener();
+  return added;
+}
+
+// ---- whole sessions heard to their end -------------------------------------------
+
+/** A Morning/Evening session the background player played to its very end. */
+export interface CompletedSession {
+  /** "native-session-complete:<section>:<occurrence>" — stable, so it is taken in once. */
+  id: string;
+  collection: "morning" | "evening";
+  at?: number;
+  timeZone?: string;
+}
+
+/** Records each not-yet-recorded completed session (by id) on the local day it finished. Returns how many were new. */
+export function commitCompletedSessions(sessions: CompletedSession[]): number {
+  const added = recordListenedSessions(
+    sessions
+      .filter((s) => s.collection === "morning" || s.collection === "evening")
+      .map((s) => ({ category: s.collection, eventId: s.id, occurredAt: s.at !== undefined ? localStamp(s.at, s.timeZone ?? "") : undefined })),
+  );
+  if (added > 0) for (const listener of listeners) listener();
+  return added;
+}
+
 let sequence = 0;
 
-/** One repetition the in-app player heard to the end, right now. */
-export function commitInAppCompletion(collection: AudioCountCollection, itemId: string): void {
+/** A playback in the app stopped before its end after playing `listenedMs`, right now. */
+export function commitInAppListening(collection: AudioCountCollection, itemId: string, listenedMs: number, details: { sessionId?: string; title?: string } = {}): void {
   sequence += 1;
-  commitAudioCompletions([{ id: `app:${Date.now()}:${sequence}:${Math.random().toString(36).slice(2, 8)}`, collection, dhikrId: itemId }]);
+  commitAudioListening([{ id: `app-listen:${Date.now()}:${sequence}:${Math.random().toString(36).slice(2, 8)}`, collection, dhikrId: itemId, listenedMs, ...details }]);
+}
+
+/** One repetition the in-app player heard to the end, right now. */
+export function commitInAppCompletion(collection: AudioCountCollection, itemId: string, details: { sessionId?: string; title?: string; durationMs?: number | null } = {}): void {
+  sequence += 1;
+  commitAudioCompletions([{ id: `app:${Date.now()}:${sequence}:${Math.random().toString(36).slice(2, 8)}`, collection, dhikrId: itemId, ...details }]);
 }
 
 function subscribe(listener: () => void): () => void {

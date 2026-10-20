@@ -16,6 +16,7 @@
 // back through applyNativePlaybackState into the one playback state.
 //
 // Web/iOS: there is no background scheduler, so nothing is scheduled.
+import { startAdhanPlaybackSync } from "./adhanPlayback";
 import { App } from "@capacitor/app";
 import type { PluginListenerHandle } from "@capacitor/core";
 import { writtenAdhkarItems } from "../data/written-adhkar";
@@ -44,9 +45,12 @@ import { buildDailySlots } from "./dailyAzkarWindows";
 import { syncAudioVolumesToNative } from "./audioVolumeSettings";
 import { subscribeLocationChanges } from "./locationSettings";
 import { trackNativeSync } from "./appExit";
-import { commitAudioCompletions } from "./audioAdhkarCounts";
+import { commitAudioCompletions, commitAudioListening, commitCompletedSessions } from "./audioAdhkarCounts";
 import { loadLanguagePreference } from "./appearancePreferences";
 import { nativeRecitation, nativeVariousItem, nativeWrittenAudio } from "./audioAdhkarNativeItems";
+import { loadDailyDayTimes, subscribeWeeklySchedule, weeklyDayStarts } from "./weeklySchedule";
+import { loadReminderSound } from "./adhkarReminderSounds";
+import { buildOccasionPush } from "./islamicOccasions";
 
 /**
  * What `item` plays, as APK asset paths: its generated recording, or —
@@ -128,8 +132,10 @@ async function syncNow(now: Date): Promise<AudioAdhkarScheduleResult> {
     const startMinutes = startTimeToMinutes(loadDailySchedule(section).startTime);
     const enabled = loadSectionStatus(section).ready;
     const playlist = enabled ? buildDailyAudioPlaylist(section) : [];
-    const slots = buildDailySlots({ section, startMinutes, playlist, location, adhanWindows, now });
-    return { enabled, startMinutes, playlist, slots: slots.map((s) => [s.start, s.at, s.end] as const) };
+    // Per-day start times ("customize by day"), when the user set any.
+    const dayStartMinutes = loadDailyDayTimes(section).map(startTimeToMinutes);
+    const slots = buildDailySlots({ section, startMinutes, dayStartMinutes, playlist, location, adhanWindows, now });
+    return { enabled, startMinutes, playlist, slots: slots.map((s) => [s.start, s.at, s.end] as const), reminderSound: loadReminderSound(section) };
   };
   const misc = loadMiscSchedule();
   const miscEnabled = loadSectionStatus("misc").ready;
@@ -144,11 +150,16 @@ async function syncNow(now: Date): Promise<AudioAdhkarScheduleResult> {
       playlist: miscEnabled ? buildMiscAudioPlaylist() : [],
       // The language of the "paused for prayer / resumed" notifications.
       language: loadLanguagePreference(),
+      // Nothing recurring starts before each weekday's start time (the weekly schedule).
+      dayStartMinutes: weeklyDayStarts(),
+      // Fridays and Islamic occasions play their own dhikr; the normal rotation resumes after.
+      ...buildOccasionPush(now),
     },
   };
   const result = await AudioAdhkarNative.setSchedules({
     ...(loadAudioAdhkarMasterEnabled() ? sections : masterOff(sections)),
     adhanWindows,
+    language: loadLanguagePreference(),
   });
   return { available: true, ...result };
 }
@@ -191,8 +202,19 @@ export async function drainNativeCompletions(): Promise<number> {
   if (!isAudioAdhkarNativeAvailable()) return 0;
   const { completions } = await AudioAdhkarNative.getCompletions();
   if (completions.length === 0) return 0;
+  // Listening that stopped before the end shares the queue: it adds listening time, never a repetition.
+  const listened = completions.filter((c) => c.kind === "listening");
+  const sessions = completions.filter((c) => c.kind === "session");
+  const completed = completions.filter((c) => c.kind === undefined);
   const added = commitAudioCompletions(
-    completions.map((c) => ({ id: c.id, collection: c.collection, dhikrId: c.dhikrId, at: c.at, timeZone: c.timeZone })),
+    completed.map((c) => ({ id: c.id, collection: c.collection, dhikrId: c.dhikrId, at: c.at, timeZone: c.timeZone, sessionId: c.sessionId, durationMs: c.durationMs, title: c.title })),
+  );
+  commitAudioListening(
+    listened.map((c) => ({ id: c.id, collection: c.collection, dhikrId: c.dhikrId, at: c.at, timeZone: c.timeZone, listenedMs: c.listenedMs ?? 0, sessionId: c.sessionId, title: c.title })),
+  );
+  // Whole Morning/Evening sessions heard to their end: completed sessions, never repetitions.
+  commitCompletedSessions(
+    sessions.flatMap((c) => (c.collection === "morning" || c.collection === "evening" ? [{ id: c.id, collection: c.collection, at: c.at, timeZone: c.timeZone }] : [])),
   );
   await AudioAdhkarNative.acknowledgeCompletions({ ids: completions.map((c) => c.id) });
   return added;
@@ -214,6 +236,8 @@ export function startAudioAdhkarNativeSync(): () => void {
   if (!isAudioAdhkarNativeAvailable()) return () => {};
   const resync = () => void syncAudioAdhkarSchedules().catch(() => {});
   const drain = () => void drainNativeCompletions().catch(() => {});
+  // The adhan, shown by the Home screen player (lib/adhanPlayback.ts).
+  const adhan = startAdhanPlaybackSync();
   const handles: Promise<PluginListenerHandle>[] = [
     AudioAdhkarNative.addListener("playbackState", ({ state }) => applyNativePlaybackState(state)),
     AudioAdhkarNative.addListener("completions", drain),
@@ -221,16 +245,20 @@ export function startAudioAdhkarNativeSync(): () => void {
       resync();
       drain();
       void refreshNativePlaybackState().catch(() => {});
+      adhan.refresh();
     }),
   ];
   const unsubscribeLocation = subscribeLocationChanges(resync);
+  const unsubscribeWeekly = subscribeWeeklySchedule(resync);
   // The app's volume levels (Settings → إعدادات الصوت), once per launch — every change is pushed as it is made.
   void syncAudioVolumesToNative();
   resync();
   drain();
   void refreshNativePlaybackState().catch(() => {});
   return () => {
+    adhan.stop();
     unsubscribeLocation();
+    unsubscribeWeekly();
     for (const handle of handles) void handle.then((h) => h.remove());
   };
 }

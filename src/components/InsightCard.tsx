@@ -98,7 +98,7 @@ export function InsightCard({
       <div className="flex gap-3">
         <div
           className="flex h-11 w-11 shrink-0 items-center justify-center self-start rounded-full"
-          style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
+          style={{ background: "var(--color-primary)", color: "var(--color-gold-on-primary)" }}
         >
           {icon}
         </div>

@@ -14,6 +14,7 @@
 // with every modern browser/WebView (the same ICU data source used for
 // Hijri dates across the Gulf region), so reusing it beats introducing a
 // new dependency and a second, hand-maintained conversion table.
+import { adjustForHijri } from "./hijriAdjustment";
 import type { Language } from "../theme/LanguageContext";
 
 export interface GregorianDateInfo {
@@ -153,7 +154,8 @@ function formatLocalTime(date: Date, language: Language): string {
 export function getDateTimeInfo(date: Date, language: Language): DateTimeInfo {
   return {
     gregorianDate: formatGregorian(date, language),
-    hijriDate: formatHijri(date, language),
+    // Moved by the user's regional Hijri adjustment (0 = Umm al-Qura exactly) — the same one the occasions use.
+    hijriDate: formatHijri(adjustForHijri(date), language),
     localTime: formatLocalTime(date, language),
     timezone: getDeviceTimeZone(),
     dateKey: getLocalDateKey(date),

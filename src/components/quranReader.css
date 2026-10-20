@@ -1,0 +1,433 @@
+/* One page of the Mushaf: warm ivory paper with a single fine gold rule and
+   the page number at the foot, as in a printed Medina Mushaf (the surah and
+   juz are in the reader's header, outside the page). The page itself is the
+   edition's artwork (an SVG image) on that paper; the ivory stays ivory in
+   the dark themes too, like a printed page under a lamp. The gold is the
+   theme's, so it stays within the app's identities. */
+.dithar-mushaf-page {
+  --mushaf-paper: #fcf8ee;
+  --mushaf-rule: rgba(var(--color-gold-rgb), 0.55);
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  width: 100%;
+  max-width: 34rem;
+  margin-inline: auto;
+  border: 1px solid var(--mushaf-rule);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 30%),
+    radial-gradient(140% 90% at 50% 50%, transparent 60%, rgba(var(--color-gold-rgb), 0.07)),
+    var(--mushaf-paper);
+  box-shadow: 0 1px 2px rgba(60, 40, 10, 0.06), 0 6px 16px rgba(60, 40, 10, 0.07);
+  padding: 8px 8px 2px;
+}
+
+/* The room the page is fitted into. A zoomed page is larger than it and
+   scrolls (both ways) instead of being clipped. */
+.dithar-mushaf-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.dithar-mushaf-body[data-zoomed] {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* The page at its own proportions (the reader sizes it): centred when it
+   fits, and auto margins — not flex centring — so a zoomed page can still
+   be scrolled to every edge. */
+.dithar-mushaf-sheet {
+  position: relative;
+  flex: none;
+  margin: auto;
+}
+
+.dithar-mushaf-art,
+.dithar-mushaf-hits {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* The page artwork (an SVG <image>, whole and at its own proportions: the
+   viewBox's default "meet" fits it, never stretched or cropped). */
+.dithar-mushaf-art {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* Each surah's printed title, framed like the opening pages' title panel —
+   drawn UNDER the artwork in the same <svg> (lib/mushafHeadings.ts centres it
+   on the title's measured ink; components/MushafSurahFrame.tsx draws it), so it
+   never covers a letter; the artwork's own title and Bismillah are what is
+   read. The colours are the opening panel's own, on the ivory page in every
+   theme. */
+.dithar-mushaf-headings {
+  --surah-frame-navy: #093970;
+  --surah-frame-teal: #188daa;
+  --surah-frame-gold: #f5ce46;
+  --surah-frame-gold-deep: #c49439;
+  --surah-frame-cream: #f9f4d8;
+}
+.dithar-surah-frame-band {
+  fill: var(--surah-frame-teal);
+}
+.dithar-surah-frame-edge {
+  fill: none;
+  stroke: var(--surah-frame-gold-deep);
+  stroke-width: 0.7;
+}
+.dithar-surah-frame-rule {
+  fill: none;
+  stroke: var(--surah-frame-gold);
+  stroke-width: 0.5;
+}
+.dithar-surah-frame-field {
+  fill: var(--surah-frame-navy);
+}
+.dithar-surah-frame-field-edge {
+  fill: none;
+  stroke: var(--surah-frame-gold-deep);
+  stroke-width: 0.5;
+}
+.dithar-surah-frame-vine {
+  fill: none;
+  stroke: var(--surah-frame-gold);
+  stroke-width: 0.5;
+}
+.dithar-surah-frame-leaf {
+  fill: var(--surah-frame-teal);
+}
+.dithar-surah-frame-floret ellipse {
+  fill: var(--surah-frame-cream);
+}
+.dithar-surah-frame-floret-teal ellipse {
+  fill: var(--surah-frame-teal);
+}
+.dithar-surah-frame-halo {
+  fill: none;
+  stroke: var(--surah-frame-navy);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.dithar-surah-frame-gold {
+  fill: var(--surah-frame-gold);
+}
+.dithar-surah-frame-cartouche {
+  fill: var(--surah-frame-cream);
+  stroke: var(--surah-frame-gold);
+  stroke-width: 1;
+}
+.dithar-surah-frame-cartouche-line {
+  fill: none;
+  stroke: var(--surah-frame-gold-deep);
+  stroke-width: 0.35;
+}
+
+/* The verse shapes, exactly over the artwork (same viewBox, same box):
+   invisible until a verse is selected or opened. */
+.dithar-mushaf-hits path {
+  fill: rgba(var(--reminder-tint-rgb), 0);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: fill 0.2s ease;
+}
+.dithar-mushaf-hits path[data-selected] {
+  fill: rgba(var(--reminder-tint-rgb), 0.14);
+}
+.dithar-mushaf-hits path:focus-visible {
+  fill: rgba(var(--reminder-tint-rgb), 0.1);
+}
+.dithar-mushaf-hits path[data-target] {
+  animation: dithar-quran-target 1.8s ease-out 1;
+}
+
+@keyframes dithar-quran-target {
+  0% { fill: rgba(var(--color-gold-rgb), 0.35); }
+  100% { fill: rgba(var(--color-gold-rgb), 0); }
+}
+
+/* A page turning (QuranReaderScreen.tsx PageTurn): copies of the two pages
+   over the reader's own, laid out exactly as it is (same flex column, the
+   leaf centred by auto margins), each pane scrolled as its page is. The
+   leaf turns over its spine — the right edge — in 3D; the reader sets its
+   transform each frame, and its shading and the shadow it casts on the
+   page beneath — transforms and opacity only, so no frame repaints a page. */
+.dithar-mushaf-turn {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+.dithar-mushaf-turn-under,
+.dithar-mushaf-turn-pane {
+  position: absolute;
+  inset: 0;
+}
+.dithar-mushaf-turn-under {
+  background: var(--color-bg);
+  overflow: hidden;
+}
+.dithar-mushaf-turn-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dithar-mushaf-turn-pane > .dithar-mushaf-leaf {
+  flex: none;
+  margin: auto;
+}
+.dithar-mushaf-turn-over > .dithar-mushaf-leaf {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: flat;
+}
+/* The turning leaf darkens toward its free edge as it rises, like paper
+   tilted away from the light, with a soft fold along the spine (the reader
+   sets its opacity; its own layer, so the page is never repainted). */
+.dithar-mushaf-turn-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+  background:
+    linear-gradient(to left, rgba(60, 40, 10, 0.18), rgba(60, 40, 10, 0) 9%),
+    linear-gradient(to left, rgba(255, 255, 255, 0.12) 20%, rgba(60, 40, 10, 0.32));
+}
+/* The shadow the leaf casts on the page beneath, just past its free edge
+   (the reader moves it, keeping its right side under that edge). */
+.dithar-mushaf-turn-cast {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -56px;
+  width: 56px;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  background: linear-gradient(to right, rgba(40, 25, 5, 0), rgba(40, 25, 5, 0.22));
+}
+
+.dithar-mushaf-folio {
+  display: flex;
+  justify-content: center;
+  padding-top: 1px;
+  font-size: 12px;
+  line-height: 1.5;
+  /* Fixed ink on the fixed ivory paper, legible in every theme. */
+  color: #6b5a3e;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dithar-mushaf-hits path[data-target] {
+    animation: none;
+    fill: rgba(var(--color-gold-rgb), 0.25);
+  }
+}
+
+/* ---- Immersive reading -------------------------------------------------
+   The reader takes the whole screen (outside the app's phone frame), within
+   the safe area. The page is the only thing laid out in it; the controls
+   float above and below it and fade in or out on a tap, so showing or
+   hiding them never changes the page's size. The page is only ever scaled
+   at its own proportions (QuranReaderScreen.tsx) — never re-flowed,
+   stretched or cropped. */
+.dithar-quran-immersive {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-bg);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* No gutter: the page takes the whole width (its own slim margin is part of
+   the artwork's shown box, PAGE_BOX). Only a vertical pan is the browser's;
+   a sideways move turns the page (a zoomed page pans freely). */
+.dithar-quran-stage {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  touch-action: pan-y;
+}
+.dithar-quran-stage[data-pan="free"] {
+  touch-action: auto;
+}
+
+/* Here the page itself is the paper: the ivory sheet hugs the artwork, at
+   any screen shape, instead of a card around the whole screen. */
+.dithar-quran-immersive .dithar-mushaf-page {
+  max-width: none;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+.dithar-quran-immersive .dithar-mushaf-sheet {
+  border: 1px solid var(--mushaf-rule);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 30%),
+    var(--mushaf-paper);
+  box-shadow: 0 1px 2px rgba(60, 40, 10, 0.06), 0 6px 16px rgba(60, 40, 10, 0.07);
+  overflow: hidden;
+}
+.dithar-quran-immersive .dithar-mushaf-folio {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.dithar-mushaf-body[data-scrollable] {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.dithar-quran-bar {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dithar-quran-bar-top {
+  top: 0;
+  padding-top: max(0.4rem, env(safe-area-inset-top));
+  border-bottom: 1px solid var(--color-gold-soft);
+}
+.dithar-quran-bar-bottom {
+  bottom: 0;
+  padding-bottom: max(0.3rem, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-gold-soft);
+}
+.dithar-quran-bar:not([data-shown]) {
+  opacity: 0;
+  pointer-events: none;
+}
+.dithar-quran-bar-top:not([data-shown]) {
+  transform: translateY(-100%);
+}
+.dithar-quran-bar-bottom:not([data-shown]) {
+  transform: translateY(100%);
+}
+
+/* A brief "tap the page" cue when the controls are hidden. */
+.dithar-quran-hint {
+  position: absolute;
+  bottom: max(1.25rem, calc(env(safe-area-inset-bottom) + 0.75rem));
+  inset-inline: 0;
+  margin-inline: auto;
+  width: max-content;
+  max-width: 90%;
+  z-index: 5;
+  pointer-events: none;
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 11.5px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  animation: dithar-quran-hint 2.6s ease-in 1 forwards;
+}
+@keyframes dithar-quran-hint {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dithar-quran-bar {
+    transition: none;
+  }
+}
+
+/* The page and its number, as one unit in the scroll area: centred when the
+   page is shorter than the screen, scrolled through (to every edge — auto
+   margins, not flex centring) when it is taller. */
+.dithar-mushaf-body {
+  flex-direction: column;
+}
+.dithar-mushaf-leaf {
+  flex: none;
+  margin: auto;
+}
+.dithar-mushaf-leaf > .dithar-mushaf-sheet {
+  margin: 0;
+}
+
+/* One page at a time (QuranReaderScreen.tsx MushafReader): in portrait the
+   whole page fits and sits centred — nothing scrolls; in landscape it takes
+   the full width and scrolls vertically (auto margins, not flex centring,
+   so every edge stays reachable). Only sideways when zoomed. */
+.dithar-quran-immersive .dithar-mushaf-body {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.dithar-quran-immersive .dithar-mushaf-body[data-zoomed] {
+  overflow-x: auto;
+}
+/* The page number under the page: exactly the room the layout gives it
+   (FOLIO_PX), at the page's outer corner — bottom right on a right-hand
+   (odd) page, bottom left on a left-hand (even) one, as in a bound Mushaf. */
+.dithar-quran-immersive .dithar-mushaf-folio {
+  height: 18px;
+  padding-top: 2px;
+  padding-inline: 10px;
+  overflow: hidden;
+  direction: ltr;
+}
+.dithar-mushaf-folio[data-side="right"] {
+  justify-content: flex-end;
+}
+.dithar-mushaf-folio[data-side="left"] {
+  justify-content: flex-start;
+}
+
+/* A verse in the search results, as written in the Uthmani text (the
+   bundled Scheherazade New covers all of its letters and marks). */
+@font-face {
+  font-family: "Scheherazade New";
+  src: url("../assets/fonts/scheherazade-new/ScheherazadeNew-Regular.woff2") format("woff2");
+  font-display: swap;
+}
+.dithar-quran-verse-text {
+  font-family: "Scheherazade New", var(--font-display);
+  font-size: 19px;
+  line-height: 1.9;
+}
+.dithar-quran-verse-text mark {
+  border-radius: 4px;
+  padding-inline: 1px;
+  background: rgba(var(--color-gold-rgb), 0.3);
+  color: inherit;
+}
+/* A long press selects a verse: no text selection or system callout over the page. */
+.dithar-mushaf-hits path {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+/* The controls: a light, see-through overlay above the page (shown by a tap). */
+.dithar-quran-bar {
+  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}

@@ -5,12 +5,13 @@ import type { PrayerKey } from "../data/content";
 import { useLanguage } from "../theme/LanguageContext";
 import { useCoordinates } from "../lib/useCoordinates";
 import { calculatePrayerDay, formatPrayerTime } from "../lib/prayerTimes";
-import { localDateIn, localDateKey } from "../lib/locationTime";
+import { addDays, localDateIn, localDateKey } from "../lib/locationTime";
 import { getCountryName } from "../data/cities";
 import { settingsLabels } from "../data/settings";
 import { useNextPrayerCountdown } from "../lib/useNextPrayerCountdown";
 import { usePrayerReminder } from "../lib/usePrayerReminder";
 import { useAudioAdhkarMaster } from "../lib/useAudioAdhkarMaster";
+import { MihrabFrame } from "./MihrabFrame";
 
 const PRAYER_ICONS: Record<PrayerKey, typeof Moon> = {
   fajr: Moon,
@@ -81,7 +82,12 @@ function ReminderSwitch({ checked, onChange, label, name }: { checked: boolean; 
 // passed down to every consumer below (the grid, the reminder scheduler,
 // the countdown) — the single source of truth for "what are today's
 // prayer times", never recomputed independently by any of them.
-export function PrayerTimesPanel({ date, className = "" }: { date: Date; className?: string }) {
+// `variant="hero"` is Home's prominent panel (it fills the room the player
+// and Qur'an cards used to take): the same calculation, countdown and the
+// same two switches — only laid out larger, the next prayer framed by a
+// mihrab's niche (a decorative motif — no direction is shown), with the
+// next prayer's time highlighted. "compact" is the original strip.
+export function PrayerTimesPanel({ date, className = "", variant = "compact" }: { date: Date; className?: string; variant?: "compact" | "hero" }) {
   const { language, dir } = useLanguage();
   const t = labels[language];
   const names = prayerNames[language];
@@ -123,7 +129,13 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
     return calculatePrayerDay({ coordinates, timezone, country: countryCode }, { year, month, day });
   }, [dayKey, coordinates, countryCode, timezone]);
 
-  const nextPrayer = useNextPrayerCountdown(times, tomorrowFajr);
+  // Yesterday's Isha: where the wait for Fajr began (the countdown bar's start before dawn).
+  const yesterdayIsha = useMemo(() => {
+    const [year, month, day] = dayKey.split("-").map(Number);
+    return calculatePrayerDay({ coordinates, timezone, country: countryCode }, addDays({ year, month, day }, -1)).times.isha;
+  }, [dayKey, coordinates, countryCode, timezone]);
+
+  const nextPrayer = useNextPrayerCountdown(times, tomorrowFajr, yesterdayIsha);
   // Nothing is scheduled for the placeholder while the location is still being detected.
   const reminder = usePrayerReminder(times, timezone, language, detecting);
   // Independent of the reminder switch above: every scheduled Audio Adhkar section.
@@ -133,6 +145,138 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
     .replace("{h}", pad2(nextPrayer.remaining.hours))
     .replace("{m}", pad2(nextPrayer.remaining.minutes))
     .replace("{s}", pad2(nextPrayer.remaining.seconds));
+
+  const toggles = (
+    <>
+      {/* The toggles row, right above "الصلاة القادمة": the Audio Adhkar
+          master switch at the start edge (right in Arabic) and the prayer
+          reminder at the end edge, where it has always been — each switch
+          at its outer edge (justify-between). Shown while the location is
+          still being detected too. */}
+      <div className="flex items-center justify-between gap-2" data-toggles-row="">
+        <span className="flex min-w-0 items-center gap-1" data-audio-adhkar-toggle="">
+          <ReminderSwitch checked={audioAdhkar.enabled} onChange={audioAdhkar.toggle} label={t.audioAdhkarToggle} name="audio-adhkar" />
+          <Headphones size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} aria-hidden="true" />
+          <span className="truncate">{t.audioAdhkarToggle}</span>
+        </span>
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="flex min-w-0 items-center gap-1">
+            <span className="truncate">{t.prayerReminder}</span>
+            <Bell size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />
+          </span>
+          <ReminderSwitch checked={reminder.enabled} onChange={reminder.toggle} label={t.prayerReminder} name="prayer-notifications" />
+        </span>
+      </div>
+
+      {reminder.enabled && !reminder.available && (
+        <p className="text-end leading-[1.4] opacity-75" style={{ fontSize: "clamp(7px, 1.9vw, 8.5px)" }}>
+          {t.prayerReminderUnavailableNote}
+        </p>
+      )}
+    </>
+  );
+
+  const progressBar =
+    nextPrayer.fraction !== null ? (
+      <div
+        role="progressbar"
+        aria-label={`${t.nextPrayerHeading}: ${names[nextPrayer.key]}`}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(nextPrayer.fraction * 100)}
+        className="h-1.5 w-full overflow-hidden rounded-full"
+        style={{ background: "rgba(var(--color-primary-contrast-rgb), 0.18)" }}
+      >
+        <div className="dithar-countdown-bar h-full rounded-full" style={{ width: `${nextPrayer.fraction * 100}%`, background: "var(--color-gold-on-primary)" }} />
+      </div>
+    ) : null;
+
+  if (variant === "hero") {
+    const NextIcon = PRAYER_ICONS[nextPrayer.key];
+    return (
+      <div
+        className={`relative flex min-w-0 flex-col overflow-hidden border px-[18px] pb-2.5 pt-2 [@media(max-height:820px)]:pb-2 [@media(max-height:820px)]:pt-1.5 ${className}`}
+        style={{
+          // The panel's own ground, deepened toward the edges like the reference's dark field.
+          background: "radial-gradient(130% 80% at 50% 30%, transparent 55%, rgba(0,0,0,0.28)), var(--color-primary)",
+          color: "var(--color-primary-contrast)",
+          borderColor: "#7a5a36",
+          borderRadius: "var(--card-radius)",
+          ["--rs-dir" as string]: dir === "rtl" ? -1 : 1,
+        }}
+        data-prayer-panel="hero"
+      >
+        {/* The whole panel is the mihrab (components/MihrabFrame.tsx) — an architectural motif only:
+            it shows no direction (the app doesn't calculate the Qibla). */}
+        <MihrabFrame />
+        {/* The title and location run across the top, above the arch's crest. */}
+        <div className="relative flex items-center gap-2" data-prayer-panel-title="">
+          <span className="flex min-w-0 items-center gap-1.5">
+            <KaabaMark />
+            <span className="truncate text-[14px] font-bold">{t.prayerPanelTitle}</span>
+          </span>
+          <span className="flex min-w-0 flex-1 items-center justify-end gap-1 text-[10.5px] opacity-90">
+            <span className="truncate">{locationLabel}</span>
+            <MapPin size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />
+          </span>
+        </div>
+
+        {/* The next prayer, under the crown. */}
+        <div className="relative mt-1 flex w-full flex-1 flex-col items-center justify-end px-4 pb-1.5 pt-7 [@media(max-height:880px)]:pb-0.5 [@media(max-height:880px)]:pt-4" style={{ containerType: "inline-size" }} data-next-prayer={detecting ? undefined : nextPrayer.key}>
+          {detecting ? (
+            <span className="relative pb-2 text-[13px] opacity-85">{settingsLabels[language].locationDetecting}</span>
+          ) : (
+            <>
+              <span className="relative flex items-center gap-1 text-[11.5px] opacity-85 [@media(max-height:880px)]:hidden">
+                <NextIcon size={13} strokeWidth={1.7} style={{ color: "var(--color-gold)" }} aria-hidden="true" />
+                {t.nextPrayerHeading}
+              </span>
+              <strong className="relative text-[clamp(21px,6.6vw,30px)] leading-tight [@media(max-height:860px)]:text-[clamp(19px,5.8vw,24px)]" style={{ fontFamily: "var(--font-display)" }} data-next-prayer-name="">
+                {names[nextPrayer.key]}
+              </strong>
+              <span
+                className="relative whitespace-nowrap font-bold tabular-nums"
+                // Never wider than the niche between its pilasters: the size also follows the line's length (cqw: the niche's width).
+                style={{ direction: "ltr", fontSize: `min(clamp(12.5px, 3.7vw, 16px), calc(100cqw * 2.2 / ${Math.max(countdownText.length, 1)}))`, color: "var(--color-gold-on-primary)" }}
+                data-next-prayer-countdown=""
+              >
+                {countdownText}
+              </span>
+              <span className="relative mt-1.5 w-full [@media(max-height:880px)]:mt-1">{progressBar}</span>
+            </>
+          )}
+        </div>
+
+        <div className="relative mt-1.5 grid grid-cols-6 gap-1" data-prayer-times="">
+          {prayerOrder.map((key) => {
+            const Icon = PRAYER_ICONS[key];
+            const isNext = !detecting && key === nextPrayer.key;
+            return (
+              <div
+                key={key}
+                className="flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-0.5 py-1 [@media(max-height:820px)]:gap-0 [@media(max-height:820px)]:py-0.5"
+                style={isNext ? { background: "rgba(var(--color-gold-rgb), 0.18)", boxShadow: "inset 0 0 0 1px var(--color-gold)" } : { background: "rgba(var(--color-primary-contrast-rgb), 0.06)" }}
+                data-prayer={key}
+                data-next={isNext ? "" : undefined}
+              >
+                <Icon size={13} strokeWidth={1.6} className="shrink-0" style={{ color: "var(--color-gold)" }} aria-hidden="true" />
+                <span className="w-full truncate text-center opacity-90" style={{ fontSize: "clamp(8.5px, 2.4vw, 10.5px)" }}>
+                  {names[key]}
+                </span>
+                <span className="w-full truncate text-center font-bold" style={{ direction: "ltr", fontSize: "clamp(10.5px, 2.9vw, 13px)" }}>
+                  {detecting ? "--:--" : formatPrayerTime(times[key], timezone)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="relative mt-1.5 flex flex-col gap-0.5 border-t pt-1.5 opacity-95" style={{ borderColor: "rgba(216,178,106,0.3)", fontSize: "clamp(9.5px, 2.6vw, 11.5px)" }}>
+          {toggles}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -194,43 +338,33 @@ export function PrayerTimesPanel({ date, className = "" }: { date: Date; classNa
         className="mt-0.5 flex flex-col gap-0.5 border-t pt-px opacity-90"
         style={{ borderColor: "rgba(var(--color-primary-contrast-rgb), 0.15)", fontSize: "clamp(8px, 2.2vw, 10.5px)" }}
       >
-        {/* The toggles row, right above "الصلاة القادمة": the Audio Adhkar
-            master switch at the start edge (right in Arabic) and the prayer
-            reminder at the end edge, where it has always been — each switch
-            at its outer edge (justify-between). Shown while the location is
-            still being detected too. */}
-        <div className="flex items-center justify-between gap-2" data-toggles-row="">
-          <span className="flex min-w-0 items-center gap-1" data-audio-adhkar-toggle="">
-            <ReminderSwitch checked={audioAdhkar.enabled} onChange={audioAdhkar.toggle} label={t.audioAdhkarToggle} name="audio-adhkar" />
-            <Headphones size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} aria-hidden="true" />
-            <span className="truncate">{t.audioAdhkarToggle}</span>
-          </span>
-          <span className="flex min-w-0 items-center gap-2">
-            <span className="flex min-w-0 items-center gap-1">
-              <span className="truncate">{t.prayerReminder}</span>
-              <Bell size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />
-            </span>
-            <ReminderSwitch checked={reminder.enabled} onChange={reminder.toggle} label={t.prayerReminder} name="prayer-notifications" />
-          </span>
-        </div>
-
-        {reminder.enabled && !reminder.available && (
-          <p className="text-end leading-[1.4] opacity-75" style={{ fontSize: "clamp(7px, 1.9vw, 8.5px)" }}>
-            {t.prayerReminderUnavailableNote}
-          </p>
-        )}
+        {toggles}
 
         {!detecting && (
-          <div className="flex items-center justify-between gap-2">
-            <span className="min-w-0 truncate">
-              {t.nextPrayerHeading}: {names[nextPrayer.key]}
-            </span>
-            <span className="shrink-0" style={{ direction: "ltr" }}>
-              {countdownText}
-            </span>
+          <div className="flex flex-col gap-1 pb-0.5" data-next-prayer={nextPrayer.key}>
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="min-w-0 truncate">
+                {t.nextPrayerHeading}: <strong className="text-[1.15em]">{names[nextPrayer.key]}</strong>
+              </span>
+              <span className="shrink-0 font-bold tabular-nums" style={{ direction: "ltr", fontSize: "clamp(11px, 3.2vw, 14px)", color: "var(--color-gold-on-primary)" }}>
+                {countdownText}
+              </span>
+            </div>
+            {progressBar}
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+/** A small Kaaba: the cube with its gold band — beside the panel's title. */
+function KaabaMark() {
+  return (
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" className="shrink-0">
+      <path d="M10 2.5 17 5.6v8.8L10 17.5 3 14.4V5.6z" fill="rgba(0,0,0,0.55)" stroke="var(--color-gold)" strokeWidth="1" strokeLinejoin="round" />
+      <path d="M3 7.6 10 10.7l7-3.1" fill="none" stroke="var(--color-gold)" strokeWidth="1.6" />
+      <path d="M10 10.7v6.8" stroke="var(--color-gold)" strokeWidth="0.8" opacity="0.7" />
+    </svg>
   );
 }

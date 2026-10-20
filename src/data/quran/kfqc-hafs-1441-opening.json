@@ -1,0 +1,59 @@
+{
+  "referenceSha256": "a9aa7cbdd36a8361e6b2ac202745c854901ac416fe8ebef7e0a1c6339c3774b2",
+  "pages": {
+    "1": {
+      "image": "composed/001.svg",
+      "viewBox": "0 0 1432 2188",
+      "displayBox": "0 0 1432 2188",
+      "shapeTransform": "matrix(3.353239 0 0 3.353239 315.9113 716.0633)",
+      "titleTransform": "matrix(4.892973 0 0 4.892973 132.1168 694.5732)",
+      "referenceCrop": [
+        0,
+        0,
+        716,
+        1094
+      ],
+      "medallion": [
+        716,
+        1107,
+        418,
+        433
+      ],
+      "cartouche": [
+        715,
+        443,
+        221,
+        73
+      ],
+      "textFill": 0.9,
+      "quranSvgSha256": "6c6c3190d6edd66cfaf17dd40c80052d86d53074915d0119535c698c48845b4f"
+    },
+    "2": {
+      "image": "composed/002.svg",
+      "viewBox": "0 0 1432 2188",
+      "displayBox": "0 0 1432 2188",
+      "shapeTransform": "matrix(3.353239 0 0 3.353239 318.9592 716.0633)",
+      "titleTransform": "matrix(4.892973 0 0 4.892973 139.7865 694.5732)",
+      "referenceCrop": [
+        721,
+        0,
+        716,
+        1094
+      ],
+      "medallion": [
+        718,
+        1107,
+        418,
+        433
+      ],
+      "cartouche": [
+        719,
+        443,
+        221,
+        73
+      ],
+      "textFill": 0.9,
+      "quranSvgSha256": "d5d166d3ee2293cc7d290c5c827b6a488a531b997f365bf7b250522350cd4ca3"
+    }
+  }
+}

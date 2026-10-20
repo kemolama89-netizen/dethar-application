@@ -18,6 +18,22 @@
     />
   </head>
   <body>
+    <!-- Bridges the native launch screen and the first React paint with the
+         launch intro's colour (DITHAR's page colour), so nothing white (or the
+         Home Screen) flashes in between. The intro (StartupHadithOverlay.tsx) removes it. Plain
+         inline CSS/JS: it must paint before any bundle has loaded. -->
+    <div id="dithar-launch-cover" style="position: fixed; inset: 0; z-index: 2147483647; background: #f2e9da"></div>
+    <script>
+      (function () {
+        // --color-bg of the men/women identity (index.css); the native launch screen uses the men's.
+        var bg = "#f2e9da";
+        try {
+          if (localStorage.getItem("dithar:appearance:theme:v1") === "women") bg = "#f6f2e9";
+        } catch (e) {}
+        document.getElementById("dithar-launch-cover").style.background = bg;
+        document.documentElement.style.setProperty("--launch-bg", bg);
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

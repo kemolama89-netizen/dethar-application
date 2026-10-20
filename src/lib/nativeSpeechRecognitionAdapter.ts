@@ -1,5 +1,6 @@
 import { VoiceRecognitionNative } from "./voiceRecognitionNative";
 import type { PluginListenerHandle } from "@capacitor/core";
+import { loadRecognitionSoundsEnabled } from "./voiceTasbeehSounds";
 
 let nextSessionCounter = 1;
 
@@ -114,7 +115,8 @@ export class NativeAndroidSpeechRecognition extends EventTarget implements Speec
       this.onend?.call(this, new Event("end"));
     }).then((handle) => this.handles.push(handle));
 
-    VoiceRecognitionNative.startSession({ sessionId, language: this.lang || "ar-SA" }).catch(() => {
+    // Read on every pass, so a change to the switch applies from the next one.
+    VoiceRecognitionNative.startSession({ sessionId, language: this.lang || "ar-SA", recognitionSounds: loadRecognitionSoundsEnabled() }).catch(() => {
       // A rejected native call — e.g. the OS-level microphone permission
       // dialog was declined, or the device has no bound
       // RecognitionService at all (see VoiceRecognitionPlugin.kt's own

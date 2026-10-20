@@ -62,7 +62,7 @@ import { saveManualLocation } from "./locationSettings";
 import { AUDIO_VARIOUS_ITEMS } from "../data/audio-adhkar";
 import { drainNativeCompletions } from "./audioAdhkarSchedules";
 import { getAudioAdhkarCount, resetAudioAdhkarCountsMemoryForTesting } from "./audioAdhkarCounts";
-import { clearAllStats, getAudioStats } from "./stats";
+import { clearAllStats, getAudioStats, getDailyActivity, getDailyAudioActivity, todayLocalDate } from "./stats";
 import { setUserRepeatCount } from "./audioUserRepeat";
 import { REPETITION_PAUSE_MS, getNowPlaying } from "./audioAdhkarPlayback";
 import { applyNativePlaybackState, pauseAudioAdhkar, resumeAudioAdhkar, startAudioAdhkar, startAudioVarious, stopAudioAdhkar } from "./audioAdhkarPlayer";
@@ -306,8 +306,8 @@ describe("schedule sync — Morning, Evening and Misc, each independent", () => 
   it("creates the Evening schedule when enabled with a start time; the others stay off", async () => {
     saveEveningAudioSettings({ eveningAudioEnabled: true, eveningAudioStartTime: "22:12" });
     const result = await syncAudioAdhkarSchedules(NOW);
-    expect(sent().evening).toEqual({ enabled: true, startMinutes: 22 * 60 + 12, playlist: buildEveningAudioPlaylist(), slots: expect.any(Array) });
-    expect(sent().morning).toEqual({ enabled: false, startMinutes: -1, playlist: [], slots: [] });
+    expect(sent().evening).toEqual({ enabled: true, startMinutes: 22 * 60 + 12, playlist: buildEveningAudioPlaylist(), slots: expect.any(Array), reminderSound: "crickets" });
+    expect(sent().morning).toEqual({ enabled: false, startMinutes: -1, playlist: [], slots: [], reminderSound: "birdsong" });
     expect(sent().misc).toMatchObject({ enabled: false, playlist: [] });
     expect(result).toMatchObject({ available: true, exact: true, evening: { scheduledAt: 1_790_000_100_000 }, morning: { scheduledAt: null } });
   });
@@ -316,8 +316,8 @@ describe("schedule sync — Morning, Evening and Misc, each independent", () => 
     saveDailySchedule("morning", { enabled: true, startTime: "05:30" });
     saveDailySchedule("evening", { enabled: false, startTime: "17:00" });
     await syncAudioAdhkarSchedules(NOW);
-    expect(sent().morning).toEqual({ enabled: true, startMinutes: 5 * 60 + 30, playlist: buildDailyAudioPlaylist("morning"), slots: expect.any(Array) });
-    expect(sent().evening).toEqual({ enabled: false, startMinutes: 17 * 60, playlist: [], slots: [] });
+    expect(sent().morning).toEqual({ enabled: true, startMinutes: 5 * 60 + 30, playlist: buildDailyAudioPlaylist("morning"), slots: expect.any(Array), reminderSound: "birdsong" });
+    expect(sent().evening).toEqual({ enabled: false, startMinutes: 17 * 60, playlist: [], slots: [], reminderSound: "crickets" });
     const morningIds = new Set(writtenAdhkarItems.morning.map((i) => i.id));
     for (const p of sent().morning.playlist) expect(morningIds.has(p.dhikrId), p.dhikrId).toBe(true);
     // Morning plays its own recordings, in Morning order.
@@ -327,7 +327,7 @@ describe("schedule sync — Morning, Evening and Misc, each independent", () => 
   it("schedules nothing when enabled without a start time", async () => {
     saveDailySchedule("morning", { enabled: true, startTime: "" });
     await syncAudioAdhkarSchedules(NOW);
-    expect(sent().morning).toEqual({ enabled: false, startMinutes: -1, playlist: [], slots: [] });
+    expect(sent().morning).toEqual({ enabled: false, startMinutes: -1, playlist: [], slots: [], reminderSound: "birdsong" });
   });
 
   it("hands native one session per day inside the prayer-time window, planned from the real playlist and its measured length", async () => {
@@ -358,7 +358,20 @@ describe("schedule sync — Morning, Evening and Misc, each independent", () => 
   it("schedules Misc with its window, interval and the Various recordings, each played once", async () => {
     saveMiscSchedule({ enabled: true, startTime: "09:00", endTime: "21:00", intervalMinutes: 5 });
     await syncAudioAdhkarSchedules(NOW);
-    expect(sent().misc).toEqual({ enabled: true, startMinutes: 9 * 60, endMinutes: 21 * 60, intervalMinutes: 5, playlist: buildMiscAudioPlaylist(), language: "ar" });
+    expect(sent().misc).toEqual({
+      enabled: true,
+      startMinutes: 9 * 60,
+      endMinutes: 21 * 60,
+      intervalMinutes: 5,
+      playlist: buildMiscAudioPlaylist(),
+      language: "ar",
+      // No weekly schedule set: no day is restricted.
+      dayStartMinutes: [-1, -1, -1, -1, -1, -1, -1],
+      // Fridays and Islamic occasions (lib/islamicOccasions.ts), on by default.
+      occasionsEnabled: true,
+      occasions: expect.any(Array),
+      occasionPlaylists: expect.any(Object),
+    });
     expect(sent().misc.playlist.map((p) => p.dhikrId)).toEqual(AUDIO_VARIOUS_ITEMS.filter((i) => i.audio).map((i) => i.id));
     for (const p of sent().misc.playlist) {
       expect(p.repetitions).toBe(1);
@@ -550,7 +563,11 @@ describe("scheduled (native) playback drives the one playback state", () => {
 });
 
 describe("repetitions the background player completed", () => {
-  const completion = (id: string, dhikrId = "morning_005", collection: "morning" | "evening" | "misc" = "evening") => ({ id, collection, dhikrId, at: Date.now() - 5_000, timeZone: "Asia/Kuwait" });
+  // Stamped with the device's own time zone, as the phone's player stamps them — the same zone the
+  // day's totals are read in (a fixed "Asia/Kuwait" made the day-total check fail every evening
+  // between 21:00 and 24:00 UTC, when Kuwait is already on the next day).
+  const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const completion = (id: string, dhikrId = "morning_005", collection: "morning" | "evening" | "misc" = "evening") => ({ id, collection, dhikrId, at: Date.now() - 5_000, timeZone: deviceTimeZone });
   beforeEach(() => {
     clearAllStats();
     resetAudioAdhkarCountsMemoryForTesting();
@@ -563,6 +580,47 @@ describe("repetitions the background player completed", () => {
     expect(getAudioAdhkarCount("misc", "tasbeeh-4")).toBe(1);
     expect(getAudioStats({ kind: "all" }).total).toBe(3);
     expect(native.plugin.acknowledgeCompletions).toHaveBeenCalledWith({ ids: ["n1", "n2", "n3"] });
+  });
+
+  it("listening that stopped part-way adds its time only — never a repetition — and is acknowledged too", async () => {
+    const at = Date.now();
+    const listening = { id: "l1", kind: "listening" as const, collection: "evening" as const, dhikrId: "morning_005", at, timeZone: "", listenedMs: 25_000, sessionId: "native-session:x" };
+    native.plugin.getCompletions.mockResolvedValue({ completions: [completion("n1"), listening] as never });
+    expect(await drainNativeCompletions()).toBe(1); // one repetition heard to the end
+    await drainNativeCompletions(); // delivered again before it was acknowledged
+    expect(getAudioAdhkarCount("evening", "morning_005")).toBe(1);
+    expect(getAudioStats({ kind: "all" }).total).toBe(1);
+    const day = getDailyAudioActivity(todayLocalDate());
+    expect(day.stoppedEarlyPlays).toBe(1);
+    expect(day.listenedMs).toBe(25_000); // the completion carries no length here: counted, never estimated
+    expect(day.playsWithoutDuration).toBe(1);
+    expect(native.plugin.acknowledgeCompletions).toHaveBeenCalledWith({ ids: ["n1", "l1"] });
+    native.plugin.getCompletions.mockReset();
+  });
+
+  it("a whole Morning/Evening session heard to its end completes that session once — never a repetition", async () => {
+    const at = Date.UTC(2026, 9, 16, 4, 30); // 07:30 in Kuwait
+    const session = { id: "native-session-complete:morning:1760580000000", kind: "session" as const, collection: "morning" as const, dhikrId: "", at, timeZone: "Asia/Kuwait", occurrence: 1760580000000 };
+    native.plugin.getCompletions.mockResolvedValue({ completions: [session, session] as never });
+    expect(await drainNativeCompletions()).toBe(0); // no repetition
+    await drainNativeCompletions(); // delivered again before it was acknowledged
+    resetAudioAdhkarCountsMemoryForTesting(); // and after a restart
+    await drainNativeCompletions();
+    const day = getDailyActivity("2026-10-16");
+    expect(day.wirds).toEqual(["morning"]);
+    expect(day.wirdsHow.morning).toEqual(["listened"]);
+    expect(getAudioStats({ kind: "all" }).total).toBe(0);
+    expect(getDailyAudioActivity("2026-10-16").completedPlays).toBe(0);
+    expect(native.plugin.acknowledgeCompletions).toHaveBeenCalledWith({ ids: [session.id, session.id] });
+    native.plugin.getCompletions.mockReset();
+  });
+
+  it("a Misc entry or an unknown section is never a completed session", async () => {
+    const misc = { id: "native-session-complete:misc:1", kind: "session" as const, collection: "misc" as const, dhikrId: "", at: Date.now(), timeZone: "" };
+    native.plugin.getCompletions.mockResolvedValue({ completions: [misc] as never });
+    await drainNativeCompletions();
+    expect(getDailyActivity(todayLocalDate()).wirds).toEqual([]);
+    native.plugin.getCompletions.mockReset();
   });
 
   it("re-delivered before they were acknowledged (the app died in between) — even after a restart — count once", async () => {
@@ -771,7 +829,8 @@ describe("the native service keeps playing with the screen off (source guards �
 
   it("«استماع» is a native session: allowed in an adhan pause, stopped at the adhan, never resumed after it", () => {
     expect(service).toContain("ACTION_PLAY_NOW ->");
-    expect(body("playCurrent")).toContain("!manualSession && AdhanSuppression.isSuppressed");
+    // A session the user resumed ("Resume Adhkar") is user-started too, like «استماع».
+    expect(body("playCurrent")).toContain("!manualSession && !userResumed && AdhanSuppression.isSuppressed");
     expect(body("startManualSession")).toContain("handler.postDelayed(stopForAdhan");
     expect(body("interruptForAdhan")).toContain("sessionSection.isDaily && !manualSession");
   });

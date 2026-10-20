@@ -190,6 +190,11 @@ export interface DailySlotsInput {
   section: DailySection;
   /** The user's start time: minutes after the location's midnight. */
   startMinutes: number;
+  /**
+   * Optional per-weekday start times (Sunday = 0 … Saturday = 6; -1 = the
+   * usual `startMinutes` that day) — the section's "customize by day" times.
+   */
+  dayStartMinutes?: readonly number[];
   playlist: readonly NativePlaylistItem[];
   location: PrayerLocation;
   adhanWindows: readonly AdhanWindow[];
@@ -203,7 +208,7 @@ export interface DailySlotsInput {
  * own day's window — a day where the session can't fit has none. Windows
  * already over are left out.
  */
-export function buildDailySlots({ section, startMinutes, playlist, location, adhanWindows, now, days = 30, durationOf = audioDurationMs }: DailySlotsInput): DailySlot[] {
+export function buildDailySlots({ section, startMinutes, dayStartMinutes, playlist, location, adhanWindows, now, days = 30, durationOf = audioDurationMs }: DailySlotsInput): DailySlot[] {
   if (startMinutes < 0 || playlist.length === 0) return [];
   const durationMs = sessionDurationMs(playlist, durationOf);
   const redoMs = Math.max(0, ...playlist.map((item) => itemDurationMs(item, durationOf) ?? 0)) + REPETITION_PAUSE_MS;
@@ -213,7 +218,10 @@ export function buildDailySlots({ section, startMinutes, playlist, location, adh
     const date = addDays(today, offset);
     const window = dailyWindowFor(section, date, location);
     if (!window || window.end <= now.getTime()) continue;
-    const at = planStartInWindow(window, zonedInstant(date, startMinutes, location.timezone), durationMs, adhanWindows, redoMs);
+    // That weekday's own start time when one is set, else the usual one.
+    const weekday = new Date(Date.UTC(date.year, date.month - 1, date.day)).getUTCDay();
+    const dayStart = dayStartMinutes?.[weekday] ?? -1;
+    const at = planStartInWindow(window, zonedInstant(date, dayStart >= 0 ? dayStart : startMinutes, location.timezone), durationMs, adhanWindows, redoMs);
     if (at !== null) slots.push({ ...window, at });
   }
   return slots;

@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NativePlaylistItem } from "./audioAdhkarNative";
 
 type Section = { enabled: boolean; startMinutes: number; playlist: NativePlaylistItem[] } & Record<string, unknown>;
-type Payload = Record<"morning" | "evening" | "misc", Section> & { adhanWindows: [number, number][] };
+type Payload = Record<"morning" | "evening" | "misc", Section> & { adhanWindows: [number, number][]; language?: "ar" | "en" };
 
 const native = vi.hoisted(() => ({
   available: true,
@@ -123,7 +123,8 @@ describe("the Audio Adhkar master switch", () => {
   it("off covers every section native is sent — whichever sections exist", async () => {
     configureAllSections();
     await setAudioAdhkarMasterEnabled(false, NOW);
-    const { adhanWindows: _, ...sections } = sent();
+    // `language` is the notifications' interface language, not a section.
+    const { adhanWindows: _, language: __, ...sections } = sent();
     expect(Object.keys(sections).length).toBeGreaterThanOrEqual(3);
     for (const [key, section] of Object.entries(sections)) expect((section as Section).enabled, key).toBe(false);
   });

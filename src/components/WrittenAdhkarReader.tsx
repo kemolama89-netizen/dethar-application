@@ -11,7 +11,7 @@ import { CATEGORY_ARTWORK } from "../icons/CategoryEmblem";
 import { useLanguage } from "../theme/LanguageContext";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels, writtenAdhkarItems } from "../data/written-adhkar";
 import type { WrittenAdhkarCategoryKey, WrittenAdhkarItem, PrayerName, PrayerScope } from "../data/written-adhkar";
-import { shareText } from "../lib/share";
+import { ShareMenu } from "./ShareMenu";
 // The same "Transliteration"/"Meaning" heading strings Miscellaneous
 // Adhkar's MiscDuaCard already uses — from a small shared module (NOT a
 // direct import of misc-library.ts), which would otherwise drag that
@@ -238,20 +238,13 @@ const DhikrCard = memo(function DhikrCard({
   const source = language === "ar" ? item.source_ar : item.source_en;
   const mt = dhikrLanguageLabels[language];
   const isUnbounded = item.unboundedCount === true;
-  // Share always carries the Arabic dhikr itself — the actual wording —
-  // and, in English mode, the established English meaning alongside it
-  // (never a translation invented on the spot; same `text_en` already
-  // shown in the Meaning popover), so the Arabic content stays Arabic and
-  // the English content stays English within the one shared message.
-  const [justCopiedShare, setJustCopiedShare] = useState(false);
-  async function handleShare() {
-    const shareBody = language === "en" && item.text_en ? `${item.text_ar}\n\n${item.text_en}` : item.text_ar;
-    const result = await shareText(title || categoryLabel, shareBody);
-    if (result === "copied") {
-      setJustCopiedShare(true);
-      window.setTimeout(() => setJustCopiedShare(false), 1400);
-    }
-  }
+  // Share opens the share sheet (ShareMenu: as text, as an image, or copy):
+  // always the Arabic dhikr itself — the actual wording — with its source,
+  // and in English mode the established English meaning alongside it (never
+  // a translation invented on the spot; the same `text_en` shown in the
+  // Meaning popover).
+  const [shareOpen, setShareOpen] = useState(false);
+  const shareContent = { kindLabel: title || categoryLabel, textAr: item.text_ar, meaningEn: item.text_en || undefined, reference: source || undefined };
   // Once every repetition has been read (count >= target) the ring shows ✓
   // but is NOT yet `isCompleted` — that next tap is the explicit
   // confirmation that advances to the next Dhikr (see handleTap in
@@ -282,14 +275,7 @@ const DhikrCard = memo(function DhikrCard({
     >
       <AdhkarWatermark src={artworkSrc} />
 
-      {justCopiedShare && (
-        <span
-          className="absolute end-3 top-3 z-10 rounded-full px-2 py-0.5 text-[10px] font-medium"
-          style={{ background: "var(--wa-badge-bg)", color: "var(--wa-gold)" }}
-        >
-          {mt.shareCopiedToast}
-        </span>
-      )}
+      <ShareMenu content={shareContent} open={shareOpen} onClose={() => setShareOpen(false)} />
 
       <div className="relative">
         {title && (
@@ -375,7 +361,7 @@ const DhikrCard = memo(function DhikrCard({
                 audio, meaning, or favorite state. */}
             <button
               type="button"
-              onClick={handleShare}
+              onClick={() => setShareOpen(true)}
               aria-label={mt.shareAria}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
               style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-gold)" }}
@@ -615,7 +601,7 @@ export function WrittenAdhkarReader({
   // across taps (it no longer depends on `counts`/`confirmed`, which change
   // on every single tap), so it can be passed straight down to every
   // memoized DhikrCard without breaking that memoization on each repetition
-  // — same fix already applied to MiscDuaCard/useMiscSpeech.
+  // — same fix already applied to MiscDuaCard.
   const countsRef = useRef(counts);
   useEffect(() => {
     countsRef.current = counts;

@@ -50,6 +50,12 @@ interface RepetitionEvent {
   dhikrId: string;
   /** Audio Adhkar only: the completion's unique id — the same completion is never recorded twice. */
   eventId?: string;
+  /** Audio Adhkar only: the listening session it belonged to, when the player reported one. */
+  sessionId?: string;
+  /** Audio Adhkar only: the measured length of what played, in ms, when known. */
+  durationMs?: number;
+  /** Audio Adhkar only: the dhikr's title as the player showed it. */
+  title?: string;
 }
 
 interface WirdCompleteEvent {
@@ -59,9 +65,39 @@ interface WirdCompleteEvent {
   timeZone: string;
   kind: "wird-complete";
   category: WrittenAdhkarCategoryKey;
+  /**
+   * How it was completed: absent = read to the end in Written Adhkar;
+   * "listened" = a whole Morning/Evening Audio Adhkar session heard to its
+   * end (every dhikr, every repetition) — counted as a completed session,
+   * never as the user reciting it.
+   */
+  via?: "listened";
+  /** Listened sessions only: the session's stable id (section + scheduled occurrence) — taken in once. */
+  eventId?: string;
 }
 
-type StatEvent = RepetitionEvent | WirdCompleteEvent;
+// Audio Adhkar listening that stopped BEFORE the recording's end (stopped,
+// interrupted, failed, replaced, the adhan): how long it really played —
+// read from the player's position, never estimated. Never a repetition,
+// never a completed play. One playback that crosses local midnight is
+// stored as one event per day (`part`), all under the same `eventId`, so
+// it is still taken in only once.
+interface ListeningEvent {
+  ts: number;
+  localDate: string;
+  localTime: string;
+  timeZone: string;
+  kind: "listening";
+  category: "morning" | "evening" | "misc";
+  dhikrId: string;
+  eventId: string;
+  part: number;
+  listenedMs: number;
+  sessionId?: string;
+  title?: string;
+}
+
+type StatEvent = RepetitionEvent | WirdCompleteEvent | ListeningEvent;
 
 // ---- device local date/time helpers ---------------------------------
 
@@ -172,12 +208,30 @@ function sanitizeStoredEvent(value: unknown): StatEvent | null {
     const event: RepetitionEvent = { ts, localDate, localTime, timeZone, kind, source: value.source as StatSource, dhikrId };
     if (typeof value.category === "string") event.category = value.category as WrittenAdhkarCategoryKey;
     if (typeof value.eventId === "string" && value.eventId !== "") event.eventId = value.eventId;
+    // Audio Adhkar's listening details — kept across restarts (they were dropped here before).
+    if (typeof value.sessionId === "string" && value.sessionId !== "") event.sessionId = value.sessionId;
+    if (typeof value.durationMs === "number" && Number.isFinite(value.durationMs) && value.durationMs > 0) event.durationMs = value.durationMs;
+    if (typeof value.title === "string" && value.title !== "") event.title = value.title;
+    return event;
+  }
+
+  if (kind === "listening") {
+    const { category, dhikrId, eventId, listenedMs, part } = value;
+    if (category !== "morning" && category !== "evening" && category !== "misc") return null;
+    if (typeof dhikrId !== "string" || dhikrId === "" || typeof eventId !== "string" || eventId === "") return null;
+    if (typeof listenedMs !== "number" || !Number.isFinite(listenedMs) || listenedMs <= 0) return null;
+    const event: ListeningEvent = { ts, localDate, localTime, timeZone, kind, category, dhikrId, eventId, part: typeof part === "number" ? part : 0, listenedMs };
+    if (typeof value.sessionId === "string" && value.sessionId !== "") event.sessionId = value.sessionId;
+    if (typeof value.title === "string" && value.title !== "") event.title = value.title;
     return event;
   }
 
   if (kind === "wird-complete") {
     if (typeof value.category !== "string") return null;
-    return { ts, localDate, localTime, timeZone, kind, category: value.category as WrittenAdhkarCategoryKey };
+    const event: WirdCompleteEvent = { ts, localDate, localTime, timeZone, kind, category: value.category as WrittenAdhkarCategoryKey };
+    if (value.via === "listened") event.via = "listened";
+    if (typeof value.eventId === "string" && value.eventId !== "") event.eventId = value.eventId;
+    return event;
   }
 
   return null;
@@ -255,10 +309,30 @@ function persist(): boolean {
   if (!cache) return false;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+    notifyChange();
     return true;
   } catch {
     // Nothing to do — worship/recitation itself must never depend on this succeeding.
     return false;
+  }
+}
+
+// Told after the log changed (e.g. the end-of-day summary's native snapshot
+// refreshes). Listeners run after the write and can never affect it.
+const changeListeners = new Set<() => void>();
+
+export function subscribeStatsChanges(listener: () => void): () => void {
+  changeListeners.add(listener);
+  return () => changeListeners.delete(listener);
+}
+
+function notifyChange() {
+  for (const listener of [...changeListeners]) {
+    try {
+      listener();
+    } catch {
+      // A listener's failure never reaches the recording path.
+    }
   }
 }
 
@@ -290,6 +364,7 @@ export function clearAllStats(): void {
     // Best-effort only — the in-memory cache above is already cleared
     // regardless, so every report already reads as empty for this session.
   }
+  notifyChange();
 }
 
 export function recordWrittenRepetition(category: WrittenAdhkarCategoryKey, dhikrId: string) {
@@ -303,6 +378,29 @@ export function recordWrittenRepetition(category: WrittenAdhkarCategoryKey, dhik
 // this is only called once `allDone` actually becomes true).
 export function recordWirdComplete(category: WrittenAdhkarCategoryKey) {
   append({ ...nowStamp(), kind: "wird-complete", category });
+}
+
+export interface ListenedSession {
+  category: "morning" | "evening";
+  /** The session's stable id (section + scheduled occurrence): the same session is recorded once. */
+  eventId: string;
+  occurredAt?: FloatingTasbeehOccurredAt;
+}
+
+/** Whole Morning/Evening sessions heard to their end; returns how many were new (repeats of an id are ignored). */
+export function recordListenedSessions(entries: ListenedSession[]): number {
+  const events = load();
+  const seen = new Set<string>();
+  for (const e of events) if (e.kind === "wird-complete" && e.eventId) seen.add(e.eventId);
+  let added = 0;
+  for (const entry of entries) {
+    if (seen.has(entry.eventId)) continue;
+    seen.add(entry.eventId);
+    events.push({ ...(entry.occurredAt ?? nowStamp()), kind: "wird-complete", category: entry.category, via: "listened", eventId: entry.eventId });
+    added++;
+  }
+  if (added > 0) persist();
+  return added;
 }
 
 export function recordTasbeehRepetition(dhikrId: number) {
@@ -440,6 +538,9 @@ export interface AudioRepetition {
   dhikrId: string;
   eventId: string;
   occurredAt?: FloatingTasbeehOccurredAt;
+  sessionId?: string;
+  durationMs?: number;
+  title?: string;
 }
 
 /** Records each not-yet-recorded completion once; returns how many were new. */
@@ -451,11 +552,63 @@ export function recordAudioRepetitions(entries: AudioRepetition[]): number {
   for (const entry of entries) {
     if (seen.has(entry.eventId)) continue;
     seen.add(entry.eventId);
-    events.push({ ...(entry.occurredAt ?? nowStamp()), kind: "repetition", source: "audio", category: entry.category, dhikrId: entry.dhikrId, eventId: entry.eventId });
+    events.push({
+      ...(entry.occurredAt ?? nowStamp()),
+      kind: "repetition",
+      source: "audio",
+      category: entry.category,
+      dhikrId: entry.dhikrId,
+      eventId: entry.eventId,
+      ...(entry.sessionId ? { sessionId: entry.sessionId } : {}),
+      ...(entry.durationMs ? { durationMs: entry.durationMs } : {}),
+      ...(entry.title ? { title: entry.title } : {}),
+    });
     added++;
   }
   if (added > 0) persist();
   return added;
+}
+
+export interface AudioListeningPiece {
+  category: "morning" | "evening" | "misc";
+  dhikrId: string;
+  /** The playback's unique id: every piece of one playback shares it. */
+  eventId: string;
+  /** 0, 1, … — one per local day the playback covered. */
+  part: number;
+  /** That day's local stamp (the end of the piece). */
+  occurredAt: FloatingTasbeehOccurredAt;
+  listenedMs: number;
+  sessionId?: string;
+  title?: string;
+}
+
+/** Records the listening pieces of playbacks not yet recorded (by eventId); returns how many playbacks were new. */
+export function recordAudioListening(pieces: AudioListeningPiece[]): number {
+  const events = load();
+  const seen = new Set<string>();
+  for (const e of events) if (e.kind === "listening") seen.add(e.eventId);
+  const fresh = new Set<string>();
+  const taken = new Set<string>(); // eventId#part within this batch (the same delivery may be in it twice)
+  for (const piece of pieces) {
+    const pieceKey = `${piece.eventId}#${piece.part}`;
+    if (seen.has(piece.eventId) || taken.has(pieceKey) || !(piece.listenedMs > 0)) continue;
+    taken.add(pieceKey);
+    fresh.add(piece.eventId);
+    events.push({
+      ...piece.occurredAt,
+      kind: "listening",
+      category: piece.category,
+      dhikrId: piece.dhikrId,
+      eventId: piece.eventId,
+      part: piece.part,
+      listenedMs: Math.round(piece.listenedMs),
+      ...(piece.sessionId ? { sessionId: piece.sessionId } : {}),
+      ...(piece.title ? { title: piece.title } : {}),
+    });
+  }
+  if (fresh.size > 0) persist();
+  return fresh.size;
 }
 
 // Legacy events recorded before this file tracked explicit local
@@ -620,4 +773,142 @@ export interface AudioStats {
 export function getAudioStats(selection: StatSelection): AudioStats {
   const reps = inSelection(load(), selection).filter((e): e is RepetitionEvent => e.kind === "repetition" && e.source === "audio");
   return { total: reps.length, perDhikr: repetitionBreakdown(reps.map((e) => ({ ...e, dhikrId: `${e.category}:${e.dhikrId}` }))) };
+}
+
+// ---- one day's own activity (the end-of-day summary) -------------------
+//
+// What the USER did on a local day: written-adhkar repetitions, completed
+// wirds and Tasbeeh (manual, voice and Floating). Audio Adhkar is left out
+// on purpose — hearing a recording play (often a scheduled one, with the
+// phone in a pocket) is not the user saying or repeating the dhikr, so it
+// is never reported as their activity.
+
+export interface DailyActivity {
+  date: string;
+  writtenRepetitions: number;
+  tasbeehRepetitions: number;
+  /** Morning/Evening sessions completed that day (read to the end, or heard to the end in Audio Adhkar). */
+  wirds: ("morning" | "evening")[];
+  /** How each completed session was completed — "read", "listened", or both. */
+  wirdsHow: Record<"morning" | "evening", ("read" | "listened")[]>;
+  prayerSessions: number;
+  /** writtenRepetitions + tasbeehRepetitions. */
+  total: number;
+}
+
+export function getDailyActivity(localDate: string): DailyActivity {
+  const events = load().filter((e) => resolvedLocalDate(e) === localDate);
+  let writtenRepetitions = 0;
+  let tasbeehRepetitions = 0;
+  let prayerSessions = 0;
+  const wirds = new Set<"morning" | "evening">();
+  const how: Record<"morning" | "evening", Set<"read" | "listened">> = { morning: new Set(), evening: new Set() };
+  for (const e of events) {
+    if (e.kind === "wird-complete") {
+      if (e.category === "morning" || e.category === "evening") {
+        wirds.add(e.category);
+        how[e.category].add(e.via === "listened" ? "listened" : "read");
+      }
+      else if (e.category === "prayer") prayerSessions++;
+    } else if (e.kind !== "repetition") {
+      // Audio listening is not the user's own activity.
+    } else if (e.source === "written") {
+      writtenRepetitions++;
+    } else if (e.source === "tasbeeh" || e.source === "floating") {
+      tasbeehRepetitions++;
+    }
+  }
+  return {
+    date: localDate,
+    writtenRepetitions,
+    tasbeehRepetitions,
+    wirds: (["morning", "evening"] as const).filter((w) => wirds.has(w)),
+    wirdsHow: { morning: [...how.morning].sort(), evening: [...how.evening].sort() },
+    prayerSessions,
+    total: writtenRepetitions + tasbeehRepetitions,
+  };
+}
+
+// ---- one day's audio LISTENING (kept apart from the user's own activity) ----
+//
+// What played in Audio Adhkar on a local day — listening, NOT the user's own
+// dhikr: a completed recording is never turned into a repetition the user
+// said. Each recording heard to the end is one event (de-duplicated by its
+// completion id, so looping, repeated callbacks, background playback and
+// app restarts never count it twice). Its day is the local date when it
+// finished, so a session that runs past midnight contributes to each day it
+// played in.
+//
+// Metrics are reported only from what was recorded:
+//   - sessions: distinct session ids; plays recorded before sessions were
+//     tracked carry none and are reported separately, never guessed into one;
+//   - listening time: the measured length of each completed recording,
+//     plus how long each recording that stopped before its end really
+//     played (its position when it stopped — ListeningEvent); completed
+//     recordings whose length wasn't known are counted, not estimated.
+//     Nothing is counted twice: a playback either completes (one
+//     repetition event) or stops early (its listening events), never both.
+//   - a playback that crosses midnight: its stopped-early listening is split
+//     between the two days; a completed recording belongs to the day it
+//     finished on.
+
+export interface DailyAudioActivity {
+  date: string;
+  /** Recordings heard to the end (one per repetition of a dhikr's audio). */
+  completedPlays: number;
+  /** Distinct listening sessions (completed or stopped-early plays) that carry a session id. */
+  sessions: number;
+  /** Recordings that played part of the way and stopped before their end. */
+  stoppedEarlyPlays: number;
+  /** Plays without a session id (recorded before sessions were tracked). */
+  playsWithoutSession: number;
+  /** Measured listening time, ms: completed recordings' lengths plus what stopped-early recordings really played. */
+  listenedMs: number;
+  /** Completed plays whose length wasn't known (not in listenedMs). */
+  playsWithoutDuration: number;
+  /** The dhikr heard, most plays first: the title the player showed when recorded, else its list and id. `plays` = heard to the end. */
+  dhikr: { key: string; title?: string; plays: number; stoppedEarly: number }[];
+}
+
+export function getDailyAudioActivity(localDate: string): DailyAudioActivity {
+  const plays = load().filter((e): e is RepetitionEvent => e.kind === "repetition" && e.source === "audio" && resolvedLocalDate(e) === localDate);
+  const sessions = new Set<string>();
+  let playsWithoutSession = 0;
+  let listenedMs = 0;
+  let playsWithoutDuration = 0;
+  const dhikr = new Map<string, { key: string; title?: string; plays: number; stoppedEarly: number }>();
+  const entryFor = (category: string | undefined, dhikrId: string, title?: string) => {
+    const key = `${category ?? "misc"}:${dhikrId}`;
+    const entry = dhikr.get(key) ?? { key, plays: 0, stoppedEarly: 0 };
+    if (title && !entry.title) entry.title = title;
+    dhikr.set(key, entry);
+    return entry;
+  };
+  for (const e of plays) {
+    if (e.sessionId) sessions.add(e.sessionId);
+    else playsWithoutSession++;
+    if (typeof e.durationMs === "number" && e.durationMs > 0) listenedMs += e.durationMs;
+    else playsWithoutDuration++;
+    entryFor(e.category, e.dhikrId, e.title).plays++;
+  }
+  const stoppedEarly = new Set<string>();
+  for (const e of load()) {
+    if (e.kind !== "listening" || resolvedLocalDate(e) !== localDate) continue;
+    listenedMs += e.listenedMs;
+    if (e.sessionId) sessions.add(e.sessionId);
+    if (!stoppedEarly.has(e.eventId)) {
+      stoppedEarly.add(e.eventId);
+      entryFor(e.category, e.dhikrId, e.title).stoppedEarly++;
+    }
+  }
+  return {
+    date: localDate,
+    completedPlays: plays.length,
+    sessions: sessions.size,
+    stoppedEarlyPlays: stoppedEarly.size,
+    playsWithoutSession,
+    listenedMs,
+    playsWithoutDuration,
+    dhikr: [...dhikr.values()].sort((a, b) => b.plays - a.plays || b.stoppedEarly - a.stoppedEarly),
+  };
 }

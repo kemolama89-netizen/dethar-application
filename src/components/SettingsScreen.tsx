@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, BellRing, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2 } from "lucide-react";
+import { BarChart3, Bell, BellRing, CalendarClock, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, ListChecks, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2, Heart, ShieldCheck } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
 import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
 import { DeviceFrame } from "./DeviceFrame";
@@ -14,6 +15,14 @@ import { PrayerNotificationsSettingsView } from "./PrayerNotificationsSettingsVi
 import { prayerNotificationLabels } from "../data/prayerNotificationLabels";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
 import { AdhanAudioSettingsView } from "./AdhanAudioSettingsView";
+import { RemindersSettingsView } from "./RemindersSettingsView";
+import { FavoritesView } from "./FavoritesView";
+import { ContentReviewView } from "./ContentReviewView";
+import { contentReviewLabels } from "../data/contentReviewLabels";
+import { DailySummarySettingsView } from "./DailySummarySettingsView";
+import { WeeklyScheduleView } from "./WeeklyScheduleView";
+import { favoritesLabels, reminderLabels, summaryLabels } from "../data/reminderLabels";
+import { weeklyScheduleLabels } from "../data/scheduleLabels";
 import { adhanAudioLabels } from "../data/adhanAudioLabels";
 import { useLanguage } from "../theme/LanguageContext";
 import { navLabels } from "../data/content";
@@ -44,7 +53,47 @@ interface SettingsScreenProps {
   onNavigateToAudio: () => void;
 }
 
-type SettingsView = "menu" | "statistics" | "appearance" | "floating-tasbeeh" | "audio-settings" | "location" | "audio-adhkar" | "adhan-audio" | "prayer-notifications";
+type SettingsView =
+  | "menu"
+  | "statistics"
+  | "appearance"
+  | "floating-tasbeeh"
+  | "audio-settings"
+  | "location"
+  | "audio-adhkar"
+  | "adhan-audio"
+  | "prayer-notifications"
+  | "reminders"
+  | "favorites"
+  | "content-review"
+  | "daily-summary"
+  | "weekly-schedule";
+
+/** A Settings menu row (same look as the rows written out below). */
+function MenuRow({ icon: Icon, title, hint, onClick, rowKey, forwardIcon: ForwardIcon }: { icon: LucideIcon; title: string; hint: string; onClick: () => void; rowKey: string; forwardIcon: LucideIcon }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-settings-row={rowKey}
+      className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-start"
+      style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full" style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}>
+        <Icon size={18} strokeWidth={1.8} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[14px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+          {title}
+        </span>
+        <span className="block text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+          {hint}
+        </span>
+      </span>
+      <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
+    </button>
+  );
+}
 
 type PeriodKind = "daily" | "weekly" | "monthly" | "yearly" | "custom" | "all";
 
@@ -400,7 +449,7 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="mt-1 flex items-center gap-2">
+      <div className="dithar-sticky-header mt-1 flex items-center gap-2">
         <button
           type="button"
           onClick={onBack}
@@ -659,7 +708,7 @@ function FloatingTasbeehView({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="mt-1 flex items-center gap-2">
+      <div className="dithar-sticky-header mt-1 flex items-center gap-2">
         <button
           type="button"
           onClick={onBack}
@@ -768,6 +817,16 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
           <AudioAdhkarSettingsView onBack={() => setView("menu")} />
         ) : view === "adhan-audio" ? (
           <AdhanAudioSettingsView onBack={() => setView("menu")} />
+        ) : view === "reminders" ? (
+          <RemindersSettingsView onBack={() => setView("menu")} />
+        ) : view === "favorites" ? (
+          <FavoritesView onBack={() => setView("menu")} />
+        ) : view === "content-review" ? (
+          <ContentReviewView onBack={() => setView("menu")} />
+        ) : view === "daily-summary" ? (
+          <DailySummarySettingsView onBack={() => setView("menu")} />
+        ) : view === "weekly-schedule" ? (
+          <WeeklyScheduleView onBack={() => setView("menu")} />
         ) : (
           <div className="flex flex-1 flex-col">
             <h1 className="mt-2 text-center text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}>
@@ -797,6 +856,34 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
               </button>
+
+              {/* TEMPORARY — the owner's content review; remove this row with ContentReviewView when asked. */}
+              <MenuRow
+                rowKey="content-review"
+                icon={ShieldCheck}
+                title={contentReviewLabels[language].row}
+                hint={contentReviewLabels[language].rowHint}
+                onClick={() => setView("content-review")}
+                forwardIcon={ForwardIcon}
+              />
+
+              <MenuRow
+                rowKey="favorites"
+                icon={Heart}
+                title={favoritesLabels[language].row}
+                hint={favoritesLabels[language].rowHint}
+                onClick={() => setView("favorites")}
+                forwardIcon={ForwardIcon}
+              />
+
+              <MenuRow
+                rowKey="daily-summary"
+                icon={ListChecks}
+                title={summaryLabels[language].row}
+                hint={summaryLabels[language].rowHint}
+                onClick={() => setView("daily-summary")}
+                forwardIcon={ForwardIcon}
+              />
 
               <button
                 type="button"
@@ -892,6 +979,15 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
               </button>
 
+              <MenuRow
+                rowKey="reminders"
+                icon={Bell}
+                title={reminderLabels[language].row}
+                hint={reminderLabels[language].rowHint}
+                onClick={() => setView("reminders")}
+                forwardIcon={ForwardIcon}
+              />
+
               <button
                 type="button"
                 onClick={() => setView("location")}
@@ -937,6 +1033,15 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
               </button>
+
+              <MenuRow
+                rowKey="weekly-schedule"
+                icon={CalendarClock}
+                title={weeklyScheduleLabels[language].row}
+                hint={weeklyScheduleLabels[language].rowHint}
+                onClick={() => setView("weekly-schedule")}
+                forwardIcon={ForwardIcon}
+              />
 
               <button
                 type="button"

@@ -334,3 +334,53 @@ describe("Audio Adhkar heard counts on the cards", () => {
   });
 });
 
+
+describe("Play All («تشغيل الكل»)", () => {
+  const click = (el: Element) => act(() => el.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+  const bar = () => container.querySelector("[data-play-all]") as HTMLElement;
+  const button = () => container.querySelector("[data-play-all-button]") as HTMLButtonElement;
+
+  beforeEach(() => {
+    setAudioElementFactory(() => ({ src: "", play: () => {}, pause: () => {}, removeAttribute: () => {}, load: () => {}, onended: null, onerror: null }));
+  });
+  afterEach(() => act(() => stopAudio()));
+
+  it.each([
+    [{ kind: "written", key: "morning" } as const],
+    [{ kind: "written", key: "evening" } as const],
+    [{ kind: "various" } as const],
+  ])("is offered at the top of the %o list, above the adhkar", (list) => {
+    render(<AudioAdhkarListScreen {...nav} list={list} onBack={noop} />);
+    expect(bar()).not.toBeNull();
+    expect(bar().getAttribute("data-play-all")).toBe("idle");
+    expect(button().textContent).toContain("تشغيل الكل");
+    const firstCard = container.querySelector("[data-dhikr-id]")!;
+    expect(bar().compareDocumentPosition(firstCard) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("plays the section, then the same button pauses and resumes it, with Stop and its place beside it", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    click(button());
+    expect(bar().getAttribute("data-play-all")).toBe("playing");
+    expect(getNowPlaying()?.itemId).toBe(AUDIO_VARIOUS_ITEMS.find((i) => i.audio)!.id);
+    expect(container.querySelector("[data-play-all-status]")!.textContent).toMatch(/الذكر 1 من \d+/);
+    click(button());
+    expect(bar().getAttribute("data-play-all")).toBe("paused");
+    expect(getNowPlaying()?.status).toBe("paused");
+    click(button());
+    expect(getNowPlaying()?.status).toBe("playing");
+    click(container.querySelector("[data-play-all-stop]")!);
+    expect(getNowPlaying()).toBeNull();
+    expect(bar().getAttribute("data-play-all")).toBe("idle");
+  });
+
+  it("stops in-app Play All when the list is left, and offers it again on re-entry", () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
+    click(button());
+    expect(bar().getAttribute("data-play-all")).toBe("playing");
+    render(<AudioAdhkarScreen {...nav} onSelectCategory={noop} />);
+    expect(getNowPlaying()).toBeNull();
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
+    expect(bar().getAttribute("data-play-all")).toBe("idle");
+  });
+});

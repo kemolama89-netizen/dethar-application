@@ -3,16 +3,17 @@
 // Bottom-tab navigation through the real AppRouter (useScreenNavigation):
 // the Audio Adhkar tab opens the Audio Adhkar screen directly from EVERY
 // screen that shows the bottom navigation, and Back still walks the stack.
-import { afterEach, beforeEach, describe, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import App from "./App";
-import { MISC_CATEGORIES, miscLibraryLabels } from "./data/misc-library";
+import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels } from "./data/misc-library";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels } from "./data/written-adhkar";
+import { resetQuranReadingCacheForTesting, saveQuranPosition } from "./lib/quranReading";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-const TAB = { home: "الرئيسية", settings: "الإعدادات", audio: "الأذكار المسموعة", written: "الأذكار المكتوبة", tasbih: "السبحة" };
+const TAB = { home: "الرئيسية", settings: "الإعدادات", audio: "الأذكار المسموعة", written: "الأذكار المكتوبة", tasbih: "السبحة", quran: "المصحف" };
 
 let container: HTMLDivElement;
 let root: Root;
@@ -163,6 +164,68 @@ describe("Back behavior is unchanged", () => {
     await browserBack();
     await expectHeading(TAB.written);
     await browserBack();
+    await expectScreen(TAB.home);
+  });
+});
+
+describe("the Mushaf tab", () => {
+  // localStorage is cleared before each test; the reading position's in-memory copy too.
+  beforeEach(() => resetQuranReadingCacheForTesting());
+  const reader = () => container.querySelector("[data-quran-reader]");
+  const current = () => container.querySelector("[data-quran-current]")?.getAttribute("data-quran-current");
+
+  it("from Home, opens the Mushaf at its beginning before any reading", async () => {
+    await expectScreen(TAB.home);
+    await tap(TAB.quran);
+    await waitFor(() => reader() !== null, "the Qur'an reader");
+    expect(current()).toBe("1:1");
+    expect(container.querySelector("[data-quran-mushaf-page]")!.getAttribute("data-quran-mushaf-page")).toBe("1");
+  });
+
+  it.each(SCREENS)("from $name, continues at the saved reading position", async ({ open }) => {
+    saveQuranPosition(18, 10);
+    await open();
+    await tap(TAB.quran);
+    await waitFor(() => reader() !== null, "the Qur'an reader");
+    expect(current()).toBe("18:10");
+  });
+
+  it("its surah index keeps the navigation (the Mushaf active); Back returns to the reader where it was left, then Home", async () => {
+    await expectScreen(TAB.home);
+    await tap(TAB.quran);
+    await waitFor(() => reader() !== null, "the Qur'an reader");
+    await click(container.querySelector("[data-quran-next-page]"), "next page");
+    await waitFor(() => current() === "2:1", "page 2");
+    await click(container.querySelector("[data-quran-open-settings]"), "reading settings");
+    await click(container.querySelector("[data-quran-open-index]"), "surah index button");
+    await expectScreen(TAB.quran);
+    await tap(TAB.tasbih);
+    await expectScreen(TAB.tasbih);
+    await browserBack();
+    await waitFor(() => reader() !== null, "the Qur'an reader again");
+    expect(current()).toBe("2:1");
+    await browserBack();
+    await expectScreen(TAB.home);
+  }, 20_000);
+});
+
+describe("«مختارات اليوم» on Home", () => {
+  it("opens like a tapped notification: the same full-screen view, on the very dua the card shows — never settings — and Back returns to Home", async () => {
+    await expectScreen(TAB.home);
+    const card = () => container.querySelector<HTMLElement>("[data-home-daily-picks]");
+    await waitFor(() => !!card()?.getAttribute("data-home-daily-picks"), "today's pick on the card");
+    const id = card()!.getAttribute("data-home-daily-picks")!;
+    const shownText = card()!.querySelector("[data-home-daily-pick]")!.textContent;
+    const dua = MISC_DUAS.find((d) => d.id === id)!;
+    expect(shownText).toBe(dua.text_ar);
+    await click(card(), "Daily Picks card");
+    await waitFor(() => container.querySelector("[data-spiritual-reminder]") !== null, "the reminder view");
+    expect(container.querySelector("[data-spiritual-reminder]")!.getAttribute("data-spiritual-reminder")).toBe(`dua:${id}`);
+    expect(container.querySelector("[data-reminder-text]")!.textContent).toBe(dua.text_ar);
+    expect(container.querySelector("[data-reminder-source]")!.textContent).toContain(dua.source_ar!);
+    expect(container.querySelector("[data-widget-info]")).toBeNull();
+    await browserBack();
+    await waitFor(() => container.querySelector("[data-spiritual-reminder]") === null, "the reminder view to close");
     await expectScreen(TAB.home);
   });
 });

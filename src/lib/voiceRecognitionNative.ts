@@ -31,7 +31,8 @@ export interface VoiceRecognitionErrorEvent {
 
 export interface VoiceRecognitionNativePlugin {
   isAvailable(): Promise<{ available: boolean }>;
-  startSession(options: { sessionId: string; language: string }): Promise<void>;
+  /** `recognitionSounds` false (or absent) mutes the recognizer's own tones while listening (lib/voiceTasbeehSounds.ts). */
+  startSession(options: { sessionId: string; language: string; recognitionSounds?: boolean }): Promise<void>;
   stopSession(): Promise<void>;
   abortSession(): Promise<void>;
   addListener(

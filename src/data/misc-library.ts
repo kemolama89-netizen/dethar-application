@@ -319,8 +319,8 @@ export const MISC_CATEGORIES: Record<MiscCategoryKey, MiscCategoryMeta> = {
 // Deferred to idle time (same requestIdleCallback-with-timeout-fallback
 // pattern App.tsx already uses for its own screen-chunk prefetching)
 // rather than running synchronously at module-evaluation time: this module
-// is bundled together with useMiscSpeech (their only two importers,
-// MiscLibraryScreen/MiscCategoryScreen, are both lazy-loaded together), so
+// is bundled with MiscLibraryScreen/MiscCategoryScreen (its only two
+// importers, both lazy-loaded together), so
 // evaluating it happens either during App.tsx's post-mount idle-prefetch of
 // every screen, or right when the user first navigates into a Misc screen
 // on a cold cache — 20 synchronous DOM head mutations at exactly that
@@ -1967,15 +1967,6 @@ export const MISC_CATEGORY_COUNTS: Record<MiscCategoryKey, number> = MISC_CATEGO
   {} as Record<MiscCategoryKey, number>,
 );
 
-// A small, FIXED editorial selection for the landing screen's "مختارات
-// اليوم" strip — never randomly generated, always a hand-picked subset of
-// the verified items above (per spec: "must select from verified Master
-// Content items... No invented explanation"). Deliberately a short,
-// unchanging list rather than a rotating/randomized one, since there is no
-// existing mechanism in this app for a genuine "daily" rotation and
-// inventing one was out of scope for this task.
-export const MISC_FEATURED_IDS: string[] = ["sayyid-al-istighfar", "rabbana-atina", "dua-al-karb"];
-
 // Interface strings for the new library screens — Arabic-only, rendered
 // regardless of the app's global language toggle (see MiscLibraryScreen's
 // own note). The dua CONTENT itself now has an English layer (see
@@ -2015,7 +2006,7 @@ export const miscLibraryLabels = {
     searchPlaceholder: "Search the library...",
     searchAria: "Search Adhkar & Duas",
     noResults: "No matching results",
-    featuredTitle: "Today's Selections",
+    featuredTitle: "Daily Picks",
     itemsCount: (n: number) => `${n} ${n === 1 ? "dua" : "duas"}`,
     countLabel: "Count",
     sourceLabelHadith: "Reference / Takhrij",
@@ -2031,8 +2022,8 @@ export const miscLibraryLabels = {
   },
 };
 
-// Bilingual interface strings for the "Listen" card action and the inline
-// Transliteration/Meaning section headings — kept separate from
+// Bilingual interface strings for the inline Transliteration/Meaning
+// section headings — kept separate from
 // `miscLibraryLabels` above (which stays Arabic-only, unchanged) so this
 // addition carries zero risk to that existing, already-shipped object.
 // Ordinary UI chrome only (aria text, section headings) — never religious
@@ -2044,12 +2035,8 @@ export const miscLibraryLabels = {
 export const miscMeaningLabels = {
   ar: {
     ...dhikrLanguageLabels.ar,
-    listenAria: "استماع",
-    stopListenAria: "إيقاف الاستماع",
   },
   en: {
     ...dhikrLanguageLabels.en,
-    listenAria: "Listen",
-    stopListenAria: "Stop",
   },
 };

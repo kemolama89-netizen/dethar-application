@@ -9,7 +9,6 @@ import { useMeaningCardState } from "./MeaningPopover";
 import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels } from "../data/misc-library";
 import type { MiscCategoryKey, MiscDuaItem } from "../data/misc-library";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
-import { useMiscSpeech } from "../lib/useMiscSpeech";
 import { useLanguage } from "../theme/LanguageContext";
 
 interface MiscCategoryScreenProps {
@@ -51,7 +50,6 @@ export function MiscCategoryScreen({
   const meta = MISC_CATEGORIES[categoryKey];
   const items = useMemo(() => MISC_DUAS.filter((item) => item.categories.includes(categoryKey)), [categoryKey]);
   const [favorites, setFavorites] = useState<Set<string>>(() => loadMiscFavorites());
-  const { speakingId, toggle: toggleSpeech } = useMiscSpeech();
   // Global-search deep link (see WrittenAdhkarSearchScreen / App.tsx): jump
   // straight to the specific dua the user tapped in the results, instead of
   // the plain top-of-list start — per this task's spec, tapping a result
@@ -112,13 +110,16 @@ export function MiscCategoryScreen({
                   ref={(el) => {
                     itemRefs.current[item.id] = el;
                   }}
+                  data-misc-item={item.id}
+                  // The dua a deep link opened (a search result, Home's «مختارات اليوم») is marked, so it is unmistakable.
+                  data-target={item.id === targetItemId ? "" : undefined}
+                  aria-current={item.id === targetItemId ? "true" : undefined}
+                  style={item.id === targetItemId ? { borderRadius: "var(--card-radius)", boxShadow: "0 0 0 2px var(--color-gold)" } : undefined}
                 >
                   <MiscDuaCard
                     item={item}
                     isFavorite={favorites.has(item.id)}
                     onToggleFavorite={handleToggleFavorite}
-                    isSpeaking={speakingId === item.id}
-                    onToggleListen={toggleSpeech}
                     onShowMeaning={handleShowMeaning}
                   />
                 </div>
