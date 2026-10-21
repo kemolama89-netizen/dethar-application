@@ -18,6 +18,7 @@
 import metadataRaw from "../data/quran/tanzil-quran-metadata.txt?raw";
 import { SURAHS } from "../data/quranSurahs";
 import mushafPages from "../data/quran/kfqc-hafs-1441-pages.json";
+import quarterMarks from "../data/quran/kfqc-hafs-1441-quarter-marks.json";
 
 export interface SurahMeta {
   number: number;
@@ -85,6 +86,37 @@ export const JUZ_STARTS: readonly (readonly [number, number])[] = parseStarts(me
  * a quarter verse by verse.
  */
 export const QUARTER_STARTS: readonly (readonly [number, number])[] = parseStarts(metadataRaw, "HizbQaurter");
+
+/**
+ * The quarter starts as the 1441H print begins them — what the reader opens
+ * when a hizb or quarter is chosen: QUARTER_STARTS, except quarter 106, which
+ * the print begins at 15:49 (its ۞ is drawn there, and none at 15:50 —
+ * src/data/quran/kfqc-hafs-1441-quarter-marks.json).
+ */
+export const PRINT_QUARTER_STARTS: readonly (readonly [number, number])[] = QUARTER_STARTS.map((start, i) => (i === 105 ? ([15, 49] as const) : start));
+
+/** Where quarter q (1–240) begins in the print, and on which page. */
+export function quarterStart(quarter: number): { surah: number; ayah: number; page: number } | null {
+  const start = PRINT_QUARTER_STARTS[quarter - 1];
+  if (!start) return null;
+  return { surah: start[0], ayah: start[1], page: pageOf(start[0], start[1]) ?? 1 };
+}
+
+/**
+ * The ۞ signs printed on a page, each with its box in the page's own
+ * 345 × 550 units (src/data/quran/kfqc-hafs-1441-quarter-marks.json, found
+ * on the artwork by scripts/mushaf/find-quarter-marks.py). The reader draws
+ * each one in its own colour, exactly over the printed sign, so a quarter
+ * reads apart from the verse numbers. A quarter that begins a surah has no
+ * sign in the text, as printed.
+ */
+export function quarterMarksOnPage(page: number): { quarter: number; box: readonly [number, number, number, number] }[] {
+  return MARKS_BY_PAGE.get(page) ?? [];
+}
+const MARKS_BY_PAGE = new Map<number, { quarter: number; box: readonly [number, number, number, number] }[]>();
+for (const m of quarterMarks.marks) {
+  MARKS_BY_PAGE.set(m.page, [...(MARKS_BY_PAGE.get(m.page) ?? []), { quarter: m.quarter, box: m.box as [number, number, number, number] }]);
+}
 
 export function surahMeta(surah: number): SurahMeta | undefined {
   return SURAH_META[surah - 1];

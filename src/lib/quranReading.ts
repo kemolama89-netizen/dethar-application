@@ -22,6 +22,7 @@ const BOOKMARKS_KEY = "dithar:quran:bookmarks:v1";
 // The reader shows page images now, so the old text-size setting
 // ("dithar:quran:font-size:v1") no longer applies and is not read.
 const ZOOM_KEY = "dithar:quran:zoom:v1";
+const TURN_SOUND_KEY = "dithar:quran:turn-sound:v1";
 
 /** Page zooms the reader can be set to: 1 fits the whole page to the screen (the default). */
 export const QURAN_ZOOMS: readonly number[] = [1, 1.25, 1.5, 1.75, 2];
@@ -112,6 +113,15 @@ export function loadQuranZoom(): number {
 
 export function saveQuranZoom(zoom: number): void {
   if (QURAN_ZOOMS.includes(zoom)) write(ZOOM_KEY, zoom);
+}
+
+/** Whether a page turn makes its soft paper sound (lib/pageTurnSound.ts) — on unless muted in the reader's settings. */
+export function loadQuranTurnSound(): boolean {
+  return read(TURN_SOUND_KEY) !== false;
+}
+
+export function saveQuranTurnSound(on: boolean): void {
+  write(TURN_SOUND_KEY, on);
 }
 
 /** The saved position with its Mushaf page (null page if the metadata can't place it). */

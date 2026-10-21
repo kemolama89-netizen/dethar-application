@@ -26,6 +26,7 @@ import { calculatePrayerDay } from "./prayerTimes";
 import type { PrayerLocation } from "./prayerTimes";
 import { addDays, localDateIn } from "./locationTime";
 import type { LocalDate } from "./locationTime";
+import { originalAudioPath } from "./audioAssets";
 
 export const WINDOW_MARGIN_MINUTES = 30;
 const MINUTE_MS = 60_000;
@@ -48,7 +49,8 @@ const APK_PREFIX = "public/";
 
 /** A bundled file's measured length in millis (path as the native playlist has it), or undefined when unknown. */
 export function audioDurationMs(assetPath: string): number | undefined {
-  return DURATIONS[assetPath.startsWith(APK_PREFIX) ? assetPath.slice(APK_PREFIX.length) : assetPath];
+  // Keyed by the original recording: a played copy (lib/audioAssets.ts) has the same length.
+  return DURATIONS[originalAudioPath(assetPath.startsWith(APK_PREFIX) ? assetPath.slice(APK_PREFIX.length) : assetPath)];
 }
 
 type DurationOf = (assetPath: string) => number | undefined;

@@ -337,6 +337,8 @@ function schedulePreload(run: () => void) {
 
 if (typeof document !== "undefined") {
   schedulePreload(() => {
+    // The page may be gone by the time this runs (e.g. a test environment torn down).
+    if (typeof document === "undefined") return;
     Object.values(MISC_CATEGORIES)
       .map((meta) => meta.image)
       .filter((src): src is string => Boolean(src))

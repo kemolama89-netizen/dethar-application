@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AudioElementLike } from "./audioEngine";
-import { claimAudio, getActiveAudio, pauseAudio, playSilence, playUrlQueue, resumeAudio, setAudioElementFactory, stopAudio } from "./audioEngine";
+import { claimAudio, getActiveAudio, pauseAudio, playSilence, playUrlQueue, resumeAudio, setAudioVolume, setAudioElementFactory, stopAudio } from "./audioEngine";
 
 class FakeAudio implements AudioElementLike {
   src = "";
@@ -208,5 +208,19 @@ describe("playUrlQueue — back-to-back files (next file preloaded on a standby 
   it("a single-file queue never touches the standby element", () => {
     playUrlQueue("adhkar", "x", ["only"]);
     expect(elements).toHaveLength(1);
+  });
+});
+
+describe("setAudioVolume", () => {
+  it("changes the gain of the file playing now, not only the next one", () => {
+    const el = fake as FakeAudio & { volume?: number };
+    playUrlQueue("adhkar", "a", ["/a.mp3", "/b.mp3"], { volume: 1 });
+    expect(el.volume).toBe(1);
+    expect(setAudioVolume("other", 0.3)).toBe(false);
+    expect(setAudioVolume("a", 0.3)).toBe(true);
+    expect(el.volume).toBe(0.3);
+    // The next file keeps the new level.
+    el.onended?.();
+    expect(el.volume).toBe(0.3);
   });
 });

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildSummarySnapshot, loadSummarySettings, saveSummarySettings } from "./dailySummary";
-import { clearAllStats, getDailyActivity, recordAudioRepetitions, recordTasbeehRepetitions, recordWirdComplete, recordWrittenRepetition, subscribeStatsChanges, todayLocalDate } from "./stats";
+import { clearAllStats, getDailyActivity, recordAudioListening, recordAudioRepetitions, recordFloatingTasbeehRepetitions, recordListenedSessions, recordTasbeehRepetitions, recordWirdComplete, recordWrittenRepetition, subscribeStatsChanges, todayLocalDate } from "./stats";
 
 describe("end-of-day summary data", () => {
   beforeEach(() => {
@@ -32,6 +32,28 @@ describe("end-of-day summary data", () => {
     expect(snap.history[6].date < snap.date).toBe(true);
     expect(snap.history[0].date < snap.history[6].date).toBe(true);
     expect(snap.trackedSince).toBe(todayLocalDate());
+  });
+
+  it("says what of native's queues it already holds, so native counts each tap and recording once", () => {
+    const day = todayLocalDate();
+    const at = (ts: number) => ({ ts, localDate: day, localTime: "10:00:00", timeZone: "UTC" });
+    expect(buildSummarySnapshot().taken).toEqual({ floatingThrough: null, audioIds: [] });
+    recordFloatingTasbeehRepetitions([
+      { dhikrId: 1, times: 3, occurredAt: at(1_000) },
+      { dhikrId: 1, times: 2, occurredAt: at(5_000) },
+    ]);
+    recordAudioRepetitions([{ category: "misc", dhikrId: "tasbeeh-1", eventId: "c1", occurredAt: at(2_000) }]);
+    recordAudioListening([{ category: "morning", dhikrId: "m1", eventId: "l1", part: 0, occurredAt: at(3_000), listenedMs: 9_000 }]);
+    recordListenedSessions([{ category: "evening", eventId: "s1", occurredAt: at(4_000) }]);
+    // Written and manual Tasbeeh never come from a native queue.
+    recordWrittenRepetition("morning", "morning_001");
+    recordTasbeehRepetitions(2, 4);
+    const snap = buildSummarySnapshot();
+    expect(snap.taken.floatingThrough).toBe(5_000);
+    expect([...snap.taken.audioIds].sort()).toEqual(["c1", "l1", "s1"]);
+    expect(snap.today).toMatchObject({ writtenRepetitions: 1, tasbeehRepetitions: 9, wirds: ["evening"] });
+    // Another day's snapshot holds none of today's.
+    expect(buildSummarySnapshot("2000-01-01").taken).toEqual({ floatingThrough: null, audioIds: [] });
   });
 
   it("tells listeners when the log changes (the native snapshot then refreshes)", () => {

@@ -78,7 +78,8 @@ export function DailyProgressCard({ className = "" }: { className?: string }) {
   const t = homeDashboardLabels[language];
   const { activity, audio } = useTodayActivity();
   const wirds = activity.wirds.length;
-  const nothingYet = activity.total === 0 && wirds === 0 && activity.prayerSessions === 0 && audio.completedPlays === 0;
+  // Listening in part (a recording stopped early) is a record of today too.
+  const nothingYet = activity.total === 0 && wirds === 0 && activity.prayerSessions === 0 && audio.completedPlays === 0 && audio.stoppedEarlyPlays === 0 && audio.listenedMs === 0;
   return (
     <section
       className={`rounded-2xl border px-3 py-2 [@media(min-height:880px)]:py-2.5 ${className}`}

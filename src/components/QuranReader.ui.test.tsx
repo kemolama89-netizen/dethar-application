@@ -124,7 +124,7 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     expect(container.querySelector("[data-verse='2:255'] title")!.textContent).toBe(QURAN_VERSES[1][254]);
     expect(current()).toBe("2:255");
     expect(container.querySelector("[data-verse='2:255']")!.hasAttribute("data-target")).toBe(true);
-    expect(container.querySelector("[data-quran-folio]")!.textContent).toBe("٤٢");
+    expect(container.querySelector("[data-quran-folio] .dithar-mushaf-folio-number")!.textContent).toBe("٤٢");
     expect(container.querySelector("[data-quran-page-of]")!.textContent).toBe("٤٢ / ٦٠٤");
     expect(container.querySelector("[data-quran-page-of]")!.getAttribute("aria-label")).toBe("صفحة ٤٢ من ٦٠٤");
     expect(container.querySelector("[data-quran-juz]")!.getAttribute("data-quran-juz")).toBe("3");
@@ -322,7 +322,7 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     expect(shownPage()).toBe("293");
   });
 
-  it("browses by Juz: all 30, each opened where it begins", () => {
+  it("browses by Juz: all 30, each opened where it begins (a Juz first shows its two Hizbs)", () => {
     mount(<QuranReaderScreen start={null} onBack={() => {}} />);
     expect(container.querySelector("[data-quran-browse]")!.getAttribute("data-quran-browse")).toBe("surah");
     click(container.querySelector("[data-quran-browse-tab='juz']")!);
@@ -337,6 +337,7 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     expect(container.querySelectorAll("[data-quran-surah]")).toHaveLength(114);
     click(container.querySelector("[data-quran-browse-tab='juz']")!);
     click(container.querySelector("[data-quran-juz-item='15']")!);
+    click(container.querySelector("[data-quran-juz-open='15']")!);
     expect(current()).toBe("17:1");
     expect(shownPage()).toBe(String(pageOf(17, 1)));
     expect(container.querySelector("[data-quran-juz]")!.getAttribute("data-quran-juz")).toBe("15");
@@ -396,10 +397,11 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
   it("puts the page number at the page's outer corner: bottom right on right-hand (odd) pages, bottom left on left-hand (even) ones", async () => {
     await open(1, 1);
     const folio = () => container.querySelector("[data-quran-folio]")!;
-    expect(folio().textContent).toBe("١");
+    const number = () => folio().querySelector(".dithar-mushaf-folio-number")!.textContent;
+    expect(number()).toBe("١");
     expect(folio().getAttribute("data-quran-folio-side")).toBe("right");
     click(container.querySelector("[data-quran-next-page]")!);
-    expect(folio().textContent).toBe("٢");
+    expect(number()).toBe("٢");
     expect(folio().getAttribute("data-quran-folio-side")).toBe("left");
     click(container.querySelector("[data-quran-next-page]")!);
     expect(folio().getAttribute("data-quran-folio-side")).toBe("right");

@@ -237,3 +237,31 @@ describe("the widget's added written duas (2026-10-19)", () => {
     expect(defaultReviewStatus("dua:bukhari-834")).toBe("pending");
   });
 });
+
+describe("the written duas added 2026-10-20", () => {
+  const narrations = (hadithApiWidgetDuas as { narrations: { ref: string; text: string }[] }).narrations;
+  const QURAN = ["q-3-191", "q-10-85", "q-12-101", "q-17-80", "q-23-29", "q-25-65", "q-28-16", "q-60-5", "q-66-11"];
+  const SUNNAH: Record<string, string> = { "muslim-2717": "Sahih Muslim 2717", "bukhari-6316": "Sahih al-Bukhari 6316" };
+  const byId = (id: string) => ENRICHED_DUAS.find((d) => d.id === id)!;
+
+  it("are all there, with their sources, and enter the review queue as new content (unpublished until approved)", () => {
+    for (const id of [...QURAN, ...Object.keys(SUNNAH)]) {
+      const d = byId(id);
+      expect(d, id).toBeDefined();
+      expect(d.review.checkedOn, id).toBe("2026-10-20");
+      expect(d.sourceAr.length, id).toBeGreaterThan(10);
+      expect(defaultReviewStatus(`dua:${id}`), id).toBe("pending");
+    }
+    for (const id of QURAN) expect(byId(id).kind, id).toBe("quran");
+  });
+
+  it("each Prophetic dua is its narration's own words, diacritics and all, from the cited collection and number", () => {
+    for (const [id, ref] of Object.entries(SUNNAH)) {
+      const narration = narrations.find((n) => n.ref === ref)!.text.replace(/[‎‏]/g, "");
+      expect(narration.includes(byId(id).textAr), id).toBe(true);
+      const number = ref.split(" ").pop()!;
+      expect(byId(id).sourceAr, id).toContain(`(${number})`);
+      expect(byId(id).sourceAr, id).toContain(ref.includes("Muslim") ? "صحيح مسلم" : "صحيح البخاري");
+    }
+  });
+});

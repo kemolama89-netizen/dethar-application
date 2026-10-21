@@ -20,6 +20,7 @@ import {
 } from "../lib/audioVolumeSettings";
 import type { VolumeCategory } from "../lib/audioVolumeSettings";
 import { endVolumePreview, previewVolume, stopVolumePreview } from "../lib/volumePreview";
+import { loadQuranTurnSound, saveQuranTurnSound } from "../lib/quranReading";
 
 type Labels = (typeof settingsLabels)["ar"];
 
@@ -35,6 +36,8 @@ export function AudioSettingsView({ onBack }: { onBack: () => void }) {
   const t = settingsLabels[language];
   const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
   const [volumes, setVolumes] = useState(() => loadAudioVolumes());
+  // The Qur'an reader's page-turn sound: the same setting as the reader's own toggle (on by default).
+  const [turnSound, setTurnSound] = useState(loadQuranTurnSound);
 
   useEffect(() => subscribeAudioVolumes(setVolumes), []);
   // Leaving the screen stops the sample.
@@ -103,6 +106,39 @@ export function AudioSettingsView({ onBack }: { onBack: () => void }) {
           );
         })}
       </div>
+
+      <button
+        type="button"
+        role="switch"
+        aria-checked={turnSound}
+        data-settings-turn-sound={turnSound ? "on" : "off"}
+        onClick={() => {
+          saveQuranTurnSound(!turnSound);
+          setTurnSound(!turnSound);
+        }}
+        className="mt-3 flex items-center gap-3 rounded-2xl border p-4 text-start"
+        style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
+      >
+        {turnSound ? <Volume2 size={18} strokeWidth={1.8} aria-hidden="true" /> : <VolumeX size={18} strokeWidth={1.8} aria-hidden="true" />}
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-[13.5px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+            {t.quranTurnSoundLabel}
+          </span>
+          <span className="text-[11.5px] leading-[1.5]" style={{ color: "var(--color-text-muted)" }}>
+            {t.quranTurnSoundHint}
+          </span>
+        </span>
+        <span
+          aria-hidden="true"
+          className="relative h-6 w-11 shrink-0 rounded-full transition-colors"
+          style={{ background: turnSound ? "var(--color-gold)" : "var(--color-gold-soft)" }}
+        >
+          <span
+            className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all"
+            style={{ insetInlineStart: turnSound ? "calc(100% - 1.375rem)" : "0.125rem" }}
+          />
+        </span>
+      </button>
     </div>
   );
 }

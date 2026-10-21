@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Heart, Share2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Maximize2, Share2 } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { favoritesLabels, reminderLabels } from "../data/reminderLabels";
 import { MISC_DUAS, miscLibraryLabels } from "../data/misc-library";
-import { loadFavorites, removeFavorite, subscribeFavorites } from "../lib/favorites";
+import { favoriteOpenRequest, loadFavorites, removeFavorite, subscribeFavorites } from "../lib/favorites";
+import { requestOpenReminder } from "../lib/reminderOpenRequests";
 import type { FavoriteEntry } from "../lib/favorites";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
 import { findReminderCandidate } from "../lib/reminderContent";
@@ -39,6 +40,8 @@ interface Row {
   fromWidget: boolean;
   savedAt: number;
   remove: () => void;
+  /** Saved reminder content: opens it in the full reminder view, as the widget does (absent for library duas). */
+  open?: () => void;
 }
 
 const LIBRARY_PREFIX = "library:";
@@ -74,6 +77,7 @@ export function FavoritesView({ onBack }: { onBack: () => void }) {
       fromWidget: e.origin === "widget",
       savedAt: e.savedAt,
       remove: () => removeFavorite(e.key),
+      open: () => requestOpenReminder(favoriteOpenRequest(e, language, r.kindTitle[e.kind] ?? r.categoryTitle[e.category])),
     }));
     // The library's own hearts (lib/miscFavorites.ts) keep their own store; shown here after the others.
     const library: Row[] = MISC_DUAS.filter((d) => libraryIds.has(d.id)).map((d) => ({
@@ -96,7 +100,7 @@ export function FavoritesView({ onBack }: { onBack: () => void }) {
       },
     }));
     return [...saved, ...library];
-  }, [entries, libraryIds, r, t]);
+  }, [entries, libraryIds, r, t, language]);
 
   function shareSectionsFor(row: Row): ShareSection[] {
     const note = row.note ? (isEn ? row.note.en : row.note.ar) : undefined;
@@ -171,6 +175,18 @@ export function FavoritesView({ onBack }: { onBack: () => void }) {
                       </span>
                     )}
                     <span className="flex-1" />
+                    {row.open && (
+                      <button
+                        type="button"
+                        onClick={row.open}
+                        aria-label={t.openAria}
+                        data-favorite-open={row.key}
+                        className="flex h-9 w-9 items-center justify-center rounded-full"
+                        style={{ color: "var(--color-primary)", boxShadow: "inset 0 0 0 1px var(--color-gold-soft)" }}
+                      >
+                        <Maximize2 size={15} />
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() =>
@@ -205,7 +221,8 @@ export function FavoritesView({ onBack }: { onBack: () => void }) {
 
                   <p
                     dir="rtl"
-                    className={`mt-2 text-[16px] leading-[2] ${row.isPoetry ? "whitespace-pre-line" : ""} ${open ? "" : "line-clamp-4"}`}
+                    onClick={row.open}
+                    className={`mt-2 text-[16px] leading-[2] ${row.isPoetry ? "whitespace-pre-line" : ""} ${open ? "" : "line-clamp-4"} ${row.open ? "cursor-pointer" : ""}`}
                     style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
                   >
                     {row.textAr}

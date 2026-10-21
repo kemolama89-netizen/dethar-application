@@ -29,6 +29,7 @@ import { GENERATED_MORNING_EVENING_AUDIO_IDS } from "../data/morningEveningAudio
 import { AUDIO_VARIOUS_ITEMS } from "../data/audio-adhkar";
 import type { VolumeCategory } from "./audioVolumeSettings";
 import { VOLUME_MAX } from "./audioVolumeSettings";
+import { playableAudioPath } from "./audioAssets";
 
 /** How long the sample keeps playing after the slider is let go. */
 export const PREVIEW_TAIL_MS = 1_200;
@@ -54,7 +55,7 @@ export interface PreviewElement {
   onerror: (() => void) | null;
 }
 
-const url = (path: string) => `${import.meta.env.BASE_URL}${encodeURI(path)}`;
+const url = (path: string) => `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(path))}`;
 
 /** What each slider previews; null when there's no sample. */
 export function previewSampleFor(category: VolumeCategory): PreviewSample | null {

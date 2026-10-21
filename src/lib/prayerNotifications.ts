@@ -33,6 +33,7 @@ import { adhanNextToken, loadAdhanRotationSettings, peekNextAdhanVoice, recordNa
 import type { AdhanSection } from "./adhanVoiceRotation";
 import { adhanMuezzinName, getAdhanRecordingById } from "../data/adhanRecordings";
 import type { AdhanRecording } from "../data/adhanRecordings";
+import { playableAudioPath } from "./audioAssets";
 
 /** How far ahead notifications are handed to native. */
 export const PRAYER_NOTIFICATION_DAYS = 30;
@@ -140,7 +141,7 @@ function nativeVoice(recording: AdhanRecording, mode: "full" | "takbeer" | "fajr
   return {
     id: recording.id,
     name: recording.name[language],
-    assetPath: `public/${recording.path}`,
+    assetPath: `public/${playableAudioPath(recording.path)}`,
     startMillis: Math.round(segment.start * 1000),
     endMillis: Math.round(segment.end * 1000),
     muezzin: adhanMuezzinName(recording, language) ?? "",

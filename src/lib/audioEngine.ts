@@ -67,6 +67,8 @@ export function getPlaybackProgress(): PlaybackProgress | null {
 export interface PauseControls {
   pause: () => void;
   resume: () => void;
+  /** Changes the gain (0–1) of what is playing, mid-playback — a volume slider moved while it plays. */
+  setVolume?: (gain: number) => void;
 }
 
 let owner: Owner | null = null;
@@ -147,6 +149,13 @@ export function pauseAudio(key: string): boolean {
 export function resumeAudio(key: string): boolean {
   if (owner?.key !== key || !owner.controls) return false;
   owner.controls.resume();
+  return true;
+}
+
+/** Sets the gain of the source playing `key`. False if `key` isn't playing or has no volume of its own. */
+export function setAudioVolume(key: string, gain: number): boolean {
+  if (owner?.key !== key || !owner.controls?.setVolume) return false;
+  owner.controls.setVolume(Math.min(1, Math.max(0, gain)));
   return true;
 }
 
@@ -349,7 +358,7 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
     standbyIndex = index + 1;
   };
 
-  const volume = Math.min(1, Math.max(0, options.volume ?? 1));
+  let volume = Math.min(1, Math.max(0, options.volume ?? 1));
   const playCurrent = () => {
     element.onended = onEnded;
     element.onerror = fail;
@@ -416,6 +425,12 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
         } catch {
           fail();
         }
+      },
+      setVolume: (gain) => {
+        volume = gain;
+        if (!active) return;
+        element.volume = gain;
+        if (standby) standby.volume = gain;
       },
     },
   );

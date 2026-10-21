@@ -134,8 +134,9 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
   let live = true;
   liveSequences += 1;
   const sources: BufferSourceLike[] = [];
-  // The app's own volume (audioVolumeSettings.ts), through one gain node when the context has them.
-  const gain = options.volume !== undefined && options.volume !== 1 && context.createGain ? context.createGain() : null;
+  // The app's own volume (audioVolumeSettings.ts), through one gain node when the context has them —
+  // also at 100 %, so a slider moved mid-playback can still change it.
+  const gain = options.volume !== undefined && context.createGain ? context.createGain() : null;
   if (gain) {
     gain.gain.value = Math.min(1, Math.max(0, options.volume!));
     gain.connect(context.destination);
@@ -183,6 +184,9 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
       },
       resume: () => {
         if (active) void context.resume().catch(fail);
+      },
+      setVolume: (value) => {
+        if (active && gain) gain.gain.value = value;
       },
     },
   );

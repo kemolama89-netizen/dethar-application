@@ -829,6 +829,29 @@ export function getDailyActivity(localDate: string): DailyActivity {
   };
 }
 
+/**
+ * What the app has already taken in, of what native queues while it is
+ * closed, for one local day — so the end-of-day summary (which adds what is
+ * still queued natively) counts each tap or recording exactly once, whichever
+ * of "taken in" and "removed from the native queue" happens first:
+ *  - floatingThrough: the newest Floating Tasbeeh tap recorded (its own time;
+ *    native drains the whole queue at once, so every queued tap up to it is in);
+ *  - audioIds: the Audio Adhkar completions, listening and sessions recorded
+ *    (their native ids).
+ */
+export function getNativeTakenIn(localDate: string): { floatingThrough: number | null; audioIds: string[] } {
+  let floatingThrough: number | null = null;
+  const audioIds = new Set<string>();
+  for (const e of load()) {
+    if (resolvedLocalDate(e) !== localDate) continue;
+    if (e.kind === "repetition" && e.source === "floating") floatingThrough = Math.max(floatingThrough ?? e.ts, e.ts);
+    else if (e.kind === "repetition" && e.source === "audio" && e.eventId) audioIds.add(e.eventId);
+    else if (e.kind === "listening") audioIds.add(e.eventId);
+    else if (e.kind === "wird-complete" && e.via === "listened" && e.eventId) audioIds.add(e.eventId);
+  }
+  return { floatingThrough, audioIds: [...audioIds] };
+}
+
 // ---- one day's audio LISTENING (kept apart from the user's own activity) ----
 //
 // What played in Audio Adhkar on a local day — listening, NOT the user's own

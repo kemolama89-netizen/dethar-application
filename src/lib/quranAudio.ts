@@ -26,6 +26,7 @@ import type { QuranRef } from "./quranRef";
 import { formatQuranRefKey, isValidQuranRef } from "./quranRef";
 import { playUrlQueue } from "./audioEngine";
 import type { PlayUrlQueueOptions } from "./audioEngine";
+import { playableAudioPath } from "./audioAssets";
 
 /** How repetitions after the first play: these files, the first one from `startAt` seconds. */
 export interface QuranRepeatPlayback {
@@ -64,7 +65,7 @@ export function resolveQuranAudio(ref: QuranRef | null | undefined, reciter: Qur
     case "bundled": {
       const audio = bundledQuranAudio(ref, reciter);
       if (!audio) return { status: "unavailable", reciterId: reciter.id, ref, reason: "ayah-not-bundled" };
-      const url = (p: string) => `${import.meta.env.BASE_URL}${encodeURI(p)}`;
+      const url = (p: string) => `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(p))}`;
       const urls = audio.paths.map(url);
       if (!audio.repeat) return { status: "ready", reciterId: reciter.id, ref, urls };
       return { status: "ready", reciterId: reciter.id, ref, urls, repeat: { urls: audio.repeat.paths.map(url), startAt: audio.repeat.startAt } };

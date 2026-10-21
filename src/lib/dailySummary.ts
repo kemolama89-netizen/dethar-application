@@ -19,7 +19,7 @@
 // Comparisons with earlier days appear only when there is enough history
 // (DailySummary decides: a recorded yesterday, or at least 4 tracked days
 // in the past week).
-import { getDailyActivity, getDailyAudioActivity, getEarliestLocalDate, todayLocalDate, addDays } from "./stats";
+import { getDailyActivity, getDailyAudioActivity, getEarliestLocalDate, getNativeTakenIn, todayLocalDate, addDays } from "./stats";
 import type { DailyActivity } from "./stats";
 import { writtenAdhkarItems } from "../data/written-adhkar";
 import { dhikrItems } from "../data/tasbeeh";
@@ -77,6 +77,13 @@ export interface SummarySnapshot {
   trackedSince: string | null;
   /** Audio Adhkar listening that day — reported separately, never as the user's repetitions. */
   audio: SummaryAudio;
+  /**
+   * What of native's own queues (Floating Tasbeeh taps, Audio Adhkar
+   * completions) this snapshot already holds (stats.ts getNativeTakenIn):
+   * native adds only what is still queued and NOT in here — never lost,
+   * never counted twice.
+   */
+  taken: { floatingThrough: number | null; audioIds: string[] };
 }
 
 export interface SummaryAudio {
@@ -126,5 +133,5 @@ export function buildSummarySnapshot(date: string = todayLocalDate()): SummarySn
     const day = addDays(date, i - 7);
     return { date: day, total: getDailyActivity(day).total };
   });
-  return { date, today: getDailyActivity(date), history, trackedSince: getEarliestLocalDate(), audio: buildSummaryAudio(date) };
+  return { date, today: getDailyActivity(date), history, trackedSince: getEarliestLocalDate(), audio: buildSummaryAudio(date), taken: getNativeTakenIn(date) };
 }

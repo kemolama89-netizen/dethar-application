@@ -19,6 +19,7 @@
 // their own store; the Favorites screen shows both.
 import type { EditorialComment } from "../data/widgetContent";
 import type { ReminderCategory, ReminderItem, ReminderKind } from "./reminderContent";
+import type { OpenReminderRequest } from "./reminderOpenRequests";
 
 const KEY = "dithar:favorites:v1";
 
@@ -111,6 +112,30 @@ export function favoriteFromItem(item: ReminderItem, comment: EditorialComment |
     comment: comment ? { id: comment.id, ar: comment.ar, en: comment.en } : undefined,
     savedAt,
     origin,
+  };
+}
+
+/**
+ * Opening a saved item: the very request a tapped widget sends (its id, the
+ * comment shown with it, and the saved strings as what was shown), so it
+ * opens in the same full view with the same layout, heart and sharing —
+ * the app's own item when its wording is unchanged, else the saved snapshot
+ * (lib/reminderOpen.ts). [title]: the kind's title in the current language.
+ */
+export function favoriteOpenRequest(entry: FavoriteEntry, language: "ar" | "en", title: string): OpenReminderRequest {
+  const en = language === "en";
+  return {
+    id: entry.key,
+    commentId: entry.comment?.id ?? null,
+    shown: {
+      category: entry.category,
+      title,
+      text: entry.textAr,
+      meaning: entry.meaningEn ?? "",
+      detail: "",
+      source: (en ? entry.sourceEn : undefined) ?? entry.sourceAr,
+      commentText: entry.comment ? (en ? entry.comment.en : entry.comment.ar) : null,
+    },
   };
 }
 

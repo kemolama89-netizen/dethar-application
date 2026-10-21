@@ -51,3 +51,20 @@ How the app meets these terms:
 The reader used to typeset this text itself, with bundled fonts
 (Scheherazade New and Amiri Quran, both SIL OFL 1.1, in `src/assets/fonts/`).
 It now shows the printed pages, so those fonts are no longer loaded by it.
+
+## Quarter-hizb signs (2026-10-20)
+
+`kfqc-hafs-1441-quarter-marks.json` records where each quarter-hizb sign (۞)
+is printed on the 1441H pages, in each page's own 345 × 550 units, so the
+reader can draw the printed sign in its own colour (a colour masked by the
+artwork's own ink — the artwork itself is never changed). It is written by
+`scripts/mushaf/find-quarter-marks.py` (with `render-quarter-pages.mjs`),
+which template-matches the sign at the start of each quarter's first verse:
+
+- 199 signs found; every quarter that begins mid-surah scores ≥ 0.86 and
+  every quarter that begins a surah (41, none printed in the text) ≤ 0.53;
+  each box was also checked by eye on a contact sheet of all 199 crops.
+- Quarter 106: the print draws the sign before 15:49 (score 0.92) and none
+  at Tanzil's 15:50 (0.46), confirming Quran.com's start. The reader opens
+  quarters at the print's starts (`PRINT_QUARTER_STARTS` in
+  `src/lib/quranMeta.ts`), which equal Quran.com's for all 240 quarters.

@@ -7,7 +7,7 @@
 // "surah|ayah|" on its line. Tanzil's copyright notice (the "#" lines at the
 // end of the file) is read from the same file and shown in the reader.
 import quranRaw from "../data/quran/tanzil-quran-uthmani.txt?raw";
-import { SURAH_META } from "./quranMeta";
+import { SURAH_META, pageVerses } from "./quranMeta";
 
 export interface QuranParse {
   /** VERSES[surah - 1][ayah - 1] */
@@ -86,4 +86,30 @@ export function splitBasmala(surah: number, ayah: number, text: string): { basma
   if (words.length <= 4 || withoutShadda(words.slice(0, 4).join(" ")) !== BASMALA) return null;
   const basmala = words.slice(0, 4).join(" ") + " ";
   return { basmala, rest: text.slice(basmala.length) };
+}
+
+/** A word as written — not a standalone annotation sign (a pause or sajdah mark, ۞). */
+const HAS_LETTER = /[\u0621-\u064A\u066E-\u06D3\u06FA-\u06FC]/;
+
+/**
+ * The first `count` words a Mushaf page begins with — the reader's catchword
+ * under the page before it, so an imam can go on reciting while turning the
+ * page. Read from that page's own verses (lib/quranMeta.ts pageVerses, the
+ * 1441H print's page starts) in Tanzil's text, never estimated: its first
+ * verse's first words, and — when that verse is shorter (e.g. «الٓمٓ») — the
+ * next verse's on the same page. The basmala heading a surah is not part of
+ * its verse 1 (splitBasmala). Empty for a page that doesn't exist.
+ */
+export function pageOpeningWords(page: number, count = 2): string[] {
+  const words: string[] = [];
+  for (const [surah, ayah] of pageVerses(page)) {
+    const raw = QURAN_VERSES[surah - 1]?.[ayah - 1] ?? "";
+    const text = splitBasmala(surah, ayah, raw)?.rest ?? raw;
+    for (const w of text.split(" ")) {
+      if (!HAS_LETTER.test(w)) continue;
+      words.push(w);
+      if (words.length === count) return words;
+    }
+  }
+  return words;
 }

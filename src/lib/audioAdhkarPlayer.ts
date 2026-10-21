@@ -49,7 +49,7 @@ import type { AudioVariousItem } from "../data/audio-adhkar";
 import type { QuranReciter } from "../data/quranReciters";
 import { peekQuranReciterForPlayback } from "./quranReciterSelection";
 import { resolveMorningEveningAudio } from "./morningEveningAudio";
-import { getPlaybackProgress, pauseAudio, playSilence, playUrlQueue, resumeAudio, stopAudio, takeStoppedProgress } from "./audioEngine";
+import { getPlaybackProgress, pauseAudio, playSilence, playUrlQueue, resumeAudio, setAudioVolume, stopAudio, takeStoppedProgress } from "./audioEngine";
 import { playAudioSequence } from "./webAudioSequence";
 import type { QuranRepeatPlayback } from "./quranAudio";
 import type { AudioChannel } from "./audioEngine";
@@ -64,8 +64,9 @@ import { commitInAppCompletion, commitInAppListening } from "./audioAdhkarCounts
 import { peekSectionReciter, takeSectionReciter } from "./audioAdhkarScheduleSettings";
 import { buildAdhanWindows, nextAdhanPauseStart } from "./adhanSuppression";
 import { loadLanguagePreference } from "./appearancePreferences";
-import { volumeGain } from "./audioVolumeSettings";
+import { subscribeAudioVolumes, volumeGain } from "./audioVolumeSettings";
 import { rememberLastPlayed } from "./lastPlayedDhikr";
+import { playableAudioPath } from "./audioAssets";
 
 /**
  * How many times the audio plays a Morning/Evening dhikr — its existing
@@ -116,7 +117,7 @@ export function getAudioAdhkarSource(
 /** A Various dhikr's recording, or null when it has none. */
 export function getAudioVariousSource(item: AudioVariousItem): AudioAdhkarSource | null {
   if (!item.audio) return null;
-  return { key: `misc:${item.id}`, urls: [`${import.meta.env.BASE_URL}${encodeURI(item.audio)}`], channel: "adhkar" };
+  return { key: `misc:${item.id}`, urls: [`${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(item.audio))}`], channel: "adhkar" };
 }
 
 interface Current {
@@ -132,6 +133,12 @@ interface Current {
 }
 
 let current: Current | null = null;
+
+// A category's slider moved while one of its dhikr plays in the app: the new level applies at once.
+subscribeAudioVolumes((volumes) => {
+  const collection = current?.playing?.collection;
+  if (current && collection) setAudioVolume(current.source.key, volumeGain(collection, volumes));
+});
 let nextToken = 0;
 
 // In-app playback stops when an adhan pause begins: one timer, armed only

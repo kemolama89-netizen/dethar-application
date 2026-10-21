@@ -70,7 +70,8 @@ export function SpiritualReminderView({
   const [shown, setShown] = useState<{ item: ReminderItem; comment?: EditorialComment; title?: string } | null>(() => {
     if (shownAs) {
       const opened = resolveOpenedReminder(itemId, commentId, shownAs, language);
-      return opened ? { item: opened.item, comment: opened.comment ?? (opened.from === "library" && !commentId ? chooseComment(opened.item) : undefined), title: opened.title } : null;
+      // Exactly what was shown: its comment, or none when it showed none — never one picked here.
+      return opened ? { item: opened.item, comment: opened.comment, title: opened.title } : null;
     }
     const item = findReminderItem(itemId);
     return item ? { item, comment: chooseComment(item, commentId) } : null;

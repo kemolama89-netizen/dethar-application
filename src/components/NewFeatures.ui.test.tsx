@@ -159,6 +159,19 @@ describe("Settings → End-of-day summary", () => {
     await setInput("#summary-time", "22:00");
     expect(loadSummarySettings()).toMatchObject({ enabled: true, time: "22:00" });
   });
+
+  it("a day with only Audio Adhkar listening (stopped part-way) never says nothing was recorded", async () => {
+    const { recordAudioListening, todayLocalDate } = await import("../lib/stats");
+    recordAudioListening([
+      { category: "morning", dhikrId: "1", eventId: "e1", part: 0, occurredAt: { ts: Date.now(), localDate: todayLocalDate(), localTime: "08:00", timeZone: "UTC" }, listenedMs: 95_000 },
+    ]);
+    mount(<DailySummarySettingsView onBack={() => {}} />);
+    const today = container.querySelector("[data-summary-today]")!.textContent!;
+    expect(today).not.toContain("لم يُسجَّل شيء اليوم بعد");
+    expect(today).toContain("لم تُسجَّل بعدُ قراءةٌ في الأذكار المكتوبة ولا تسبيح");
+    // Its listening time, kept apart from repetitions.
+    expect(container.querySelector("[data-summary-listening]")!.textContent).toContain("دقيقتان");
+  });
 });
 
 describe("Audio Adhkar settings → Miscellaneous: Fridays and occasions", () => {

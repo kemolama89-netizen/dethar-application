@@ -12,11 +12,12 @@ import type { BundledQuranAudio } from "./quranAudio";
 import type { DailySection } from "./audioAdhkarScheduleSettings";
 import type { NativePlaylistItem, NativeRecitation } from "./audioAdhkarNative";
 import { loadLanguagePreference } from "./appearancePreferences";
+import { playableAudioPath } from "./audioAssets";
 
 /** Where Capacitor packages the built web app (dist/ → assets/public/) inside the APK. */
 const APK_WEB_ASSETS_DIR = "public/";
 
-const inApk = (paths: readonly string[]) => paths.map((p) => `${APK_WEB_ASSETS_DIR}${p}`);
+const inApk = (paths: readonly string[]) => paths.map((p) => `${APK_WEB_ASSETS_DIR}${playableAudioPath(p)}`);
 
 /** A bundled recitation as native plays it, naming `reciter` (in the app's language) so the player can show who is heard. */
 export function nativeRecitation(audio: BundledQuranAudio, reciter?: QuranReciter): NativeRecitation {

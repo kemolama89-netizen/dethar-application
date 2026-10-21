@@ -34,6 +34,17 @@ export function sameWording(a: string, b: string): boolean {
   return norm(a) === norm(b);
 }
 
+/**
+ * The library item's source is the one that was shown (in either language —
+ * the notification follows the app's language), or none was shown. A source
+ * corrected since the notification was posted means the snapshot is shown,
+ * so the text AND its source are exactly what the notification said.
+ */
+function sameSource(item: ReminderItem, shownSource: string | undefined): boolean {
+  if (!shownSource) return true;
+  return sameWording(item.sourceAr ?? "", shownSource) || sameWording(item.sourceEn ?? "", shownSource);
+}
+
 const KIND_OF: Record<ReminderCategory, ReminderKind> = { dua: "dua", hadith: "hadith", virtue: "virtue", poetry: "poetry", lataif: "lataif" };
 
 function asCategory(value: string, id: string): ReminderCategory {
@@ -70,7 +81,7 @@ function shownComment(commentId: string | null | undefined, shown: ShownReminder
  */
 export function resolveOpenedReminder(id: string, commentId: string | null | undefined, shown: ShownReminder | undefined, language: Language): OpenedReminder | null {
   const library = findReminderItem(id) ?? findReminderCandidate(id);
-  if (library && (!shown || !shown.text || sameWording(library.textAr, shown.text))) {
+  if (library && (!shown || !shown.text || (sameWording(library.textAr, shown.text) && sameSource(library, shown.source)))) {
     return { item: library, comment: findComment(library, commentId) ?? shownComment(commentId, shown), from: "library" };
   }
   if (shown?.text) {

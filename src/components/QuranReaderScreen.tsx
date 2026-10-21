@@ -1,21 +1,23 @@
 import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode, Ref } from "react";
-import { Bookmark, BookmarkCheck, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ExternalLink, Home, List, Maximize2, Minus, Plus, RectangleHorizontal, RectangleVertical, Search, Settings2, Trash2, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Bookmark, BookmarkCheck, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ExternalLink, Home, List, Maximize2, Minus, Plus, RectangleHorizontal, RectangleVertical, Search, Settings2, Trash2, Volume2, VolumeX, X, ZoomIn, ZoomOut } from "lucide-react";
 import "./quranReader.css";
 import { DeviceFrame } from "./DeviceFrame";
 import { BottomNav } from "./BottomNav";
 import { useLanguage } from "../theme/LanguageContext";
 import { quranLabels } from "../data/quranLabels";
-import { QURAN_VERSES, TANZIL_NOTICE } from "../lib/quranText";
-import { JUZ_STARTS, MUSHAF_SHOWN_BOX, SURAH_META, TOTAL_PAGES, arabicDigits, hizbOf, juzOf, mushafViewBox, pageOf, pageVerses, quarterStartsOnPage, surahMeta } from "../lib/quranMeta";
+import { QURAN_VERSES, TANZIL_NOTICE, pageOpeningWords } from "../lib/quranText";
+import { JUZ_STARTS, MUSHAF_SHOWN_BOX, SURAH_META, TOTAL_PAGES, arabicDigits, hizbOf, juzOf, mushafViewBox, pageOf, pageVerses, quarterMarksOnPage, quarterStart, quarterStartsOnPage, surahMeta } from "../lib/quranMeta";
 import { QURAN_SEARCH_MIN, normalizeQuery, searchQuran } from "../lib/quranSearch";
 import { lockReaderOrientation } from "../lib/orientationNative";
 import {
   QURAN_ZOOMS,
   QURAN_ZOOM_FIT,
   isQuranBookmarked,
+  loadQuranTurnSound,
   loadQuranZoom,
   saveQuranPosition,
+  saveQuranTurnSound,
   saveQuranZoom,
   toggleQuranBookmark,
   useQuranBookmarks,
@@ -23,6 +25,8 @@ import {
 } from "../lib/quranReading";
 import { isPageVisible, subscribePageVisibility } from "../lib/pageVisibility";
 import { SLOW_FRAMES, SLOW_FRAME_MS, markPageTurnTooSlow, pageTurnTooSlow } from "../lib/pageTurnPerformance";
+import { playPageTurnSound, preparePageTurnSound } from "../lib/pageTurnSound";
+import { useKeepScreenAwake } from "../lib/screenAwake";
 import { surahHeadingFrames } from "../lib/mushafHeadings";
 import { openingArtwork } from "../lib/mushafOpening";
 import { MushafSurahFrame, MushafSurahFrameDefs } from "./MushafSurahFrame";
@@ -43,6 +47,13 @@ import { MushafSurahFrame, MushafSurahFrameDefs } from "./MushafSurahFrame";
 export interface QuranTarget {
   surah: number;
   ayah: number;
+  /**
+   * A search result: the verse stays marked on its page (even a verse 1)
+   * until the page is tapped or turned, and `found` — the matched words, as
+   * written — is named over the page. The page is an image, so a single word
+   * can't be marked on it; the words are marked in the result itself.
+   */
+  found?: string[];
 }
 
 const POSITION_SAVE_DELAY_MS = 500;
@@ -274,39 +285,113 @@ function SurahIndex({ onOpen, onBack, onNavigate }: { onOpen: (t: QuranTarget) =
   );
 }
 
-/** The 30 Juz, each opened where it begins — its first verse, surah and page, and its two hizbs. */
+/**
+ * The 30 Juz, each opened where it begins — its first verse, surah and page.
+ * Choosing a Juz shows its two Hizbs (2j − 1 and 2j); choosing a Hizb shows
+ * its four quarters (its beginning, ¼, ½, ¾). Every row opens the exact verse
+ * its division begins with, as printed (lib/quranMeta.ts PRINT_QUARTER_STARTS).
+ */
 function JuzList({ onOpen }: { onOpen: (t: QuranTarget) => void }) {
   const { language } = useLanguage();
   const t = quranLabels[language];
   const digits = (n: number) => (language === "ar" ? arabicDigits(n) : String(n));
+  const [openJuz, setOpenJuz] = useState<number | null>(null);
+  const [openHizb, setOpenHizb] = useState<number | null>(null);
+  const row = "flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start";
+  const rowStyle = { borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" };
+  const where = (surah: number, ayah: number) => `${t.surah(surahName(surah, language))} · ${t.ayah(digits(ayah))}`;
   return (
     <ul className="mt-2 grid grid-cols-1 gap-1.5" data-quran-juzs="">
-      {JUZ_STARTS.map(([surah, ayah], i) => (
-        <li key={i}>
-          <button
-            type="button"
-            onClick={() => onOpen({ surah, ayah })}
-            className="flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start"
-            style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
-            data-quran-juz-item={i + 1}
-          >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-bold" style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}>
-              {digits(i + 1)}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[15px] font-bold" style={{ fontFamily: "var(--font-display)" }}>
-                {t.juz(digits(i + 1))}
+      {JUZ_STARTS.map(([surah, ayah], i) => {
+        const juz = i + 1;
+        const expanded = openJuz === juz;
+        return (
+          <li key={juz}>
+            <button
+              type="button"
+              onClick={() => {
+                setOpenJuz(expanded ? null : juz);
+                setOpenHizb(null);
+              }}
+              aria-expanded={expanded}
+              className={row}
+              style={expanded ? { ...rowStyle, borderColor: "var(--color-gold)" } : rowStyle}
+              data-quran-juz-item={juz}
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-bold" style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}>
+                {digits(juz)}
               </span>
-              <span className="block text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-                {t.surah(surahName(surah, language))} · {t.ayah(digits(ayah))} · {t.hizbs(digits(2 * i + 1), digits(2 * i + 2))}
+              <span className="min-w-0 flex-1">
+                <span className="block text-[15px] font-bold" style={{ fontFamily: "var(--font-display)" }}>
+                  {t.juz(digits(juz))}
+                </span>
+                <span className="block text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                  {where(surah, ayah)} · {t.hizbs(digits(2 * juz - 1), digits(2 * juz))}
+                </span>
               </span>
-            </span>
-            <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-              {t.page(digits(pageOf(surah, ayah) ?? 0))}
-            </span>
-          </button>
-        </li>
-      ))}
+              <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                {t.page(digits(pageOf(surah, ayah) ?? 0))}
+              </span>
+              <ChevronDown size={15} className="shrink-0 opacity-60 transition-transform" style={{ transform: expanded ? "rotate(180deg)" : undefined }} aria-hidden="true" />
+            </button>
+            {expanded && (
+              <div className="mt-1.5 flex flex-col gap-1.5 ps-5" data-quran-juz-hizbs={juz}>
+                <button type="button" onClick={() => onOpen({ surah, ayah })} className="rounded-full px-3 py-1.5 text-[12.5px] font-semibold" style={{ background: "var(--color-primary)", color: "var(--color-primary-contrast)" }} data-quran-juz-open={juz}>
+                  {t.openJuz(digits(juz))}
+                </button>
+                {[2 * juz - 1, 2 * juz].map((hizb) => {
+                  const first = quarterStart(4 * hizb - 3)!;
+                  const hizbExpanded = openHizb === hizb;
+                  return (
+                    <div key={hizb} className="flex flex-col gap-1.5">
+                      <button type="button" onClick={() => setOpenHizb(hizbExpanded ? null : hizb)} aria-expanded={hizbExpanded} className={row} style={hizbExpanded ? { ...rowStyle, borderColor: "var(--color-gold)" } : rowStyle} data-quran-hizb-item={hizb}>
+                        <span className="dithar-quran-quarter-chip flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11.5px] font-bold" aria-hidden="true">
+                          ۞
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[14px] font-bold">{t.hizb(digits(hizb))}</span>
+                          <span className="block text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                            {where(first.surah, first.ayah)}
+                          </span>
+                        </span>
+                        <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                          {t.page(digits(first.page))}
+                        </span>
+                        <ChevronDown size={14} className="shrink-0 opacity-60" style={{ transform: hizbExpanded ? "rotate(180deg)" : undefined }} aria-hidden="true" />
+                      </button>
+                      {hizbExpanded && (
+                        <ul className="flex flex-col gap-1 ps-5" data-quran-hizb-quarters={hizb}>
+                          {([0, 1, 2, 3] as const).map((part) => {
+                            const quarter = 4 * hizb - 3 + part;
+                            const q = quarterStart(quarter)!;
+                            return (
+                              <li key={quarter}>
+                                <button type="button" onClick={() => onOpen({ surah: q.surah, ayah: q.ayah })} className="flex w-full items-center gap-2 rounded-lg border px-3 py-1.5 text-start" style={rowStyle} data-quran-quarter-item={quarter} data-quran-quarter-start={`${q.surah}:${q.ayah}`}>
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block text-[13px] font-semibold" style={{ color: "color-mix(in srgb, var(--quran-quarter) 72%, var(--color-text-primary))" }}>
+                                      {t.quarter(part, digits(hizb))}
+                                    </span>
+                                    <span className="block text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                                      {where(q.surah, q.ayah)}
+                                    </span>
+                                  </span>
+                                  <span className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                                    {t.page(digits(q.page))}
+                                  </span>
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -346,7 +431,7 @@ function VerseResults({ query, onOpen }: { query: string; onOpen: (t: QuranTarge
             <li key={`${h.surah}:${h.ayah}`}>
               <button
                 type="button"
-                onClick={() => onOpen({ surah: h.surah, ayah: h.ayah })}
+                onClick={() => onOpen({ surah: h.surah, ayah: h.ayah, found: h.matched.map((i) => h.words[i]) })}
                 className="flex w-full flex-col gap-1 rounded-xl border px-3 py-2 text-start"
                 style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
                 data-quran-result={`${h.surah}:${h.ayah}`}
@@ -406,8 +491,8 @@ function parseVerseKey(key: string): QuranTarget {
   return { surah, ayah };
 }
 
-/** Room under the page for its printed number, and above it (px). */
-const FOLIO_PX = 18;
+/** Room under the page for its printed number and the next page's opening words, and above it (px). */
+const FOLIO_PX = 30;
 const TOP_PAD_PX = 4;
 /** A press held this long on a verse selects it (a tap only shows or hides the controls). */
 const LONG_PRESS_MS = 450;
@@ -430,6 +515,7 @@ function MushafSheet({
   onFailed,
   selected,
   highlight,
+  found = null,
   onLongPress,
   style,
 }: {
@@ -441,6 +527,8 @@ function MushafSheet({
   onFailed: (page: number) => void;
   selected: string | null;
   highlight: string | null;
+  /** A search result's verse, marked until the page is tapped or turned. */
+  found?: string | null;
   onLongPress: (key: string) => void;
   style?: CSSProperties;
 }) {
@@ -478,6 +566,7 @@ function MushafSheet({
                     data-verse={key}
                     data-selected={selected === key ? "" : undefined}
                     data-target={highlight === key ? "" : undefined}
+                    data-found={found === key ? "" : undefined}
                     // A tap goes on to the page (it shows or hides the controls); a long press selects the verse.
                     onPointerDown={(e) => {
                       cancelPress();
@@ -538,6 +627,7 @@ function MushafArt({ page, onFailed }: { page: number; onFailed?: (page: number)
   const artViewBox = shownViewBox(page);
   const artBox = (opening?.imageBox ?? mushafViewBox(page)).split(/\s+/).map(Number);
   const shownBox = artViewBox.split(/\s+/).map(Number);
+  const marks = opening ? [] : quarterMarksOnPage(page);
   return (
     /* The page artwork, and — behind it, in the SAME viewport so the two can never drift apart by
        a pixel — a frame centred on each surah's own printed title (lib/mushafHeadings.ts). */
@@ -564,6 +654,24 @@ function MushafArt({ page, onFailed }: { page: number; onFailed?: (page: number)
         onError={onFailed ? () => onFailed(page) : undefined}
         data-quran-page-image={main ? page : undefined}
       />
+      {/* Each printed ۞ in its own colour, so a quarter reads apart from the verse numbers: a colour
+          masked by the artwork's own ink inside the sign's box (lib/quranMeta.ts quarterMarksOnPage)
+          — exactly the printed sign's shape and place; nothing is added to the text or moved. */}
+      {marks.length > 0 && (
+        <g className="dithar-mushaf-quarter-marks" data-quran-quarter-marks={main ? marks.map((m) => m.quarter).join(" ") : undefined} aria-hidden="true">
+          {marks.map(({ quarter, box: [x, y, w, h] }) => {
+            const maskId = `dithar-quarter-mark-${id}-${quarter}`;
+            return (
+              <g key={quarter}>
+                <mask id={maskId} maskUnits="userSpaceOnUse" x={x - 0.6} y={y - 0.6} width={w + 1.2} height={h + 1.2} style={{ maskType: "alpha" }}>
+                  <image href={pageImage(page)} x={artBox[0]} y={artBox[1]} width={artBox[2]} height={artBox[3]} />
+                </mask>
+                <rect x={x - 0.6} y={y - 0.6} width={w + 1.2} height={h + 1.2} mask={`url(#${maskId})`} className="dithar-mushaf-quarter-ink" data-quran-quarter-mark={main ? quarter : undefined} />
+              </g>
+            );
+          })}
+        </g>
+      )}
     </svg>
   );
 }
@@ -577,9 +685,19 @@ function MushafArt({ page, onFailed }: { page: number; onFailed?: (page: number)
 const folioSide = (page: number): "right" | "left" => (page % 2 === 1 ? "right" : "left");
 
 function MushafFolio({ page, main = false }: { page: number; main?: boolean }) {
+  const { language } = useLanguage();
+  const t = quranLabels[language];
+  // The next page's first words, under the end of the last line (the bottom left of an Arabic page),
+  // so an imam can read on while turning — from that page itself (lib/quranText.ts pageOpeningWords).
+  const cue = useMemo(() => pageOpeningWords(page + 1).join(" "), [page]);
   return (
     <div className="dithar-mushaf-folio" data-side={folioSide(page)} data-quran-folio={main ? page : undefined} data-quran-folio-side={main ? folioSide(page) : undefined}>
-      <span>{arabicDigits(page)}</span>
+      <span className="dithar-mushaf-folio-number">{arabicDigits(page)}</span>
+      {cue && (
+        <span className="dithar-mushaf-cue" dir="rtl" lang="ar" title={t.nextPageCue} aria-label={`${t.nextPageCue}: ${cue}`} data-quran-next-cue={main ? cue : undefined}>
+          {cue}
+        </span>
+      )}
     </div>
   );
 }
@@ -609,6 +727,8 @@ interface PageTurn {
 }
 /** A whole page turn (ms); a part of one takes its part of this. */
 const TURN_MS = 420;
+/** The lightweight turn's length (ms) — quranReader.css .dithar-mushaf-liteturn-leaf. */
+const LITE_TURN_MS = 380;
 function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -638,7 +758,12 @@ function MushafReader({
   const pageRef = useRef(page);
   const [position, setPosition] = useState<QuranTarget>(target);
   const positionRef = useRef<QuranTarget>(target);
-  const [highlight, setHighlight] = useState<string | null>(target.ayah > 1 ? verseKey(target.surah, target.ayah) : null);
+  const [highlight, setHighlight] = useState<string | null>(target.ayah > 1 && !target.found ? verseKey(target.surah, target.ayah) : null);
+  // A search result stays marked (verse 1 too) until the page is tapped or turned.
+  const [found, setFound] = useState<{ key: string; words: string[] } | null>(target.found ? { key: verseKey(target.surah, target.ayah), words: target.found } : null);
+  const [turnSound, setTurnSound] = useState(loadQuranTurnSound);
+  // The screen stays on while a page is open; the phone's own timeout returns when the reader closes.
+  useKeepScreenAwake();
   const [selected, setSelected] = useState<string | null>(null);
   const [zoom, setZoom] = useState(loadQuranZoom);
   const [area, setArea] = useState({ w: 0, h: 0 });
@@ -782,6 +907,7 @@ function MushafReader({
       showPage(next);
       setSelected(null);
       setHighlight(at && at.ayah > 1 ? verseKey(at.surah, at.ayah) : null);
+      setFound(null);
       setFailed((f) => {
         if (!f[next]) return f;
         const copy = { ...f };
@@ -910,14 +1036,34 @@ function MushafReader({
     applyTurn(turnProgress.current);
   }, [turn, applyTurn]);
 
+  // The lightweight turn, for a device too slow to move the pages themselves (lib/pageTurnPerformance.ts):
+  // the page changes at once and a plain sheet of paper — no artwork in it, so nothing is redrawn — sweeps
+  // over it from the spine, shaded as it lifts (a CSS animation of transform and opacity only).
+  const [liteTurn, setLiteTurn] = useState<{ dir: "next" | "prev"; n: number } | null>(null);
+  const canLiteTurn = () => measured && !zoomed && typeof requestAnimationFrame === "function" && !prefersReducedMotion();
+
+  /** The paper sound of a page turning, unless muted in the settings (lib/pageTurnSound.ts), its landing at `landsInMs`. */
+  const playTurnSound = (landsInMs: number) => {
+    if (loadQuranTurnSound()) playPageTurnSound(landsInMs);
+  };
+  // The recording is decoded as the reader opens, so the first turn already sounds on time.
+  useEffect(() => {
+    if (turnSound) void preparePageTurnSound();
+  }, [turnSound]);
+
   /** Turns to the next or previous page (the buttons, the keys, a quick swipe). */
   const turnPage = (next: number) => {
     if (next < 1 || next > TOTAL_PAGES || next === pageRef.current) return;
     const animate = canAnimateTurn();
+    const lite = !animate && canLiteTurn();
+    const dir = next > pageRef.current ? "next" : "prev";
     if (animate) beginTurn(next);
     else endTurn();
     goToPage(next);
+    // The leaf lands as the turn ends: the whole turn, the lighter one's, or at once when the page just changes.
+    playTurnSound(animate ? TURN_MS : lite ? LITE_TURN_MS : 0);
     if (animate) animateTurn(1);
+    else if (lite) setLiteTurn((l) => ({ dir, n: (l?.n ?? 0) + 1 }));
   };
 
   // A finger on the page: undecided until it has moved; a clearly sideways move lifts the leaf.
@@ -1028,6 +1174,7 @@ function MushafReader({
       return;
     }
     if (controls) setSelected(null);
+    setFound(null);
     setControls((c) => !c);
   };
 
@@ -1081,6 +1228,8 @@ function MushafReader({
             const speed = Math.abs(dx) / Math.max(1, Date.now() - d.at);
             if (d.p > 0.25 || (d.p > 0.04 && speed > 0.35)) {
               goToPage(d.to);
+              // Let go part-way: the rest of the turn (animateTurn's own duration) is what the sound waits for.
+              playTurnSound(Math.max(140, TURN_MS * (1 - turnProgress.current)));
               animateTurn(1);
             } else animateTurn(0);
             return;
@@ -1110,9 +1259,21 @@ function MushafReader({
               onFailed={(f) => setFailed((s) => ({ ...s, [f]: true }))}
               selected={selected}
               highlight={highlight}
+              found={found?.key ?? null}
               onLongPress={selectVerse}
             />
           </div>
+          {liteTurn && (
+            <div className="dithar-mushaf-liteturn" aria-hidden="true" data-quran-lite-turn={liteTurn.dir}>
+              <div
+                key={liteTurn.n}
+                className="dithar-mushaf-liteturn-leaf"
+                data-dir={liteTurn.dir}
+                style={{ width: sheetWidth, height: sheetHeight }}
+                onAnimationEnd={() => setLiteTurn(null)}
+              />
+            </div>
+          )}
           {turn && (
             <div className="dithar-mushaf-turn" aria-hidden="true" data-quran-turn={turn.dir}>
               {/* Beneath: the page uncovered (next) or the page being covered (previous). */}
@@ -1141,7 +1302,20 @@ function MushafReader({
         </article>
       </div>
 
-      {!controls && (
+      {found && !controls && (
+        <p className="dithar-quran-found" role="status" data-quran-found={found.key}>
+          <span className="font-semibold">{t.foundLabel}</span>
+          {found.words.length > 0 && (
+            <span dir="rtl" lang="ar" className="dithar-quran-verse-text">
+              <mark>{found.words.join(" ")}</mark>
+            </span>
+          )}
+          <span>
+            {t.surah(surahName(parseVerseKey(found.key).surah, language))} · {t.ayah(digits(parseVerseKey(found.key).ayah))}
+          </span>
+        </p>
+      )}
+      {!controls && !found && (
         <p className="dithar-quran-hint" aria-hidden="true" data-quran-tap-hint="">
           {t.tapHint}
         </p>
@@ -1207,7 +1381,7 @@ function MushafReader({
           {hizb ? <span data-quran-hizb={hizb}>· {t.hizb(digits(hizb))}</span> : null}
           <span data-quran-page-number={page}>· {t.page(digits(page))}</span>
           {quarters.map((q) => (
-            <span key={q.quarter} className="rounded-full px-1.5 font-semibold" style={{ background: "rgba(var(--color-gold-rgb), 0.16)", color: "var(--color-text-primary)" }} data-quran-quarter={q.quarter}>
+            <span key={q.quarter} className="dithar-quran-quarter-chip rounded-full px-1.5 font-semibold" data-quran-quarter={q.quarter}>
               ۞ {t.quarter(q.part, digits(q.hizb))}
             </span>
           ))}
@@ -1294,6 +1468,27 @@ function MushafReader({
                 <button type="button" onClick={fitPage} aria-pressed={!zoomed} className="flex items-center justify-center gap-1.5 rounded-full px-3.5 py-2 text-[12.5px] font-semibold" style={!zoomed ? { background: "var(--color-primary)", color: "var(--color-primary-contrast)" } : ring} data-quran-zoom="fit">
                   <Maximize2 size={14} />
                   {t.fitPage}
+                </button>
+                {/* The page-turn sound: on, or muted (kept on this device — lib/quranReading.ts). */}
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={turnSound}
+                  onClick={() => {
+                    const next = !turnSound;
+                    setTurnSound(next);
+                    saveQuranTurnSound(next);
+                    if (next) playPageTurnSound();
+                  }}
+                  className="flex items-center justify-between gap-3 rounded-full px-3.5 py-2 text-[12.5px] font-semibold"
+                  style={ring}
+                  data-quran-turn-sound={turnSound ? "on" : "off"}
+                >
+                  <span className="flex items-center gap-1.5">
+                    {turnSound ? <Volume2 size={15} /> : <VolumeX size={15} />}
+                    {t.turnSound}
+                  </span>
+                  <span style={{ color: turnSound ? "var(--color-primary)" : "var(--color-text-muted)" }}>{turnSound ? t.turnSoundOn : t.turnSoundOff}</span>
                 </button>
                 <button
                   type="button"

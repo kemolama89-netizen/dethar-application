@@ -138,7 +138,8 @@ export function DailySummarySettingsView({ onBack }: { onBack: () => void }) {
           {t.todayPreview}
         </p>
         <p className="text-[12.5px] leading-[1.7]" style={parts.length ? primaryText : muted}>
-          {parts.length ? parts.join(" · ") : t.nothingYet}
+          {/* Listening alone is still a record of today: never "nothing recorded" over it. */}
+          {parts.length ? parts.join(" · ") : listening ? t.onlyListening : t.nothingYet}
         </p>
         <div className="border-t pt-2" style={{ borderColor: "var(--color-gold-soft)" }} data-summary-listening="">
           <p className="text-[12px] font-semibold" style={primaryText}>

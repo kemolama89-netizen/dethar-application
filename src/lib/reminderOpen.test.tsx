@@ -141,3 +141,53 @@ describe("the full-screen view opened from a tap", () => {
     expect(container.querySelector("[aria-pressed='true'][aria-label]")).not.toBeNull();
   });
 });
+
+describe("the source shown is the source opened", () => {
+  it("a notification whose source has since changed opens with the source it showed, not the library's", () => {
+    const item = aHadith();
+    const { commentId, shown } = shownFor(item, "ar");
+    const posted = { ...shown, source: "صحيح مسلم (1)" };
+    expect(sameWording(item.sourceAr ?? "", posted.source)).toBe(false);
+    const opened = resolveOpenedReminder(item.id, commentId, posted, "ar")!;
+    expect(opened.from).toBe("as-shown");
+    expect(opened.item.id).toBe(item.id);
+    expect(opened.item.sourceAr).toBe("صحيح مسلم (1)");
+    expect(sameWording(opened.item.textAr, shown.text)).toBe(true);
+  });
+
+  it("an English notification's source (the item's English source) still opens the library item", () => {
+    const item = aHadith();
+    const { commentId, shown } = shownFor(item, "en");
+    expect(resolveOpenedReminder(item.id, commentId, shown, "en")!.from).toBe("library");
+  });
+});
+
+describe("the full view shows no comment the notification didn't show", () => {
+  let container: HTMLDivElement;
+  let root: ReturnType<typeof createRoot>;
+  beforeEach(() => {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+  });
+  afterEach(() => {
+    act(() => root.unmount());
+    container.remove();
+  });
+
+  it("opened from a notification that showed no comment: none is added", () => {
+    const item = aHadith();
+    // It has comments of its own — the view used to pick one of them here.
+    expect(item.comments.length).toBeGreaterThan(0);
+    const { shown } = shownFor(item, "ar");
+    act(() =>
+      root.render(
+        <LanguageProvider>
+          <SpiritualReminderView itemId={item.id} commentId={null} shownAs={{ ...shown, commentText: null }} autoClose={false} onClose={() => {}} />
+        </LanguageProvider>,
+      ),
+    );
+    expect(container.textContent).toContain(item.textAr.slice(0, 20));
+    for (const c of item.comments) expect(container.textContent).not.toContain(c.ar);
+  });
+});

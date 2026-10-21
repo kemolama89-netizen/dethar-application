@@ -15,6 +15,9 @@ import { saveMiscFavorites, loadMiscFavorites } from "../lib/miscFavorites";
 import { findReminderItem } from "../lib/reminderContent";
 import { loadContentHistory } from "../lib/contentRotation";
 import { MISC_DUAS } from "../data/misc-library";
+import { subscribeOpenReminderRequests } from "../lib/reminderOpenRequests";
+import type { OpenReminderRequest } from "../lib/reminderOpenRequests";
+import { resolveOpenedReminder } from "../lib/reminderOpen";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -104,6 +107,38 @@ describe("the full-screen reflection", () => {
 });
 
 describe("Settings → Favorites", () => {
+  it("opens a widget favorite exactly as the widget does: same id, comment and full reminder view", async () => {
+    const item = findReminderItem("virtue:8")!;
+    addFavorite(favoriteFromItem(item, item.comments[1], "widget"));
+    const requests: OpenReminderRequest[] = [];
+    const unsubscribe = subscribeOpenReminderRequests((r) => requests.push(r));
+    mount(<FavoritesView onBack={() => {}} />);
+    await click(container.querySelector('[data-favorite-open="virtue:8"]')!);
+    unsubscribe();
+    expect(requests).toHaveLength(1);
+    expect(requests[0].id).toBe("virtue:8");
+    expect(requests[0].commentId).toBe(item.comments[1].id);
+    // The app's own item opens (full evidence and reflection), with the comment that was saved.
+    const opened = resolveOpenedReminder(requests[0].id, requests[0].commentId, requests[0].shown, "ar")!;
+    expect(opened.from).toBe("library");
+    expect(opened.item.id).toBe("virtue:8");
+    expect(opened.comment?.id).toBe(item.comments[1].id);
+    act(() => root.unmount());
+    mount(<SpiritualReminderView itemId={requests[0].id} commentId={requests[0].commentId} shownAs={requests[0].shown} onClose={() => {}} />);
+    expect(container.querySelector("[data-reminder-comment]")!.getAttribute("data-reminder-comment")).toBe(item.comments[1].id);
+  });
+
+  it("a favorite whose library text changed since opens as it was saved", () => {
+    const item = findReminderItem("virtue:8")!;
+    addFavorite({ ...favoriteFromItem(item, undefined, "widget"), textAr: "نص محفوظ قديم" });
+    const entry = loadFavorites()[0];
+    const request = { id: entry.key, commentId: null, shown: { category: entry.category, title: "", text: entry.textAr, meaning: "", detail: "", source: entry.sourceAr, commentText: null } };
+    const opened = resolveOpenedReminder(request.id, request.commentId, request.shown, "ar")!;
+    expect(opened.from).toBe("as-shown");
+    expect(opened.item.textAr).toBe("نص محفوظ قديم");
+    expect(opened.item.id).toBe("virtue:8");
+  });
+
   it("explains how to add favorites when there are none", () => {
     mount(<FavoritesView onBack={() => {}} />);
     expect(container.querySelector("[data-favorites-empty]")!.textContent).toContain("لا يوجد شيء في المفضلة بعد");

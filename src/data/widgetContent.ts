@@ -74,7 +74,7 @@ const QURAN_SOURCE_CHECK = "Qur'an text (Tanzil «quran-simple», via fawazahmed
  * unnumbered (2700, 2733, 2759) take the slot between their neighbours;
  * those links are flagged for confirmation in the review screen.
  */
-export const SUNNAH_IN_BOOK: Readonly<Record<string, string>> = {"muslim-38": "1/66", "muslim-373": "3/147", "muslim-482": "4/245", "muslim-798": "6/290", "muslim-804": "6/302", "muslim-817": "6/325", "muslim-2553": "45/16", "muslim-2564": "45/42", "muslim-2566": "45/46", "muslim-2695": "48/42", "muslim-2700": "48/50", "muslim-2733": "48/121", "muslim-2734": "48/123", "muslim-2749": "50/13", "muslim-2759": "50/36", "muslim-2822": "53/1", "muslim-2963": "55/14", "muslim-2965": "55/16", "bukhari-39": "2/32", "bukhari-69": "3/11", "bukhari-1145": "19/26", "bukhari-1283": "23/43", "bukhari-1469": "24/71", "bukhari-2320": "41/1", "bukhari-2996": "56/205", "bukhari-5269": "68/19", "bukhari-5986": "78/17", "bukhari-5991": "78/22", "bukhari-6116": "78/143", "bukhari-6168": "78/194", "bukhari-6309": "80/6", "bukhari-6340": "80/37", "bukhari-6407": "80/102", "bukhari-6412": "81/1", "bukhari-6416": "81/5", "bukhari-6446": "81/35", "tirmidhi-1162": "12/17", "tirmidhi-1987": "27/93", "tirmidhi-2346": "36/43", "tirmidhi-2399": "36/97", "tirmidhi-2518": "37/104", "tirmidhi-3372": "48/3", "tirmidhi-3375": "48/6", "tirmidhi-3377": "48/8", "tirmidhi-3556": "48/187", "ibnmajah-3818": "33/162", "ibnmajah-4032": "36/107", "muslim-2654": "46/29", "muslim-2722": "48/99", "bukhari-3841": "63/66", "bukhari-6012": "78/43", "bukhari-6064": "78/94", "bukhari-6477": "81/66", "bukhari-6011": "78/42", "bukhari-6035": "78/65", "bukhari-2989": "56/198", "bukhari-6018": "78/49", "bukhari-6464": "81/53", "bukhari-834": "10/227"};
+export const SUNNAH_IN_BOOK: Readonly<Record<string, string>> = {"muslim-38": "1/66", "muslim-373": "3/147", "muslim-482": "4/245", "muslim-798": "6/290", "muslim-804": "6/302", "muslim-817": "6/325", "muslim-2553": "45/16", "muslim-2564": "45/42", "muslim-2566": "45/46", "muslim-2695": "48/42", "muslim-2700": "48/50", "muslim-2733": "48/121", "muslim-2734": "48/123", "muslim-2749": "50/13", "muslim-2759": "50/36", "muslim-2822": "53/1", "muslim-2963": "55/14", "muslim-2965": "55/16", "bukhari-39": "2/32", "bukhari-69": "3/11", "bukhari-1145": "19/26", "bukhari-1283": "23/43", "bukhari-1469": "24/71", "bukhari-2320": "41/1", "bukhari-2996": "56/205", "bukhari-5269": "68/19", "bukhari-5986": "78/17", "bukhari-5991": "78/22", "bukhari-6116": "78/143", "bukhari-6168": "78/194", "bukhari-6309": "80/6", "bukhari-6340": "80/37", "bukhari-6407": "80/102", "bukhari-6412": "81/1", "bukhari-6416": "81/5", "bukhari-6446": "81/35", "tirmidhi-1162": "12/17", "tirmidhi-1987": "27/93", "tirmidhi-2346": "36/43", "tirmidhi-2399": "36/97", "tirmidhi-2518": "37/104", "tirmidhi-3372": "48/3", "tirmidhi-3375": "48/6", "tirmidhi-3377": "48/8", "tirmidhi-3556": "48/187", "ibnmajah-3818": "33/162", "ibnmajah-4032": "36/107", "muslim-2654": "46/29", "muslim-2722": "48/99", "bukhari-3841": "63/66", "bukhari-6012": "78/43", "bukhari-6064": "78/94", "bukhari-6477": "81/66", "bukhari-6011": "78/42", "bukhari-6035": "78/65", "bukhari-2989": "56/198", "bukhari-6018": "78/49", "bukhari-6464": "81/53", "bukhari-834": "10/227", "muslim-2717": "48/92", "bukhari-6316": "80/13"};
 export const DERIVED_IN_BOOK = new Set(["muslim-2700", "muslim-2733", "muslim-2759"]);
 
 const SUNNAH_SLUG: Record<string, string> = { bukhari: "bukhari", muslim: "muslim", tirmidhi: "tirmidhi", ibnmajah: "ibnmajah" };
@@ -836,6 +836,8 @@ interface QuranDuaSpec {
   textAr: string;
   meaningEn: string;
   comments: readonly CommentSpec[];
+  /** When its text was checked against the source (default CHECKED_ON). */
+  checkedOn?: string;
 }
 
 // `meaningEn` is Saheeh International's wording for the dua's own words,
@@ -853,7 +855,7 @@ function quranDua(spec: QuranDuaSpec): EnrichedDua {
     sourceEn: `The Qur'an — Surat ${spec.surahEn} ${spec.surah}:${spec.ayah}`,
     url: `https://quran.com/${spec.surah}/${spec.ayah}`,
     translation: { source: "Saheeh International (trimmed to the dua's words)", reviewed: false },
-    review: { status: "source-checked", checkedAgainst: QURAN_SOURCE_CHECK, checkedOn: CHECKED_ON },
+    review: { status: "source-checked", checkedAgainst: QURAN_SOURCE_CHECK, checkedOn: spec.checkedOn ?? CHECKED_ON },
     comments: comments(`dua:${id}`, spec.comments),
   };
 }
@@ -1019,6 +1021,126 @@ export const ENRICHED_DUAS: readonly EnrichedDua[] = [
       ["reflection", "حين تدعو للمؤمنين جميعًا، يتّسع قلبك معهم.", "When you pray for all believers, your heart widens with them."],
     ],
   }),
+  // ---- Added 2026-10-20: each cut on whole words from its source by script — the Qur'an from Tanzil's
+  // «quran-simple» (verse lines in lib/__fixtures__/tanzil-simple-cited.txt) with Saheeh International's
+  // words for it; the Prophetic duas from the Arabic edition of the checked dataset, its own diacritics
+  // kept (the narrations in lib/__fixtures__/hadith-api-widget-duas.json). New content: pending review.
+  quranDua({
+    surahAr: "آل عمران", surahEn: "Al 'Imran", surah: 3, ayah: 191, checkedOn: "2026-10-20",
+    textAr: "رَبَّنَا مَا خَلَقْتَ هَٰذَا بَاطِلًا سُبْحَانَكَ فَقِنَا عَذَابَ النَّارِ",
+    meaningEn: "Our Lord, You did not create this aimlessly; exalted are You [above such a thing]; then protect us from the punishment of the Fire.",
+    comments: [
+      ["meaning", "دعاءُ أولي الألباب: يذكرون الله ويتفكّرون في خلق السماوات والأرض، ثم يسألونه النجاة من النار.", "People of understanding remember Allah and reflect on the creation of the heavens and the earth, then ask Him for safety from the Fire."],
+      ["practice", "حين ترى السماء أو منظرًا بديعًا اليوم، تفكّر قليلًا ثم ادعُ بهذا الدعاء.", "When you see the sky or a beautiful sight today, reflect a little, then say this dua."],
+    ],
+  }),
+  quranDua({
+    surahAr: "يونس", surahEn: "Yunus", surah: 10, ayah: 85, checkedOn: "2026-10-20",
+    textAr: "عَلَى اللَّهِ تَوَكَّلْنَا رَبَّنَا لَا تَجْعَلْنَا فِتْنَةً لِّلْقَوْمِ الظَّالِمِينَ",
+    meaningEn: "Upon Allah do we rely. Our Lord, make us not [objects of] trial for the wrongdoing people.",
+    comments: [
+      ["meaning", "قاله قوم موسى عليه السلام: توكّلٌ على الله أولًا، ثم سؤالُه السلامة من الظالمين.", "Said by the people of Moses (peace be upon him): reliance on Allah first, then asking Him for safety from the wrongdoers."],
+      ["reflection", "التوكّل يسبق الطلب في هذا الدعاء؛ فابدأ بقلبٍ مطمئن إلى الله.", "In this dua reliance comes before the request; begin with a heart at rest in Allah."],
+    ],
+  }),
+  quranDua({
+    surahAr: "يوسف", surahEn: "Yusuf", surah: 12, ayah: 101, checkedOn: "2026-10-20",
+    textAr: "فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ أَنتَ وَلِيِّي فِي الدُّنْيَا وَالْآخِرَةِ تَوَفَّنِي مُسْلِمًا وَأَلْحِقْنِي بِالصَّالِحِينَ",
+    meaningEn: "Creator of the heavens and earth, You are my protector in this world and in the Hereafter. Cause me to die a Muslim and join me with the righteous.",
+    comments: [
+      ["meaning", "دعاء يوسف عليه السلام بعد أن تمّت عليه النعمة: أن يثبّته الله على الإسلام حتى يلقاه.", "The dua of Joseph (peace be upon him) once his blessings were complete: that Allah keep him a Muslim until he meets Him."],
+      ["reflection", "حتى في أتمّ النعم، بقي همُّه حسنَ الخاتمة.", "Even at the height of his blessings, his concern remained a good ending."],
+    ],
+  }),
+  quranDua({
+    surahAr: "الإسراء", surahEn: "Al-Isra'", surah: 17, ayah: 80, checkedOn: "2026-10-20",
+    textAr: "رَبِّ أَدْخِلْنِي مُدْخَلَ صِدْقٍ وَأَخْرِجْنِي مُخْرَجَ صِدْقٍ وَاجْعَل لِّي مِن لَّدُنكَ سُلْطَانًا نَّصِيرًا",
+    meaningEn: "My Lord, cause me to enter a sound entrance and to exit a sound exit and grant me from Yourself a supporting authority.",
+    comments: [
+      ["meaning", "دعاءٌ عُلِّمه النبي ﷺ: أن يكون كلُّ دخولٍ وخروجٍ له على صدق، وأن يجعل الله له من لدنه سلطانًا نصيرًا.", "A dua the Prophet ﷺ was taught: that every entering and leaving be in truth, and that Allah grant him supporting authority from Himself."],
+      ["practice", "ادعُ به قبل أن تبدأ عملًا جديدًا أو تنتقل إلى مكانٍ جديد.", "Say it before you start new work or move to a new place."],
+    ],
+  }),
+  quranDua({
+    surahAr: "المؤمنون", surahEn: "Al-Mu'minun", surah: 23, ayah: 29, checkedOn: "2026-10-20",
+    textAr: "رَبِّ أَنزِلْنِي مُنزَلًا مُّبَارَكًا وَأَنتَ خَيْرُ الْمُنزِلِينَ",
+    meaningEn: "My Lord, let me land at a blessed landing place, and You are the best to accommodate [us].",
+    comments: [
+      ["meaning", "عُلِّمه نوحٌ عليه السلام بعد أن استوى في الفلك: أن ينزله الله منزلًا مباركًا.", "Noah (peace be upon him) was taught it once aboard the ark: that Allah settle him in a blessed place."],
+      ["practice", "ادعُ به حين تصل إلى بيتٍ أو مدينةٍ أو مرحلةٍ جديدة في حياتك.", "Say it when you arrive at a new home, city or stage of life."],
+    ],
+  }),
+  quranDua({
+    surahAr: "الفرقان", surahEn: "Al-Furqan", surah: 25, ayah: 65, checkedOn: "2026-10-20",
+    textAr: "رَبَّنَا اصْرِفْ عَنَّا عَذَابَ جَهَنَّمَ إِنَّ عَذَابَهَا كَانَ غَرَامًا",
+    meaningEn: "Our Lord, avert from us the punishment of Hell. Indeed, its punishment is ever adhering.",
+    comments: [
+      ["meaning", "من صفات عباد الرحمن: يدعون ربهم أن يصرف عنهم عذاب جهنم.", "Among the qualities of the servants of the Most Merciful: they ask their Lord to turn the punishment of Hell away from them."],
+      ["reflection", "الخوف من العذاب يدفع إلى الدعاء، والدعاء يورث الطمأنينة.", "Fear of punishment moves one to pray, and prayer brings peace of heart."],
+    ],
+  }),
+  quranDua({
+    surahAr: "القصص", surahEn: "Al-Qasas", surah: 28, ayah: 16, checkedOn: "2026-10-20",
+    textAr: "رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي",
+    meaningEn: "My Lord, indeed I have wronged myself, so forgive me.",
+    comments: [
+      ["meaning", "دعاء موسى عليه السلام حين أخطأ: اعترافٌ صريح، ثم طلبُ المغفرة — فغفر الله له.", "The dua of Moses (peace be upon him) when he erred: a plain admission, then a plea for forgiveness — and Allah forgave him."],
+      ["practice", "إذا أخطأت اليوم، فلا تؤخّر هذه الكلمات القليلة.", "If you err today, don't delay these few words."],
+    ],
+  }),
+  quranDua({
+    surahAr: "الممتحنة", surahEn: "Al-Mumtahanah", surah: 60, ayah: 5, checkedOn: "2026-10-20",
+    textAr: "رَبَّنَا لَا تَجْعَلْنَا فِتْنَةً لِّلَّذِينَ كَفَرُوا وَاغْفِرْ لَنَا رَبَّنَا إِنَّكَ أَنتَ الْعَزِيزُ الْحَكِيمُ",
+    meaningEn: "Our Lord, make us not [objects of] torment for the disbelievers and forgive us, our Lord. Indeed, it is You who is the Exalted in Might, the Wise.",
+    comments: [
+      ["meaning", "من دعاء إبراهيم عليه السلام والذين معه: ألّا يجعلهم الله فتنةً لغيرهم، وأن يغفر لهم.", "From the dua of Abraham (peace be upon him) and those with him: that Allah not make them a trial for others, and that He forgive them."],
+      ["reflection", "أن تكون قدوةً حسنة نعمةٌ تُطلب من الله.", "Being a good example is a blessing to ask Allah for."],
+    ],
+  }),
+  quranDua({
+    surahAr: "التحريم", surahEn: "At-Tahrim", surah: 66, ayah: 11, checkedOn: "2026-10-20",
+    textAr: "رَبِّ ابْنِ لِي عِندَكَ بَيْتًا فِي الْجَنَّةِ",
+    meaningEn: "My Lord, build for me near You a house in Paradise.",
+    comments: [
+      ["meaning", "دعاء امرأة فرعون: طلبت جوار الله قبل الدار، فقدّمت قربه على البيت في الجنة.", "The dua of Pharaoh's wife: she asked for nearness to Allah before the house, putting His nearness before a home in Paradise."],
+      ["encouragement", "مهما اشتدّ ما حولك، فقلبك يستطيع أن يتعلّق بما عند الله.", "However hard your surroundings, your heart can hold on to what is with Allah."],
+    ],
+  }),
+  {
+    id: "muslim-2717",
+    kind: "sunnah",
+    url: sunnahUrl("muslim-2717"),
+    translation: PUBLISHED_EN_MUSLIM,
+    textAr: "اللَّهُمَّ لَكَ أَسْلَمْتُ وَبِكَ آمَنْتُ وَعَلَيْكَ تَوَكَّلْتُ وَإِلَيْكَ أَنَبْتُ وَبِكَ خَاصَمْتُ اللَّهُمَّ إِنِّي أَعُوذُ بِعِزَّتِكَ لاَ إِلَهَ إِلاَّ أَنْتَ أَنْ تُضِلَّنِي أَنْتَ الْحَىُّ الَّذِي لاَ يَمُوتُ وَالْجِنُّ وَالإِنْسُ يَمُوتُونَ",
+    meaningEn: "O Allah, it is unto Thee that I surrender myself. I affirm my faith in Thee and repose my trust in Thee and turn to Thee in repentance and with Thy help fought my adversaries. O Allah, I seek refuge in Thee with Thine Power; there is no god but Thou, lest Thou leadest me astray. Thou art ever-living that dieth not, while the Jinn and mankind die.",
+    sourceAr: "صحيح مسلم (2717)، كتاب الذكر والدعاء — من حديث ابن عباس رضي الله عنهما",
+    sourceEn: "Sahih Muslim 2717, Book of Remembrance and Supplication — narrated by Ibn 'Abbas",
+    review: { status: "source-checked", checkedAgainst: HADITH_SOURCE_CHECK, checkedOn: "2026-10-20" },
+    comments: comments("dua:muslim-2717", [
+      ["meaning", "إسلامٌ وإيمانٌ وتوكّلٌ وإنابة، ثم استعاذةٌ بعزّة الله من الضلال.", "Submission, faith, reliance and turning back to Allah — then seeking refuge in His might from going astray."],
+      ["reflection", "كل ما سوى الله يزول، والحيّ الذي لا يموت هو الملجأ.", "All besides Allah passes away; the Ever-Living who never dies is the refuge."],
+    ]),
+  },
+  {
+    id: "bukhari-6316",
+    kind: "sunnah",
+    url: sunnahUrl("bukhari-6316"),
+    translation: DITHAR_RENDERING_CHECKED,
+    textAr: "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا، وَفِي بَصَرِي نُورًا، وَفِي سَمْعِي نُورًا، وَعَنْ يَمِينِي نُورًا، وَعَنْ يَسَارِي نُورًا، وَفَوْقِي نُورًا، وَتَحْتِي نُورًا، وَأَمَامِي نُورًا، وَخَلْفِي نُورًا، وَاجْعَلْ لِي نُورًا",
+    meaningEn: "O Allah, place light in my heart, light in my sight and light in my hearing; light on my right and light on my left; light above me and light below me; light before me and light behind me; and grant me light.",
+    sourceAr: "صحيح البخاري (6316)، كتاب الدعوات — من حديث ابن عباس رضي الله عنهما",
+    sourceEn: "Sahih al-Bukhari 6316, Book of Invocations — narrated by Ibn 'Abbas",
+    review: {
+      status: "source-checked",
+      checkedAgainst: HADITH_SOURCE_CHECK,
+      checkedOn: "2026-10-20",
+      note: "Arabic verbatim from the edition. Its English edition gives only a transliteration of these words, so the meaning is DITHAR's rendering.",
+    },
+    comments: comments("dua:bukhari-6316", [
+      ["meaning", "نورٌ في القلب والجوارح ومن كل جهة: هدايةٌ تحيط بالعبد في كل أحواله.", "Light in the heart, the senses and on every side: guidance surrounding a person in every state."],
+      ["practice", "من دعاء النبي ﷺ؛ فاجعل له نصيبًا من دعائك.", "It is among the Prophet's ﷺ supplications; give it a place in your own."],
+    ]),
+  },
 ];
 
 /**
