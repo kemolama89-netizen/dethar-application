@@ -1,7 +1,7 @@
 // The interface colour in effect — the non-React half of PaletteContext.tsx.
 //
 // Manual colour selection was removed from Settings → Appearance (2026-10-31):
-// the app's colours now come from the identity (men/women) and the
+// the app's colours now come from the identity and the
 // appearance theme (theme/looks.ts) alone, so the palette in effect is always
 // "original" (the identity's own approved colours). A choice saved by an
 // earlier version (localStorage "dithar:appearance:palette:v1") is no longer

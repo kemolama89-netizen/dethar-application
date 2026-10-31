@@ -39,20 +39,20 @@ function deltaE(a: string, b: string): number {
   return Math.hypot(la[0] - lb[0], la[1] - lb[1], la[2] - lb[2]);
 }
 
-const variants: { id: string; theme: "men" | "women"; c: PaletteColors }[] = PALETTES.flatMap((p) =>
-  (["men", "women"] as const).flatMap((theme) => (p.colors[theme] ? [{ id: p.id, theme, c: p.colors[theme]! }] : [])),
+const variants: { id: string; theme: "men"; c: PaletteColors }[] = PALETTES.flatMap((p) =>
+  (["men"] as const).flatMap((theme) => (p.colors[theme] ? [{ id: p.id, theme, c: p.colors[theme]! }] : [])),
 );
 
 describe("palette definitions", () => {
-  it("offer the requested palettes, for both identities, plus the untouched original", () => {
+  it("offer the requested palettes for the men's identity only, plus the untouched original", () => {
     expect(PALETTE_IDS).toEqual(["original", "emerald", "navy", "burgundy", "royal", "teal", "sand"]);
     for (const p of PALETTES) {
-      if (p.id === "original") expect(p.colors).toEqual({ men: null, women: null });
-      else expect(p.colors.men && p.colors.women, p.id).toBeTruthy();
+      if (p.id === "original") expect(p.colors).toEqual({ men: null });
+      else expect(Object.keys(p.colors), p.id).toEqual(["men"]);
     }
   });
 
-  it("keep every text pair the UI draws readable (WCAG AA), in both identities", () => {
+  it("keep every text pair the UI draws readable (WCAG AA), for the identity", () => {
     for (const { id, theme, c } of variants) {
       const at = `${id}/${theme}`;
       expect(contrast(c.text, c.bg), `${at} text/bg`).toBeGreaterThanOrEqual(4.5);
@@ -72,7 +72,7 @@ describe("palette definitions", () => {
   });
 
   it("are clearly distinct from each other and from the original (ΔE ≥ 20 between primaries)", () => {
-    for (const theme of ["men", "women"] as const) {
+    for (const theme of ["men"] as const) {
       const primaries = PALETTES.map((p) => ({ id: p.id, primary: (p.colors[theme] ?? ORIGINAL_COLORS[theme]).primary }));
       for (let i = 0; i < primaries.length; i++) {
         for (let j = i + 1; j < primaries.length; j++) {
@@ -93,7 +93,7 @@ describe("palette definitions", () => {
     const css = paletteStylesheet();
     for (const { id, theme } of variants) expect(css).toContain(`html[data-palette="${id}"] [data-theme="${theme}"]`);
     expect(css).not.toContain(`data-palette="original"`);
-    const tokens = Object.keys(paletteTokens(variants[0].c, "men"));
+    const tokens = Object.keys(paletteTokens(variants[0].c));
     for (const token of ["--color-primary", "--color-surface", "--color-gold", "--color-gold-on-primary", "--color-accent-on-dark", "--wa-page-bg", "--wa-ink", "--color-frame-bezel"]) {
       expect(tokens).toContain(token);
     }
@@ -110,18 +110,17 @@ describe("palette definitions", () => {
 
   it("give the widget the palette's accent and primary (the original keeps today's widget colors)", () => {
     expect(widgetColors("men", "original")).toEqual({ accent: "#e6d5a7", tint: "#12213f" });
-    const berry = PALETTES.find((p) => p.id === "burgundy")!.colors.women!;
-    expect(widgetColors("women", "burgundy")).toEqual({ accent: berry.accentOnDark, tint: berry.primary });
+    const berry = PALETTES.find((p) => p.id === "burgundy")!.colors.men!;
+    expect(widgetColors("men", "burgundy")).toEqual({ accent: berry.accentOnDark, tint: berry.primary });
   });
 });
 
 // ---- applied and persisted --------------------------------------------------
 
 let palette: ReturnType<typeof usePalette> | undefined;
-let theme: ReturnType<typeof useTheme> | undefined;
 function Probe() {
   palette = usePalette();
-  theme = useTheme();
+  useTheme();
   return null;
 }
 
@@ -170,12 +169,9 @@ describe("the interface colour (no manual choice any more)", () => {
     expect(document.getElementById("dithar-palettes")).toBeNull();
   });
 
-  it("ignores a palette saved by an earlier version, for both identities", async () => {
+  it("ignores a palette saved by an earlier version", async () => {
     localStorage.setItem(OLD_PALETTE_KEY, JSON.stringify({ men: "teal", women: "royal" }));
     await mount();
-    expect(palette!.activePalette).toBe("original");
-    expect(document.documentElement.getAttribute("data-palette")).toBe("original");
-    await act(async () => theme!.toggleTheme()); // → women
     expect(palette!.activePalette).toBe("original");
     expect(document.documentElement.getAttribute("data-palette")).toBe("original");
   });

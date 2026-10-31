@@ -4,7 +4,7 @@ import { labels } from "../data/content";
 
 // Renders the authoritative DITHAR / دِثار logo artwork exactly as supplied
 // — the wordmark is now part of the image asset itself (one of 4 PNGs,
-// selected by theme + language in ThemeContext.tsx) and is never
+// selected by language in ThemeContext.tsx) and is never
 // reproduced as a separate text element anywhere in the UI.
 //
 // width/height attributes reflect each selected asset's real intrinsic
@@ -21,8 +21,6 @@ import { labels } from "../data/content";
 const INTRINSIC_SIZE: Record<string, { width: number; height: number }> = {
   men_ar: { width: 480, height: 480 },
   men_en: { width: 400, height: 480 },
-  women_ar: { width: 320, height: 480 },
-  women_en: { width: 459, height: 480 },
 };
 //
 // Sizing model: two numbers.

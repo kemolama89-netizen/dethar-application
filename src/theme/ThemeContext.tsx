@@ -1,10 +1,10 @@
-import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { createContext, useContext, useMemo, useEffect } from "react";
 import type { ReactNode } from "react";
 import { useLanguage } from "./LanguageContext";
 import type { Language } from "./LanguageContext";
-import { loadThemePreference, saveThemePreference } from "../lib/appearancePreferences";
 
-export type IdentityTheme = "men" | "women";
+/** DITHAR has a single identity: the men's logo, wording and base colours. */
+export type IdentityTheme = "men";
 
 // Optimized (downscaled, still crisp at on-screen size) runtime display
 // copies, served from public/logos/ at a stable URL — see
@@ -20,63 +20,41 @@ export type IdentityTheme = "men" | "women";
 // subpath, and a literal "/logos/..." string resolves against the domain
 // root instead, 404ing in production. BASE_URL always ends in "/".
 //
-// Each of the 4 supplied PNGs already has the app's wordmark ("دِثار" /
-// "DETHAR") baked into the artwork itself, so selecting the right one by
-// theme + language is now the ONLY thing needed to show the correct name
-// — there is no separate text label to keep in sync (see LogoHeader.tsx).
-const LOGO_BY_THEME_AND_LANGUAGE: Record<IdentityTheme, Record<Language, string>> = {
-  men: {
-    ar: `${import.meta.env.BASE_URL}logos/dithar_male_ar.png`,
-    en: `${import.meta.env.BASE_URL}logos/dithar_male_en.png`,
-  },
-  women: {
-    ar: `${import.meta.env.BASE_URL}logos/dithar_female_ar.png`,
-    en: `${import.meta.env.BASE_URL}logos/dithar_female_en.png`,
-  },
+// Each supplied PNG already has the app's wordmark ("دِثار" / "DETHAR")
+// baked into the artwork itself, so selecting the right one by language is
+// the ONLY thing needed to show the correct name — there is no separate
+// text label to keep in sync (see LogoHeader.tsx).
+const LOGO_BY_LANGUAGE: Record<Language, string> = {
+  ar: `${import.meta.env.BASE_URL}logos/dithar_male_ar.png`,
+  en: `${import.meta.env.BASE_URL}logos/dithar_male_en.png`,
 };
+
+const THEME: IdentityTheme = "men";
 
 interface ThemeContextValue {
   theme: IdentityTheme;
-  toggleTheme: () => void;
   logoSrc: string;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Restored from the persisted choice (see appearancePreferences.ts);
-  // defaults to "men" on a first launch or an unreadable stored value.
-  const [theme, setTheme] = useState<IdentityTheme>(() => loadThemePreference());
   const { language } = useLanguage();
 
-  // Warm the browser cache for the other 3 theme/language combinations
-  // right after first paint, so toggling either one swaps instantly
-  // instead of triggering a fresh network/decode delay on first switch.
+  // Warm the browser cache for the other language's logo right after first
+  // paint, so switching language swaps it instantly.
   useEffect(() => {
-    (["men", "women"] as const).forEach((t) => {
-      (["ar", "en"] as const).forEach((l) => {
-        if (t === theme && l === language) return;
-        const img = new Image();
-        img.src = LOGO_BY_THEME_AND_LANGUAGE[t][l];
-      });
+    (["ar", "en"] as const).forEach((l) => {
+      if (l === language) return;
+      const img = new Image();
+      img.src = LOGO_BY_LANGUAGE[l];
     });
-  }, [theme, language]);
+  }, [language]);
 
-  const value = useMemo<ThemeContextValue>(
-    () => ({
-      theme,
-      toggleTheme: () => {
-        const next: IdentityTheme = theme === "men" ? "women" : "men";
-        setTheme(next);
-        saveThemePreference(next);
-      },
-      logoSrc: LOGO_BY_THEME_AND_LANGUAGE[theme][language],
-    }),
-    [theme, language],
-  );
+  const value = useMemo<ThemeContextValue>(() => ({ theme: THEME, logoSrc: LOGO_BY_LANGUAGE[language] }), [language]);
 
   return (
-    <div data-theme={theme}>
+    <div data-theme={THEME}>
       <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
     </div>
   );

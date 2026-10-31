@@ -252,9 +252,9 @@ describe("launch intro (startup Hadith)", () => {
       const shown = vi.fn();
       mount(<StartupHadithOverlay appReady={false} onShown={shown} />);
       await flushFont();
-      // Home loads while the logo shows; the Hadith waits beneath it, its time not started.
+      // Home loads while the logo shows; the Hadith waits beneath it, complete (its font loaded), its time not started.
       expect(shown).toHaveBeenCalled();
-      expect(container.querySelector("[data-startup-overlay]")!.className).not.toContain("is-text-ready");
+      expect(container.querySelector("[data-startup-overlay]")!.className).toContain("is-text-ready");
       logoPainted();
       act(() => vi.advanceTimersByTime(LOGO_VISIBLE_MS - 100));
       expect(cover.isConnected).toBe(true);
@@ -268,6 +268,24 @@ describe("launch intro (startup Hadith)", () => {
       // The Hadith's own time starts now, as before.
       act(() => vi.advanceTimersByTime(MIN_VISIBLE_MS - 600));
       expect(container.querySelector("[data-startup-overlay='visible']")).not.toBeNull();
+    });
+
+    it("logo for LOGO_VISIBLE_MS, then the Hadith for MIN_VISIBLE_MS (4 s), then Home", async () => {
+      expect(LOGO_VISIBLE_MS).toBe(1_000);
+      expect(MIN_VISIBLE_MS).toBe(4_000);
+      const cover = logoCover();
+      mount(<StartupHadithOverlay appReady />);
+      await flushFont();
+      logoPainted();
+      act(() => vi.advanceTimersByTime(LOGO_VISIBLE_MS));
+      expect(cover.style.opacity).toBe("0"); // the logo gives way to the Hadith
+      await flushFont();
+      act(() => vi.advanceTimersByTime(MIN_VISIBLE_MS - 100));
+      expect(container.querySelector("[data-startup-overlay='visible']")).not.toBeNull();
+      act(() => vi.advanceTimersByTime(200));
+      expect(container.querySelector("[data-startup-overlay='leaving']")).not.toBeNull();
+      act(() => vi.advanceTimersByTime(FADE_MS));
+      expect(container.querySelector("[data-startup-overlay]")).toBeNull();
     });
 
     it("counts the logo's time from its first frame, not from when the app started", async () => {

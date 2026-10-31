@@ -1,8 +1,5 @@
-import { useTheme } from "../theme/ThemeContext";
 import quranInsightMen from "../assets/illustrations/quran-insight-men.png";
-import quranInsightWomen from "../assets/illustrations/quran-insight-women.png";
 import hadithMen from "../assets/illustrations/hadith-men.png";
-import hadithWomen from "../assets/illustrations/hadith-women.png";
 
 // The real decorative illustration, extracted as a standalone transparent
 // asset from the approved reference designs (ASSETS/dithar-home-*-ar.png —
@@ -10,13 +7,12 @@ import hadithWomen from "../assets/illustrations/hadith-women.png";
 // src/assets/illustrations/README.md for how these were derived). Same
 // slot size/position as before — only the artwork changed.
 const ILLUSTRATIONS = {
-  quran: { men: quranInsightMen, women: quranInsightWomen },
-  hadith: { men: hadithMen, women: hadithWomen },
+  quran: quranInsightMen,
+  hadith: hadithMen,
 } as const;
 
 export function CardMotif({ variant }: { variant: "quran" | "hadith" }) {
-  const { theme } = useTheme();
-  const src = ILLUSTRATIONS[variant][theme];
+  const src = ILLUSTRATIONS[variant];
 
   return (
     <div className="w-[clamp(76px,24vw,108px)] shrink-0 self-stretch">

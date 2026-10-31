@@ -91,7 +91,7 @@
   /* Written Adhkar — dedicated premium reading identity (men). Deliberately
      separate token namespace (--wa-*) from the Home/Tasbeeh --color-* tokens
      above: this page is allowed its own visual language per spec while
-     staying on the same men/women [data-theme] switch everything else uses.
+     staying on the same [data-theme] identity everything else uses.
      --wa-page-bg is the FULL screen background (edge to edge, via
      DeviceFrame's `background` override — never an inset "box" behind just
      the cards/pages) — a deep midnight navy for men, giving the ivory
@@ -163,67 +163,12 @@
   }
 }
 
-[data-theme="women"] {
-  --color-bg: #f6f2e9;
-  --color-surface: #fcfaf3;
-  --color-primary: #5b6e4e;
-  --color-primary-contrast: #f3f6ec;
-  --color-primary-contrast-rgb: 243, 246, 236;
-  --color-gold: #c6a15b;
-  --color-gold-rgb: 198, 161, 91;
-  --color-gold-soft: rgba(198, 161, 91, 0.35);
-  --color-gold-on-primary: #c6a15b;
-  --color-accent-on-dark: #e6d5a7;
-  --reminder-tint-rgb: 62, 74, 52;
-  --color-panel-divider: rgba(214, 184, 128, 0.55);
-  --color-text-primary: #3e4a34;
-  --color-text-muted: #7a8069;
-  --card-radius: 20px;
-  --color-shadow-rgb: 91, 110, 78;
-
-  /* Women's reference has no dark bezel — just a thin gold line on a
-     softly matted surface, close in tone to the page itself. */
-  --color-frame-bezel: #fdfbf6;
-  --color-frame-backdrop: #eef0e5;
-  --frame-bezel-thickness: clamp(3px, 1.2vw, 6px);
-
-  --color-glass-tint: rgba(255, 253, 245, 0.44);
-  --color-glass-tint-soft: rgba(255, 253, 245, 0.26);
-  --color-glass-highlight: rgba(255, 255, 255, 0.78);
-  --color-glass-edge: rgba(198, 161, 91, 0.5);
-  --color-glass-accent: rgba(var(--color-shadow-rgb), 0.07);
-
-  /* Written Adhkar — dedicated premium reading identity (women). A
-     sophisticated sage/muted-olive identity — deliberately NOT a
-     pink/mauve palette (avoids the stereotypical-feminine cliché) — paired
-     with soft champagne gold, on the same card geometry as the men's
-     version so the two read as siblings. --wa-page-bg is a warm-ivory
-     page with the faintest sage cast (two very close stops, same "barely
-     perceptible tonal depth" treatment as the men's navy) rather than the
-     flat neutral ivory Home/Tasbeeh use elsewhere — an "atmosphere", not
-     a saturated background. --wa-on-page equals --wa-ink here (dark text
-     on a light page) — unlike the men's theme there's no dark-page/
-     light-surface gap to bridge. */
-  --wa-page-bg: linear-gradient(180deg, #f7f3e7 0%, #f1ece0 100%);
-  --wa-surface: #fffefa;
-  --wa-ink: #3f4a34;
-  --wa-ink-muted: #82806c;
-  --wa-on-page: #3f4a34;
-  --wa-on-page-muted: #82806c;
-  --wa-gold: #c9a768;
-  --wa-gold-soft: rgba(201, 167, 104, 0.3);
-  --wa-gold-hairline: rgba(201, 167, 104, 0.26);
-  --wa-badge-bg: rgba(201, 167, 104, 0.16);
-
-  --wa-category-bg: linear-gradient(180deg, #faf8f2 0%, #f5f2ea 100%);
-}
-
 /* ------------------------------------------------------------------ */
 /* Appearance -> Colors — palette overrides are GENERATED from           */
 /* src/theme/palettes.ts (one source of truth for the colors, their      */
 /* contrast tests and the widget's colors) and added to <head> by        */
-/* PaletteContext.tsx as `html[data-palette="<id>"] [data-theme="men|    */
-/* women"] { ... }` rules. "original" has no rules at all — it IS the    */
+/* PaletteContext.tsx as `html[data-palette="<id>"] [data-theme="men"]  */
+/* { ... }` rules. "original" has no rules at all — it IS the    */
 /* identity's approved appearance above, reproduced by overriding        */
 /* nothing.                                                              */
 /* ------------------------------------------------------------------ */
@@ -313,11 +258,6 @@ html[data-look-off] .device-backdrop::before {
     0 12px 28px -18px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
   display: flex;
-}
-
-/* The women's identity keeps its light, thin frame (no dark bezel) on the light looks. */
-[data-theme="women"] .device-frame {
-  background: var(--color-frame-bezel);
 }
 
 .device-screen {

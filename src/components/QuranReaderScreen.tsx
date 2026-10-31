@@ -553,7 +553,7 @@ function MushafSheet({
           {t.loadError}
         </p>
       ) : (
-        <div className="dithar-mushaf-sheet" style={width > 0 ? { width, height } : { visibility: "hidden" }} data-quran-sheet={page}>
+        <div className="dithar-mushaf-sheet" style={width > 0 ? { width, height } : { visibility: "hidden" }} data-quran-sheet={page} data-leaves={folioSide(page)}>
           <MushafArt page={page} onFailed={onFailed} />
           <svg viewBox={artViewBox} className="dithar-mushaf-hits" aria-label={t.pages} data-quran-hits={page}>
             <g transform={opening?.shapeTransform}>
@@ -710,7 +710,7 @@ function MushafFolio({ page, main = false }: { page: number; main?: boolean }) {
 function MushafLeafCopy({ page, width, height, leafRef, children }: { page: number; width: number; height: number; leafRef?: Ref<HTMLDivElement>; children?: ReactNode }) {
   return (
     <div className="dithar-mushaf-leaf" ref={leafRef}>
-      <div className="dithar-mushaf-sheet" style={{ width, height }}>
+      <div className="dithar-mushaf-sheet" style={{ width, height }} data-leaves={folioSide(page)}>
         <MushafArt page={page} />
         {children}
       </div>

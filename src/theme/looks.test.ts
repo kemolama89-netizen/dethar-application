@@ -141,7 +141,7 @@ describe("appearance themes (looks)", () => {
   });
 
   for (const look of ["night", "nature", "sunset"] as const) {
-    for (const id of ["men", "women"] as const) {
+    for (const id of ["men"] as const) {
       it(`${look} (${id}): the Adhkar screens follow the look, and their text stays readable`, () => {
         const r = LOOKS[look].reader![id];
         expect(contrast(r.ink, r.surface)).toBeGreaterThanOrEqual(7);

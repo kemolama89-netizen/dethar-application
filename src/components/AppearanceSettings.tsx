@@ -9,8 +9,7 @@ import { LookCustomizer } from "./LookCustomizer";
 // transparency and automatic dark mode (LookCustomizer). The theme sets the
 // app's colours by itself: the manual colour palette that used to be a
 // second entry here («الألوان») was removed, and no saved palette is applied
-// any more (theme/paletteStore.ts). Identity selection (men/women) lives
-// elsewhere (ThemeToggleButton) and is untouched.
+// any more (theme/paletteStore.ts). The app has a single identity (ThemeContext.tsx).
 export function AppearanceSettings({ onBack }: { onBack: () => void }) {
   const { language, dir } = useLanguage();
   const t = settingsLabels[language];

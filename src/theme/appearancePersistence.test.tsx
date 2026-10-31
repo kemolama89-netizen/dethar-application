@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 //
-// C1 — the selected language and men/women theme must survive an app
+// C1 — the selected language must survive an app (the identity is always men's)
 // restart. "Restart" here is a completely fresh mount of the real providers
 // with nothing carried over except what's in localStorage.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -16,7 +16,6 @@ import {
   loadLanguagePreference,
   loadThemePreference,
   saveLanguagePreference,
-  saveThemePreference,
 } from "../lib/appearancePreferences";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -77,10 +76,7 @@ describe("appearancePreferences — load/save", () => {
       saveLanguagePreference(language);
       expect(loadLanguagePreference()).toBe(language);
     }
-    for (const theme of ["men", "women"] as const) {
-      saveThemePreference(theme);
-      expect(loadThemePreference()).toBe(theme);
-    }
+    expect(loadThemePreference()).toBe("men");
   });
 
   it("falls back to the defaults for any stored value outside the allowed set", () => {
@@ -102,7 +98,6 @@ describe("appearancePreferences — load/save", () => {
     expect(loadLanguagePreference()).toBe("ar");
     expect(loadThemePreference()).toBe("men");
     expect(() => saveLanguagePreference("en")).not.toThrow();
-    expect(() => saveThemePreference("women")).not.toThrow();
   });
 });
 
@@ -147,33 +142,14 @@ describe("LanguageProvider / ThemeProvider — persistence across a restart", ()
     await unmountApp();
   });
 
-  it("a theme change is stored and restored (with the matching logo) after a restart", async () => {
+  it("there is only the men's identity: a \"women\" value saved by an older build is ignored", async () => {
+    localStorage.setItem(THEME_STORAGE_KEY, "women");
     await mountApp();
-    const menLogo = latestTheme!.logoSrc;
-    await act(async () => latestTheme!.toggleTheme());
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe("women");
-    await unmountApp();
-
-    await mountApp();
-    expect(latestTheme?.theme).toBe("women");
-    expect(latestTheme?.logoSrc).toContain("dithar_female_ar");
-    expect(latestTheme?.logoSrc).not.toBe(menLogo);
-    await unmountApp();
-  });
-
-  it("language and theme are stored independently — changing one never changes the other's stored value", async () => {
-    await mountApp();
+    expect(latestTheme?.theme).toBe("men");
+    expect(latestTheme?.logoSrc).toContain("dithar_male_ar");
+    expect("toggleTheme" in latestTheme!).toBe(false);
     await act(async () => latestLanguage!.toggleLanguage());
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBeNull();
-    await act(async () => latestTheme!.toggleTheme());
-    expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe("en");
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe("women");
-    await unmountApp();
-
-    await mountApp();
-    expect(latestLanguage?.language).toBe("en");
-    expect(latestTheme?.theme).toBe("women");
-    expect(latestTheme?.logoSrc).toContain("dithar_female_en");
+    expect(latestTheme?.logoSrc).toContain("dithar_male_en");
     await unmountApp();
   });
 
@@ -193,10 +169,9 @@ describe("LanguageProvider / ThemeProvider — persistence across a restart", ()
     });
     await mountApp();
     await act(async () => latestLanguage!.toggleLanguage());
-    await act(async () => latestTheme!.toggleTheme());
     expect(latestLanguage?.language).toBe("en");
     expect(document.documentElement.dir).toBe("ltr");
-    expect(latestTheme?.theme).toBe("women");
+    expect(latestTheme?.theme).toBe("men");
     await unmountApp();
   });
 });

@@ -226,7 +226,7 @@ export function DraggableMeaningCard({
         // instead of a 1px line — over the plain `--wa-surface` the card
         // underneath also uses. Composed entirely from existing palette
         // tokens (no new colors, no color-mix), so it stays correct for
-        // every accent in both the men's and women's identities. This is
+        // every accent of the identity. This is
         // the actual fix for "blends with the card underneath": once the
         // free-floating redesign dropped the old dimming backdrop, the
         // popup and the card beneath were left sharing the exact same flat

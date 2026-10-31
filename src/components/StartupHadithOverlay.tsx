@@ -112,22 +112,29 @@ export function StartupHadithOverlay({ appReady, onShown }: { appReady: boolean;
     if (state !== "visible") return;
     markStartupOverlayShown();
     const stop = onStartupOverlayDismiss(() => setState("leaving"));
+    let cancelled = false;
+    // The text waits for the Arabic display font (at most FONT_WAIT_MS) — beneath the logo when there
+    // is one, so the Hadith is already complete the moment the logo leaves and its 4 seconds are all reading time.
+    const fontReady = whenFontReady(FONT_WAIT_MS);
     if (!logoDone) {
+      void fontReady.then(() => {
+        if (!cancelled) setTextReady(true);
+      });
       // Beneath the logo: the Home Screen loads now, once the intro itself is painted.
       const cancelPaint = afterFirstPaint(() => onShownRef.current?.());
       return () => {
+        cancelled = true;
         cancelPaint();
         stop();
       };
     }
-    let cancelled = false;
     let min: number | undefined;
     let max: number | undefined;
     // Its time starts when it is on screen, not when React mounted it.
     let cancelTextPaint = () => {};
     const cancelPaint = afterFirstPaint(() => {
       max = window.setTimeout(() => setState("leaving"), MAX_VISIBLE_MS);
-      void whenFontReady(FONT_WAIT_MS).then(() => {
+      void fontReady.then(() => {
         if (cancelled) return;
         setTextReady(true);
         // Counted from the frame that shows the text, not from when it was asked for.

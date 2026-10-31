@@ -1,4 +1,3 @@
-import { ThemeToggleButton } from "./ThemeToggleButton";
 import { LanguageControl } from "./LanguageControl";
 import { ExitAppButton } from "./ExitAppButton";
 
@@ -12,21 +11,12 @@ import { ExitAppButton } from "./ExitAppButton";
 // site (every screen except Home) renders the exact same markup as
 // before, untouched. Only App.tsx's HomeScreen passes it, per the "exit
 // button on the main screen only" requirement — grouped with
-// ThemeToggleButton in the same end-side flex item so the two-groups
-// layout (LanguageControl at the start, everything else at the end) is
-// preserved exactly.
+// LanguageControl at the start, the exit button at the end.
 export function TopBar({ showExitButton = false }: { showExitButton?: boolean }) {
   return (
     <div className="flex items-center justify-between">
       <LanguageControl />
-      {showExitButton ? (
-        <div className="flex items-center gap-2">
-          <ExitAppButton />
-          <ThemeToggleButton />
-        </div>
-      ) : (
-        <ThemeToggleButton />
-      )}
+      {showExitButton && <ExitAppButton />}
     </div>
   );
 }

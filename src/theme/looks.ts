@@ -1,9 +1,10 @@
+import type { IdentityTheme } from "./ThemeContext";
 // DITHAR's appearance themes ("looks"): Classic, Night, Nature and Modern
 // Sunset (public/reference/Dithar App Theme Showcase.png). One central place
 // for their colours, wallpapers and the prayer-times arch scene.
 //
 // Layers, the look over the identity:
-//   1. the identity, men/women (index.css [data-theme]) — logo, wording, base colours;
+//   1. the identity (index.css [data-theme="men"]) — logo, wording, base colours;
 //   2. the look (this file, html[data-look]) — the page, card and text tones, Nature's
 //      and Sunset's primary, the Adhkar screens' reading colours, the Home wallpaper
 //      and the arch scene. Classic overrides no colour: it IS the identity's own
@@ -58,8 +59,8 @@ export const WALLPAPER_TONE: Readonly<Record<WallpaperId, Tone>> = {
 
 /**
  * The Adhkar screens' own colour set (--wa-*: the Written Adhkar reader, the Written/Audio Adhkar
- * category screens and search) for a look. The men's identity reads on a deep page, the women's on a
- * light one — each look keeps that, in its own hues. Night is dark for both, with dark cards and light ink.
+ * category screens and search) for a look. The identity reads on a deep page — each look keeps that,
+ * in its own hues. Night is dark, with dark cards and light ink.
  */
 export interface ReaderColors {
   page: readonly [string, string];
@@ -91,7 +92,7 @@ interface LookColors {
   /** A fine geometric lattice drawn over the Home wallpaper (Classic's eight-pointed stars). */
   pattern?: string;
   /** The Adhkar screens' colours per identity (none for Classic: the original reading identity). */
-  reader?: Readonly<Record<"men" | "women", ReaderColors>>;
+  reader?: Readonly<Record<IdentityTheme, ReaderColors>>;
 }
 
 // Classic's lattice: an eight-pointed star (two overlapping squares) with a small diamond between the
@@ -151,7 +152,7 @@ export const LOOKS: Readonly<Record<LookId, LookColors>> = {
     veilRgb: "11, 18, 44",
     swatch: "#101a3a",
     bezel: "#050a18",
-    reader: { men: NIGHT_READER, women: NIGHT_READER },
+    reader: { men: NIGHT_READER },
   },
   nature: {
     tone: "light",
@@ -170,7 +171,6 @@ export const LOOKS: Readonly<Record<LookId, LookColors>> = {
     originalPrimary: { primary: "#24553a", contrast: "#f4f1e2", contrastRgb: "244, 241, 226", shadowRgb: "28, 52, 36" },
     reader: {
       men: { page: ["#22402e", "#183022"], surface: "#fbfaf2", ink: "#22331f", inkMuted: "#56634c", onPage: "#f1ead4", onPageMuted: "rgba(241, 234, 212, 0.7)", category: ["#f2f4e9", "#e7ecdc"] },
-      women: { page: ["#f2f5ea", "#e6ecdb"], surface: "#fdfdf7", ink: "#2f3d2a", inkMuted: "#56634c", onPage: "#2f3d2a", onPageMuted: "#56634c", category: ["#f2f4e9", "#e7ecdc"] },
     },
   },
   sunset: {
@@ -190,7 +190,6 @@ export const LOOKS: Readonly<Record<LookId, LookColors>> = {
     originalPrimary: { primary: "#4a2c69", contrast: "#fbf1f6", contrastRgb: "251, 241, 246", shadowRgb: "58, 32, 82" },
     reader: {
       men: { page: ["#3d2756", "#2b1b3f"], surface: "#fffafc", ink: "#33264a", inkMuted: "#65577a", onPage: "#f7eaf2", onPageMuted: "rgba(247, 234, 242, 0.7)", category: ["#fbf4f8", "#f2e5ee"] },
-      women: { page: ["#faf1f6", "#f1e4ee"], surface: "#fffbfd", ink: "#3b2f4f", inkMuted: "#65577a", onPage: "#3b2f4f", onPageMuted: "#65577a", category: ["#fbf4f8", "#f2e5ee"] },
     },
   },
 };
@@ -378,7 +377,7 @@ export function lookStylesheet(): string {
     const primary = lookOriginalPrimaryTokens(look);
     if (Object.keys(primary).length) rules.push(block(`${onLook(look)} [data-theme]`, primary));
     const reader = LOOKS[look].reader;
-    if (reader) for (const id of ["men", "women"] as const) rules.push(block(`${onLook(look)} [data-theme="${id}"]`, readerTokens(reader[id])));
+    if (reader) for (const id of ["men"] as const) rules.push(block(`${onLook(look)} [data-theme="${id}"]`, readerTokens(reader[id])));
     return rules.join("\n");
   }).join("\n\n");
 }

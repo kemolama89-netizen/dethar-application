@@ -1,5 +1,12 @@
 # Logo assets — provenance
 
+> 2026-10-31: DITHAR now has a single, men's identity. The women's logo
+> files (source, derived, optimized and runtime copies) were removed; the
+> notes below about them are kept only as history. The launch screen's
+> `public/logos/dithar_emblem.png` is the men's emblem cropped (alpha
+> bounding box, wordmark rows excluded) from `dithar-logo-men.png` and
+> box-downscaled to 420px high; index.html draws the word "DITHAR" beneath it.
+
 None of the files in this folder are imported by the app (the runtime
 copies live in `public/logos/`, see below, so `index.html` can use a
 stable `<link rel="preload">` URL). These are kept as an audit trail of

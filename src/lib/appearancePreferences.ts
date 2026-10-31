@@ -1,5 +1,6 @@
 // Persistence for the two app-wide identity preferences: the interface
-// language (Arabic RTL / English LTR) and the men/women identity theme.
+// language (Arabic RTL / English LTR). The identity is fixed (men's); a
+// "women" value saved by an older build is ignored.
 // Loaded once, synchronously, as the lazy initial state of
 // LanguageProvider/ThemeProvider (so the very first render is already in
 // the user's saved language/theme — no flash of the defaults), and written
@@ -45,11 +46,7 @@ export function saveLanguagePreference(language: Language): void {
   writeRaw(LANGUAGE_STORAGE_KEY, language);
 }
 
+/** Always the men's identity — the only one; any stored value (e.g. an older build's "women") is ignored. */
 export function loadThemePreference(): IdentityTheme {
-  const raw = readRaw(THEME_STORAGE_KEY);
-  return raw === "men" || raw === "women" ? raw : DEFAULT_THEME;
-}
-
-export function saveThemePreference(theme: IdentityTheme): void {
-  writeRaw(THEME_STORAGE_KEY, theme);
+  return DEFAULT_THEME;
 }

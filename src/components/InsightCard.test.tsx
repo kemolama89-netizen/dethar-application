@@ -18,7 +18,7 @@ import { LanguageProvider } from "../theme/LanguageContext";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-// CardMotif (rendered inside InsightCard) reads the men/women identity via
+// CardMotif (rendered inside InsightCard) reads the identity via
 // useTheme, which itself needs LanguageProvider — same nesting App.tsx
 // always mounts this component inside.
 async function mount(node: React.ReactElement) {

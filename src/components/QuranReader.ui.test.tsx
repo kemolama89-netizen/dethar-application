@@ -452,6 +452,17 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     click(container.querySelector("[data-quran-next-page]")!);
     expect(folio().getAttribute("data-quran-folio-side")).toBe("right");
   });
+
+  it("shows the leaves beneath the page at its own outer side only: right on right-hand (odd) pages, left on left-hand (even) ones", async () => {
+    await open(1, 1);
+    const sheet = () => container.querySelector(`[data-quran-sheet="${shownPage()}"]`)!;
+    expect(sheet().getAttribute("data-leaves")).toBe("right");
+    click(container.querySelector("[data-quran-next-page]")!);
+    expect(shownPage()).toBe("2");
+    expect(sheet().getAttribute("data-leaves")).toBe("left");
+    click(container.querySelector("[data-quran-next-page]")!);
+    expect(sheet().getAttribute("data-leaves")).toBe("right");
+  });
 });
 
 describe("Home dhikr player", () => {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// The navy/gold (or ivory/gold, women's theme) frame — the approved outer
+// The navy/gold frame — the approved outer
 // identity — is now visible at every width, real phone included, not just
 // as a desktop-preview affordance. Its thickness/radius are width-based
 // clamp()s (see index.css) so it stays proportionate from a 320px phone up

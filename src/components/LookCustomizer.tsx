@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { Check, ChevronLeft, ChevronRight, Home, ImagePlus, RotateCcw } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { useTheme } from "../theme/ThemeContext";
+import type { IdentityTheme } from "../theme/ThemeContext";
 import { useLook } from "../theme/LookContext";
 import { ORIGINAL_COLORS } from "../theme/palettes";
 import {
@@ -102,7 +103,7 @@ function Tile({ selected, onClick, label, image, children, testId }: { selected:
 }
 
 /** A look's primary and gold in this identity: the look's own primary (Nature, Sunset), else the identity's. */
-function accentOf(theme: "men" | "women", look: LookId): { primary: string; gold: string } {
+function accentOf(theme: IdentityTheme, look: LookId): { primary: string; gold: string } {
   return { primary: LOOKS[look].originalPrimary?.primary ?? ORIGINAL_COLORS[theme].primary, gold: ORIGINAL_COLORS[theme].accent };
 }
 

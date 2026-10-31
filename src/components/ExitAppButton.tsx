@@ -7,7 +7,7 @@ import { useBackDismiss } from "../lib/backOverlays";
 
 // Exit-app control — rendered only in TopBar's `showExitButton` slot (Home
 // screen only, see TopBar.tsx), never on any other screen. Same visual
-// language as ThemeToggleButton (h-12 w-12 circular, gold border,
+// language as the other top-bar controls (h-12 w-12 circular, gold border,
 // primary-color icon) so it reads as part of the same existing control
 // row rather than a bolted-on addition — no new colors/spacing introduced.
 //

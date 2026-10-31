@@ -1,26 +1,20 @@
 # Card illustration assets — provenance
 
-These four PNGs are extracted from the approved reference designs:
+These two PNGs are extracted from the approved reference design
+`ASSETS/dithar-home-men-ar.png` (DITHAR has a single, men's identity; the
+women's identity and its artwork were removed on 2026-10-31).
 
-- `ASSETS/dithar-home-men-ar.png`
-- `ASSETS/dithar-home-women-ar.png`
-
-Those two reference files are read-only source material and were never
+That reference file is read-only source material and were never
 modified, cropped in place, overwritten, or renamed — the crop happens on
 an in-memory copy of the decoded pixel data; the process only ever writes
 new files here.
 
 Files:
 
-- `quran-insight-men.png` / `quran-insight-women.png` — the Qur'an-stand +
-  vase + botanical-branch + niche/arch illustration next to the "لطيفة
-  قرآنية" card, one per theme (the two reference designs use different
-  artwork — a dark vase with golden branches for men, a lighter ceramic
-  vase with sage-green branches for women).
-- `hadith-men.png` / `hadith-women.png` — the hanging-lantern + Qur'an +
-  books + niche/arch illustration next to the "حديث نبوي" card, one per
-  theme (different lantern/book styling per theme, matching each
-  reference).
+- `quran-insight-men.png` — the Qur'an-stand + vase + botanical-branch +
+  niche/arch illustration next to the "لطيفة قرآنية" card.
+- `hadith-men.png` — the hanging-lantern + Qur'an + books + niche/arch
+  illustration next to the "حديث نبوي" card.
 
 How they were made: each illustration was cropped out of its reference
 screenshot, then the flat card-background color surrounding it was keyed
