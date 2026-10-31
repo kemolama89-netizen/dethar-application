@@ -64,6 +64,7 @@ import {
 } from "./audioAdhkarScheduleSettings";
 import { loadPrayerReminderSettings, savePrayerReminderSettings } from "./prayerReminderSettings";
 import { saveManualLocation } from "./locationSettings";
+import { saveDailyDayTimes, saveMiscDayTimes } from "./weeklySchedule";
 import { applyNativePlaybackState, startAudioVarious } from "./audioAdhkarPlayer";
 import { AUDIO_VARIOUS_ITEMS } from "../data/audio-adhkar";
 import { getAudioAdhkarCount, resetAudioAdhkarCountsMemoryForTesting } from "./audioAdhkarCounts";
@@ -233,5 +234,19 @@ describe("the Audio Adhkar master switch", () => {
     expect(loadAudioAdhkarMasterEnabled()).toBe(false);
     expect(native.plugin.setSchedules).not.toHaveBeenCalled();
     expect(native.plugin.stopScheduled).not.toHaveBeenCalled();
+  });
+});
+
+describe("weekday-specific times reach native", () => {
+  it("Misc's own Saturday start/end and Morning's Saturday time are in the sync", async () => {
+    configureAllSections();
+    saveMiscDayTimes({ start: ["", "", "", "", "", "", "12:00"], end: ["", "", "", "", "", "", "22:00"] });
+    saveDailyDayTimes("morning", ["", "", "", "", "", "", "12:00"]);
+    await syncAudioAdhkarSchedules(NOW);
+    const misc = (sent() as unknown as { misc: { dayTimes: { startMinutes: number[]; endMinutes: number[] } } }).misc;
+    expect(misc.dayTimes).toEqual({ startMinutes: [-1, -1, -1, -1, -1, -1, 720], endMinutes: [-1, -1, -1, -1, -1, -1, 1320] });
+    // Saturday 17 October 2026, 12:00 in Kuwait (09:00 UTC) is one of Morning's planned starts.
+    const morning = (sent() as unknown as { morning: { slots: [number, number, number][] } }).morning;
+    expect(morning.slots.map((s) => s[1])).toContain(Date.UTC(2026, 9, 17, 9, 0));
   });
 });

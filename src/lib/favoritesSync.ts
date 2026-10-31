@@ -15,11 +15,14 @@ import type { NativeFavoriteOp } from "./remindersNative";
 import { addFavorite, favoriteFromItem, favoriteKeys, removeFavorite, subscribeFavorites } from "./favorites";
 import type { FavoriteEntry } from "./favorites";
 import { findReminderCandidate, REMINDER_CATEGORIES } from "./reminderContent";
+import { reminderAuditApproved } from "./religiousAudit";
 import type { ReminderCategory } from "./reminderContent";
 import { findComment } from "./contentRotation";
 
 /** The entry a widget "add" saves: the app's own item (both languages, full details) when known, else the widget's snapshot. */
 export function entryFromNativeOp(op: NativeFavoriteOp): FavoriteEntry | null {
+  // A Hadith or Latifa only if it passed the religious-content audit (lib/religiousAudit.ts); other items are unaffected.
+  if (!reminderAuditApproved(op.key, "ar")) return null;
   const item = findReminderCandidate(op.key);
   if (item) return favoriteFromItem(item, findComment(item, op.commentId), "widget", op.at || Date.now());
   if (!op.text) return null;

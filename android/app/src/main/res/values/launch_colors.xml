@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- DITHAR's page colour (the men identity page colour, "color-bg" in src/index.css): the launch
+         screen, the window behind the WebView, and the launch intro share it. -->
+    <color name="dithar_launch_background">#F2E9DA</color>
+</resources>

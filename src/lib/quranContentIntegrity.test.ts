@@ -75,7 +75,7 @@ function isVerbatimExcerpt(text: string, passage: string[]): boolean {
 function wamdaPassage(entry: WamdaEntry): string[] {
   const ref = getWamdaQuranRef(entry);
   if (ref) return cited(ref.surah, ref.fromAyah, ref.toAyah);
-  // Entries 1 and 2 state no verse numbers in the source: al-Fatihah as a whole.
+  // Entry 1 states no verse numbers in the source: al-Fatihah as a whole.
   expect(entry.surah).toBe("الفاتحة");
   return cited(1, 1, 7);
 }
@@ -83,16 +83,15 @@ function wamdaPassage(entry: WamdaEntry): string[] {
 const wamda = (id: number) => WAMDAT.find((e) => e.id === id)!;
 
 describe("Qur'an verses shown in reminders, against Tanzil", () => {
-  it("every Wamdat verse is its COMPLETE cited verse(s), word for word — the only exception is held back", () => {
+  it("every Wamdat verse is its COMPLETE cited verse(s), word for word (the one exception, 16, was removed by the audit cleanup)", () => {
     const failing = WAMDAT.filter((e) => {
       const passage = wamdaPassage(e).flatMap(letterWords);
       const shown = getWamdaVerseText(e).split(/\*|\.\.\.|…/).flatMap(letterWords);
-      // Entries 1 and 2 quote al-Fatihah 1:2-5 and 1:5 without a marker: complete verses of it, in order.
+      // Entry 1 quotes al-Fatihah 1:2-5 without a marker: complete verses of it, in order.
       if (!getWamdaQuranRef(e)) return indexOf(shown, passage) < 0;
       return shown.join(" ") !== passage.join(" ");
     }).map((e) => e.id);
-    expect(failing).toEqual([16]);
-    expect(16 in WAMDA_NEEDS_VERIFICATION).toBe(true);
+    expect(failing).toEqual([]);
   });
 
   it("al-Qasas 28:79 is shown whole (it used to stop at «قَارُونُ», without «إِنَّهُ لَذُو حَظٍّ عَظِيمٍ»)", () => {
@@ -102,8 +101,8 @@ describe("Qur'an verses shown in reminders, against Tanzil", () => {
     expect(getWamdaVerseReference(entry)).toBe("سورة القصص – الآية 79");
   });
 
-  it("the 40 corrected verses are now exactly Tanzil's words, vowels included", () => {
-    const FIXED = [18, 25, 27, 30, 31, 37, 47, 55, 58, 74, 106, 110, 117, 118, 122, 128, 142, 143, 144, 150, 160, 167, 176, 188, 205, 229, 239, 240, 250, 255, 270, 287, 321, 325, 352, 386, 410, 463, 468, 517];
+  it("the corrected verses are now exactly Tanzil's words, vowels included (22 of the 40 remain after the audit cleanup)", () => {
+    const FIXED = [25, 30, 37, 47, 58, 106, 110, 117, 118, 122, 143, 167, 176, 239, 255, 270, 321, 325, 352, 410, 463, 517];
     for (const id of FIXED) {
       const entry = wamda(id);
       const passage = wamdaPassage(entry).map((w) => w.normalize("NFC"));
@@ -117,24 +116,15 @@ describe("Qur'an verses shown in reminders, against Tanzil", () => {
   it("keeps the exact failing examples fixed", () => {
     const text = (id: number) => getWamdaVerseText(wamda(id)).normalize("NFC");
     const nfc = (s: string) => s.normalize("NFC");
-    // Words split when the dagger alif was lost in data preparation.
-    expect(text(250)).toContain(nfc("وَلَٰكِنَّ"));
-    expect(text(250)).not.toContain(nfc("وَلَ كِنَّ"));
-    expect(text(287)).toContain(nfc("أُولَٰئِكَ"));
+    // (The examples from entries 27, 128, 142, 250, 287 and 468 were removed by the audit cleanup.)
     // Two words run together.
     expect(text(255)).toContain(nfc("وَيَعْفُو عَن"));
     // Wrong or mistyped words.
     expect(text(106)).toContain(nfc("حَيَاةً طَيِّبَةً"));
     expect(text(106)).not.toContain(nfc("مَعِيشَةً"));
-    expect(text(142)).toContain(nfc("حَرَّمْنَا"));
-    expect(text(27)).toContain(nfc("خَلْفِهِمْ"));
     // Wrong vowels.
-    expect(text(128)).toContain(nfc("وَوُضِعَ"));
     expect(text(410)).toContain(nfc("السَّقْفُ"));
     expect(text(117)).toContain(nfc("وَالْبَصَرَ"));
-    // A misquoted opening, restored as Tanzil has it.
-    // A misquoted opening; the record now holds the whole verse, as Tanzil has it.
-    expect(text(468)).toBe(TANZIL.get("64:9")!.normalize("NFC"));
   });
 
   it("shows no brace or marker inside a verse, and every stated verse number in its reference", () => {
@@ -142,14 +132,11 @@ describe("Qur'an verses shown in reminders, against Tanzil", () => {
       expect(getWamdaVerseText(e), `w${e.id}`).not.toMatch(/[{}[\]]/);
       if (getWamdaQuranRef(e)) expect(getWamdaVerseReference(e), `w${e.id}`).toMatch(/الآي(ة|تان|ات) \d/);
     }
-    expect(getWamdaVerseReference(wamda(66))).toBe("سورة يونس – الآيتان 62–63");
     expect(getWamdaVerseReference(wamda(494))).toBe("سورة البلد – الآيات 1–4");
-    expect(getWamdaVerseReference(wamda(183))).toBe("سورة آل عمران – الآية 124");
     expect(getWamdaVerseText(wamda(494)).endsWith("كَبَدٍ")).toBe(true);
   });
 
-  it("every word a Wamdat reflection quotes in «{…}» after the fixes is still Qur'anic wording (the three corrected quotes)", () => {
-    expect(wamda(31).insightAr.normalize("NFC")).toContain("{" + "فَطَوَّعَتْ".normalize("NFC") + "}");
+  it("every word a Wamdat reflection quotes in «{…}» after the fixes is still Qur'anic wording (the corrected quotes; 31's was removed)", () => {
     expect(wamda(339).insightAr.normalize("NFC")).toContain("{" + "مِيثَاقِهِ".normalize("NFC") + "}");
     expect(wamda(383).insightAr.normalize("NFC")).toContain("{" + "لِيُثْبِتُوكَ".normalize("NFC") + "}");
   });
@@ -190,7 +177,9 @@ describe("excerpts are labelled as excerpts", () => {
 
 describe("Wamdat reflections are complete", () => {
   // Revised on purpose in the source-aligned working version (complete sentences, more cautious wording); all others are the audited master text.
-  const REWRITTEN = [3, 4, 6, 8, 10, 12, 14, 15, 31, 35, 38, 40, 47, 62, 68, 89, 104, 124, 131, 206, 339, 383];
+  // (31, 40, 89, 124 and 206 were removed by the 2026-10-30 audit cleanup.)
+  // (30, 49, 76, 155, 165, 212, 239, 260, 278, 286, 296, 347, 432, 469, 501: claims their cited tafsir does not make were removed, 2026-10-31.)
+  const REWRITTEN = [3, 4, 6, 8, 10, 12, 14, 15, 30, 35, 38, 47, 49, 62, 68, 76, 104, 131, 155, 165, 212, 239, 260, 278, 286, 296, 339, 347, 383, 432, 469, 501];
   const master = new Map(DITHAR_WAMDAt_524_INSIGHT_EN.map((e) => [e.id, e]));
 
   it("every reflection is the audited master text, or one of the deliberate rewrites — never a cut-down copy", () => {
@@ -223,11 +212,11 @@ describe("Tafsir al-Sa'di passages, against the source", () => {
 });
 
 describe("records whose verse, reference and reflection disagree", () => {
-  it("are held for review and not shown", () => {
-    expect(Object.keys(WAMDA_NEEDS_VERIFICATION).map(Number).sort((a, b) => a - b)).toEqual([16, 183, 232]);
+  it("are gone — the three held for review (16, 183, 232) were removed by the 2026-10-30 audit cleanup", () => {
+    expect(Object.keys(WAMDA_NEEDS_VERIFICATION)).toEqual([]);
     const shown = new Set(reminderPool().map((i) => i.id));
     for (const id of [16, 183, 232]) {
-      expect(defaultReviewStatus(`lataif:w${id}`)).toBe("needs-verification");
+      expect(wamda(id), `w${id}`).toBeUndefined();
       expect(shown.has(`lataif:w${id}`)).toBe(false);
     }
     // Every other Wamdat entry keeps its previous default.

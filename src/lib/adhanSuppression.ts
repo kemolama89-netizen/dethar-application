@@ -4,7 +4,7 @@
 // source prayer notifications use) — never hardcoded. Shuruq has no adhan
 // and is not included.
 import type { PrayerLocation } from "./prayerTimes";
-import { currentPrayerLocation, upcomingPrayerTimes } from "./prayerSchedule";
+import { currentPrayerLocation, upcomingAdhanTimes } from "./prayerSchedule";
 
 export { currentPrayerLocation };
 
@@ -20,9 +20,11 @@ export type AdhanWindow = readonly [number, number];
  * overlapping windows merged into one.
  */
 export function buildAdhanWindows(now: Date, location: PrayerLocation = currentPrayerLocation(), days = 30): AdhanWindow[] {
-  const raw = upcomingPrayerTimes(now, location, days)
-    .filter(({ at }) => at + PAUSE_MS > now.getTime())
-    .map(({ at }): [number, number] => [at, at + PAUSE_MS]);
+  // Around each prayer time, and around its Adhan when that weekday's Adhan is set later (lib/prayerSchedule.ts).
+  const raw = upcomingAdhanTimes(now, location, days)
+    .flatMap(({ at, prayerAt }) => (at === prayerAt ? [at] : [prayerAt, at]))
+    .filter((at) => at + PAUSE_MS > now.getTime())
+    .map((at): [number, number] => [at, at + PAUSE_MS]);
   return mergeWindows(raw);
 }
 

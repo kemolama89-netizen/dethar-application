@@ -1,11 +1,30 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLanguage } from "../theme/LanguageContext";
-import { STARTUP_HADITH } from "../data/startupHadith";
-import { FADE_MS, FONT_WAIT_MS, MAX_VISIBLE_MS, MIN_VISIBLE_MS, markStartupOverlayShown, onStartupOverlayDismiss, removeLaunchCover, startupIntroWillShow } from "../lib/startupOverlay";
+import { STARTUP_HADITH, STARTUP_HADITH_REVIEW_ID } from "../data/startupHadith";
+import { auditShowsEnglish } from "../lib/religiousAudit";
+import {
+  FADE_MS,
+  FONT_WAIT_MS,
+  MAX_VISIBLE_MS,
+  MIN_VISIBLE_MS,
+  fadeOutLaunchCover,
+  launchLogoShowing,
+  markStartupOverlayShown,
+  onStartupOverlayDismiss,
+  removeLaunchCover,
+  startupIntroWillShow,
+  whenLaunchLogoDone,
+} from "../lib/startupOverlay";
 
 // DITHAR's launch intro: an authentic Hadith on the virtue of remembering
 // Allah (Jami' at-Tirmidhi 3377 — data/startupHadith.ts), shown full screen
-// between the app icon and the Home Screen.
+// between the DITHAR logo and the Home Screen.
+//
+//  - On a fresh launch the logo comes first: index.html's static cover shows
+//    it before any bundle has loaded, for LOGO_VISIBLE_MS from its first
+//    frame (lib/startupOverlay.ts). Meanwhile the intro waits beneath it and
+//    the Home Screen mounts beneath both, so the app's loading is done while
+//    the logo shows instead of after it. Then the logo fades to the Hadith.
 //
 //  - It is the first thing React paints (imported eagerly, opaque), and it
 //    takes over from index.html's static cover of the same colour, which
@@ -14,8 +33,9 @@ import { FADE_MS, FONT_WAIT_MS, MAX_VISIBLE_MS, MIN_VISIBLE_MS, markStartupOverl
 //    seen behind or before it, and the final fade has no colour jump.
 //  - Its text appears once the Arabic display font is ready (at most
 //    FONT_WAIT_MS), so it never reflows while read. Once that text is on
-//    screen, App mounts the Home Screen underneath (onShown): it loads while
-//    the Hadith is read, and never competes with the intro's first frames.
+//    screen — or, with the launch logo, once the intro is painted beneath
+//    the logo — App mounts the Home Screen underneath (onShown): it loads
+//    while the logo or the Hadith is on screen, never in their first frames.
 //  - Its timing starts once it has actually been painted (a slow WebView
 //    can't use its time up unseen). It stays MIN_VISIBLE_MS once its text shows and leaves as soon as the
 //    app has painted after that; never longer than MAX_VISIBLE_MS. A tap
@@ -73,17 +93,33 @@ export function StartupHadithOverlay({ appReady, onShown }: { appReady: boolean;
     onShownRef.current = onShown;
   }, [onShown]);
   const [minElapsed, setMinElapsed] = useState(false);
+  // The launch logo (index.html) is still on screen above it: its own time hasn't started.
+  const [logoDone, setLogoDone] = useState(() => !launchLogoShowing());
   // The intro is over and the app is ready: it leaves now.
   const phase = state === "visible" && minElapsed && appReady ? "leaving" : state;
 
-  // The intro (or, when it isn't shown, the Home Screen) now covers the screen: the static cover can go.
+  // Without the launch logo, the intro (or, when it isn't shown, the Home Screen) now covers the
+  // screen: the static cover can go. With it, the cover fades out once the logo has had its time.
   useLayoutEffect(() => {
-    removeLaunchCover();
+    if (!launchLogoShowing()) return removeLaunchCover();
+    return whenLaunchLogoDone(() => {
+      fadeOutLaunchCover();
+      setLogoDone(true);
+    });
   }, []);
 
   useEffect(() => {
     if (state !== "visible") return;
     markStartupOverlayShown();
+    const stop = onStartupOverlayDismiss(() => setState("leaving"));
+    if (!logoDone) {
+      // Beneath the logo: the Home Screen loads now, once the intro itself is painted.
+      const cancelPaint = afterFirstPaint(() => onShownRef.current?.());
+      return () => {
+        cancelPaint();
+        stop();
+      };
+    }
     let cancelled = false;
     let min: number | undefined;
     let max: number | undefined;
@@ -101,7 +137,6 @@ export function StartupHadithOverlay({ appReady, onShown }: { appReady: boolean;
         });
       });
     });
-    const stop = onStartupOverlayDismiss(() => setState("leaving"));
     return () => {
       cancelled = true;
       cancelPaint();
@@ -110,7 +145,7 @@ export function StartupHadithOverlay({ appReady, onShown }: { appReady: boolean;
       window.clearTimeout(max);
       stop();
     };
-  }, [state]);
+  }, [state, logoDone]);
 
   // Not showing (already shown, not approved) or ended early: the Home Screen must not wait for it.
   useEffect(() => {
@@ -139,7 +174,8 @@ export function StartupHadithOverlay({ appReady, onShown }: { appReady: boolean;
         <p dir="rtl" lang="ar" className="text-[19px] leading-[2.05]" style={{ fontFamily: "var(--font-display)" }} data-startup-text="">
           {STARTUP_HADITH.quoteAr}
         </p>
-        {isEn && (
+        {/* Its English is a DITHAR rendering, not a credited published translation (lib/religiousAudit.ts). */}
+        {isEn && auditShowsEnglish(STARTUP_HADITH_REVIEW_ID) && (
           <p dir="ltr" lang="en" className="mt-4 text-[13px] italic leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
             {STARTUP_HADITH.meaningEn}
           </p>

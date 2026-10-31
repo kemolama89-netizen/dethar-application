@@ -1,8 +1,10 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useScreenNavigation } from "./lib/useScreenNavigation";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { LanguageProvider, useLanguage } from "./theme/LanguageContext";
 import { PaletteProvider } from "./theme/PaletteContext";
+import { LookProvider } from "./theme/LookContext";
+import { setLookSuspended } from "./theme/looks";
 import { QuranReciterProvider } from "./theme/QuranReciterContext";
 import { DeviceFrame } from "./components/DeviceFrame";
 import { AppShell } from "./components/AppShell";
@@ -12,6 +14,7 @@ import { DateTimeStrip } from "./components/DateTimeStrip";
 import { PrayerTimesPanel } from "./components/PrayerTimesPanel";
 import { BottomNav } from "./components/BottomNav";
 import { QuranNavContext } from "./lib/quranNav";
+import { AdhkarNavContext } from "./lib/adhkarNav";
 import { DailyProgressCard } from "./components/HomeDashboard";
 import { HomeActivePlayback } from "./components/HomeAudioPlayer";
 import { HomeDailyPicksCard } from "./components/HomeDailyPicksCard";
@@ -24,7 +27,6 @@ import { labels } from "./data/content";
 import { useDateTime } from "./lib/useDateTime";
 import { loadInstallationAnchorDateKey, saveInstallationAnchorDateKey } from "./lib/dailyContentProgress";
 import type { WrittenAdhkarCategoryKey } from "./data/written-adhkar";
-import type { MiscCategoryKey } from "./data/misc-library";
 import type { WrittenSearchResult } from "./components/WrittenAdhkarSearchScreen";
 import type { AudioAdhkarList } from "./components/AudioAdhkarScreen";
 import { startFloatingOpenRouteRequests, startFloatingTasbeehSync } from "./lib/floatingTasbeehSync";
@@ -36,7 +38,8 @@ import type { ShownReminder } from "./lib/remindersNative";
 import { requestOpenReminder, subscribeOpenReminderRequests } from "./lib/reminderOpenRequests";
 // Eager, not lazy: the launch intro must be in the very first paint, or the Home Screen shows before it.
 import { StartupHadithOverlay } from "./components/StartupHadithOverlay";
-import { dismissStartupOverlay, startupIntroWillShow } from "./lib/startupOverlay";
+import { dismissStartupOverlay, holdLaunchCover, startupIntroWillShow } from "./lib/startupOverlay";
+import type { LaunchCoverHold } from "./lib/startupOverlay";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -59,20 +62,17 @@ const loadWrittenAdhkarReader = () =>
 const loadWrittenAdhkarSearchScreen = () =>
   import("./components/WrittenAdhkarSearchScreen").then((m) => ({ default: m.WrittenAdhkarSearchScreen }));
 const loadSettingsScreen = () => import("./components/SettingsScreen").then((m) => ({ default: m.SettingsScreen }));
-const loadMiscLibraryScreen = () =>
-  import("./components/MiscLibraryScreen").then((m) => ({ default: m.MiscLibraryScreen }));
-const loadMiscCategoryScreen = () =>
-  import("./components/MiscCategoryScreen").then((m) => ({ default: m.MiscCategoryScreen }));
 const loadAudioAdhkarModule = () => import("./components/AudioAdhkarScreen");
-const SpiritualReminderView = lazy(() => import("./components/SpiritualReminderView").then((m) => ({ default: m.SpiritualReminderView })));
+const loadAdhkarScreen = () => import("./components/AdhkarScreen").then((m) => ({ default: m.AdhkarScreen }));
+const loadSpiritualReminderView = () => import("./components/SpiritualReminderView").then((m) => ({ default: m.SpiritualReminderView }));
+const SpiritualReminderView = lazy(loadSpiritualReminderView);
 
 const TasbeehScreen = lazy(loadTasbeehScreen);
 const WrittenAdhkarScreen = lazy(loadWrittenAdhkarScreen);
 const WrittenAdhkarReader = lazy(loadWrittenAdhkarReader);
 const WrittenAdhkarSearchScreen = lazy(loadWrittenAdhkarSearchScreen);
 const SettingsScreen = lazy(loadSettingsScreen);
-const MiscLibraryScreen = lazy(loadMiscLibraryScreen);
-const MiscCategoryScreen = lazy(loadMiscCategoryScreen);
+const AdhkarScreen = lazy(loadAdhkarScreen);
 const AudioAdhkarScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarScreen })));
 const AudioAdhkarListScreen = lazy(() => loadAudioAdhkarModule().then((m) => ({ default: m.AudioAdhkarListScreen })));
 // The Qur'an reader brings the Mushaf text (~1.3 MB) with it, so it is only loaded when opened.
@@ -187,7 +187,7 @@ function HomeScreen({
   const locationChange = useLocationChangeDetector();
 
   return (
-    <DeviceFrame scrollLocked={locationChange.pending !== null}>
+    <DeviceFrame scrollLocked={locationChange.pending !== null} wallpaper>
       <AppShell>
         <TopBar showExitButton />
         <LogoHeader />
@@ -237,7 +237,7 @@ function HomeScreen({
   );
 }
 
-type Screen = "home" | "tasbeeh" | "written" | "written-reader" | "written-search" | "misc-library" | "misc-category" | "settings" | "audio" | "audio-list" | "quran";
+type Screen = "home" | "tasbeeh" | "adhkar" | "written" | "written-reader" | "written-search" | "settings" | "audio" | "audio-list" | "quran";
 
 // Minimal in-memory screen switcher — no router dependency added. Screens
 // don't keep their own transient state across a switch (theme/language are
@@ -263,8 +263,11 @@ function AppRouter() {
   // back stack (see lib/useScreenNavigation.ts) so system Back — Android's
   // hardware/gesture button and the browser's — returns to the previous
   // screen instead of leaving the app.
-  const { screen, navigate: setScreen } = useScreenNavigation<Screen>("home");
+  const { screen, navigate: setScreen, back } = useScreenNavigation<Screen>("home");
   const [writtenCategory, setWrittenCategory] = useState<WrittenAdhkarCategoryKey>("morning");
+  // The Mushaf keeps its own appearance: the appearance theme (look) and the wallpaper never reach it
+  // (theme/looks.ts LOOK_OFF_ATTRIBUTE). Set before paint, so it never shows a frame in the look's colours.
+  useLayoutEffect(() => setLookSuspended(screen === "quran"), [screen]);
 
   // Android only: schedules prayer-time notifications from the saved
   // choices and keeps them current (launch, return to the app, location
@@ -282,16 +285,12 @@ function AppRouter() {
     // So are reminders, the widget's text and the end-of-day summary.
     if (isRemindersNativeAvailable()) void import("./lib/remindersSync").then((m) => Promise.all([m.syncReminders({ withPool: true }), m.syncSummary()])).catch(() => {});
   }, [language]);
-  // Which Misc-library category the detail screen should open — same
-  // pattern as `writtenCategory` above, set right before switching to
-  // "misc-category" and simply left as-is on the way back.
-  const [miscCategory, setMiscCategory] = useState<MiscCategoryKey>("comprehensive");
   // The specific Dhikr/dua a global search result pointed at — set ONLY
-  // right before jumping into "written-reader"/"misc-category" FROM a
+  // right before jumping into "written-reader" FROM a
   // search result (see handleSelectSearchResult below), read once by that
   // screen to scroll straight to it instead of starting at the top.
-  // Explicitly cleared to `null` at every ORDINARY entry point into those
-  // two screens (the category tiles, the bottom-nav "written" tab) so a
+  // Explicitly cleared to `null` at every ORDINARY entry point into that
+  // screen (the category tiles, the bottom-nav "written" tab) so a
   // stale target from a previous search never lingers into a normal visit.
   const [searchTargetItemId, setSearchTargetItemId] = useState<string | null>(null);
   // Which list the Audio Adhkar list screen shows — same pattern as
@@ -302,6 +301,8 @@ function AppRouter() {
   // section opens (also when Back returns to it), never a stale copy — or
   // at the beginning of the Mushaf before any reading.
   const openQuran = useCallback(() => setScreen("quran"), [setScreen]);
+  // The navigation's الأذكار item (on every screen, through AdhkarNavContext): the Adhkar screen's two cards.
+  const openAdhkar = useCallback(() => setScreen("adhkar"), [setScreen]);
   const audioNav = {
     onNavigateHome: () => setScreen("home"),
     onNavigateToTasbeeh: () => setScreen("tasbeeh"),
@@ -323,35 +324,27 @@ function AppRouter() {
 
   function handleSelectSearchResult(result: WrittenSearchResult) {
     setSearchTargetItemId(result.itemId);
-    if (result.kind === "written") {
-      setWrittenCategory(result.category);
-      setScreen("written-reader");
-    } else {
-      setMiscCategory(result.category);
-      setScreen("misc-category");
-    }
+    setWrittenCategory(result.category);
+    setScreen("written-reader");
   }
 
-  // Warms the chunk (and, for Misc Library, its category images — see
-  // that module's own preload side effect) for whichever screen is the
+  // Warms the chunk for whichever screen is the
   // likely NEXT hop from wherever the user currently is, once the browser
   // is idle. This is what makes Home -> Settings/Tasbeeh and
-  // Written -> Misc Library feel instant instead of waiting on a chunk
+  // Written -> Reader feel instant instead of waiting on a chunk
   // fetch triggered only at the moment of navigation. Deliberately not
   // "prefetch everything from Home": screens two hops away (the reader,
-  // the category detail screen) only get warmed once the user has
+  // the search screen) only get warmed once the user has
   // actually entered that flow, so the initial idle work stays small.
   useEffect(() => {
     if (screen === "home") {
+      preloadOnIdle(loadAdhkarScreen);
       preloadOnIdle(loadTasbeehScreen);
       preloadOnIdle(loadWrittenAdhkarScreen);
       preloadOnIdle(loadSettingsScreen);
     } else if (screen === "written") {
       preloadOnIdle(loadWrittenAdhkarReader);
-      preloadOnIdle(loadMiscLibraryScreen);
       preloadOnIdle(loadWrittenAdhkarSearchScreen);
-    } else if (screen === "misc-library") {
-      preloadOnIdle(loadMiscCategoryScreen);
     }
   }, [screen]);
 
@@ -371,6 +364,22 @@ function AppRouter() {
         </div>
       );
     }
+    if (screen === "adhkar") {
+      return (
+        <div key={screen} className="dithar-app-transition">
+          <Suspense fallback={<ScreenFallback />}>
+            <AdhkarScreen
+              onOpenAudio={() => setScreen("audio")}
+              onOpenWritten={() => setScreen("written")}
+              onNavigateHome={() => setScreen("home")}
+              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
+              onNavigateToSettings={() => setScreen("settings")}
+              onBack={back}
+            />
+          </Suspense>
+        </div>
+      );
+    }
     if (screen === "written") {
       return (
         <div key={screen} className="dithar-app-transition">
@@ -381,20 +390,12 @@ function AppRouter() {
               onNavigateToSettings={() => setScreen("settings")}
               onNavigateToAudio={() => setScreen("audio")}
               onSelectCategory={(key) => {
-                // "Miscellaneous Adhkar & Duas" is now the richer Dithar
-                // Library (landing + category grid + search) built from
-                // ASSETS/dithar_master_content_library.md, rather than the
-                // old flat single-reader list — every other category is
-                // completely unaffected and still opens the existing reader.
                 setSearchTargetItemId(null);
-                if (key === "misc") {
-                  setScreen("misc-library");
-                  return;
-                }
                 setWrittenCategory(key);
                 setScreen("written-reader");
               }}
               onOpenSearch={() => setScreen("written-search")}
+              onBack={() => setScreen("adhkar")}
             />
           </Suspense>
         </div>
@@ -433,50 +434,13 @@ function AppRouter() {
         </div>
       );
     }
-    if (screen === "misc-library") {
-      return (
-        <div key={screen} className="dithar-app-transition">
-          <Suspense fallback={<ScreenFallback />}>
-            <MiscLibraryScreen
-              onBack={() => setScreen("written")}
-              onNavigateHome={() => setScreen("home")}
-              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-              onNavigateToSettings={() => setScreen("settings")}
-              onNavigateToAudio={() => setScreen("audio")}
-              onSelectCategory={(key) => {
-                setSearchTargetItemId(null);
-                setMiscCategory(key);
-                setScreen("misc-category");
-              }}
-            />
-          </Suspense>
-        </div>
-      );
-    }
-    if (screen === "misc-category") {
-      return (
-        <div key={screen} className="dithar-app-transition">
-          <Suspense fallback={<ScreenFallback />}>
-            <MiscCategoryScreen
-              categoryKey={miscCategory}
-              onBack={() => setScreen("misc-library")}
-              onNavigateToWrittenRoot={() => setScreen("written")}
-              onNavigateHome={() => setScreen("home")}
-              onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-              onNavigateToSettings={() => setScreen("settings")}
-              onNavigateToAudio={() => setScreen("audio")}
-              targetItemId={searchTargetItemId ?? undefined}
-            />
-          </Suspense>
-        </div>
-      );
-    }
     if (screen === "audio") {
       return (
         <div key={screen} className="dithar-app-transition">
           <Suspense fallback={<ScreenFallback />}>
             <AudioAdhkarScreen
               {...audioNav}
+              onBack={() => setScreen("adhkar")}
               onSelectCategory={(key) => {
                 setAudioList(key === "misc" ? { kind: "various" } : { kind: "written", key });
                 setScreen("audio-list");
@@ -552,7 +516,11 @@ function AppRouter() {
       </div>
     );
   })();
-  return <QuranNavContext.Provider value={openQuran}>{routed}</QuranNavContext.Provider>;
+  return (
+    <QuranNavContext.Provider value={openQuran}>
+      <AdhkarNavContext.Provider value={openAdhkar}>{routed}</AdhkarNavContext.Provider>
+    </QuranNavContext.Provider>
+  );
 }
 
 /** Where the Qur'an section opens: the saved reading position, or the beginning of the Mushaf. */
@@ -570,6 +538,27 @@ function ReminderOverlayHost() {
   // that content opens — lib/reminderOpen.ts).
   const [openReminder, setOpenReminder] = useState<{ id: string; commentId: string | null; shown?: ShownReminder } | null>(null);
   const closeReminder = useCallback(() => setOpenReminder(null), []);
+  // A tap on a notification or the widget opens its reminder DIRECTLY — never Home first:
+  //  - cold start: the launch cover (index.html) is held from the first frame until native has said
+  //    whether the app was opened from a reminder (consumeLaunchReminder); if it was, the cover stays
+  //    until the reminder's view has painted, then goes — Home, mounted beneath, is never seen;
+  //  - running (background or open): native's "openReminder" event opens the view over the current
+  //    screen; its code is fetched ahead (idle), and while it loads an opaque cover stands in.
+  // Taken in a layout effect that runs before the launch intro's (this host comes first in App), so the
+  // intro can't remove the cover before the answer.
+  const launchHold = useRef<LaunchCoverHold | null>(null);
+  const launchReminderPending = useRef(false);
+  useLayoutEffect(() => {
+    if (!isRemindersNativeAvailable()) return;
+    const hold = holdLaunchCover();
+    launchHold.current = hold;
+    return () => hold.cancel();
+  }, []);
+  // The reminder's view has painted: the cover can go (at once — the logo's time doesn't apply).
+  const reminderPainted = useCallback(() => {
+    launchReminderPending.current = false;
+    launchHold.current?.release(true);
+  }, []);
   // The reminder the user tapped is what they came for: the launch intro steps aside at once.
   useEffect(() => {
     if (openReminder) dismissStartupOverlay();
@@ -581,15 +570,24 @@ function ReminderOverlayHost() {
   );
   useEffect(() => {
     if (!isRemindersNativeAvailable()) return;
+    preloadOnIdle(loadSpiritualReminderView);
     const handle = RemindersNative.addListener("openReminder", ({ id, commentId, shown }) => setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined }));
     void RemindersNative.consumeLaunchReminder()
-      .then(({ id, commentId, shown }) => id && setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined }))
-      .catch(() => {});
+      .then(({ id, commentId, shown }) => {
+        if (id) {
+          launchReminderPending.current = true;
+          setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined });
+        } else if (!launchReminderPending.current) {
+          // Not opened from a reminder: the launch goes on as usual (logo, intro, Home).
+          launchHold.current?.release();
+        }
+      })
+      .catch(() => launchHold.current?.release());
     return () => void handle.then((h) => h.remove());
   }, []);
   if (!openReminder) return null;
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="fixed inset-0 z-[80]" style={{ background: "var(--color-bg)" }} aria-hidden="true" data-reminder-loading="" />}>
       <SpiritualReminderView
         key={`${openReminder.id}|${openReminder.commentId ?? ""}|${openReminder.shown?.text ?? ""}`}
         itemId={openReminder.id}
@@ -597,8 +595,24 @@ function ReminderOverlayHost() {
         shownAs={openReminder.shown}
         onClose={closeReminder}
       />
+      <AfterPaint onPainted={reminderPainted} />
     </Suspense>
   );
+}
+
+/** Calls [onPainted] once what was committed with it is on screen (two frames later). */
+function AfterPaint({ onPainted }: { onPainted: () => void }) {
+  useEffect(() => {
+    let second = 0;
+    const first = window.requestAnimationFrame(() => {
+      second = window.requestAnimationFrame(onPainted);
+    });
+    return () => {
+      window.cancelAnimationFrame(first);
+      window.cancelAnimationFrame(second);
+    };
+  }, [onPainted]);
+  return null;
 }
 
 export default function App() {
@@ -661,11 +675,13 @@ export default function App() {
     <LanguageProvider>
       <ThemeProvider>
         <PaletteProvider>
-          <QuranReciterProvider>
-            {homeMounted && <AppRouter />}
-            <ReminderOverlayHost />
-            <StartupHadithOverlay appReady={appReady} onShown={mountHome} />
-          </QuranReciterProvider>
+          <LookProvider>
+            <QuranReciterProvider>
+              {homeMounted && <AppRouter />}
+              <ReminderOverlayHost />
+              <StartupHadithOverlay appReady={appReady} onShown={mountHome} />
+            </QuranReciterProvider>
+          </LookProvider>
         </PaletteProvider>
       </ThemeProvider>
     </LanguageProvider>

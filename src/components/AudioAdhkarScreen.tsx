@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
-import { BookOpenText, ListMusic, Languages, Pause, Play, Square, Volume2 } from "lucide-react";
+import { BookOpenText, ListMusic, Languages, Pause, Play, SkipForward, Square, Volume2 } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
+import { BackArrowButton } from "./BackHeader";
 import { BackHeader, StickyBackButton } from "./BackHeader";
 import { WrittenAdhkarCategoryCard } from "./WrittenAdhkarCategoryCard";
 import { ResumeAdhkarBanner } from "./ResumeAdhkarBanner";
@@ -25,6 +26,7 @@ import { usePageVisible } from "../lib/pageVisibility";
 import { useInView } from "../lib/useInView";
 import {
   AUDIO_ENABLED_COLLECTIONS,
+  canSkipAudioAdhkar,
   getAudioAdhkarPlayAll,
   getAudioAdhkarSource,
   getAudioAdhkarPlaybackFailure,
@@ -33,11 +35,13 @@ import {
   playableAudioAdhkar,
   resumeAudioAdhkar,
   startAudioAdhkar,
+  skipAudioAdhkar,
   startAudioAdhkarPlayAll,
   startAudioVarious,
   stopAudioAdhkar,
   stopAudioAdhkarPlayback,
   subscribeAudioAdhkarPlayAll,
+  subscribeAudioAdhkarSkip,
   subscribeAudioAdhkarPlaybackFailure,
 } from "../lib/audioAdhkarPlayer";
 import type { AudioAdhkarCollection, AudioAdhkarNowPlaying, AudioAdhkarPlaybackState } from "../lib/audioAdhkarPlayback";
@@ -79,8 +83,13 @@ const SELECT_TRANSITION_MS = 320;
 
 export function AudioAdhkarScreen({
   onSelectCategory,
+  onBack,
   ...nav
-}: AudioAdhkarNavProps & { onSelectCategory: (key: AudioAdhkarCategoryKey) => void }) {
+}: AudioAdhkarNavProps & {
+  onSelectCategory: (key: AudioAdhkarCategoryKey) => void;
+  /** The header's back arrow (to the Adhkar screen); without it, the header is as before. */
+  onBack?: () => void;
+}) {
   const { language } = useLanguage();
   const t = writtenAdhkarLabels[language];
   const [selectingKey, setSelectingKey] = useState<AudioAdhkarCategoryKey | null>(null);
@@ -96,12 +105,22 @@ export function AudioAdhkarScreen({
       <AppShell>
         <TopBar />
         <div className="flex flex-1 flex-col">
-          <h1
-            className="mt-2 text-center text-[20px] font-bold"
-            style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
-          >
-            {navLabels[language].audioAdhkar}
-          </h1>
+          {onBack ? (
+            <div className="mt-2 flex items-center gap-2">
+              <BackArrowButton onBack={onBack} backLabel={t.back} />
+              <h1 className="min-w-0 flex-1 text-center text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
+                {navLabels[language].audioAdhkar}
+              </h1>
+              <div className="h-9 w-9 shrink-0" aria-hidden="true" />
+            </div>
+          ) : (
+            <h1
+              className="mt-2 text-center text-[20px] font-bold"
+              style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
+            >
+              {navLabels[language].audioAdhkar}
+            </h1>
+          )}
           <p className="mt-0.5 text-center text-[13px]" style={{ color: "var(--wa-ink-muted)" }}>
             {t.chooseCategory}
           </p>
@@ -284,6 +303,7 @@ const playerLabels = {
     stopAll: "إيقاف",
     playAllHint: (n: number) => `${n} ${n === 1 ? "ذكر" : "أذكار"} متتالية`,
     playAllPosition: (n: number, total: number) => `الذكر ${n} من ${total}`,
+    nextDhikr: "الذكر التالي",
   },
   en: {
     listen: "Listen",
@@ -303,6 +323,7 @@ const playerLabels = {
     stopAll: "Stop",
     playAllHint: (n: number) => `${n} ${n === 1 ? "dhikr" : "adhkar"} in sequence`,
     playAllPosition: (n: number, total: number) => `Dhikr ${n} of ${total}`,
+    nextDhikr: "Next dhikr",
   },
 };
 
@@ -537,6 +558,7 @@ function PlayAllBar({ collection, entries, playback }: { collection: AudioAdhkar
   const { language } = useLanguage();
   const labels = playerLabels[language];
   const run = useSyncExternalStore(subscribeAudioAdhkarPlayAll, getAudioAdhkarPlayAll, () => null);
+  const canSkip = useSyncExternalStore(subscribeAudioAdhkarSkip, canSkipAudioAdhkar, () => false);
   const mine = run?.collection === collection ? run : null;
   const playableCount = useMemo(() => playableAudioAdhkar(collection, entries).length, [collection, entries]);
   if (playableCount === 0) return null;
@@ -568,6 +590,20 @@ function PlayAllBar({ collection, entries, playback }: { collection: AudioAdhkar
       <span className="min-w-0 flex-1 truncate text-[11.5px]" style={{ color: "var(--wa-ink-muted)" }} aria-live="polite" data-play-all-status="">
         {running && mine ? labels.playAllPosition(mine.index + 1, mine.count) : labels.playAllHint(playableCount)}
       </span>
+      {running && mine && canSkip && (
+        <button
+          type="button"
+          onClick={() => void skipAudioAdhkar()}
+          aria-label={labels.nextDhikr}
+          title={labels.nextDhikr}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
+          data-play-all-next=""
+        >
+          {/* Points the way the list reads: forward is left in Arabic. */}
+          <SkipForward size={14} strokeWidth={2} aria-hidden="true" className="rtl:-scale-x-100" />
+        </button>
+      )}
       {running && (
         <button
           type="button"

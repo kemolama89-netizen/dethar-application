@@ -161,6 +161,20 @@ export { addDays, startOfWeek };
 // re-parse JSON.
 let cache: StatEvent[] | null = null;
 
+/**
+ * Whether the last load() could read the stored log: "unreadable" when the
+ * stored text wasn't valid JSON (its events are gone from this session),
+ * "unavailable" when storage itself couldn't be reached. Either way the
+ * empty log is a stand-in, not a verified "nothing recorded".
+ */
+export type StatsReadStatus = "ok" | "unreadable" | "unavailable";
+let readStatus: StatsReadStatus = "ok";
+
+export function getStatsReadStatus(): StatsReadStatus {
+  load();
+  return readStatus;
+}
+
 // Where the ORIGINAL stored text is copied (once) if load() ever has to
 // discard or repair anything in it — see sanitizeStoredEvents. Nothing
 // reads this key back automatically; it exists so that a repair can never
@@ -266,6 +280,7 @@ function backUpUnreadableStats(raw: string) {
 
 function load(): StatEvent[] {
   if (cache) return cache;
+  readStatus = "ok";
   try {
     const raw = typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
     if (!raw) {
@@ -280,12 +295,14 @@ function load(): StatEvent[] {
       }
       const { events, changed } = parseFailed ? { events: [], changed: true } : sanitizeStoredEvents(parsed);
       if (changed) backUpUnreadableStats(raw);
+      if (parseFailed) readStatus = "unreadable";
       cache = events;
     }
   } catch {
     // Storage unavailable (e.g. access blocked) — start clean rather than
     // throwing; stats are a nice-to-have, never load-bearing.
     cache = [];
+    readStatus = "unavailable";
   }
   return cache;
 }
@@ -358,6 +375,7 @@ function append(event: StatEvent) {
 // language/theme preference, etc. are structurally untouched by this call.
 export function clearAllStats(): void {
   cache = [];
+  readStatus = "ok";
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {

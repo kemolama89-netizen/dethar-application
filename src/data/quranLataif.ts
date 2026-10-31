@@ -96,22 +96,6 @@ export const QURAN_LATAIF: readonly QuranLatifa[] = [
     ],
   }),
   lataif({
-    id: "q2-153",
-    surah: 2,
-    ayahs: [153],
-    verseAr: "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ",
-    excerpt: false,
-    verseRefAr: "سورة البقرة، الآية 153",
-    verseRefEn: "Surat Al-Baqarah 2:153",
-    verseEn: "O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient",
-    tafsirAr: "فالصبر هو: حبس النفس وكفها عما تكره, فهو ثلاثة أقسام: صبرها على طاعة الله حتى تؤديها, وعن معصية الله حتى تتركها, وعلى أقدار الله المؤلمة فلا تتسخطها",
-    tafsirRef: "2:153",
-    comments: [
-      ["meaning", "الصبر هنا ثلاثة أبواب: على الطاعة، وعن المعصية، وعلى المؤلم من الأقدار.", "Patience here has three doors: in obedience, away from sin, and through painful decrees."],
-      ["practice", "حين يشتد عليك أمر، اجمع بين الصبر والصلاة كما أرشدت الآية.", "When something weighs on you, join patience with prayer, as the verse guides."],
-    ],
-  }),
-  lataif({
     id: "q39-53",
     surah: 39,
     ayahs: [53],
@@ -135,7 +119,7 @@ export const QURAN_LATAIF: readonly QuranLatifa[] = [
     excerpt: false,
     verseRefAr: "سورة الشرح، الآية 5–6",
     verseRefEn: "Surat Ash-Sharh 94:5–6",
-    verseEn: "For indeed, with hardship [will be] ease Indeed, with hardship [will be] ease",
+    verseEn: "For indeed, with hardship [will be] ease [i.e., relief]. Indeed, with hardship [will be] ease",
     tafsirAr: "بشارة عظيمة، أنه كلما وجد عسر وصعوبة، فإن اليسر يقارنه ويصاحبه",
     tafsirRef: "94:5",
     comments: [
@@ -176,22 +160,6 @@ export const QURAN_LATAIF: readonly QuranLatifa[] = [
     ],
   }),
   lataif({
-    id: "q29-45",
-    surah: 29,
-    ayahs: [45],
-    verseAr: "وَلَذِكْرُ اللَّهِ أَكْبَرُ",
-    excerpt: true,
-    verseRefAr: "سورة العنكبوت، الآية 45",
-    verseRefEn: "Surat Al-'Ankabut 29:45",
-    verseEn: "and the remembrance of Allah is greater",
-    tafsirAr: "وثَمَّ في الصلاة مقصود أعظم من هذا وأكبر، وهو ما اشتملت عليه من ذكر اللّه، بالقلب واللسان والبدن. فإن اللّه تعالى، إنما خلق الخلق لعبادته، وأفضل عبادة تقع منهم الصلاة، وفيها من عبوديات الجوارح كلها، ما ليس في غيرها، ولهذا قال: { وَلَذِكْرُ اللَّهِ أَكْبَرُ } ويحتمل أنه لما أمر بالصلاة ومدحها، أخبر أن ذكره تعالى خارج الصلاة أكبر من الصلاة، كما هو قول جمهور المفسرين، لكن الأول أولى",
-    tafsirRef: "29:45",
-    comments: [
-      ["reflection", "الصلاة نفسها ذكرٌ بالقلب واللسان والجسد معًا.", "Prayer itself is remembrance with heart, tongue and body together."],
-      ["practice", "استحضر في صلاتك القادمة أنها أعظم مجالس الذكر.", "In your next prayer, recall that it is among the greatest moments of remembrance."],
-    ],
-  }),
-  lataif({
     id: "q7-205",
     surah: 7,
     ayahs: [205],
@@ -205,22 +173,6 @@ export const QURAN_LATAIF: readonly QuranLatifa[] = [
     comments: [
       ["practice", "اذكر ربك في نفسك بهدوء، دون رفع صوت ولا غفلة.", "Remember your Lord within yourself, calmly — neither loud nor heedless."],
       ["meaning", "أكمل الذكر ما اجتمع فيه القلب واللسان.", "The most complete remembrance is where heart and tongue meet."],
-    ],
-  }),
-  lataif({
-    id: "q65-3",
-    surah: 65,
-    ayahs: [3],
-    verseAr: "وَمَنْ يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    excerpt: true,
-    verseRefAr: "سورة الطلاق، الآية 3",
-    verseRefEn: "Surat At-Talaq 65:3",
-    verseEn: "And whoever relies upon Allah - then He is sufficient for him",
-    tafsirAr: "أي: في أمر دينه ودنياه، بأن يعتمد على الله في جلب ما ينفعه ودفع ما يضره، ويثق به في تسهيل ذلك",
-    tafsirRef: "65:3",
-    comments: [
-      ["meaning", "التوكل اعتمادٌ على الله في جلب النفع ودفع الضر، مع الثقة به.", "Reliance is depending on Allah to bring good and avert harm, trusting Him."],
-      ["encouragement", "ما وكلته إلى الله فهو في أمانٍ؛ فخذ بالأسباب واطمئن.", "What you entrust to Allah is in safe keeping; take the means and be at peace."],
     ],
   }),
   lataif({
@@ -247,7 +199,7 @@ export const QURAN_LATAIF: readonly QuranLatifa[] = [
     excerpt: true,
     verseRefAr: "سورة الزمر، الآية 10",
     verseRefEn: "Surat Az-Zumar 39:10",
-    verseEn: "Indeed, the patient will be given their reward without account",
+    verseEn: "Indeed, the patient will be given their reward without account [i.e., limit]",
     tafsirAr: "وهذا عام في جميع أنواع الصبر، الصبر على أقدار اللّه المؤلمة فلا يتسخطها، والصبر عن معاصيه فلا يرتكبها، والصبر على طاعته حتى يؤديها، فوعد اللّه الصابرين أجرهم بغير حساب، أي: بغير حد ولا عد ولا مقدار",
     tafsirRef: "39:10",
     comments: [
@@ -287,22 +239,6 @@ export const QURAN_LATAIF: readonly QuranLatifa[] = [
       ["practice", "إن طال عليك أمر، فاستمر عليه بهدوء دون تذمّر.", "If something drags on, keep at it calmly, without complaint."],
     ],
   }),  // Added 2026-10-16 (verse: Tanzil; tafsir: verbatim al-Sa'di via Quran.com; English: Saheeh International). Pending Review.
-  lataif({
-    id: "q25-63",
-    surah: 25,
-    ayahs: [63],
-    verseAr: "وَعِبَادُ الرَّحْمَٰنِ الَّذِينَ يَمْشُونَ عَلَى الْأَرْضِ هَوْنًا وَإِذَا خَاطَبَهُمُ الْجَاهِلُونَ قَالُوا سَلَامًا",
-    excerpt: false,
-    verseRefAr: "سورة الفرقان، الآية 63",
-    verseRefEn: "Surat Al-Furqan 25:63",
-    verseEn: "And the servants of the Most Merciful are those who walk upon the earth easily, and when the ignorant address them [harshly], they say [words of] peace",
-    tafsirAr: "ساكنين متواضعين لله والخلق فهذا وصف لهم بالوقار والسكينة والتواضع لله ولعباده",
-    tafsirRef: "25:63",
-    comments: [
-      ["meaning", "من صفات عباد الرحمن: السكينة والتواضع، والردّ على الجاهل بما يسلم به المرء.", "Among the traits of the servants of the Most Merciful: calm, humility, and answering the ignorant with words that keep one safe."],
-      ["practice", "إذا خاطبك أحدٌ بحدّة اليوم، فأجبه بهدوء أو اترك الجدال.", "If someone speaks to you harshly today, answer calmly or let the argument go."],
-    ],
-  }),
   lataif({
     id: "q14-7",
     surah: 14,

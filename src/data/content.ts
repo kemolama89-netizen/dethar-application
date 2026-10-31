@@ -4,8 +4,8 @@
 //
 // Every user-facing string is bilingual: { ar, en }. Ordinary UI
 // terminology (nav labels, section titles, prayer names) is translated
-// with confidence. Religious content (the featured hadith, the hadith
-// card, the Quranic insight) is handled more cautiously — see the
+// with confidence. Religious content (the hadith card, the Quranic
+// insight) is handled more cautiously — see the
 // per-field notes below. Where an English rendering is marked as not
 // sourced from an approved in-project citation, treat it as a DRAFT
 // pending your explicit sign-off, not as verified.
@@ -114,6 +114,7 @@ export const navLabels = {
     audioAdhkar: "الأذكار المسموعة",
     home: "الرئيسية",
     writtenAdhkar: "الأذكار المكتوبة",
+    adhkar: "الأذكار",
     quran: "المصحف",
     tasbih: "السبحة",
   },
@@ -122,27 +123,9 @@ export const navLabels = {
     audioAdhkar: "Audio Adhkar",
     home: "Home",
     writtenAdhkar: "Written Adhkar",
+    adhkar: "Adhkar",
     quran: "Mushaf",
     tasbih: "Tasbeeh",
-  },
-};
-
-// Featured quote directly under the logo — Sahih al-Bukhari 6407.
-// Arabic wording is the verified, approved text and must not change.
-// The English rendering is the standard, widely-published translation of
-// this very well-known hadith (the wording is highly consistent across
-// published English Sahih al-Bukhari translations) — provided as a DRAFT
-// from general knowledge, not pulled from an in-project citation. Please
-// verify it against your preferred authoritative source before treating
-// it as final.
-export const featuredQuote = {
-  ar: {
-    text: "مَثَلُ الَّذِي يَذْكُرُ رَبَّهُ وَالَّذِي لا يَذْكُرُ رَبَّهُ مَثَلُ الحَيِّ وَالمَيِّتِ",
-    citation: "رواه البخاري (6407)",
-  },
-  en: {
-    text: "The example of the one who remembers his Lord in comparison to the one who does not remember his Lord is that of the living compared to the dead.",
-    citation: "Sahih al-Bukhari (6407)",
   },
 };
 
@@ -164,8 +147,8 @@ export const insightCardContent = {
   quranRef: { surah: 13, fromAyah: 28, toAyah: 28, excerpt: true } satisfies QuranRef,
 };
 
-// Hadith card — same hadith as the featured quote (Sahih al-Bukhari 6407),
-// also narrated in Sahih Muslim. Same draft-translation caveat as above.
+// Hadith card — Sahih al-Bukhari 6407, also narrated in Sahih Muslim. The
+// English is a DRAFT from general knowledge, not an in-project citation.
 export const hadithCardContent = {
   ar: {
     body: "«مَثَلُ الَّذِي يَذْكُرُ رَبَّهُ وَالَّذِي لَا يَذْكُرُ رَبَّهُ، مَثَلُ الْحَيِّ وَالْمَيِّتِ»",

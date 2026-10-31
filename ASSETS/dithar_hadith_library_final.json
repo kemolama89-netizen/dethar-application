@@ -5,61 +5,9 @@
     "ar",
     "en"
   ],
-  "count": 200,
+  "count": 104,
   "sourceFile": "DITHAR_200_حديث_مُنقّح.docx",
   "hadiths": [
-    {
-      "id": 1,
-      "topicAr": "النية والإخلاص",
-      "textAr": "عن عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: «إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى، فمن كانت هجرته إلى الله ورسوله فهجرته إلى الله ورسوله، ومن كانت هجرته لدنيا يصيبها أو امرأة ينكحها فهجرته إلى ما هاجر إليه»",
-      "narratorAr": "عمر بن الخطاب رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب بدء الوحي",
-      "referenceAr": "1 (ومسلم 1907)",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: قبل أن تبدأ عملك، اسأل نفسك: لماذا أفعل هذا؟ فالجزاء مرهون بالجواب.",
-      "textEn": "Umar ibn al-Khattab reported that the Messenger of Allah, peace and blessings be upon him, said: \"Actions are but by intentions, and every person will have only what they intended. Whoever emigrated for Allah and His Messenger, their emigration is for Allah and His Messenger. Whoever emigrated for worldly gain or to marry a woman, their emigration is for that for which they emigrated.\"",
-      "reflectionEn": "DITHAR reflection: Before you begin any act, ask yourself: why am I doing this? For the reward is tied entirely to the answer."
-    },
-    {
-      "id": 2,
-      "topicAr": "حسن الخلق",
-      "textAr": "عن جابر بن عبدالله رضي الله عنهما قال: قال رسول الله صلى الله عليه وسلم: «إن من أحبكم إليّ وأقربكم مني مجلساً يوم القيامة أحاسنكم أخلاقاً»",
-      "narratorAr": "جابر بن عبدالله رضي الله عنهما",
-      "sourceAr": "سنن الترمذي، كتاب البر والصلة",
-      "referenceAr": "2018",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "حسّنه الترمذي، وصححه الألباني في صحيح الترمذي وصحيح الجامع (1548)",
-      "reflectionAr": "ومضة دِثار: أقرب الناس مجلساً من النبي يوم القيامة ليسوا الأكثر عبادة فحسب، بل الأحسن خلقاً.",
-      "textEn": "Jabir ibn Abdullah reported that the Messenger of Allah, peace and blessings be upon him, said: \"The most beloved of you to me and the closest of you to me in seating on the Day of Resurrection are those of you with the best character.\"",
-      "reflectionEn": "DITHAR reflection: Those seated closest to the Prophet on Judgment Day are not necessarily the most devout in ritual worship, but those with the finest character."
-    },
-    {
-      "id": 3,
-      "topicAr": "حسن الخلق",
-      "textAr": "عن أبي الدرداء رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «ما من شيء أثقل في ميزان المؤمن يوم القيامة من خلق حسن، وإن الله ليبغض الفاحش البذيء»",
-      "narratorAr": "أبو الدرداء رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب الأدب / سنن الترمذي",
-      "referenceAr": "أبو داود 4799، الترمذي 2002",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الترمذي والألباني",
-      "reflectionAr": "ومضة دِثار: في الميزان يوم القيامة، لا شيء أثقل من خلقك مع الناس اليوم.",
-      "textEn": "Abu al-Darda reported that the Messenger of Allah, peace and blessings be upon him, said: \"Nothing is heavier on the believer's scale on the Day of Resurrection than good character, and Allah detests the vulgar, obscene person.\"",
-      "reflectionEn": "DITHAR reflection: On the scale of Judgment Day, nothing outweighs your character with people today."
-    },
-    {
-      "id": 4,
-      "topicAr": "عدم إيذاء الآخرين",
-      "textAr": "عن عبدالله بن عمرو رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «المسلم من سلم المسلمون من لسانه ويده، والمهاجر من هجر ما نهى الله عنه»",
-      "narratorAr": "عبدالله بن عمرو رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب الإيمان / صحيح مسلم",
-      "referenceAr": "البخاري 10، مسلم 41",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: قبل أن تتكلم أو تتحرك اسأل نفسك: هل سلم مني من حولي؟",
-      "textEn": "Abdullah ibn Amr reported that the Prophet, peace and blessings be upon him, said: \"The Muslim is the one from whose tongue and hand other Muslims are safe, and the emigrant is the one who abandons what Allah has forbidden.\"",
-      "reflectionEn": "DITHAR reflection: Before you speak or act, ask: are the people around me safe from me?"
-    },
     {
       "id": 5,
       "topicAr": "حفظ اللسان",
@@ -87,19 +35,6 @@
       "reflectionEn": "DITHAR reflection: Two simple guarantees, and an entire Paradise: guard your tongue and your chastity."
     },
     {
-      "id": 7,
-      "topicAr": "حفظ اللسان",
-      "textAr": "عن أبي هريرة رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «إن العبد ليتكلم بالكلمة من رضوان الله لا يلقي لها بالاً يرفعه الله بها درجات، وإن العبد ليتكلم بالكلمة من سخط الله لا يلقي لها بالاً يهوي بها في جهنم»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الرقاق",
-      "referenceAr": "6478",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: الكلمة التي لا تزنها قبل أن تقولها قد ترفعك درجات أو تهوي بك في جهنم.",
-      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"A servant may utter a word pleasing to Allah without giving it much thought, and Allah raises him thereby in degrees. And a servant may utter a word displeasing to Allah without giving it much thought, and it casts him into Hell.\"",
-      "reflectionEn": "DITHAR reflection: The word you speak without weighing it first may raise you in rank, or cast you into Hell."
-    },
-    {
       "id": 8,
       "topicAr": "الأخوة الإيمانية",
       "textAr": "عن أنس بن مالك رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه»",
@@ -115,7 +50,7 @@
     {
       "id": 9,
       "topicAr": "التعامل مع الناس",
-      "textAr": "عن أبي موسى الأشعري رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إن المؤمن للمؤمن كالبنيان يشد بعضه بعضاً» وشبّك بين أصابعه",
+      "textAr": "عن أبي موسى الأشعري رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إن المؤمن للمؤمن كالبنيان يشد بعضه بعضاً» وشبّك أصابعه",
       "narratorAr": "أبو موسى الأشعري رضي الله عنه",
       "sourceAr": "صحيح البخاري، كتاب الصلاة / صحيح مسلم",
       "referenceAr": "البخاري 481، مسلم 2585",
@@ -269,97 +204,6 @@
       "reflectionEn": "DITHAR reflection: Every hardship you relieve for a believer today, you will find relieved for you on the Day of Resurrection."
     },
     {
-      "id": 21,
-      "topicAr": "قضاء حوائج الناس",
-      "textAr": "عن عبدالله بن عمر رضي الله عنهما أن رسول الله صلى الله عليه وسلم قال: «المسلم أخو المسلم، لا يظلمه ولا يسلمه، ومن كان في حاجة أخيه كان الله في حاجته، ومن فرّج عن مسلم كربة فرّج الله عنه بها كربة من كربات يوم القيامة، ومن ستر مسلماً ستره الله يوم القيامة»",
-      "narratorAr": "عبدالله بن عمر رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب المظالم / صحيح مسلم",
-      "referenceAr": "البخاري 2442، مسلم 2580",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: وأنت تقضي حاجة أخيك اليوم، تذكر: الله في حاجتك في تلك اللحظة بالذات.",
-      "textEn": "Abdullah ibn Umar reported that the Messenger of Allah, peace and blessings be upon him, said: \"The Muslim is the brother of the Muslim; he does not wrong him nor abandon him. Whoever is in need of his brother's help, Allah is in his need. Whoever relieves a Muslim of distress, Allah will relieve him of a distress from the distresses of the Day of Resurrection. Whoever conceals the faults of a Muslim, Allah will conceal his faults on the Day of Resurrection.\"",
-      "reflectionEn": "DITHAR reflection: As you meet your brother's need today, remember: Allah is meeting your need at that very moment."
-    },
-    {
-      "id": 22,
-      "topicAr": "الإحسان إلى الجار",
-      "textAr": "عن ابن عمر وعائشة رضي الله عنهم قالا: قال رسول الله صلى الله عليه وسلم: «ما زال جبريل يوصيني بالجار حتى ظننت أنه سيورّثه»",
-      "narratorAr": "عبدالله بن عمر وعائشة رضي الله عنهم",
-      "sourceAr": "صحيح البخاري، كتاب الأدب / صحيح مسلم",
-      "referenceAr": "البخاري 6014، مسلم 2624",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: لو كان حق الجار سيصل إلى الميراث، فكيف يليق بك أن تهمله؟",
-      "textEn": "Ibn Umar and Aisha reported that the Messenger of Allah, peace and blessings be upon him, said: \"Gabriel kept advising me about the neighbor until I thought he would make him an heir.\"",
-      "reflectionEn": "DITHAR reflection: If the neighbor's right nearly reached the point of inheritance, how could you ever neglect it?"
-    },
-    {
-      "id": 23,
-      "topicAr": "الإحسان إلى الجار",
-      "textAr": "عن أبي هريرة رضي الله عنه أن النبي صلى الله عليه وسلم قال: «والله لا يؤمن، والله لا يؤمن، والله لا يؤمن». قيل: من يا رسول الله؟ قال: «الذي لا يأمن جاره بوائقه»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الأدب",
-      "referenceAr": "6016",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: لن يكتمل إيمانك ما دام جارك لا يأمن شرك.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"By Allah, he does not believe. By Allah, he does not believe. By Allah, he does not believe.\" It was said, \"Who, O Messenger of Allah?\" He said, \"The one whose neighbor is not safe from his harm.\"",
-      "reflectionEn": "DITHAR reflection: Your faith cannot be complete while your neighbor is not safe from your harm."
-    },
-    {
-      "id": 24,
-      "topicAr": "بر الوالدين",
-      "textAr": "عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «رغم أنفه، ثم رغم أنفه، ثم رغم أنفه». قيل: من يا رسول الله؟ قال: «من أدرك أبويه عند الكبر، أحدهما أو كليهما، فلم يدخل الجنة»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب البر والصلة",
-      "referenceAr": "2551",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: وجود والديك أو أحدهما معك في كبرهما فرصة ذهبية للجنة؛ فلا تضيّعها.",
-      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"Let him be humbled, let him be humbled, let him be humbled.\" It was said, \"Who, O Messenger of Allah?\" He said, \"The one who reaches old age with one or both of his parents still alive, and does not enter Paradise (through serving them).\"",
-      "reflectionEn": "DITHAR reflection: Having your parents, or even one of them, alive in their old age is a golden opportunity for Paradise - do not waste it."
-    },
-    {
-      "id": 25,
-      "topicAr": "بر الوالدين",
-      "textAr": "عن معاوية بن جاهمة السلمي رضي الله عنه أن جاهمة جاء إلى النبي صلى الله عليه وسلم فقال: يا رسول الله، أردت أن أغزو وقد جئت أستشيرك، فقال: «هل لك من أم؟» قال: نعم، قال: «فالزمها، فإن الجنة تحت رجليها»",
-      "narratorAr": "معاوية بن جاهمة السلمي رضي الله عنه",
-      "sourceAr": "سنن النسائي، كتاب الجهاد",
-      "referenceAr": "3104",
-      "gradeAr": "صحيح (حسن صحيح)",
-      "gradingSourceAr": "صححه الحاكم ووافقه الذهبي، وحسّنه المنذري، وصححه الألباني",
-      "reflectionAr": "ومضة دِثار: قبل أن تسافر بحثاً عن أجر بعيد، تفقد: هل الجنة تحت قدمي أمك أقرب مما تظن؟",
-      "textEn": "Mu'awiyah ibn Jahimah reported that Jahimah came to the Prophet, peace and blessings be upon him, and said: \"O Messenger of Allah, I wanted to go fight, and I have come to consult you.\" He said, \"Do you have a mother?\" He said, \"Yes.\" He said, \"Then stay with her, for Paradise is beneath her feet.\"",
-      "reflectionEn": "DITHAR reflection: Before setting off in search of distant reward, check: is Paradise, beneath your mother's feet, closer than you think?"
-    },
-    {
-      "id": 26,
-      "topicAr": "تربية الأبناء",
-      "textAr": "عن عبدالله بن عمر رضي الله عنهما أن رسول الله صلى الله عليه وسلم قال: «ألا كلكم راعٍ، وكلكم مسؤول عن رعيته، فالأمير الذي على الناس راعٍ وهو مسؤول عن رعيته، والرجل راعٍ على أهل بيته وهو مسؤول عن رعيته، والمرأة راعية على بيت زوجها وولده وهي مسؤولة عنهم، والعبد راعٍ على مال سيده وهو مسؤول عنه، ألا فكلكم راعٍ وكلكم مسؤول عن رعيته»",
-      "narratorAr": "عبدالله بن عمر رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب الجمعة / صحيح مسلم",
-      "referenceAr": "البخاري 893، مسلم 1829",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: أنت راعٍ في بيتك اليوم، وغداً سؤال محدد ينتظرك عن رعيتك.",
-      "textEn": "Abdullah ibn Umar reported that the Messenger of Allah, peace and blessings be upon him, said: \"Each of you is a shepherd, and each of you is responsible for his flock. The leader is a shepherd responsible for his flock; the man is a shepherd in his family and responsible for his flock; the woman is a shepherd in her husband's house and responsible for her flock...\"",
-      "reflectionEn": "DITHAR reflection: You are a shepherd in your home today, and tomorrow a specific question awaits you about your flock."
-    },
-    {
-      "id": 27,
-      "topicAr": "تربية الأبناء",
-      "textAr": "عن عمرو بن شعيب عن أبيه عن جده رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «مروا أولادكم بالصلاة وهم أبناء سبع سنين، واضربوهم عليها وهم أبناء عشر، وفرّقوا بينهم في المضاجع»",
-      "narratorAr": "عبدالله بن عمرو بن العاص رضي الله عنهما (عن جده)",
-      "sourceAr": "سنن أبي داود، كتاب الصلاة",
-      "referenceAr": "495",
-      "gradeAr": "حسن صحيح",
-      "gradingSourceAr": "حسّنه الحاكم وصححه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: تربية ابنك على الصلاة لها مواعيد محددة؛ فلا تؤجلها حتى يكبر.",
-      "textEn": "Amr ibn Shu'ayb reported from his father from his grandfather that the Messenger of Allah, peace and blessings be upon him, said: \"Command your children to pray when they are seven years old, and discipline them for it when they are ten, and separate them in their beds.\"",
-      "reflectionEn": "DITHAR reflection: Raising your child to pray has specific milestones - do not postpone it until he is grown."
-    },
-    {
       "id": 28,
       "topicAr": "التعامل مع الزوجة والأسرة",
       "textAr": "عن عائشة رضي الله عنها قالت: قال رسول الله صلى الله عليه وسلم: «خيركم خيركم لأهله، وأنا خيركم لأهلي»",
@@ -384,19 +228,6 @@
       "reflectionAr": "ومضة دِثار: إن كرهت خصلة في شريك حياتك، فتذكر خصالاً أخرى ترضيك فيه.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Let no believing man hate a believing woman; if he dislikes one trait in her, he will be pleased with another.\"",
       "reflectionEn": "DITHAR reflection: If you dislike one trait in your spouse, remember other traits that please you."
-    },
-    {
-      "id": 30,
-      "topicAr": "الصبر",
-      "textAr": "عن عبدالله بن عباس رضي الله عنهما قال: كنت خلف النبي صلى الله عليه وسلم يوماً فقال: «يا غلام، إني أعلمك كلمات: احفظ الله يحفظك، احفظ الله تجده تجاهك، إذا سألت فاسأل الله، وإذا استعنت فاستعن بالله، واعلم أن الأمة لو اجتمعت على أن ينفعوك بشيء لم ينفعوك إلا بشيء قد كتبه الله لك، وإن اجتمعوا على أن يضروك بشيء لم يضروك إلا بشيء قد كتبه الله عليك، رُفعت الأقلام وجفّت الصحف»",
-      "narratorAr": "عبدالله بن عباس رضي الله عنهما",
-      "sourceAr": "سنن الترمذي، كتاب صفة القيامة",
-      "referenceAr": "2516",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الترمذي والألباني",
-      "reflectionAr": "ومضة دِثار: لن ينفعك أحد إلا بما كتبه الله لك، ولن يضرك أحد إلا بما كتبه الله عليك؛ فاطمئن قلبك بهذا اليقين.",
-      "textEn": "Abdullah ibn Abbas reported: I was riding behind the Prophet, peace and blessings be upon him, one day, and he said: \"Young man, I will teach you some words: Be mindful of Allah and He will protect you. Be mindful of Allah and you will find Him in front of you. If you ask, ask Allah; and if you seek help, seek help from Allah. And know that if the whole nation were to gather to benefit you with something, they would not benefit you except with something Allah had already decreed for you; and if they were to gather to harm you with something, they would not harm you except with something Allah had already decreed against you. The pens have been lifted and the pages have dried.\"",
-      "reflectionEn": "DITHAR reflection: No one can benefit you except by what Allah has already decreed for you, and no one can harm you except by what Allah has already decreed against you - let your heart rest in this certainty."
     },
     {
       "id": 31,
@@ -425,19 +256,6 @@
       "reflectionEn": "DITHAR reflection: Every injustice you commit today turns into darkness surrounding you on the Day of Resurrection."
     },
     {
-      "id": 33,
-      "topicAr": "النهي عن الظلم",
-      "textAr": "عن أبي ذر الغفاري رضي الله عنه عن النبي صلى الله عليه وسلم فيما يرويه عن ربه عز وجل أنه قال: «يا عبادي، إني حرّمت الظلم على نفسي، وجعلته بينكم محرماً؛ فلا تظالموا. يا عبادي، كلكم ضالّ إلا من هديته، فاستهدوني أهدكم. يا عبادي، كلكم جائع إلا من أطعمته، فاستطعموني أُطعمكم. يا عبادي، كلكم عارٍ إلا من كسوته، فاستكسوني أكسكم. يا عبادي، إنكم تخطئون بالليل والنهار، وأنا أغفر الذنوب جميعاً، فاستغفروني أغفر لكم. يا عبادي، إنكم لن تبلغوا ضري فتضروني، ولن تبلغوا نفعي فتنفعوني. يا عبادي، لو أن أولكم وآخركم وإنسكم وجنكم كانوا على أتقى قلب رجل واحد منكم ما زاد ذلك في ملكي شيئاً. يا عبادي، لو أن أولكم وآخركم وإنسكم وجنكم كانوا على أفجر قلب رجل واحد منكم ما نقص ذلك من ملكي شيئاً. يا عبادي، لو أن أولكم وآخركم وإنسكم وجنكم قاموا في صعيد واحد فسألوني، فأعطيت كل إنسان مسألته، ما نقص ذلك مما عندي إلا كما ينقص المخيط إذا أُدخل البحر. يا عبادي، إنما هي أعمالكم أحصيها لكم، ثم أوفيكم إياها، فمن وجد خيراً فليحمد الله، ومن وجد غير ذلك فلا يلومنّ إلا نفسه»",
-      "narratorAr": "أبو ذر الغفاري رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب البر والصلة (الحديث القدسي)",
-      "referenceAr": "2577",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: كل ما تملكه من هداية وطعام وكسوة ومغفرة إنما هو محض عطاء من الله؛ فاطلبه منه وحده.",
-      "textEn": "Abu Dharr al-Ghifari reported that the Prophet, peace and blessings be upon him, said, narrating from his Lord: \"O My servants, I have forbidden injustice for Myself and made it forbidden among you, so do not oppress one another. O My servants, all of you are astray except one whom I have guided, so seek guidance from Me and I will guide you. O My servants, all of you are hungry except one whom I have fed, so seek food from Me and I will feed you. O My servants, all of you are naked except one whom I have clothed, so seek clothing from Me and I will clothe you. O My servants, you sin by night and day, and I forgive all sins, so seek forgiveness from Me and I will forgive you. O My servants, you will not attain harming Me so as to harm Me, nor will you attain benefiting Me so as to benefit Me. O My servants, if the first of you and the last of you, the humans among you and the jinn among you, were as pious as the most pious heart of any one man among you, that would not increase My dominion in anything. O My servants, if the first of you and the last of you, the humans among you and the jinn among you, were as wicked as the most wicked heart of any one man among you, that would not decrease My dominion in anything. O My servants, if the first of you and the last of you, the humans among you and the jinn among you, were to stand in one place and ask of Me, and I gave everyone what he asked, that would not decrease what I have, except as a needle decreases the sea when dipped into it. O My servants, it is only your deeds that I record for you, then I compensate you for them; so whoever finds good, let him praise Allah, and whoever finds otherwise, let him blame no one but himself.\"",
-      "reflectionEn": "DITHAR reflection: Every bit of guidance, food, clothing, and forgiveness you possess is a pure gift from Allah - so seek it from Him alone."
-    },
-    {
       "id": 34,
       "topicAr": "ستر الناس",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من ستر مسلماً ستره الله في الدنيا والآخرة»",
@@ -462,19 +280,6 @@
       "reflectionAr": "ومضة دِثار: يكفيك من الشر أن تحتقر أخاك، وإن لم تؤذه بشيء آخر.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"It is enough evil for a man to despise his Muslim brother.\"",
       "reflectionEn": "DITHAR reflection: It is enough evil that you look down on your brother, even if you harm him in no other way."
-    },
-    {
-      "id": 36,
-      "topicAr": "الصدقة بأشكالها المختلفة",
-      "textAr": "عن جابر بن عبدالله رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «كل معروف صدقة»",
-      "narratorAr": "جابر بن عبدالله رضي الله عنهما",
-      "sourceAr": "الأدب المفرد للبخاري، وأصله في صحيح مسلم من حديث حذيفة بنحوه",
-      "referenceAr": "الأدب المفرد 225",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الألباني في صحيح الأدب المفرد",
-      "reflectionAr": "ومضة دِثار: لا تشترط المال لتتصدق؛ كل معروف تفعله اليوم صدقة كاملة الأجر.",
-      "textEn": "Jabir ibn Abdullah reported that the Prophet, peace and blessings be upon him, said: \"Every act of kindness is charity.\"",
-      "reflectionEn": "DITHAR reflection: Do not wait until you have money to give charity; every act of kindness you do today is complete charity."
     },
     {
       "id": 37,
@@ -503,45 +308,6 @@
       "reflectionEn": "DITHAR reflection: In every conversation today, choose your kind words; they are charity that costs you nothing."
     },
     {
-      "id": 39,
-      "topicAr": "حقوق المسلمين",
-      "textAr": "عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «حق المسلم على المسلم ست». قيل: ما هن يا رسول الله؟ قال: «إذا لقيته فسلم عليه، وإذا دعاك فأجبه، وإذا استنصحك فانصح له، وإذا عطس فحمد الله فشمّته، وإذا مرض فعده، وإذا مات فاتبعه»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب السلام",
-      "referenceAr": "2162",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: راجع اليوم: هل أديت هذه الحقوق الستة الأساسية لإخوانك؟",
-      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"The right of a Muslim over a Muslim is six.\" It was said, \"What are they, O Messenger of Allah?\" He said, \"When you meet him, greet him; when he invites you, accept; when he seeks your advice, advise him; when he sneezes and praises Allah, respond to him; when he is ill, visit him; and when he dies, follow his funeral.\"",
-      "reflectionEn": "DITHAR reflection: Check today: have you fulfilled these six basic rights owed to your fellow believers?"
-    },
-    {
-      "id": 40,
-      "topicAr": "التعامل مع الاختلاف / أثر الرحمة واللين",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا تحاسدوا، ولا تناجشوا، ولا تباغضوا، ولا تدابروا، ولا يبع بعضكم على بيع بعض، وكونوا عباد الله إخواناً»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الأدب / صحيح مسلم",
-      "referenceAr": "البخاري 6064، مسلم 2559",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: بدل أن تحسد أو تتدابر مع أحد اليوم، اختر أن تكون أخاً له فحسب.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Do not envy one another, do not artificially inflate prices against one another, do not hate one another, do not turn away from one another, and let none of you undercut the sale of another; and be, O servants of Allah, brothers.\"",
-      "reflectionEn": "DITHAR reflection: Instead of envying or turning away from someone today, simply choose to be their brother."
-    },
-    {
-      "id": 41,
-      "topicAr": "حسن الظن",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إياكم والظن، فإن الظن أكذب الحديث، ولا تجسسوا، ولا تحسسوا، ولا تنافسوا، ولا تحاسدوا، ولا تباغضوا، ولا تدابروا، وكونوا عباد الله إخواناً»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الأدب / صحيح مسلم",
-      "referenceAr": "البخاري 6064، مسلم 2563",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: قبل أن تصدق ظنك السيء بأحد، تذكر: هو أكذب حديث تحدّثك به نفسك.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Beware of suspicion, for suspicion is the most untruthful form of speech. Do not spy on one another, do not seek out others' faults, do not compete enviously, do not envy one another, do not hate one another, do not turn away from one another; and be, O servants of Allah, brothers.\"",
-      "reflectionEn": "DITHAR reflection: Before you believe your bad assumption about someone, remember: it is the most untruthful thing your own mind can tell you."
-    },
-    {
       "id": 42,
       "topicAr": "عدم نقل الكلام والإفساد بين الناس",
       "textAr": "عن حذيفة بن اليمان رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا يدخل الجنة قتّات»",
@@ -553,32 +319,6 @@
       "reflectionAr": "ومضة دِثار: فكّر مرتين قبل أن تنقل كلاماً بين طرفين؛ فمصير ناقل الفتنة خطير.",
       "textEn": "Hudhayfah ibn al-Yaman reported that the Prophet, peace and blessings be upon him, said: \"One who spreads malicious talk will not enter Paradise.\"",
       "reflectionEn": "DITHAR reflection: Think twice before you carry words between two people - the fate of one who spreads discord is grave."
-    },
-    {
-      "id": 43,
-      "topicAr": "أثر الرحمة واللين",
-      "textAr": "عن جرير بن عبدالله رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من يُحرم الرفق يُحرم الخير كله»",
-      "narratorAr": "جرير بن عبدالله رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب البر والصلة",
-      "referenceAr": "2592",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: إن حُرمت الرفق في تعاملك اليوم، فقد حُرمت الخير كله لا بعضه.",
-      "textEn": "Jarir ibn Abdullah reported that the Prophet, peace and blessings be upon him, said: \"Whoever is deprived of gentleness is deprived of all good.\"",
-      "reflectionEn": "DITHAR reflection: If you are deprived of gentleness in how you deal with people today, you are deprived of all goodness, not just some of it."
-    },
-    {
-      "id": 44,
-      "topicAr": "اغتنام الفرص اليومية لفعل الخير",
-      "textAr": "عن عبدالله بن عباس رضي الله عنهما قال: قال رسول الله صلى الله عليه وسلم: «اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك»",
-      "narratorAr": "عبدالله بن عباس رضي الله عنهما",
-      "sourceAr": "المستدرك للحاكم",
-      "referenceAr": "صححه الحاكم، وصححه الألباني في صحيح الجامع 1077",
-      "gradeAr": "صحيح لغيره (حسن)",
-      "gradingSourceAr": "صححه الألباني في صحيح الجامع وصحيح الترغيب",
-      "reflectionAr": "ومضة دِثار: انظر إلى الخمسة التي بين يديك الآن: شبابك، صحتك، غناك، فراغك، حياتك؛ فأيها لا تستثمره اليوم سيندبك عليه غداً.",
-      "textEn": "Abdullah ibn Abbas reported that the Messenger of Allah, peace and blessings be upon him, said: \"Take advantage of five before five: your youth before your old age, your health before your illness, your wealth before your poverty, your free time before your busyness, and your life before your death.\"",
-      "reflectionEn": "DITHAR reflection: Look at the five things in your hands right now: your youth, health, wealth, free time, and life - whichever you fail to invest today, you will mourn tomorrow."
     },
     {
       "id": 45,
@@ -607,71 +347,6 @@
       "reflectionEn": "DITHAR reflection: Even if what you said about your brother is true, it is still backbiting if he would dislike hearing it."
     },
     {
-      "id": 47,
-      "topicAr": "عدم إيذاء الآخرين",
-      "textAr": "عن أبي سعيد الخدري رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «لا ضرر ولا ضرار»",
-      "narratorAr": "أبو سعيد الخدري رضي الله عنه",
-      "sourceAr": "سنن ابن ماجه، كتاب الأحكام",
-      "referenceAr": "2340",
-      "gradeAr": "حسن (له طرق يقوي بعضها بعضاً)",
-      "gradingSourceAr": "صححه الألباني بمجموع طرقه في السلسلة الصحيحة رقم 250، وحسّنه في صحيح ابن ماجه",
-      "reflectionAr": "ومضة دِثار: قبل أي قرار يمسّ غيرك اليوم، اسأل: هل فيه ضرر عليه أو مضارّة له؟",
-      "textEn": "Abu Sa'id al-Khudri reported that the Messenger of Allah, peace and blessings be upon him, said: \"There is no harming, nor reciprocating harm.\"",
-      "reflectionEn": "DITHAR reflection: Before any decision today that affects someone else, ask: does this cause them harm, or return harm for harm?"
-    },
-    {
-      "id": 48,
-      "topicAr": "رحمة الصغير وتوقير الكبير",
-      "textAr": "عن أبي هريرة رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «ليس منا من لم يرحم صغيرنا، ويوقّر كبيرنا»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "الأدب المفرد للبخاري",
-      "referenceAr": "353",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "صححه الحاكم، وحسّنه محققو الأدب المفرد، وله شواهد عند الترمذي وأبي داود بلفظ قريب من حديث عمرو بن شعيب",
-      "reflectionAr": "ومضة دِثار: طريقتك في التعامل مع صغار السن وكبارهم اليوم تكشف مدى اتباعك لهدي النبي.",
-      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"He is not one of us who does not show mercy to our young and does not show respect to our elders.\"",
-      "reflectionEn": "DITHAR reflection: How you treat the young and the elderly today reveals how closely you follow the Prophet's example."
-    },
-    {
-      "id": 49,
-      "topicAr": "فضل الدعوة إلى الله",
-      "textAr": "عن سهل بن سعد رضي الله عنه أن رسول الله صلى الله عليه وسلم قال لعلي يوم خيبر: «انفذ على رِسلك حتى تنزل بساحتهم، ثم ادعهم إلى الإسلام، وأخبرهم بما يجب عليهم من حق الله فيه، فوالله لأن يهدي الله بك رجلاً واحداً خير لك من حُمر النَّعَم»",
-      "narratorAr": "سهل بن سعد رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب فضائل الصحابة / صحيح مسلم",
-      "referenceAr": "متفق عليه",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: هداية شخص واحد على يدك خير لك من أثمن ما يمكن أن تملكه في هذه الدنيا.",
-      "textEn": "Sahl ibn Sa'd reported that the Messenger of Allah, peace and blessings be upon him, said to Ali on the day of Khaybar: \"Proceed calmly until you reach their courtyard, then invite them to Islam, and inform them of what is due upon them of Allah's right therein. For by Allah, if Allah guides a single man through you, that is better for you than red camels [the most prized wealth of the Arabs].\"",
-      "reflectionEn": "DITHAR reflection: Guiding a single person through your efforts is better for you than the most prized wealth this world has to offer."
-    },
-    {
-      "id": 50,
-      "topicAr": "الصدق ينجي / حفظ اللسان",
-      "textAr": "عن عبدالله بن عمرو رضي الله عنهما قال: قال رسول الله صلى الله عليه وسلم: «من صمت نجا»",
-      "narratorAr": "عبدالله بن عمرو رضي الله عنهما",
-      "sourceAr": "سنن الترمذي، كتاب صفة القيامة",
-      "referenceAr": "2501",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه المنذري وصححه الألباني في صحيح الجامع 6367",
-      "reflectionAr": "ومضة دِثار: إذا ترددت في كلمة فاختر الصمت؛ فمن صمت نجا.",
-      "textEn": "Abdullah ibn Amr reported that the Messenger of Allah, peace and blessings be upon him, said: \"Whoever remains silent is saved.\"",
-      "reflectionEn": "DITHAR reflection: When in doubt about a word, choose silence - for whoever remains silent is saved."
-    },
-    {
-      "id": 51,
-      "topicAr": "عظمة رضا الله وجزائه (نادر ومؤثر)",
-      "textAr": "عن عتبة بن عبد رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «لو أنَّ رجلًا يُجَرُّ على وجهه من يوم وُلِد إلى يوم يموت هَرَمًا في مرضاة الله عز وجل، لحقّره يوم القيامة»",
-      "narratorAr": "عتبة بن عبد (أبو الوليد) رضي الله عنه",
-      "sourceAr": "مسند الإمام أحمد، والتاريخ الكبير للبخاري",
-      "referenceAr": "أحمد 17649 (وروي أيضاً بمعناه عن محمد بن أبي عميرة)",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في السلسلة الصحيحة رقم 446-447، وصححه في صحيح الجامع 5249، مع ملاحظة أن أحد طرقه فيه بقية بن الوليد وعنعنته تُضعَّف، لكن له شواهد ترقى به إلى الحسن",
-      "reflectionAr": "ومضة دِثار: مهما ظننت أن الطاعة كلفتك غالياً، فستراها يوم القيامة أهون بكثير مما كنت تتصور.",
-      "textEn": "Utbah ibn Abd reported that the Messenger of Allah, peace and blessings be upon him, said: \"If a man were dragged on his face from the day he was born until the day he died of old age, in seeking Allah's pleasure, he would still consider it insignificant on the Day of Resurrection.\"",
-      "reflectionEn": "DITHAR reflection: However costly you think your obedience has been, you will see on the Day of Resurrection that it was far lighter than you imagined."
-    },
-    {
       "id": 52,
       "topicAr": "حسن الخلق وترك الجدال (نادر)",
       "textAr": "عن أبي أمامة الباهلي رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «أنا زعيمٌ ببيتٍ في ربَض الجنة لمن ترك المِراء وإن كان محقاً، وببيتٍ في وسط الجنة لمن ترك الكذب وإن كان مازحاً، وببيتٍ في أعلى الجنة لمن حسُن خلقه»",
@@ -679,23 +354,10 @@
       "sourceAr": "سنن أبي داود، كتاب الأدب",
       "referenceAr": "4800",
       "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح أبي داود وصحيح الجامع (1464)، وقال المنذري: لا ينزل عن درجة الحسن وقد يكون على شرط الصحيحين أو أحدهما",
+      "gradingSourceAr": "حسّنه الألباني في صحيح أبي داود",
       "reflectionAr": "ومضة دِثار: حتى لو كنت محقاً في نقاشك، اترك الجدال؛ فبيت كامل في الجنة ينتظر من يفعل ذلك.",
       "textEn": "Abu Umamah al-Bahili reported that the Messenger of Allah, peace and blessings be upon him, said: \"I guarantee a house on the outskirts of Paradise for one who leaves off argument even if he is in the right; a house in the middle of Paradise for one who leaves off lying even in jest; and a house in the highest part of Paradise for one who perfects his character.\"",
       "reflectionEn": "DITHAR reflection: Even when you are right in an argument, walk away from it - an entire house in Paradise awaits whoever does."
-    },
-    {
-      "id": 53,
-      "topicAr": "عظمة نعيم الجنة (نادر ومذهل)",
-      "textAr": "عن أبي هريرة وأبي سعيد الخدري رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «تحاجَّت الجنة والنار، فقالت النار: أوثرت بالمتكبرين والمتجبرين، وقالت الجنة: مالي لا يدخلني إلا ضعفاء الناس وسقطهم؟ فقال الله للجنة: أنت رحمتي أرحم بك من أشاء من عبادي، وقال للنار: أنت عذابي أعذب بك من أشاء من عبادي، ولكلتيكما عليّ ملؤها»",
-      "narratorAr": "أبو هريرة وأبو سعيد الخدري رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب التوحيد / صحيح مسلم، كتاب الجنة",
-      "referenceAr": "البخاري 4850، مسلم 2846",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: إن كنت تشعر بالضعف أو التواضع في نظر الناس، فتذكر: الجنة تشتكي من قلة من مثلك فيها لا من كثرتهم.",
-      "textEn": "Abu Hurayrah and Abu Sa'id al-Khudri reported that the Prophet, peace and blessings be upon him, said: \"Paradise and the Fire argued. The Fire said, 'I have been favored with the arrogant and the tyrants.' Paradise said, 'What is the matter with me, that only the weak and lowly among people enter me?' So Allah said to Paradise, 'You are My mercy, by which I show mercy to whomever I will of My servants,' and He said to the Fire, 'You are My punishment, by which I punish whomever I will of My servants, and each of you will be filled.'\"",
-      "reflectionEn": "DITHAR reflection: If you feel weak or looked down upon by people, remember: Paradise complains there are too few like you in it, not too many."
     },
     {
       "id": 54,
@@ -711,84 +373,6 @@
       "reflectionEn": "DITHAR reflection: However great your sins, the door of repentance remains open - and a single, sincere hand's-span of effort toward it may be enough to save you."
     },
     {
-      "id": 55,
-      "topicAr": "خطورة السؤال دون حاجة (صورة نادرة مرعبة)",
-      "textAr": "عن ابن عمر رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «لا يزال الرجل يسأل الناس حتى يأتي يوم القيامة ليس في وجهه مزعة لحم»",
-      "narratorAr": "عبدالله بن عمر رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب الزكاة / صحيح مسلم",
-      "referenceAr": "البخاري 1474، مسلم 1040",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: كل سؤال للناس بلا حاجة حقيقية يترك أثراً خفياً، يظهر يوم القيامة على وجهك بالذات.",
-      "textEn": "Abdullah ibn Umar reported that the Prophet, peace and blessings be upon him, said: \"A man continues to beg from people until he comes on the Day of Resurrection without a shred of flesh on his face.\"",
-      "reflectionEn": "DITHAR reflection: Every unnecessary request you make of people leaves a hidden mark, one that will appear on your very face on the Day of Resurrection."
-    },
-    {
-      "id": 56,
-      "topicAr": "القرب من الله عبر النوافل (حديث قدسي نادر العمق)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم فيما يرويه عن ربه عز وجل قال: «من عادى لي ولياً فقد آذنته بالحرب، وما تقرب إليّ عبدي بشيء أحب إليّ مما افترضته عليه، وما يزال عبدي يتقرب إليّ بالنوافل حتى أحبه، فإذا أحببته كنت سمعه الذي يسمع به، وبصره الذي يبصر به، ويده التي يبطش بها، ورجله التي يمشي بها، ولئن سألني لأعطينه، ولئن استعاذني لأعيذنه»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الرقاق (حديث قدسي)",
-      "referenceAr": "6502",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: نوافلك الخفية اليوم قد تكون طريقك إلى أن يتولى الله سمعك وبصرك ويدك.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said, narrating from his Lord: \"Whoever shows hostility to a friend of Mine, I have declared war upon him. My servant does not draw near to Me with anything more beloved to Me than what I have made obligatory upon him. My servant continues to draw near to Me with voluntary acts until I love him. When I love him, I am his hearing with which he hears, his sight with which he sees, his hand with which he strikes, and his foot with which he walks. If he asks Me, I will surely give him, and if he seeks refuge in Me, I will surely grant him refuge.\"",
-      "reflectionEn": "DITHAR reflection: Your hidden voluntary acts of worship today may be your path to having Allah Himself become your hearing, your sight, and your hand."
-    },
-    {
-      "id": 57,
-      "topicAr": "خطورة خواتيم الأعمال (نادر ومقلق)",
-      "textAr": "عن عبدالله بن مسعود رضي الله عنه، وهو الصادق المصدوق، قال: حدثنا رسول الله صلى الله عليه وسلم: «إن أحدكم يُجمع خلقه في بطن أمه أربعين يوماً نطفة، ثم يكون علقة مثل ذلك، ثم يكون مضغة مثل ذلك، ثم يرسل إليه الملَك فينفخ فيه الروح، ويؤمر بأربع كلمات: بكتب رزقه، وأجله، وعمله، وشقيّ أو سعيد، فوالذي لا إله غيره، إن أحدكم ليعمل بعمل أهل الجنة حتى ما يكون بينه وبينها إلا ذراع فيسبق عليه الكتاب فيعمل بعمل أهل النار فيدخلها، وإن أحدكم ليعمل بعمل أهل النار حتى ما يكون بينه وبينها إلا ذراع فيسبق عليه الكتاب فيعمل بعمل أهل الجنة فيدخلها»",
-      "narratorAr": "عبدالله بن مسعود رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب بدء الخلق / صحيح مسلم، كتاب القدر",
-      "referenceAr": "البخاري 3208، مسلم 2643",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: لا تغترّ بطول طاعتك؛ فالمسافة بين الجنة والنار قد تكون ذراعاً واحداً فقط، والعبرة بالخاتمة.",
-      "textEn": "Abdullah ibn Mas'ud, the truthful and believed one, reported: The Messenger of Allah, peace and blessings be upon him, told us: \"Each of you is assembled in his mother's womb for forty days as a drop, then he becomes a clot for a similar period, then a morsel of flesh for a similar period, then the angel is sent to him and breathes the soul into him, and is commanded with four matters: to record his provision, his lifespan, his deeds, and whether he will be wretched or blessed. By the One besides whom there is no god, one of you may do the deeds of the people of Paradise until there is only an arm's length between him and it, then what has been written overtakes him and he does the deeds of the people of the Fire and enters it. And one of you may do the deeds of the people of the Fire until there is only an arm's length between him and it, then what has been written overtakes him and he does the deeds of the people of Paradise and enters it.\"",
-      "reflectionEn": "DITHAR reflection: Do not be deceived by how long you have been obedient - the distance between Paradise and the Fire can be a single arm's length, and what matters most is how it ends."
-    },
-    {
-      "id": 58,
-      "topicAr": "حق الجار في الطعام (نادر وصادم)",
-      "textAr": "عن أنس بن مالك رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «ما آمن بي من بات شبعان وجاره جائع إلى جنبه وهو يعلم به»",
-      "narratorAr": "أنس بن مالك رضي الله عنه",
-      "sourceAr": "المعجم الكبير للطبراني، ورواه البزار في مسنده",
-      "referenceAr": "الطبراني 754، البزار (كما في مجمع الزوائد 8/170)",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "قال الهيثمي في مجمع الزوائد: إسناد البزار حسن",
-      "reflectionAr": "ومضة دِثار: قبل أن تنام شبعان الليلة تذكّر جارك؛ فإيمانك مرهون بمعرفتك بحاله لا بتجاهله.",
-      "textEn": "Anas ibn Malik reported that the Messenger of Allah, peace and blessings be upon him, said: \"He has not believed in me who sleeps with a full stomach while his neighbor beside him is hungry, and he knows it.\"",
-      "reflectionEn": "DITHAR reflection: Before you sleep full tonight, remember your neighbor - your faith is bound to your awareness of his condition, not to ignoring it."
-    },
-    {
-      "id": 59,
-      "topicAr": "خطر مجاملة الظالمين (نادر ومهم لزماننا)",
-      "textAr": "عن كعب بن عُجرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «سيكون بعدي أمراء، فمن دخل عليهم فصدّقهم بكذبهم، وأعانهم على ظلمهم، فليس مني ولست منه، وليس بوارد عليّ الحوض، ومن لم يدخل عليهم، ولم يعنهم على ظلمهم، ولم يصدقهم بكذبهم، فهو مني وأنا منه، وهو وارد عليّ الحوض»",
-      "narratorAr": "كعب بن عُجرة رضي الله عنه",
-      "sourceAr": "سنن الترمذي، كتاب صفة القيامة / سنن النسائي",
-      "referenceAr": "الترمذي 614",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح الترمذي وصحيح النسائي",
-      "reflectionAr": "ومضة دِثار: موقفك من الظلم اليوم يحدد مباشرة: هل أنت ممن يرد على النبي حوضه يوم القيامة أم لا؟",
-      "textEn": "Ka'b ibn Ujrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"There will be rulers after me. Whoever enters upon them and affirms their lies and helps them in their oppression is not of me and I am not of him, and he will not come to me at the Pond. And whoever does not enter upon them, does not help them in their oppression, and does not affirm their lies, is of me and I am of him, and he will come to me at the Pond.\"",
-      "reflectionEn": "DITHAR reflection: Your stance toward injustice today directly determines whether you will be among those who come to the Prophet at his Pond on the Day of Resurrection."
-    },
-    {
-      "id": 60,
-      "topicAr": "دقة لغوية نبوية نادرة عن النفس",
-      "textAr": "عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «لا يقولن أحدكم: خبثت نفسي، ولكن ليقل: لقست نفسي»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الأدب",
-      "referenceAr": "6179",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: حتى في وصفك لمزاجك السيء، اختر كلمة أرقى؛ فالنبي كان يهتم بهذا التفصيل الدقيق.",
-      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"None of you should say, 'My soul has become vile (khabuthat),' but rather let him say, 'My soul feels unsettled (laqisat).'\"",
-      "reflectionEn": "DITHAR reflection: Even in describing your own bad mood, choose the more refined word - the Prophet paid attention to even this small detail."
-    },
-    {
       "id": 61,
       "topicAr": "نصرة الدين بأسباب غير متوقعة (نادر ومدهش)",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إن الله ليؤيد هذا الدين بالرجل الفاجر»",
@@ -800,32 +384,6 @@
       "reflectionAr": "ومضة دِثار: لا تظن أن نصرة الدين محصورة في الأتقياء فقط؛ فتدبير الله أوسع مما تتخيل.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Indeed, Allah supports this religion even through a immoral man.\"",
       "reflectionEn": "DITHAR reflection: Do not assume that the support of true religion comes only through the pious - Allah's planning is far wider than you imagine."
-    },
-    {
-      "id": 62,
-      "topicAr": "عظمة قدر الحياء (نادر التفصيل)",
-      "textAr": "عن أبي مسعود عقبة بن عمرو الأنصاري رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «إن مما أدرك الناس من كلام النبوة الأولى: إذا لم تستحِ فاصنع ما شئت»",
-      "narratorAr": "أبو مسعود عقبة بن عمرو الأنصاري رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب أحاديث الأنبياء",
-      "referenceAr": "3483",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: إذا أردت أن تعرف هل فعلك صواب أم خطأ، اسأل حياءك أولاً قبل أن تسأل غيره.",
-      "textEn": "Abu Mas'ud Uqbah ibn Amr al-Ansari reported that the Messenger of Allah, peace and blessings be upon him, said: \"Among what people have retained of the words of earlier prophethood is: if you feel no shame, then do as you wish.\"",
-      "reflectionEn": "DITHAR reflection: If you want to know whether an act is right or wrong, consult your sense of shame before consulting anything else."
-    },
-    {
-      "id": 63,
-      "topicAr": "تجانس النفوس (نادر ومدهش)",
-      "textAr": "عن عائشة رضي الله عنها قالت: سمعت رسول الله صلى الله عليه وسلم يقول: «الأرواح جنود مجنّدة، فما تعارف منها ائتلف، وما تناكر منها اختلف»",
-      "narratorAr": "عائشة رضي الله عنها (وأبو هريرة بلفظ قريب)",
-      "sourceAr": "صحيح البخاري، كتاب أحاديث الأنبياء / صحيح مسلم، كتاب البر والصلة",
-      "referenceAr": "البخاري 3336، مسلم 2638",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: إذا انجذبت فجأة لشخص لم تعرفه من قبل، فقد تكون أرواحكما ممن (تعارف) في عالم الذر.",
-      "textEn": "Aisha reported that she heard the Messenger of Allah, peace and blessings be upon him, say: \"Souls are like conscripted troops: those that recognized each other became attached, and those that did not, differed.\"",
-      "reflectionEn": "DITHAR reflection: If you feel an instant, unexplained connection to someone you just met, your souls may be among those that \"recognized\" one another in a realm beyond this world."
     },
     {
       "id": 64,
@@ -854,19 +412,6 @@
       "reflectionEn": "DITHAR reflection: If your contentment and anger depend entirely on what you own, examine your heart - you may be its slave without realizing it."
     },
     {
-      "id": 66,
-      "topicAr": "لقاء الله (نادر التداول رغم عمقه)",
-      "textAr": "عن عائشة رضي الله عنها عن النبي صلى الله عليه وسلم قال: «من أحب لقاء الله أحب الله لقاءه، ومن كره لقاء الله كره الله لقاءه». قالت: يا نبي الله، أو بعض أزواجه، إنا لنكره الموت، قال: «ليس ذلك، ولكن المؤمن إذا حضره الموت بُشّر برضوان الله وكرامته، فليس شيء أحب إليه مما أمامه، فأحب لقاء الله وأحب الله لقاءه، وإن الكافر إذا حُضر بُشّر بعذاب الله وعقوبته، فليس شيء أكره إليه مما أمامه، كره لقاء الله وكره الله لقاءه»",
-      "narratorAr": "عائشة رضي الله عنها",
-      "sourceAr": "صحيح البخاري، كتاب الرقاق / صحيح مسلم",
-      "referenceAr": "البخاري 6507، مسلم 2684",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: خوفك الفطري من الموت لا يعني أنك تكره لقاء الله؛ فالعبرة بحالك عند الاحتضار لا بمشاعرك اليوم.",
-      "textEn": "Aisha reported that the Prophet, peace and blessings be upon him, said: \"Whoever loves to meet Allah, Allah loves to meet him, and whoever dislikes to meet Allah, Allah dislikes to meet him.\" She, or one of his other wives, said, \"O Prophet of Allah, but we dislike death.\" He said, \"That is not it. Rather, when death approaches the believer, he is given glad tidings of Allah's pleasure and honor, so nothing is more beloved to him than what lies ahead, and thus he loves to meet Allah and Allah loves to meet him. But when the disbeliever is dying, he is given tidings of Allah's punishment and penalty, so nothing is more hateful to him than what lies ahead, and thus he dislikes meeting Allah and Allah dislikes meeting him.\"",
-      "reflectionEn": "DITHAR reflection: Your natural fear of death does not mean you dislike meeting Allah - what matters is your state at the moment death actually approaches."
-    },
-    {
       "id": 67,
       "topicAr": "مسؤولية السكوت عن الظلم (مثل نادر ومهم)",
       "textAr": "عن النعمان بن بشير رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «مثل القائم على حدود الله والواقع فيها كمثل قوم استهموا على سفينة، فأصاب بعضهم أعلاها وبعضهم أسفلها، فكان الذين في أسفلها إذا استقوا من الماء مروا على من فوقهم، فقالوا: لو أنّا خرقنا في نصيبنا خرقاً ولم نؤذِ من فوقنا، فإن يتركوهم وما أرادوا هلكوا جميعاً، وإن أخذوا على أيديهم نجوا ونجوا جميعاً»",
@@ -893,25 +438,12 @@
       "reflectionEn": "DITHAR reflection: If you see a wrongdoer persisting unpunished, know this: it is respite, not neglect - and Allah's grip, when it comes, lets no one escape."
     },
     {
-      "id": 69,
-      "topicAr": "الدفاع عن غياب الآخرين (نادر ومهم)",
-      "textAr": "عن أسماء بنت يزيد رضي الله عنها عن النبي صلى الله عليه وسلم قال: «من ردّ عن عِرض أخيه بالغيبة، كان حقاً على الله أن يعتقه من النار». وفي رواية أبي الدرداء: «من ردّ عن عرض أخيه، ردّ الله عن وجهه النار يوم القيامة»",
-      "narratorAr": "أسماء بنت يزيد وأبو الدرداء رضي الله عنهما",
-      "sourceAr": "مسند أحمد / سنن الترمذي",
-      "referenceAr": "الترمذي 1931",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي والألباني في صحيح الترمذي",
-      "reflectionAr": "ومضة دِثار: في المرة القادمة التي تُغتاب فيها أحد أمامك، دافع عنه؛ فرد الله عن وجهك النار مقابل ذلك.",
-      "textEn": "Asma bint Yazid reported that the Prophet, peace and blessings be upon him, said: \"Whoever defends his brother's honor when he is being backbitten, it is a right upon Allah to free him from the Fire.\" And in Abu al-Darda's narration: \"Whoever defends his brother's honor, Allah will turn the Fire away from his face on the Day of Resurrection.\"",
-      "reflectionEn": "DITHAR reflection: The next time you witness someone being backbitten in your presence, defend them - Allah will turn the Fire away from your face in return."
-    },
-    {
       "id": 70,
       "topicAr": "الحياء والإيمان (رابط نادر)",
       "textAr": "عن ابن عمر رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «الحياء والإيمان قُرنا جميعاً، فإذا رُفع أحدهما رُفع الآخر»",
       "narratorAr": "عبدالله بن عمر رضي الله عنهما",
       "sourceAr": "المستدرك للحاكم",
-      "referenceAr": "صححه الحاكم",
+      "referenceAr": "المستدرك للحاكم 58",
       "gradeAr": "صحيح",
       "gradingSourceAr": "صححه الحاكم ووافقه الذهبي، وله أصل في الصحيحين بمعناه من حديث ابن عمر (الحياء من الإيمان)",
       "reflectionAr": "ومضة دِثار: إذا شعرت أن حياءك بدأ يتلاشى فراقب إيمانك أيضاً؛ فهما مقترنان لا ينفك أحدهما عن الآخر.",
@@ -921,14 +453,14 @@
     {
       "id": 71,
       "topicAr": "الدلالة على الخير (سهل ومهمل)",
-      "textAr": "عن أبي مسعود عقبة بن عمرو الأنصاري رضي الله عنه أن رجلاً جاء إلى النبي صلى الله عليه وسلم فقال: يا رسول الله، انقطعت بي الحمولة فاحملني، فقال: «ما عندي»، فقال رجل: يا رسول الله، أنا أدله على من يحمله، فقال رسول الله صلى الله عليه وسلم: «من دلّ على خير فله مثل أجر فاعله»",
+      "textAr": "عن أبي مسعود عقبة بن عمرو الأنصاري رضي الله عنه أن رجلاً جاء إلى النبي صلى الله عليه وسلم فقال: إني أُبدِع بي فاحملني، فقال: «ما عندي»، فقال رجل: يا رسول الله، أنا أدله على من يحمله، فقال رسول الله صلى الله عليه وسلم: «من دلّ على خير فله مثل أجر فاعله»",
       "narratorAr": "أبو مسعود عقبة بن عمرو الأنصاري رضي الله عنه",
       "sourceAr": "صحيح مسلم، كتاب الإمارة",
       "referenceAr": "1893",
       "gradeAr": "صحيح",
       "gradingSourceAr": "مسلم",
       "reflectionAr": "ومضة دِثار: لا تملك ما تساعد به؟ فقط دلّ من يحتاج على من يقدر على مساعدته، ولك مثل أجره كاملاً.",
-      "textEn": "Abu Mas'ud Uqbah ibn Amr al-Ansari reported that a man came to the Prophet, peace and blessings be upon him, and said, \"O Messenger of Allah, my mount has failed me, so carry me.\" He said, \"I have nothing.\" A man said, \"O Messenger of Allah, I will direct him to someone who can carry him.\" The Messenger of Allah, peace and blessings be upon him, said: \"Whoever directs someone to a good deed has a reward like the one who does it.\"",
+      "textEn": "Abu Mas'ud Uqbah ibn Amr al-Ansari reported that a man came to the Prophet, peace and blessings be upon him, and said, \"My mount has failed me, so carry me.\" He said, \"I have nothing.\" A man said, \"O Messenger of Allah, I will direct him to someone who can carry him.\" The Messenger of Allah, peace and blessings be upon him, said: \"Whoever directs someone to a good deed has a reward like the one who does it.\"",
       "reflectionEn": "DITHAR reflection: Don't have the means to help? Simply point someone in need toward someone who can help them, and you receive a reward equal to theirs."
     },
     {
@@ -971,19 +503,6 @@
       "reflectionEn": "DITHAR reflection: The title of \"those who went ahead\" was not earned through struggle or wealth, but through a tongue that remembered Allah often."
     },
     {
-      "id": 75,
-      "topicAr": "لو تعلمون ما أعلم (نادر الأثر)",
-      "textAr": "عن أنس بن مالك رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «والذي نفسي بيده، لو تعلمون ما أعلم، لضحكتم قليلاً ولبكيتم كثيراً»",
-      "narratorAr": "أنس بن مالك رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الكسوف / صحيح مسلم",
-      "referenceAr": "البخاري 6485، مسلم 2359",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: لو رأيت ما رآه النبي من حقائق الغيب، لتغيّر ميزان ضحكك وبكائك اليوم تماماً.",
-      "textEn": "Anas ibn Malik reported that the Messenger of Allah, peace and blessings be upon him, said: \"By the One in whose hand is my soul, if you knew what I know, you would laugh little and weep much.\"",
-      "reflectionEn": "DITHAR reflection: If you saw what the Prophet saw of the unseen realities, your daily balance of laughter and tears would shift entirely."
-    },
-    {
       "id": 76,
       "topicAr": "سرعة انقلاب القلوب (نادر ومقلق)",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «بادروا بالأعمال فتناً كقطع الليل المظلم، يصبح الرجل مؤمناً ويمسي كافراً، أو يمسي مؤمناً ويصبح كافراً، يبيع دينه بعرض من الدنيا»",
@@ -999,41 +518,15 @@
     {
       "id": 77,
       "topicAr": "خطورة الكذب على النبي (تحذير أساسي)",
-      "textAr": "عن أنس بن مالك وأبي هريرة وسلمة بن الأكوع والمغيرة بن شعبة رضي الله عنهم أن رسول الله صلى الله عليه وسلم قال: «من كذب علي متعمداً فليتبوأ مقعده من النار»",
-      "narratorAr": "جمع من الصحابة، منهم أنس بن مالك وأبو هريرة",
+      "textAr": "عن أبي هريرة رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «من كذب علي متعمداً فليتبوأ مقعده من النار»",
+      "narratorAr": "أبو هريرة رضي الله عنه",
       "sourceAr": "صحيح البخاري، كتاب العلم / صحيح مسلم (مقدمة الكتاب)",
       "referenceAr": "البخاري 110، مسلم (المقدمة، حديث متواتر)",
       "gradeAr": "صحيح متفق عليه (بل هو من الأحاديث المتواترة)",
       "gradingSourceAr": "البخاري ومسلم، ونقل تواتره جمع من المحدثين لكثرة رواته",
       "reflectionAr": "ومضة دِثار: كل حديث تنشره دون تحقق، أنت تخاطر فيه بهذا الوعيد الشديد إن كان كذباً على النبي.",
-      "textEn": "A group of Companions, including Anas ibn Malik and Abu Hurayrah, reported that the Messenger of Allah, peace and blessings be upon him, said: \"Whoever deliberately lies about me, let him take his seat in the Fire.\"",
+      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"Whoever deliberately lies about me, let him take his seat in the Fire.\"",
       "reflectionEn": "DITHAR reflection: Every hadith you share without verification risks this severe warning, if it turns out to be a fabrication attributed to the Prophet."
-    },
-    {
-      "id": 78,
-      "topicAr": "خطورة تصوير ذوات الأرواح (نادر التفصيل)",
-      "textAr": "عن ابن عباس رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «إن أشد الناس عذاباً يوم القيامة المصورون»",
-      "narratorAr": "عبدالله بن عباس رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب اللباس / صحيح مسلم",
-      "referenceAr": "البخاري 5950، مسلم 2109",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: قبل أن تلتقط أو تشارك صورة اليوم، تذكر هذا الوعيد الشديد وموضعه من هذا الحديث.",
-      "textEn": "Abdullah ibn Abbas reported that the Prophet, peace and blessings be upon him, said: \"The people most severely punished on the Day of Resurrection will be the image-makers.\"",
-      "reflectionEn": "DITHAR reflection: Before you capture or share an image today, remember this severe warning and its place in this hadith."
-    },
-    {
-      "id": 79,
-      "topicAr": "بناء المساجد (وعد سخي)",
-      "textAr": "عن عثمان بن عفان رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من بنى مسجداً لله يبتغي به وجه الله، بنى الله له مثله في الجنة»",
-      "narratorAr": "عثمان بن عفان رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الصلاة / صحيح مسلم",
-      "referenceAr": "البخاري 450، مسلم 533",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: كل مشاركة في بناء مسجد، ولو بحجر واحد بنية صادقة، وعدك الله عليها ببيت مثله في الجنة.",
-      "textEn": "Uthman ibn Affan reported that the Prophet, peace and blessings be upon him, said: \"Whoever builds a mosque for Allah, seeking Allah's pleasure thereby, Allah will build for him a similar house in Paradise.\"",
-      "reflectionEn": "DITHAR reflection: Every contribution to building a mosque, even a single stone given with sincere intention, is met with Allah's promise of a similar house in Paradise."
     },
     {
       "id": 80,
@@ -1049,45 +542,6 @@
       "reflectionEn": "DITHAR reflection: If you are poor and patient, you may enter Paradise a full forty years ahead of the wealthy."
     },
     {
-      "id": 81,
-      "topicAr": "تذكر الموت (تسمية نادرة)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «أكثروا من ذكر هاذم اللذات» يعني: الموت",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "سنن الترمذي، كتاب صفة القيامة",
-      "referenceAr": "2307",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح الترمذي",
-      "reflectionAr": "ومضة دِثار: في ذروة أي لذة دنيوية اليوم تذكّر أن للذات كلها قاطعاً قد يأتي في أي لحظة.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Remember often the terminator of pleasures\" - meaning death.",
-      "reflectionEn": "DITHAR reflection: At the peak of any worldly pleasure today, remember: there is a terminator of all pleasures that may arrive at any moment."
-    },
-    {
-      "id": 82,
-      "topicAr": "الغش في المعاملات",
-      "textAr": "عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم مرّ على صُبرة طعام فأدخل يده فيها فنالت أصابعه بللاً، فقال: «ما هذا يا صاحب الطعام؟» قال: أصابته السماء يا رسول الله، قال: «أفلا جعلته فوق الطعام كي يراه الناس؟ من غش فليس مني»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب الإيمان",
-      "referenceAr": "101",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: إن كان في سلعتك عيب، ضعه فوقها لا تحته؛ فالإخفاء غش، ومن غش فليس من النبي.",
-      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, passed by a pile of food and put his hand into it, and his fingers felt moisture. He said, \"What is this, O owner of the food?\" The man said, \"It was rained on, O Messenger of Allah.\" He said, \"Why did you not put it on top of the food so people could see it? Whoever cheats is not one of us.\"",
-      "reflectionEn": "DITHAR reflection: If your product has a flaw, put it on top, not hidden underneath - concealment is deception, and whoever deceives is not following the Prophet's way."
-    },
-    {
-      "id": 83,
-      "topicAr": "محاسبة الصلاة أولاً (ترتيب نادر)",
-      "textAr": "عن تميم الداري رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إن أول ما يُحاسب به العبد يوم القيامة من عمله صلاته، فإن صلحت فقد أفلح وأنجح، وإن فسدت فقد خاب وخسر»",
-      "narratorAr": "تميم الداري رضي الله عنه",
-      "sourceAr": "سنن الترمذي، كتاب الصلاة",
-      "referenceAr": "413",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي، وله شواهد صحيحة عند أبي داود والنسائي",
-      "reflectionAr": "ومضة دِثار: أول سؤال ستُسأله يوم القيامة عن عملك: كيف كانت صلاتك؟ فأصلحها من الآن.",
-      "textEn": "Tamim al-Dari reported that the Prophet, peace and blessings be upon him, said: \"The first matter the servant will be called to account for on the Day of Resurrection is his prayer. If it was sound, he has succeeded and prospered; and if it was corrupt, he has failed and lost.\"",
-      "reflectionEn": "DITHAR reflection: The very first thing you will be asked about on the Day of Resurrection is your prayer - so put it right starting now."
-    },
-    {
       "id": 84,
       "topicAr": "شكر الناس من شكر الله",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا يشكر الله من لا يشكر الناس»",
@@ -1099,19 +553,6 @@
       "reflectionAr": "ومضة دِثار: قبل أن تدّعي شكرك لله راجع نفسك: هل شكرت آخر من أحسن إليك من الناس؟",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"He who does not thank people does not thank Allah.\"",
       "reflectionEn": "DITHAR reflection: Before you claim gratitude to Allah, ask yourself: did you thank the last person who did you a kindness?"
-    },
-    {
-      "id": 85,
-      "topicAr": "رد السلام على من قضى نحبه (نادر ومؤثر)",
-      "textAr": "عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «ما من أحد يسلّم عليّ إلا ردّ الله عليّ روحي حتى أردّ عليه السلام»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب المناسك",
-      "referenceAr": "2041",
-      "gradeAr": "حسن صحيح",
-      "gradingSourceAr": "حسّنه الحافظ ابن حجر والألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: سلامك على النبي في هذه اللحظة تحديداً يُرد عليه الروح ليردّ عليك السلام بنفسه.",
-      "textEn": "Abu Hurayrah reported that the Messenger of Allah, peace and blessings be upon him, said: \"There is no one who greets me with peace except that Allah returns my soul to me so that I may return his greeting.\"",
-      "reflectionEn": "DITHAR reflection: Your greeting of peace upon the Prophet, right now, causes his soul to be returned so he may personally return your greeting."
     },
     {
       "id": 86,
@@ -1192,32 +633,6 @@
       "reflectionEn": "DITHAR reflection: Raising two orphaned girls until they reach maturity may place you right beside the Prophet himself on the Day of Resurrection."
     },
     {
-      "id": 92,
-      "topicAr": "قرب الجنة والنار (مسافة صادمة)",
-      "textAr": "عن ابن مسعود رضي الله عنه عن النبي صلى الله عليه وسلم قال: «الجنة أقرب إلى أحدكم من شِراك نعله، والنار مثل ذلك»",
-      "narratorAr": "عبدالله بن مسعود رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الرقاق",
-      "referenceAr": "6488",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: القرار الذي تتخذه في هذه اللحظة قد يكون بمسافة رباط نعلك من الجنة أو من النار.",
-      "textEn": "Abdullah ibn Mas'ud reported that the Prophet, peace and blessings be upon him, said: \"Paradise is closer to any of you than the strap of his sandal, and so is the Fire.\"",
-      "reflectionEn": "DITHAR reflection: The decision you make in this very moment may be as close as your sandal strap to either Paradise or the Fire."
-    },
-    {
-      "id": 93,
-      "topicAr": "محبة الله للوتر (تفصيل عبادي نادر)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إن الله وِتر يحب الوِتر»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الدعوات",
-      "referenceAr": "6410",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: في كل وتر تصليه، تذكر: أنت تقترب من صفة يحبها الله في ذاته: الوتر والأحدية.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Allah is Witr (One) and loves the witr (odd-numbered acts).\"",
-      "reflectionEn": "DITHAR reflection: Every time you pray Witr, remember: you are drawing close to an attribute Allah loves in Himself - oneness."
-    },
-    {
       "id": 94,
       "topicAr": "أجر تلاوة القرآن حرفاً حرفاً (تفصيل نادر)",
       "textAr": "عن عبدالله بن مسعود رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «من قرأ حرفاً من كتاب الله فله به حسنة، والحسنة بعشر أمثالها، لا أقول {الم} حرف، ولكن ألف حرف، ولام حرف، وميم حرف»",
@@ -1229,32 +644,6 @@
       "reflectionAr": "ومضة دِثار: عد حروف الصفحة التي تقرؤها الآن؛ فكل حرف منها عشر حسنات كاملة.",
       "textEn": "Abdullah ibn Mas'ud reported that the Messenger of Allah, peace and blessings be upon him, said: \"Whoever recites a letter from the Book of Allah receives a good deed for it, and a good deed is multiplied tenfold. I do not say that 'Alif-Lam-Mim' is one letter, but Alif is a letter, Lam is a letter, and Mim is a letter.\"",
       "reflectionEn": "DITHAR reflection: Count the letters on the page you are reading right now - each single letter is worth ten complete good deeds."
-    },
-    {
-      "id": 95,
-      "topicAr": "استمرار الخطأ من طبيعة الإنسان (رجاء نادر)",
-      "textAr": "عن أنس بن مالك رضي الله عنه عن النبي صلى الله عليه وسلم قال: «كل بني آدم خطّاء، وخير الخطّائين التوّابون»",
-      "narratorAr": "أنس بن مالك رضي الله عنه",
-      "sourceAr": "سنن الترمذي، كتاب صفة القيامة / سنن ابن ماجه",
-      "referenceAr": "الترمذي 2499",
-      "gradeAr": "حسن (مع خلاف يستحق الذكر)",
-      "gradingSourceAr": "حسّنه الألباني في صحيح ابن ماجه (اعتماداً على تعدد طرقه)؛ لكن نُقل عن الإمام أحمد بن حنبل نفسه وأبي أحمد الحاكم تضعيفه بل وصفه بـ'منكر' لتفرد علي بن مسعدة (مختلف في توثيقه) به عن قتادة؛ بينما صححه الحاكم النيسابوري وابن القطان.",
-      "reflectionAr": "ومضة دِثار: لست الوحيد الذي يخطئ؛ كل بني آدم كذلك، لكن الأفضل منهم من يعود سريعاً بالتوبة.",
-      "textEn": "Anas ibn Malik reported that the Prophet, peace and blessings be upon him, said: \"Every son of Adam sins, and the best of those who sin are those who repent often.\"",
-      "reflectionEn": "DITHAR reflection: You are not the only one who errs; every child of Adam does - but the best among them are those who return quickly through repentance."
-    },
-    {
-      "id": 96,
-      "topicAr": "القرب بحسب ظن العبد (حديث قدسي نادر التأمل)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: يقول الله تعالى: «أنا عند ظن عبدي بي، وأنا معه إذا ذكرني، فإن ذكرني في نفسه ذكرته في نفسي، وإن ذكرني في ملأ ذكرته في ملأ خير منهم، وإن تقرب إليّ بشبر تقربت إليه ذراعاً، وإن تقرب إليّ ذراعاً تقربت إليه باعاً، وإن أتاني يمشي أتيته هرولة»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب التوحيد (حديث قدسي)",
-      "referenceAr": "7405",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: ظنك بالله الآن هو بالضبط ما ستجده منه؛ فأحسن الظن يزدد لك القرب أضعافاً مضاعفة.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said that Allah, the Exalted, says: \"I am as My servant thinks of Me, and I am with him when he remembers Me. If he remembers Me within himself, I remember him within Myself; and if he remembers Me in an assembly, I remember him in a better assembly than theirs. If he draws near to Me by a hand's span, I draw near to him by a forearm's length; and if he draws near to Me by a forearm's length, I draw near to him by an arm's length; and if he comes to Me walking, I come to him running.\"",
-      "reflectionEn": "DITHAR reflection: Your opinion of Allah right now is exactly what you will find from Him - hold a good opinion, and His nearness to you multiplies far beyond your own effort."
     },
     {
       "id": 97,
@@ -1270,19 +659,6 @@
       "reflectionEn": "DITHAR reflection: Only ninety-nine names stand between you and the promise of Paradise - have you truly encompassed them with understanding and supplication, not just memorization?"
     },
     {
-      "id": 98,
-      "topicAr": "المحافظة على الوضوء علامة إيمان",
-      "textAr": "عن ثوبان رضي الله عنه عن النبي صلى الله عليه وسلم قال: «استقيموا ولن تُحصوا، واعلموا أن خير أعمالكم الصلاة، ولن يحافظ على الوضوء إلا مؤمن»",
-      "narratorAr": "ثوبان مولى رسول الله صلى الله عليه وسلم رضي الله عنه",
-      "sourceAr": "سنن ابن ماجه، كتاب الطهارة",
-      "referenceAr": "277",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح ابن ماجه، وله شاهد صحيح عند أحمد",
-      "reflectionAr": "ومضة دِثار: حرصك على الوضوء حتى في أصعب الظروف علامة خفية على صدق إيمانك.",
-      "textEn": "Thawban reported that the Prophet, peace and blessings be upon him, said: \"Be upright, though you will never be able to fully account for it; and know that the best of your deeds is prayer, and none but a believer maintains ablution.\"",
-      "reflectionEn": "DITHAR reflection: Your diligence in maintaining ablution, even under difficult circumstances, is a hidden sign of the sincerity of your faith."
-    },
-    {
       "id": 99,
       "topicAr": "رؤية النبي في المنام (حقيقة نادرة)",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من رآني في المنام فقد رآني، فإن الشيطان لا يتمثل بي»",
@@ -1294,32 +670,6 @@
       "reflectionAr": "ومضة دِثار: إن رأيت النبي في منامك، فاعلم أنك رأيته فعلاً؛ فالشيطان لا يقدر أن يتمثل بصورته أبداً.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Whoever sees me in a dream has truly seen me, for Satan cannot take my form.\"",
       "reflectionEn": "DITHAR reflection: If you see the Prophet in your dream, know that you have truly seen him - Satan can never assume his likeness."
-    },
-    {
-      "id": 100,
-      "topicAr": "سعة رحمة الله بالتوبة المتكررة (ختام مؤثر)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم فيما يرويه عن ربه عز وجل قال: «أذنب عبد ذنباً فقال: اللهم اغفر لي ذنبي، فقال تبارك وتعالى: أذنب عبدي ذنباً فعلم أن له رباً يغفر الذنب ويأخذ به، فغفرت لعبدي»، ثم أذنب فاستغفر، فغفر الله له، ثم أذنب فاستغفر فغفر الله له، إلى أن قال: «اعمل ما شئت فقد غفرت لك»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب التوحيد / صحيح مسلم (حديث قدسي)",
-      "referenceAr": "البخاري 7507، مسلم 2758",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: مهما تكرر ذنبك واستغفارك، فباب المغفرة لا يُغلق ما دام قلبك صادقاً في العودة.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said, narrating from his Lord: \"A servant sinned and said, 'O Allah, forgive my sin.' Allah, Blessed and Exalted, said, 'My servant has sinned and known that he has a Lord who forgives sin and takes account of it - I have forgiven My servant.'\" The servant sinned again and sought forgiveness, and Allah forgave him; he sinned again and sought forgiveness, and Allah forgave him, until He said, \"Do as you wish, for I have forgiven you.\"",
-      "reflectionEn": "DITHAR reflection: However often your sin and your repentance repeat, the door of forgiveness never closes as long as your heart is sincere in returning."
-    },
-    {
-      "id": 101,
-      "topicAr": "شمول الإحسان لكل شيء",
-      "textAr": "عن شداد بن أوس رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إن الله كتب الإحسان على كل شيء، فإذا قتلتم فأحسنوا القِتلة، وإذا ذبحتم فأحسنوا الذِّبحة، وليُحدّ أحدكم شفرته، وليُرح ذبيحته»",
-      "narratorAr": "شداد بن أوس رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب الصيد والذبائح",
-      "referenceAr": "1955",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: إن كان الإحسان مطلوباً حتى في لحظة الذبح، فكيف يليق أن تهمله في تعاملك اليومي مع البشر؟",
-      "textEn": "Shaddad ibn Aws reported that the Prophet, peace and blessings be upon him, said: \"Allah has prescribed excellence in all things. So if you kill, kill well; and if you slaughter, slaughter well. Let each of you sharpen his blade and spare suffering to the animal he slaughters.\"",
-      "reflectionEn": "DITHAR reflection: If excellence is required even in the moment of slaughter, how could you ever neglect it in your daily dealings with people?"
     },
     {
       "id": 102,
@@ -1342,23 +692,10 @@
       "sourceAr": "سنن أبي داود، كتاب الصلاة / سنن الترمذي",
       "referenceAr": "أبو داود 561، الترمذي 223",
       "gradeAr": "صحيح",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح أبي داود",
+      "gradingSourceAr": "صححه الألباني في صحيح أبي داود",
       "reflectionAr": "ومضة دِثار: كل خطوة تمشيها في الظلام إلى المسجد اليوم تتحول إلى نور تام يضيء طريقك يوم القيامة.",
       "textEn": "Buraydah ibn al-Husayb reported that the Prophet, peace and blessings be upon him, said: \"Give glad tidings to those who walk to the mosques in darkness, of complete light on the Day of Resurrection.\"",
       "reflectionEn": "DITHAR reflection: Every step you take through the darkness toward the mosque today turns into complete light illuminating your way on the Day of Resurrection."
-    },
-    {
-      "id": 104,
-      "topicAr": "أثر المصافحة على غفران الذنوب",
-      "textAr": "عن البراء بن عازب رضي الله عنه عن النبي صلى الله عليه وسلم قال: «ما من مسلمين يلتقيان فيتصافحان، إلا غُفر لهما قبل أن يتفرّقا»",
-      "narratorAr": "البراء بن عازب رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب الأدب",
-      "referenceAr": "5212",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: مصافحتك القادمة لأخيك المسلم قد تُغفر بها ذنوبكما قبل أن تفترقا.",
-      "textEn": "Al-Bara ibn Azib reported that the Prophet, peace and blessings be upon him, said: \"No two Muslims meet and shake hands except that they are forgiven before they part.\"",
-      "reflectionEn": "DITHAR reflection: Your next handshake with a fellow Muslim may result in both of you being forgiven before you even part ways."
     },
     {
       "id": 105,
@@ -1368,23 +705,10 @@
       "sourceAr": "سنن أبي داود، كتاب الجنائز",
       "referenceAr": "3116",
       "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الألباني في صحيح أبي داود، والحاكم ووافقه الذهبي",
+      "gradingSourceAr": "صححه الألباني في صحيح أبي داود، وقال الحاكم: صحيح الإسناد",
       "reflectionAr": "ومضة دِثار: آخر كلمة تنطقها في حياتك قد تكون هي مفتاح جنتك؛ فليكن لسانك جاهزاً لها دوماً.",
       "textEn": "Mu'adh ibn Jabal reported that the Prophet, peace and blessings be upon him, said: \"Whoever's last words are 'There is no god but Allah' will enter Paradise.\"",
       "reflectionEn": "DITHAR reflection: The last word you utter in this life could be the key to your Paradise - keep your tongue ready for it always."
-    },
-    {
-      "id": 106,
-      "topicAr": "سبعة يظلهم الله في ظله (نادر التفصيل الكامل)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «سبعة يُظلّهم الله في ظله يوم لا ظل إلا ظله: إمام عادل، وشاب نشأ في عبادة الله، ورجل قلبه معلّق بالمساجد، ورجلان تحابّا في الله اجتمعا عليه وتفرّقا عليه، ورجل دعته امرأة ذات منصب وجمال فقال إني أخاف الله، ورجل تصدّق بصدقة فأخفاها حتى لا تعلم شماله ما تنفق يمينه، ورجل ذكر الله خالياً ففاضت عيناه»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الأذان / صحيح مسلم، كتاب الزكاة",
-      "referenceAr": "البخاري 660، مسلم 1031",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: راجع نفسك في هذه الفئات السبع: هل أنت من بينهم؟ فالظل يوم القيامة محصور فيهم فقط.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Seven will be shaded by Allah under His shade on the Day when there is no shade but His: a just ruler; a young man who grew up in worship of Allah; a man whose heart is attached to the mosques; two men who love each other for Allah's sake, meeting and parting upon that; a man invited by a woman of beauty and position who says, 'I fear Allah'; a man who gives charity so secretly that his left hand does not know what his right hand spends; and a man who remembers Allah in private and his eyes overflow with tears.\"",
-      "reflectionEn": "DITHAR reflection: Examine yourself against these seven categories: are you among them? For the shade on that Day belongs only to them."
     },
     {
       "id": 107,
@@ -1446,7 +770,7 @@
       "sourceAr": "الأدب المفرد للبخاري",
       "referenceAr": "594",
       "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني وابن حجر (سنده حسن) والعراقي (سند جيد) والأرناؤوط (حسن بشواهده)",
+      "gradingSourceAr": "قال ابن حجر: إسناده حسن، وقال العراقي: بسند جيد",
       "reflectionAr": "ومضة دِثار: أريد أن تحب أحداً أكثر أو يحبك أكثر؟ ابدأ بهدية بسيطة؛ فالتهادي سبب مباشر للتحاب.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Exchange gifts, and you will love one another.\"",
       "reflectionEn": "DITHAR reflection: Want to love someone more, or be loved more? Start with a simple gift - exchanging gifts is a direct cause of mutual love."
@@ -1459,23 +783,10 @@
       "sourceAr": "سنن الترمذي، كتاب الزهد",
       "referenceAr": "2390",
       "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الترمذي والألباني في صحيح الترمذي وصحيح الجامع",
+      "gradingSourceAr": "صححه الترمذي والألباني في صحيح الترمذي",
       "reflectionAr": "ومضة دِثار: محبتك لأخيك خالصة لله فقط قد تمنحك منبراً من نور يغبطك عليه الأنبياء والشهداء.",
       "textEn": "Mu'adh ibn Jabal reported that the Prophet, peace and blessings be upon him, said that Allah, Mighty and Sublime, said: \"Those who love one another for My glory will have pulpits of light, and the prophets and martyrs will envy them.\"",
       "reflectionEn": "DITHAR reflection: Loving your brother purely for Allah's sake may earn you a pulpit of light that even the prophets and martyrs will envy."
-    },
-    {
-      "id": 113,
-      "topicAr": "كظم الغيظ (تفصيل نادر للجزاء)",
-      "textAr": "عن معاذ بن أنس رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من كظم غيظاً وهو قادر على أن يُنفذه، دعاه الله سبحانه وتعالى على رؤوس الخلائق يوم القيامة، حتى يُخيّره من الحور العين ما شاء»",
-      "narratorAr": "معاذ بن أنس رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب الأدب / سنن الترمذي",
-      "referenceAr": "أبو داود 4777، الترمذي 2493",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي، وحسّنه الألباني في صحيح أبي داود وصحيح الجامع (6518)",
-      "reflectionAr": "ومضة دِثار: كظمك لغيظك الآن رغم قدرتك على الانتقام، قد يجعلك تُنادى أمام الخلائق كلها يوم القيامة لتُخيّر مما تشاء.",
-      "textEn": "Mu'adh ibn Anas reported that the Prophet, peace and blessings be upon him, said: \"Whoever suppresses his anger while being able to act on it, Allah will call him before all of creation on the Day of Resurrection, until He lets him choose whichever of the maidens of Paradise he wishes.\"",
-      "reflectionEn": "DITHAR reflection: Suppressing your anger right now, despite being able to retaliate, may cause Allah to call you before all of creation on the Day of Resurrection, letting you choose your reward."
     },
     {
       "id": 114,
@@ -1485,23 +796,10 @@
       "sourceAr": "سنن أبي داود، كتاب الأدب / سنن الترمذي",
       "referenceAr": "أبو داود 4941، الترمذي 1924",
       "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الترمذي والحاكم، وحسّنه الألباني في صحيح الترمذي وصححه في السلسلة الصحيحة (925)",
+      "gradingSourceAr": "صححه الترمذي والألباني",
       "reflectionAr": "ومضة دِثار: كل رحمة تمنحها لمن في الأرض اليوم، تعود إليك من السماء بمثلها.",
       "textEn": "Abdullah ibn Amr reported that the Prophet, peace and blessings be upon him, said: \"The merciful are shown mercy by the Most Merciful. Show mercy to those on earth, and He who is in heaven will show mercy to you.\"",
       "reflectionEn": "DITHAR reflection: Every act of mercy you extend to those on earth today returns to you from heaven in kind."
-    },
-    {
-      "id": 115,
-      "topicAr": "ترك ما لا يعني (خلاصة تربوية)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من حسن إسلام المرء تركه ما لا يعنيه»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "سنن الترمذي، كتاب الزهد",
-      "referenceAr": "2317",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي، واختُلف في تحسينه بين المحدثين، لكن رجّح الألباني وابن رجب تحسينه بمجموع طرقه",
-      "reflectionAr": "ومضة دِثار: قبل أن تتدخل في أمر لا يخصك اليوم تذكّر أن حسن إسلامك يُقاس بمدى تركك له.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Part of the excellence of a person's Islam is his leaving what does not concern him.\"",
-      "reflectionEn": "DITHAR reflection: Before you involve yourself in something that is none of your business today, remember: the excellence of your faith is measured by how well you leave it alone."
     },
     {
       "id": 116,
@@ -1543,19 +841,6 @@
       "reflectionEn": "DITHAR reflection: If someone owes you a debt and is in hardship, granting them respite or forgiving the debt may save you from the entire distress of the Day of Resurrection."
     },
     {
-      "id": 119,
-      "topicAr": "استحضار مراقبة الله في الخلوة (نادر ومقلق)",
-      "textAr": "عن ثوبان رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «لأعلمنّ أقواماً من أمتي يأتون يوم القيامة بحسنات أمثال جبال تِهامة بيضاً، فيجعلها الله عز وجل هباءً منثوراً». قال ثوبان: يا رسول الله، صفهم لنا، جلّهم لنا أن لا نكون منهم ونحن لا نعلم. قال: «أما إنهم إخوانكم، ومن جلدتكم، ويأخذون من الليل كما تأخذون، ولكنهم أقوام إذا خلوا بمحارم الله انتهكوها»",
-      "narratorAr": "ثوبان رضي الله عنه",
-      "sourceAr": "سنن ابن ماجه، كتاب الزهد",
-      "referenceAr": "4245",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح ابن ماجه وصحيح الترغيب",
-      "reflectionAr": "ومضة دِثار: أعمالك الظاهرة قد تكون كالجبال، لكن ماذا تفعل حين تخلو بنفسك؟ فهناك يُكتب مصير تلك الجبال.",
-      "textEn": "Thawban reported that the Messenger of Allah, peace and blessings be upon him, said: \"I certainly know of people from my nation who will come on the Day of Resurrection with good deeds like the white mountains of Tihamah, but Allah will make them scattered dust.\" Thawban said, \"O Messenger of Allah, describe them to us in detail, so that we do not become like them without knowing it.\" He said, \"They are your brothers, of your own kind, who pray at night just as you do, but they are a people who, when alone with what Allah has forbidden, violate it.\"",
-      "reflectionEn": "DITHAR reflection: Your visible deeds may be like mountains, but what do you do when you are alone? For it is there that the fate of those mountains is decided."
-    },
-    {
       "id": 120,
       "topicAr": "القناعة كنز لا يفنى",
       "textAr": "عن عبدالله بن عمرو رضي الله عنهما أن رسول الله صلى الله عليه وسلم قال: «قد أفلح من أسلم، ورُزق كفافاً، وقنّعه الله بما آتاه»",
@@ -1569,32 +854,6 @@
       "reflectionEn": "DITHAR reflection: If you are a Muslim, your provision is sufficient, and your heart is content with it, you are truly among the successful, however small your wealth may appear."
     },
     {
-      "id": 121,
-      "topicAr": "محبة الله للمؤمن القوي",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف، وفي كل خير، احرص على ما ينفعك واستعن بالله ولا تعجز، وإن أصابك شيء فلا تقل: لو أني فعلت كذا كان كذا وكذا، ولكن قل: قدر الله وما شاء فعل»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب القدر",
-      "referenceAr": "2664",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: إذا أصابك مكروه، فلا تقل (لو فعلت كذا)؛ فهذه الكلمة تفتح عمل الشيطان، وقل بدلاً منها: قدر الله وما شاء فعل.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"The strong believer is better and more beloved to Allah than the weak believer, though there is good in both. Cherish what benefits you, seek Allah's help, and do not be overcome by helplessness. If something befalls you, do not say, 'If only I had done such-and-such, such-and-such would have happened,' but say, 'Allah has decreed, and what He willed, He did.'\"",
-      "reflectionEn": "DITHAR reflection: If something bad happens to you, do not say 'if only I had done this' - that phrase opens the door to Satan's work; instead say, 'Allah has decreed, and what He willed, He did.'"
-    },
-    {
-      "id": 122,
-      "topicAr": "الحسد المشروع (نادر التصنيف)",
-      "textAr": "عن عبدالله بن مسعود رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا حسد إلا في اثنتين: رجل آتاه الله مالاً فسلّطه على هلكته في الحق، ورجل آتاه الله الحكمة فهو يقضي بها ويعلّمها»",
-      "narratorAr": "عبدالله بن مسعود رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب العلم / صحيح مسلم",
-      "referenceAr": "البخاري 73، مسلم 816",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: إن كنت ستحسد أحداً فلا تحسده إلا على مال ينفقه في الحق أو علم ينشره بين الناس.",
-      "textEn": "Abdullah ibn Mas'ud reported that the Prophet, peace and blessings be upon him, said: \"There is no envy except in two cases: a man to whom Allah has given wealth and he spends it righteously, and a man to whom Allah has given wisdom, and he judges by it and teaches it.\"",
-      "reflectionEn": "DITHAR reflection: If you are going to envy anyone, let it only be someone who spends wealth righteously, or spreads knowledge to others."
-    },
-    {
       "id": 123,
       "topicAr": "مضاعفة أجر الدعوة إلى الهدى",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من دعا إلى هدى، كان له من الأجر مثل أجور من تبعه، لا ينقص ذلك من أجورهم شيئاً، ومن دعا إلى ضلالة، كان عليه من الإثم مثل آثام من تبعه، لا ينقص ذلك من آثامهم شيئاً»",
@@ -1606,45 +865,6 @@
       "reflectionAr": "ومضة دِثار: كل كلمة خير تنشرها اليوم وتؤثر في غيرك، تكسب أجرها كاملاً مضافاً إلى أجورهم دون أن ينقص من أجورهم شيء.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Whoever calls to guidance will have a reward like the rewards of those who follow him, without their rewards being diminished at all. And whoever calls to misguidance will bear a sin like the sins of those who follow him, without their sins being diminished at all.\"",
       "reflectionEn": "DITHAR reflection: Every good word you spread today that influences someone else earns you its full reward added to theirs, without diminishing their own reward at all."
-    },
-    {
-      "id": 124,
-      "topicAr": "ما يرضاه الله لعباده وما يكرهه (نادر الجمع)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إن الله يرضى لكم ثلاثاً، ويكره لكم ثلاثاً: يرضى لكم أن تعبدوه ولا تشركوا به شيئاً، وأن تعتصموا بحبل الله جميعاً ولا تفرقوا، وأن تناصحوا من ولاه الله أمركم، ويكره لكم قيل وقال، وكثرة السؤال، وإضاعة المال»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب الأقضية",
-      "referenceAr": "1715",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: راجع نفسك في الثلاثة التي يكرهها الله: كثرة الكلام بلا فائدة، وكثرة السؤال، وإضاعة المال؛ فهل تقع في واحدة منها اليوم؟",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Allah is pleased with three things for you and dislikes three things for you: He is pleased that you worship Him and associate nothing with Him, that you hold fast to the rope of Allah together and do not become divided, and that you sincerely advise whoever is placed in authority over you. He dislikes for you idle talk, excessive questioning, and wasting wealth.\"",
-      "reflectionEn": "DITHAR reflection: Examine yourself against the three things Allah dislikes: excessive idle talk, excessive questioning, and wasting wealth - do you fall into any of them today?"
-    },
-    {
-      "id": 125,
-      "topicAr": "أدب الحياء الكامل (نادر التفصيل)",
-      "textAr": "عن عبدالله بن مسعود رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «استحيوا من الله حق الحياء». قلنا: يا رسول الله، إنا نستحي والحمد لله. قال: «ليس ذاك، ولكن الاستحياء من الله حق الحياء أن تحفظ الرأس وما وعى، والبطن وما حوى، ولتذكر الموت والبِلى، ومن أراد الآخرة ترك زينة الدنيا، فمن فعل ذلك فقد استحيا من الله حق الحياء»",
-      "narratorAr": "عبدالله بن مسعود رضي الله عنه",
-      "sourceAr": "سنن الترمذي، كتاب صفة القيامة",
-      "referenceAr": "2458",
-      "gradeAr": "حسن لغيره",
-      "gradingSourceAr": "حسّنه الترمذي وحسّنه الألباني في صحيح الترمذي",
-      "reflectionAr": "ومضة دِثار: حياؤك من الله ليس مجرد خجل؛ بل حفظ عقلك وبطنك وتذكرك الدائم للموت.",
-      "textEn": "Abdullah ibn Mas'ud reported that the Messenger of Allah, peace and blessings be upon him, said: \"Have modesty before Allah as is truly due.\" We said, \"O Messenger of Allah, we do have modesty, praise be to Allah.\" He said, \"That is not it. Rather, true modesty before Allah is to guard the head and what it contains, and the stomach and what it holds, and to remember death and decay, and whoever wants the Hereafter leaves behind the adornments of this world. Whoever does that has truly shown modesty before Allah as is due.\"",
-      "reflectionEn": "DITHAR reflection: Your modesty before Allah is not mere social shyness - it is guarding your mind, guarding your stomach, and constantly remembering death."
-    },
-    {
-      "id": 126,
-      "topicAr": "شناعة سبّ الوالدين بالتسبب (نادر ومحير)",
-      "textAr": "عن عبدالله بن عمرو رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «إن من أكبر الكبائر أن يلعن الرجل والديه». قيل: يا رسول الله، وكيف يلعن الرجل والديه؟ قال: «يسبّ الرجل أبا الرجل فيسبّ أباه، ويسبّ أمه فيسبّ أمه»",
-      "narratorAr": "عبدالله بن عمرو رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب الأدب / صحيح مسلم",
-      "referenceAr": "البخاري 5973، مسلم 90",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: سبّك لوالدي شخص آخر اليوم قد يرتد ليجعلك لاعناً لوالديك أنت، وهي من أكبر الكبائر.",
-      "textEn": "Abdullah ibn Amr reported that the Prophet, peace and blessings be upon him, said: \"Indeed, among the greatest of major sins is that a man curses his own parents.\" It was said, \"O Messenger of Allah, how does a man curse his own parents?\" He said, \"He curses another man's father, so that man curses his father in return; and he curses another man's mother, so that man curses his mother in return.\"",
-      "reflectionEn": "DITHAR reflection: Cursing someone else's parent today may indirectly cause your own parents to be cursed in return - and that is among the greatest of major sins."
     },
     {
       "id": 127,
@@ -1673,71 +893,6 @@
       "reflectionEn": "DITHAR reflection: Mocking people's lineage and wailing loudly over the dead are remnants of pre-Islamic ignorance that the Prophet strongly warned against."
     },
     {
-      "id": 129,
-      "topicAr": "النهي عن مظاهر جزع الجاهلية",
-      "textAr": "عن عبدالله بن مسعود رضي الله عنه عن النبي صلى الله عليه وسلم قال: «ليس منا من ضرب الخدود، وشقّ الجيوب، ودعا بدعوى الجاهلية»",
-      "narratorAr": "عبدالله بن مسعود رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الجنائز / صحيح مسلم",
-      "referenceAr": "البخاري 1294، مسلم 103",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: حزنك على فقيد طبيعي ومشروع، لكن ضرب الخدود وشق الثياب مما نفى النبي الانتساب إليه.",
-      "textEn": "Abdullah ibn Mas'ud reported that the Prophet, peace and blessings be upon him, said: \"He is not one of us who strikes his cheeks, tears his garments, or calls out with the cries of pre-Islamic ignorance.\"",
-      "reflectionEn": "DITHAR reflection: Your grief over a loved one is natural and permissible, but striking your cheeks and tearing your clothes are acts the Prophet disowned."
-    },
-    {
-      "id": 130,
-      "topicAr": "سعة رحمة الله ونقمته (توازن نادر)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لو يعلم المؤمن ما عند الله من العقوبة، ما طمع في جنته أحد، ولو يعلم الكافر ما عند الله من الرحمة، ما قنط من رحمته أحد»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب التوبة",
-      "referenceAr": "2755",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: لا تغترّ بعملك الصالح فتأمن، ولا تيأس من رحمة الله مهما بلغت ذنوبك؛ فكلا الطرفين ممنوع.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"If the believer knew the extent of Allah's punishment, no one would feel secure in hoping for His Paradise; and if the disbeliever knew the extent of Allah's mercy, no one would despair of His mercy.\"",
-      "reflectionEn": "DITHAR reflection: Do not be complacent about your good deeds and feel secure, nor despair of Allah's mercy however great your sins - both extremes are forbidden."
-    },
-    {
-      "id": 131,
-      "topicAr": "خطورة الافتراء على مؤمن (تفصيل نادر)",
-      "textAr": "عن عبدالله بن عمر رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «من حالت شفاعته دون حدّ من حدود الله فقد ضادّ الله في أمره، ومن خاصم في باطل وهو يعلمه، لم يزل في سخط الله حتى ينزع، ومن قال في مؤمن ما ليس فيه، أسكنه الله ردغة الخبال حتى يخرج مما قال»",
-      "narratorAr": "عبدالله بن عمر رضي الله عنهما",
-      "sourceAr": "مسند الإمام أحمد / سنن أبي داود",
-      "referenceAr": "أحمد 5385، أبو داود 3597",
-      "gradeAr": "صحيح (إسناد جيد)",
-      "gradingSourceAr": "صححه الحاكم ووافقه الذهبي، وصححه الألباني في صحيح الترغيب (2845)",
-      "reflectionAr": "ومضة دِثار: قبل أن تفتري كذباً على مؤمن، تذكر: عقوبتها وحل من عصارة أهل النار حتى تخرج مما قلت.",
-      "textEn": "Abdullah ibn Umar reported that the Prophet, peace and blessings be upon him, said: \"Whoever's intercession stands in the way of a legal punishment of Allah has opposed Allah in His command. Whoever disputes in falsehood while knowing it, remains under Allah's wrath until he desists. And whoever says about a believer what is not true in him, Allah will settle him in the discharge of the people of Hell until he retracts what he said.\"",
-      "reflectionEn": "DITHAR reflection: Before you falsely slander a believer, remember: the punishment is being settled in the discharge of the people of Hell until you retract what you said."
-    },
-    {
-      "id": 132,
-      "topicAr": "استمرار العمل الصالح المداوم",
-      "textAr": "عن عائشة رضي الله عنها قالت: قال رسول الله صلى الله عليه وسلم: «أحبّ الأعمال إلى الله أدومها وإن قلّ»، وقال: «كلّفوا من الأعمال ما تطيقون»",
-      "narratorAr": "عائشة رضي الله عنها",
-      "sourceAr": "صحيح البخاري، كتاب الرقاق / صحيح مسلم",
-      "referenceAr": "البخاري 6465، مسلم 782",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: عمل صالح قليل تداوم عليه خير عند الله من عمل كثير تنقطع عنه سريعاً.",
-      "textEn": "Aisha reported that the Messenger of Allah, peace and blessings be upon him, said: \"The most beloved of deeds to Allah are the most consistent, even if small,\" and he said, \"Take on only as much as you can bear.\"",
-      "reflectionEn": "DITHAR reflection: A small good deed you sustain consistently is better with Allah than a large one you abandon quickly."
-    },
-    {
-      "id": 133,
-      "topicAr": "عدم إملال الله حتى تملوا (نادر التفسير)",
-      "textAr": "عن عائشة رضي الله عنها قالت: كان رسول الله صلى الله عليه وسلم إذا عمل عملاً أثبته، وقال: «خذوا من الأعمال ما تطيقون، فإن الله لا يملّ حتى تملّوا»",
-      "narratorAr": "عائشة رضي الله عنها",
-      "sourceAr": "صحيح البخاري، كتاب الرقاق / صحيح مسلم",
-      "referenceAr": "البخاري 43، مسلم 782",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: استمرارك في العمل الصالح، ولو قليلاً، هو ما يبقي الباب مفتوحاً؛ فلا تكن أنت من يغلقه أولاً.",
-      "textEn": "Aisha reported that when the Messenger of Allah, peace and blessings be upon him, did a deed, he would maintain it consistently, and said: \"Take on only as much of deeds as you can sustain, for Allah does not become weary until you become weary.\"",
-      "reflectionEn": "DITHAR reflection: Your continuation in good deeds, even in small amounts, is what keeps the door open - do not be the one to close it first through your own fatigue."
-    },
-    {
       "id": 134,
       "topicAr": "تحريم الاستئثار بالدنيا والغش (نادر الصياغة)",
       "textAr": "عن عوف بن مالك رضي الله عنه عن النبي صلى الله عليه وسلم قال: «خيار أئمتكم الذين تحبونهم ويحبونكم، وتصلّون عليهم ويصلّون عليكم، وشرار أئمتكم الذين تبغضونهم ويبغضونكم، وتلعنونهم ويلعنونكم»",
@@ -1751,42 +906,16 @@
       "reflectionEn": "DITHAR reflection: If your relationship with someone you follow is built on mutual hatred, reconsider the situation - this is not a trait of righteous leadership."
     },
     {
-      "id": 135,
-      "topicAr": "تكافؤ دماء المسلمين",
-      "textAr": "عن عمرو بن شعيب عن أبيه عن جده رضي الله عنه أن النبي صلى الله عليه وسلم قال في خطبته: «المسلمون تتكافأ دماؤهم، وهم يدٌ على من سواهم، ويسعى بذمّتهم أدناهم»",
-      "narratorAr": "عبدالله بن عمرو بن العاص رضي الله عنهما (عن جده)",
-      "sourceAr": "سنن أبي داود، كتاب الجهاد",
-      "referenceAr": "2751",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الألباني في صحيح أبي داود، وله شواهد في الصحيحين بمعناه",
-      "reflectionAr": "ومضة دِثار: دم أفقر مسلم يساوي دم أغناهم عند الله؛ فلا تفاضل بينهم إلا بالتقوى.",
-      "textEn": "Amr ibn Shu'ayb reported from his father from his grandfather that the Prophet, peace and blessings be upon him, said in his sermon: \"The blood of Muslims is equal in worth; they are a single hand against outsiders, and the guarantee of protection given by the lowest of them is binding on all.\"",
-      "reflectionEn": "DITHAR reflection: The blood of the poorest Muslim is equal in worth to that of the wealthiest before Allah - there is no distinction between them except in righteousness."
-    },
-    {
-      "id": 136,
-      "topicAr": "العدل حتى مع غير المسلمين (مبدأ نادر)",
-      "textAr": "عن عبدالله بن عمرو رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «ألا من ظلم معاهداً، أو انتقصه، أو كلّفه فوق طاقته، أو أخذ منه شيئاً بغير طيب نفس، فأنا حجيجه يوم القيامة»",
-      "narratorAr": "عبدالله بن عمرو رضي الله عنهما",
-      "sourceAr": "سنن أبي داود، كتاب الخراج والإمارة والفيء",
-      "referenceAr": "3052",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: ظلمك لغير مسلم يعيش بينكم بعهد وأمان يجعل النبي نفسه خصمك يوم القيامة.",
-      "textEn": "Abdullah ibn Amr reported that the Prophet, peace and blessings be upon him, said: \"Whoever wrongs a person under a covenant of protection, or diminishes his right, or burdens him beyond his capacity, or takes something from him without his full consent, I will be his adversary on the Day of Resurrection.\"",
-      "reflectionEn": "DITHAR reflection: Wronging a non-Muslim living among you under a covenant of protection makes the Prophet himself your adversary on the Day of Resurrection."
-    },
-    {
       "id": 137,
       "topicAr": "إماطة الأذى بأقل تقدير",
-      "textAr": "عن أبي برزة الأسلمي رضي الله عنه قال: قلت: يا رسول الله، علّمني شيئاً أنتفع به. قال: «اعزل الأذى عن طريق المسلمين»",
+      "textAr": "عن أبي برزة الأسلمي رضي الله عنه قال: قلت: يا نبي الله، علّمني شيئاً أنتفع به. قال: «اعزل الأذى عن طريق المسلمين»",
       "narratorAr": "أبو برزة الأسلمي رضي الله عنه",
       "sourceAr": "صحيح مسلم، كتاب البر والصلة",
       "referenceAr": "2618",
       "gradeAr": "صحيح",
       "gradingSourceAr": "مسلم",
       "reflectionAr": "ومضة دِثار: حين سأل الصحابي عن أنفع عمل له، لم يوصه النبي بعبادة معقدة، بل بإزالة أذى بسيط عن الطريق.",
-      "textEn": "Abu Barzah al-Aslami reported: I said, \"O Messenger of Allah, teach me something beneficial.\" He said, \"Remove harmful things from the path of the Muslims.\"",
+      "textEn": "Abu Barzah al-Aslami reported: I said, \"O Prophet of Allah, teach me something beneficial.\" He said, \"Remove harmful things from the path of the Muslims.\"",
       "reflectionEn": "DITHAR reflection: When the Companion asked for the most beneficial deed, the Prophet did not recommend a complex form of worship, but simply removing harm from the road."
     },
     {
@@ -1849,7 +978,7 @@
       "sourceAr": "سنن الترمذي، كتاب القدر",
       "referenceAr": "2139",
       "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي، وصححه الألباني في صحيح الترمذي وصحيح الجامع",
+      "gradingSourceAr": "حسّنه الترمذي والألباني في صحيح الترمذي",
       "reflectionAr": "ومضة دِثار: دعاؤك اليوم قد يكون هو السبب الذي قدّره الله لرفع بلاء كان مقضياً؛ فلا تدع الدعاء أبداً.",
       "textEn": "Salman al-Farisi reported that the Prophet, peace and blessings be upon him, said: \"Nothing repels the decree except supplication, and nothing increases lifespan except righteousness.\"",
       "reflectionEn": "DITHAR reflection: Your supplication today may be the very cause Allah decreed to lift a hardship that was otherwise destined - so never abandon supplication."
@@ -1868,19 +997,6 @@
       "reflectionEn": "DITHAR reflection: Just six days in Shawwal, added to your Ramadan fast, are recorded for you as if you had fasted your whole life."
     },
     {
-      "id": 144,
-      "topicAr": "إفشاء السلام سبب المحبة والإيمان",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «والذي نفسي بيده، لا تدخلون الجنة حتى تؤمنوا، ولا تؤمنوا حتى تحابّوا، أولا أدلّكم على شيء إذا فعلتموه تحاببتم؟ أفشوا السلام بينكم»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب الإيمان",
-      "referenceAr": "54",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: إفشاء السلام على من تعرف ومن لا تعرف هو المفتاح العملي الذي دلّنا عليه النبي للتحاب، فالإيمان، فالجنة.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"By the One in whose hand is my soul, you will not enter Paradise until you believe, and you will not believe until you love one another. Shall I not guide you to something that, if you do it, you will love one another? Spread the greeting of peace among yourselves.\"",
-      "reflectionEn": "DITHAR reflection: Spreading the greeting of peace, to those you know and those you don't, is the practical key the Prophet pointed us toward for mutual love, then faith, then Paradise."
-    },
-    {
       "id": 145,
       "topicAr": "حق المسلم الخمسة (نادر مقارنة بالستة)",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «حق المسلم على المسلم خمس: ردّ السلام، وعيادة المريض، واتباع الجنائز، وإجابة الدعوة، وتشميت العاطس»",
@@ -1892,19 +1008,6 @@
       "reflectionAr": "ومضة دِثار: راجع اليوم: هل أديت لإخوانك المسلمين ولو حقاً واحداً من هذه الحقوق الخمسة؟",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"The right of a Muslim over a Muslim is five: returning the greeting, visiting the sick, following funeral processions, accepting invitations, and responding to one who sneezes.\"",
       "reflectionEn": "DITHAR reflection: Check today: have you fulfilled even one of these five rights owed to your fellow Muslims?"
-    },
-    {
-      "id": 146,
-      "topicAr": "من غزا في سبيل الله ولم ينو إلا عرضاً من الدنيا",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من غزا في سبيل الله ولم ينوِ إلا عقالاً، فله ما نوى»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب الجهاد / سنن النسائي",
-      "referenceAr": "أبو داود 2497",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: حتى في أعظم الأعمال الظاهرة تبقى النية هي الفيصل؛ فقد لا تخرج منها إلا بما نويته ولو كان تافهاً.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Whoever goes out fighting in the way of Allah intending nothing but a camel's rope, will have only what he intended.\"",
-      "reflectionEn": "DITHAR reflection: Even in the greatest of visible deeds, intention is the deciding factor - you may walk away with only what you truly intended, however trivial it was."
     },
     {
       "id": 147,
@@ -1927,23 +1030,10 @@
       "sourceAr": "سنن الترمذي، كتاب الدعوات",
       "referenceAr": "3479",
       "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح الترمذي وصحيح الجامع (245)",
+      "gradingSourceAr": "حسّنه الألباني في صحيح الترمذي",
       "reflectionAr": "ومضة دِثار: دعاؤك القادم لن يُستجاب إن كان قلبك غافلاً لاهياً؛ فاحضر قلبك أولاً ثم ادعُ بيقين.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Call upon Allah while being certain of a response, and know that Allah does not answer the supplication of a heedless, distracted heart.\"",
       "reflectionEn": "DITHAR reflection: Your next supplication will not be answered if your heart is heedless and distracted - bring your heart to attention first, then call upon Him with certainty."
-    },
-    {
-      "id": 149,
-      "topicAr": "فضل السلام على النبي (تصحيح شامل)",
-      "textAr": "عن عبدالله بن مسعود رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «إن لله ملائكة سيّاحين في الأرض يبلّغوني من أمتي السلام»",
-      "narratorAr": "عبدالله بن مسعود رضي الله عنه",
-      "sourceAr": "سنن النسائي، كتاب السهو",
-      "referenceAr": "1282",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه ابن باز والألباني وموسوعة الأحاديث النبوية المترجمة",
-      "reflectionAr": "ومضة دِثار: سلامك على النبي الآن من أي مكان كنت تحمله ملائكة مخصصون لهذه المهمة وحدها.",
-      "textEn": "Abdullah ibn Mas'ud reported that the Messenger of Allah, peace and blessings be upon him, said: \"Allah has traveling angels on earth, conveying to me the greetings of my nation.\"",
-      "reflectionEn": "DITHAR reflection: Your greeting of peace upon the Prophet right now, wherever you are, is carried by angels whose sole mission is exactly this."
     },
     {
       "id": 150,
@@ -2011,19 +1101,6 @@
       "reflectionEn": "DITHAR reflection: If you cannot change a wrong with your hand or your tongue, at least reject it with your heart - that is the weakest degree of faith, not its absence."
     },
     {
-      "id": 155,
-      "topicAr": "عدم تمني الموت عند الضر",
-      "textAr": "عن أنس بن مالك رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا يتمنّينّ أحدكم الموت لضرّ أصابه، فإن كان لا بدّ فاعلاً، فليقل: اللهم أحيني ما كانت الحياة خيراً لي، وتوفّني إذا كانت الوفاة خيراً لي»",
-      "narratorAr": "أنس بن مالك رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب المرضى / صحيح مسلم",
-      "referenceAr": "البخاري 5671، مسلم 2680",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: إن ألمّ بك ضر شديد وتمنيت الموت، فبدّل ذلك بدعاء التفويض: اللهم أحيني ما كانت الحياة خيراً لي.",
-      "textEn": "Anas ibn Malik reported that the Prophet, peace and blessings be upon him, said: \"None of you should wish for death because of harm that befalls him. But if he must do so, let him say: 'O Allah, keep me alive as long as life is good for me, and take my life when death is better for me.'\"",
-      "reflectionEn": "DITHAR reflection: If severe hardship strikes you and you wish for death, replace that wish with this prayer of surrender: 'O Allah, keep me alive as long as life is good for me.'"
-    },
-    {
       "id": 156,
       "topicAr": "تكفير الذنوب بالأذى مهما صغر",
       "textAr": "عن أبي سعيد الخدري وأبي هريرة رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «ما يصيب المسلم من نصب ولا وصب، ولا همّ ولا حزن، ولا أذى ولا غمّ، حتى الشوكة يُشاكها، إلا كفّر الله بها من خطاياه»",
@@ -2050,32 +1127,6 @@
       "reflectionEn": "DITHAR reflection: If misfortune befalls you, know that this very thing may be a sign that Allah has willed good for you."
     },
     {
-      "id": 158,
-      "topicAr": "الطاعون شهادة للمسلم",
-      "textAr": "عن عائشة رضي الله عنها أنها سألت النبي صلى الله عليه وسلم عن الطاعون، فأخبرها: «أنه كان عذاباً يبعثه الله على من يشاء، فجعله الله رحمة للمؤمنين، فليس من عبد يقع في الطاعون فيمكث في بلده صابراً محتسباً، يعلم أنه لن يصيبه إلا ما كتب الله له، إلا كان له مثل أجر الشهيد»",
-      "narratorAr": "عائشة رضي الله عنها",
-      "sourceAr": "صحيح البخاري، كتاب الطب",
-      "referenceAr": "3474",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: إن مررت بوباء أو جائحة يوماً، فصبرك واحتسابك في بلدك قد يجعلها لك أجر شهيد لا مجرد كارثة.",
-      "textEn": "Aisha reported that she asked the Prophet, peace and blessings be upon him, about plague, and he told her: \"It was a punishment Allah sent upon whom He willed, but Allah made it a mercy for the believers. There is no servant who resides in a land afflicted by plague, remaining there patiently and expecting reward, knowing that nothing will befall him except what Allah has decreed for him, except that he will have a reward like that of a martyr.\"",
-      "reflectionEn": "DITHAR reflection: If you ever live through an epidemic or pandemic, your patience and hope for reward while staying put could turn it into a martyr's reward rather than mere catastrophe."
-    },
-    {
-      "id": 159,
-      "topicAr": "إدارة الأوبئة (حكمة نبوية سابقة لعصرها)",
-      "textAr": "عن عبدالله بن عامر رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: «إذا سمعتم بالطاعون بأرض، فلا تدخلوها، وإذا وقع بأرض وأنتم بها، فلا تخرجوا فراراً منه»",
-      "narratorAr": "عبدالله بن عامر رضي الله عنه (عن أسامة بن زيد)",
-      "sourceAr": "صحيح البخاري، كتاب الطب / صحيح مسلم",
-      "referenceAr": "البخاري 5728، مسلم 2218",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: مبدأ الحجر الصحي الذي عرفه العالم حديثاً، وضعه النبي كقاعدة منذ أكثر من 1400 عام.",
-      "textEn": "Abdullah ibn Amir reported that the Messenger of Allah, peace and blessings be upon him, said: \"If you hear of plague in a land, do not enter it; and if it breaks out in a land while you are in it, do not leave that land fleeing from it.\"",
-      "reflectionEn": "DITHAR reflection: The principle of quarantine that the modern world only recently discovered was laid down as a rule by the Prophet over 1,400 years ago."
-    },
-    {
       "id": 160,
       "topicAr": "نفي الخرافات الجاهلية (تحرير عقلي نادر)",
       "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا عدوى، ولا طيرة، ولا هامة، ولا صفر»",
@@ -2087,19 +1138,6 @@
       "reflectionAr": "ومضة دِثار: إن انتابك خوف من فأل سيئ أو خرافة شائعة، تذكر: النبي نفى هذه الخرافات بجملة واحدة قاطعة.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"There is no contagion of its own accord, no evil omen from birds, no owl of ill fortune, and no ill fate in the month of Safar.\"",
       "reflectionEn": "DITHAR reflection: If a bad omen or common superstition ever grips you with fear, remember: the Prophet dismissed these superstitions with one decisive statement."
-    },
-    {
-      "id": 161,
-      "topicAr": "مثل القارئ للقرآن (نادر التشبيه الرباعي)",
-      "textAr": "عن أبي موسى الأشعري رضي الله عنه عن النبي صلى الله عليه وسلم قال: «مثل المؤمن الذي يقرأ القرآن كمثل الأترجّة، ريحها طيب وطعمها طيب. ومثل المؤمن الذي لا يقرأ القرآن كمثل التمرة، لا ريح لها وطعمها حلو. ومثل المنافق الذي يقرأ القرآن كمثل الريحانة، ريحها طيب وطعمها مرّ. ومثل المنافق الذي لا يقرأ القرآن كمثل الحنظلة، ليس لها ريح وطعمها مرّ»",
-      "narratorAr": "أبو موسى الأشعري رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب فضائل القرآن / صحيح مسلم",
-      "referenceAr": "البخاري 5059، مسلم 797",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: أي الأصناف الأربعة تشبهك: الأترجة، التمرة، الريحانة، أم الحنظلة؟ راجع علاقتك بقراءة القرآن وصدق قلبك.",
-      "textEn": "Abu Musa al-Ash'ari reported that the Prophet, peace and blessings be upon him, said: \"The believer who recites the Qur'an is like a citron: its taste is good and its smell is good. The believer who does not recite the Qur'an is like a date: its taste is good but it has no smell. The hypocrite who recites the Qur'an is like sweet basil: its smell is good but its taste is bitter. And the hypocrite who does not recite the Qur'an is like a bitter gourd: its taste is bitter and it has no smell.\"",
-      "reflectionEn": "DITHAR reflection: Which of these four are you like: the citron, the date, the basil, or the bitter gourd? Examine your relationship with reciting the Qur'an and the sincerity of your heart."
     },
     {
       "id": 162,
@@ -2128,32 +1166,6 @@
       "reflectionEn": "DITHAR reflection: When choosing a life partner, four criteria may pull at you, but the Prophet identified which one deserves top priority: religion."
     },
     {
-      "id": 164,
-      "topicAr": "العدل بين الزوجات (وعيد نادر التصوير)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من كانت له امرأتان فمال إلى إحداهما، جاء يوم القيامة وشقّه مائل»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب النكاح / سنن الترمذي",
-      "referenceAr": "أبو داود 2133، الترمذي 1141",
-      "gradeAr": "حسن صحيح",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: ميلك الظاهر لإحدى زوجتيك دون الأخرى قد يجعلك تأتي يوم القيامة وشق جسدك مائل.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Whoever has two wives and leans toward one of them unfairly, he will come on the Day of Resurrection with one side of his body tilted.\"",
-      "reflectionEn": "DITHAR reflection: Your visible favoritism toward one wife over another may cause you to arrive on the Day of Resurrection with one side of your body tilted."
-    },
-    {
-      "id": 165,
-      "topicAr": "أجران للفئات الثلاث المستحقة",
-      "textAr": "عن أبي موسى الأشعري رضي الله عنه عن النبي صلى الله عليه وسلم قال: «ثلاثة لهم أجران: رجل من أهل الكتاب آمن بنبيه وآمن بمحمد صلى الله عليه وسلم، والعبد المملوك إذا أدّى حق الله وحق مواليه، ورجل كانت عنده أمة فأدّبها فأحسن تأديبها، وعلّمها فأحسن تعليمها، ثم أعتقها فتزوجها»",
-      "narratorAr": "أبو موسى الأشعري رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب العلم / صحيح مسلم",
-      "referenceAr": "البخاري 97، مسلم 154",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: إن كنت تؤدي حقين متزامنين بإخلاص (كحق الله وحق عملك مثلاً)، فقد تكون من أصحاب الأجرين.",
-      "textEn": "Abu Musa al-Ash'ari reported that the Prophet, peace and blessings be upon him, said: \"Three people will have a double reward: a man from the People of the Book who believed in his prophet and then believed in Muhammad; a slave who fulfills his duty to Allah and his duty to his masters; and a man who had a slave woman, disciplined her well, educated her well, then freed her and married her.\"",
-      "reflectionEn": "DITHAR reflection: If you fulfill two simultaneous duties with sincerity (such as your duty to Allah and your duty at work), you may be among those with a double reward."
-    },
-    {
       "id": 166,
       "topicAr": "صيام يوم عرفة وعاشوراء (تفصيل التكفير)",
       "textAr": "عن أبي قتادة رضي الله عنه أن رسول الله صلى الله عليه وسلم سئل عن صوم يوم عرفة فقال: «يكفّر السنة الماضية والباقية»، وسئل عن صوم يوم عاشوراء فقال: «يكفّر السنة الماضية»",
@@ -2165,19 +1177,6 @@
       "reflectionAr": "ومضة دِثار: يوم واحد من صيام عرفة قد يكفّر سنتين كاملتين من ذنوبك؛ فلا تفوّته.",
       "textEn": "Abu Qatadah reported that the Messenger of Allah, peace and blessings be upon him, was asked about fasting the Day of Arafah, and he said, \"It expiates the sins of the past year and the coming year.\" He was asked about fasting the Day of Ashura, and he said, \"It expiates the sins of the past year.\"",
       "reflectionEn": "DITHAR reflection: A single day of fasting on the Day of Arafah may expiate two full years of your sins - do not let it pass you by."
-    },
-    {
-      "id": 167,
-      "topicAr": "مغفرة شاملة بشرط الإيمان والاحتساب",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من صام رمضان إيماناً واحتساباً، غُفر له ما تقدّم من ذنبه، ومن قام رمضان إيماناً واحتساباً، غُفر له ما تقدّم من ذنبه، ومن قام ليلة القدر إيماناً واحتساباً، غُفر له ما تقدّم من ذنبه»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الإيمان وكتاب فضل ليلة القدر / صحيح مسلم",
-      "referenceAr": "البخاري 38 و2014، مسلم 760",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: مجرد الصيام أو القيام لا يكفي وحده؛ الشرط المتكرر ثلاث مرات هو: إيماناً واحتساباً.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Whoever fasts Ramadan out of faith and seeking reward will have his past sins forgiven. Whoever prays during Ramadan's nights out of faith and seeking reward will have his past sins forgiven. And whoever prays on the Night of Decree out of faith and seeking reward will have his past sins forgiven.\"",
-      "reflectionEn": "DITHAR reflection: Simply fasting or praying is not enough on its own - the condition repeated three times is: out of faith and seeking reward."
     },
     {
       "id": 168,
@@ -2206,45 +1205,6 @@
       "reflectionEn": "DITHAR reflection: An accepted Hajj, free of obscenity and transgression, may return you as clean of sin as the day you were born."
     },
     {
-      "id": 170,
-      "topicAr": "إماطة أذى صغير ولو معروفاً بسيطاً",
-      "textAr": "عن جابر بن عبدالله رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «لا تحقرنّ من المعروف شيئاً، ولو أن تفرغ من دلوك في إناء المستسقي، ولو أن تلقى أخاك ووجهك إليه منبسط، ولو أن تروّح على أخيك من الحرّ»",
-      "narratorAr": "جابر بن عبدالله رضي الله عنهما",
-      "sourceAr": "مسند الإمام أحمد",
-      "referenceAr": "14171",
-      "gradeAr": "حسن (وله شاهد صحيح في صحيح مسلم من حديث أبي ذر بلفظ آخر)",
-      "gradingSourceAr": "حسّنه محققو المسند، وشاهده الصحيح عند مسلم (2626) من حديث أبي ذر بلفظ: لا تحقرن من المعروف شيئاً ولو أن تلقى أخاك بوجه طلق",
-      "reflectionAr": "ومضة دِثار: لا تحقر بسمتك لأخيك أو تهويتك عنه من الحر؛ فكل هذا معروف كامل الأجر مهما بدا صغيراً.",
-      "textEn": "Jabir ibn Abdullah reported that the Prophet, peace and blessings be upon him, said: \"Do not belittle any act of kindness, even pouring from your bucket into the vessel of one seeking water, meeting your brother with a cheerful face, or fanning your brother in the heat.\"",
-      "reflectionEn": "DITHAR reflection: Do not belittle your smile at your brother or fanning him in the heat - all of this is a complete act of kindness, however small it may seem to you."
-    },
-    {
-      "id": 171,
-      "topicAr": "أمانة الاستشارة",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «المستشار مؤتمن»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب الأدب / سنن الترمذي وابن ماجه",
-      "referenceAr": "أبو داود 5128",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح أبي داود وصحيح الجامع (6537)",
-      "reflectionAr": "ومضة دِثار: إذا استشارك أحد فأنت مؤتمن على صدق رأيك؛ فلا تجامله على حساب مصلحته.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"The one asked for advice is entrusted.\"",
-      "reflectionEn": "DITHAR reflection: If someone seeks your advice, you are entrusted with giving it honestly - do not flatter them at the expense of their true interest."
-    },
-    {
-      "id": 172,
-      "topicAr": "آداب السفر الجماعي (نادر التفصيل)",
-      "textAr": "عن أبي سعيد الخدري وابن عمر رضي الله عنهم عن النبي صلى الله عليه وسلم قال: «الراكب شيطان، والراكبان شيطانان، والثلاثة ركب»",
-      "narratorAr": "أبو سعيد الخدري وعبدالله بن عمر رضي الله عنهم",
-      "sourceAr": "سنن أبي داود، كتاب الجهاد / سنن الترمذي",
-      "referenceAr": "أبو داود 2607، الترمذي 1674",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: إن كنت تخطط لسفر بعيد، تجنب السفر منفرداً؛ فالرفقة أسلم وأقرب لهدي النبي.",
-      "textEn": "Abu Sa'id al-Khudri and Ibn Umar reported that the Prophet, peace and blessings be upon him, said: \"A lone rider is a devil, two riders are two devils, but three form a company.\"",
-      "reflectionEn": "DITHAR reflection: If you are planning a long journey, avoid traveling alone - company is safer and closer to the Prophet's guidance."
-    },
-    {
       "id": 173,
       "topicAr": "دعاء السفر ووداع المسافر",
       "textAr": "عن ابن عمر رضي الله عنهما أن رسول الله صلى الله عليه وسلم كان إذا ودّع رجلاً قال: «أستودع الله دينك، وأمانتك، وخواتيم عملك»",
@@ -2271,19 +1231,6 @@
       "reflectionEn": "DITHAR reflection: Next time you walk past someone who is sitting, remember: it is you who should greet them first."
     },
     {
-      "id": 175,
-      "topicAr": "من دلّ على شرّ فعليه وزره",
-      "textAr": "عن أبي مسعود عقبة بن عمرو الأنصاري رضي الله عنه عن النبي صلى الله عليه وسلم في تكملة حديث الدلالة على الخير: «ومن أشار على أخيه بأمر يعلم أن الرشد في غيره فقد خانه»",
-      "narratorAr": "أبو مسعود عقبة بن عمرو الأنصاري رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب العلم",
-      "referenceAr": "3657",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: إن أشرت على أخيك برأي تعلم أن الصواب في غيره، فأنت خائن له وإن بدا الأمر مجرد نصيحة عابرة.",
-      "textEn": "Abu Mas'ud Uqbah ibn Amr al-Ansari reported, continuing the hadith on guiding to good: \"Whoever advises his brother toward something while knowing that the right course lies elsewhere has betrayed him.\"",
-      "reflectionEn": "DITHAR reflection: If you advise your brother toward something while knowing the right course lies elsewhere, you have betrayed him, however casual the advice may have seemed."
-    },
-    {
       "id": 176,
       "topicAr": "الوفاء بالنذر في الطاعة فقط",
       "textAr": "عن عائشة رضي الله عنها عن النبي صلى الله عليه وسلم قال: «من نذر أن يطيع الله فليطعه، ومن نذر أن يعصيه فلا يعصه»",
@@ -2295,58 +1242,6 @@
       "reflectionAr": "ومضة دِثار: إن نذرت شيئاً فيه معصية، فلا تفِ به مهما شعرت بضغط الالتزام؛ فالوفاء واجب في الطاعة فقط.",
       "textEn": "Aisha reported that the Prophet, peace and blessings be upon him, said: \"Whoever vows to obey Allah, let him obey Him; and whoever vows to disobey Him, let him not disobey Him.\"",
       "reflectionEn": "DITHAR reflection: If you vowed to do something sinful, do not follow through with it no matter how strong the pressure of commitment feels - fulfilling a vow is only obligatory when it involves obedience to Allah."
-    },
-    {
-      "id": 177,
-      "topicAr": "كفارة اليمين (نادر التفصيل التطبيقي)",
-      "textAr": "عن عبدالرحمن بن سمرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إذا حلفت على يمين، فرأيت غيرها خيراً منها، فأت الذي هو خير، وكفّر عن يمينك»",
-      "narratorAr": "عبدالرحمن بن سمرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الأيمان والنذور / صحيح مسلم",
-      "referenceAr": "البخاري 6622، مسلم 1652",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: إن حلفت يميناً ثم رأيت الأفضل في مخالفتها، فافعل الأفضل وكفّر عن يمينك؛ فالمصلحة الحقيقية أولى من التمسك الحرفي.",
-      "textEn": "Abdurrahman ibn Samurah reported that the Prophet, peace and blessings be upon him, said: \"If you take an oath, and then find something better than it, do what is better, and make expiation for your oath.\"",
-      "reflectionEn": "DITHAR reflection: If you swore an oath and then realized something better lies in breaking it, do what is better and make expiation - real benefit takes priority over rigid literal commitment."
-    },
-    {
-      "id": 178,
-      "topicAr": "النهي عن الحلف الكثير",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «لا تحلفوا بآبائكم، ومن كان حالفاً فليحلف بالله أو ليصمت»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الأيمان والنذور / صحيح مسلم",
-      "referenceAr": "البخاري 6646، مسلم 1646",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: إن كنت معتاداً الحلف بغير الله (كأبيك أو شرفك)، فتذكر: النبي نهى عن ذلك صراحة.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Do not swear by your fathers. Whoever must swear, let him swear by Allah or remain silent.\"",
-      "reflectionEn": "DITHAR reflection: If you are used to swearing by something other than Allah, like your father or your honor, remember: the Prophet explicitly prohibited this."
-    },
-    {
-      "id": 179,
-      "topicAr": "القرض خير من الصدقة (تفصيل مالي نادر)",
-      "textAr": "عن ابن مسعود رضي الله عنه عن النبي صلى الله عليه وسلم قال: «ما من مسلم يقرض مسلماً قرضاً مرتين، إلا كان كصدقتها مرة»",
-      "narratorAr": "عبدالله بن مسعود رضي الله عنه",
-      "sourceAr": "سنن ابن ماجه، كتاب الصدقات",
-      "referenceAr": "2430",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح ابن ماجه وصحيح الترغيب",
-      "reflectionAr": "ومضة دِثار: إقراضك المتكرر لمن يحتاج قد يعادل أجر الصدقة، مع الحفاظ على كرامته دون منّة الهبة المباشرة.",
-      "textEn": "Abdullah ibn Mas'ud reported that the Prophet, peace and blessings be upon him, said: \"There is no Muslim who lends another Muslim a loan twice, except that it is like giving charity once.\"",
-      "reflectionEn": "DITHAR reflection: Repeatedly lending to someone in need may equal the reward of charity, while preserving their dignity without the weight of an outright gift."
-    },
-    {
-      "id": 180,
-      "topicAr": "ختام: جامعية الخير في كلمة واحدة",
-      "textAr": "عن جابر بن عبدالله رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «كل معروف صدقة، وإن من المعروف أن تلقى أخاك بوجه طلق، وأن تفرغ من دلوك في إناء أخيك»",
-      "narratorAr": "جابر بن عبدالله رضي الله عنهما",
-      "sourceAr": "مسند الإمام أحمد، وأصله في صحيح مسلم من حديث حذيفة بمعناه",
-      "referenceAr": "أحمد 14571",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه محققو المسند، وأصل معناه صحيح شاهد له في الصحيحين وغيرهما",
-      "reflectionAr": "ومضة دِثار: بعد كل هذه الأحاديث، تذكر الخلاصة الجامعة: كل معروف - مهما صغر - صدقة كاملة الأجر عند الله.",
-      "textEn": "Jabir ibn Abdullah reported that the Prophet, peace and blessings be upon him, said: \"Every act of kindness is charity, and among acts of kindness is meeting your brother with a cheerful face, and pouring from your bucket into your brother's vessel.\"",
-      "reflectionEn": "DITHAR reflection: After all these hadiths, remember the unifying conclusion: every act of kindness - however small - is complete charity in Allah's sight."
     },
     {
       "id": 181,
@@ -2362,58 +1257,6 @@
       "reflectionEn": "DITHAR reflection: Before making a decisive judgment between two parties, make sure you are not angry - anger corrupts even the fairest of rulings."
     },
     {
-      "id": 182,
-      "topicAr": "من ظلم أجيراً أو حراً (حديث قدسي نادر التفصيل)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم فيما يرويه عن ربه عز وجل قال: «ثلاثة أنا خصمهم يوم القيامة: رجل أعطى بي ثم غدر، ورجل باع حراً فأكل ثمنه، ورجل استأجر أجيراً فاستوفى منه ولم يعطه أجره»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب البيوع (حديث قدسي)",
-      "referenceAr": "2227",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "البخاري",
-      "reflectionAr": "ومضة دِثار: إن استوفيت عمل أجير كاملاً ثم ماطلته في أجره، فاعلم أن خصمك يوم القيامة هو الله نفسه.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said, narrating from his Lord: \"There are three whose adversary I will be on the Day of Resurrection: a man who makes a pledge in My name then breaks it; a man who sells a free person and consumes the price; and a man who hires a worker, receives his full labor, but does not pay him his wage.\"",
-      "reflectionEn": "DITHAR reflection: If you take a worker's full labor and then delay or deny their wage, know that your adversary on the Day of Resurrection is Allah Himself."
-    },
-    {
-      "id": 183,
-      "topicAr": "سرعة دفع أجرة الأجير",
-      "textAr": "عن عبدالله بن عمر رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «أعطوا الأجير أجره قبل أن يجفّ عرقه»",
-      "narratorAr": "عبدالله بن عمر رضي الله عنهما",
-      "sourceAr": "سنن ابن ماجه، كتاب الرهون",
-      "referenceAr": "2443",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الألباني في صحيح ابن ماجه وصحيح الجامع (1193)",
-      "reflectionAr": "ومضة دِثار: إن كان لديك أجير فبادر بدفع أجره سريعاً؛ فالمعيار النبوي دقيق: قبل أن يجف عرقه.",
-      "textEn": "Abdullah ibn Umar reported that the Prophet, peace and blessings be upon him, said: \"Give the worker his wages before his sweat dries.\"",
-      "reflectionEn": "DITHAR reflection: If you employ a worker, hasten to pay their wages - the prophetic standard is precise: before their sweat even dries."
-    },
-    {
-      "id": 184,
-      "topicAr": "تحريم الكذب المضحك (نادر ومباشر)",
-      "textAr": "عن معاوية بن حيدة القشيري رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: «ويلٌ للذي يُحدّث بالحديث ليُضحك به القوم فيكذب، ويلٌ له، ويلٌ له»",
-      "narratorAr": "معاوية بن حيدة القشيري رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب الأدب / سنن الترمذي",
-      "referenceAr": "أبو داود 4990، الترمذي 2315",
-      "gradeAr": "حسن",
-      "gradingSourceAr": "حسّنه الترمذي، وحسّنه الألباني في صحيح الترمذي وصحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: إن كذبت في حديثك لتُضحك الجالسين فتذكّر هذا الوعيد الذي كرّره النبي ثلاث مرات.",
-      "textEn": "Mu'awiyah ibn Haydah al-Qushayri reported that he heard the Messenger of Allah, peace and blessings be upon him, say: \"Woe to the one who tells a story to make people laugh and lies in it; woe to him, woe to him.\"",
-      "reflectionEn": "DITHAR reflection: If you lie in a story just to make people laugh, remember this warning repeated twice: woe to him, woe to him."
-    },
-    {
-      "id": 185,
-      "topicAr": "تحذير من نقل كل ما يُسمع (أساس لكل توثيق)",
-      "textAr": "عن أبي هريرة رضي الله عنه أن النبي صلى الله عليه وسلم قال: «كفى بالمرء كذباً أن يحدّث بكل ما سمع»",
-      "narratorAr": "أبو هريرة رضي الله عنه (في مقدمة صحيح مسلم)",
-      "sourceAr": "صحيح مسلم، المقدمة",
-      "referenceAr": "5 (المقدمة)",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: يكفيك كذباً أن تنقل كل ما تسمعه دون تحقق؛ وهذا بالضبط ما حاولنا تجنبه في كل حديث بهذا المشروع.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"It is enough falsehood for a person to relate everything he hears.\"",
-      "reflectionEn": "DITHAR reflection: It is enough falsehood to relate everything you hear without verification - and this is exactly what this entire project has tried to avoid with every single hadith."
-    },
-    {
       "id": 186,
       "topicAr": "تحريم حمل السلاح على المسلمين",
       "textAr": "عن عبدالله بن عمر رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «من حمل علينا السلاح فليس منّا»",
@@ -2427,58 +1270,6 @@
       "reflectionEn": "DITHAR reflection: Raising weapons against your fellow Muslim, however severe the dispute, disowns you from the community by the clear text of this hadith."
     },
     {
-      "id": 187,
-      "topicAr": "قبض العلم بقبض العلماء (نادر التصوير)",
-      "textAr": "عن عبدالله بن عمرو رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «إن الله لا يقبض العلم انتزاعاً ينتزعه من العباد، ولكن يقبض العلم بقبض العلماء، حتى إذا لم يُبقِ عالماً اتخذ الناس رؤوساً جهالاً، فسُئلوا فأفتوا بغير علم، فضلّوا وأضلّوا»",
-      "narratorAr": "عبدالله بن عمرو رضي الله عنهما",
-      "sourceAr": "صحيح البخاري، كتاب العلم / صحيح مسلم",
-      "referenceAr": "البخاري 100، مسلم 2673",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: خطر ضياع العلم الشرعي ليس في محوه فجأة، بل في موت حامليه الحقيقيين تدريجياً؛ فاحرص على طلبه ونشره.",
-      "textEn": "Abdullah ibn Amr reported that the Prophet, peace and blessings be upon him, said: \"Allah does not take away knowledge by snatching it away from people, but He takes it away by taking away the scholars, until when no scholar remains, people take ignorant leaders who, when asked, give verdicts without knowledge, thus leading themselves and others astray.\"",
-      "reflectionEn": "DITHAR reflection: The danger of losing sacred knowledge is not in its sudden erasure, but in the gradual death of its true bearers - so strive to seek it and spread it."
-    },
-    {
-      "id": 188,
-      "topicAr": "ملائكة تضع أجنحتها لطالب العلم",
-      "textAr": "عن أبي الدرداء رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من سلك طريقاً يلتمس فيه علماً، سهّل الله له به طريقاً إلى الجنة، وإن الملائكة لتضع أجنحتها لطالب العلم رضاً بما يصنع»",
-      "narratorAr": "أبو الدرداء رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب العلم / سنن الترمذي وابن ماجه",
-      "referenceAr": "أبو داود 3641، الترمذي 2682",
-      "gradeAr": "حسن صحيح",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: في رحلتك لطلب العلم الشرعي تخيّل ملائكة تضع أجنحتها تحت قدميك رضا بما تفعل.",
-      "textEn": "Abu al-Darda reported that the Prophet, peace and blessings be upon him, said: \"Whoever takes a path seeking knowledge, Allah makes easy for him a path to Paradise; and the angels lower their wings for the seeker of knowledge, pleased with what he does.\"",
-      "reflectionEn": "DITHAR reflection: On every journey you take to seek sacred knowledge, imagine: angels lowering their wings beneath your feet, pleased with what you are doing."
-    },
-    {
-      "id": 189,
-      "topicAr": "فضل العالم كفضل القمر (نادر التشبيه) والعلماء ورثة الأنبياء",
-      "textAr": "عن أبي الدرداء رضي الله عنه عن النبي صلى الله عليه وسلم قال: «وفضل العالم على العابد كفضل القمر على سائر الكواكب، وإن العلماء ورثة الأنبياء، وإن الأنبياء لم يورثوا ديناراً ولا درهماً، وإنما ورّثوا العلم، فمن أخذه أخذ بحظ وافر»",
-      "narratorAr": "أبو الدرداء رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب العلم / سنن الترمذي وابن ماجه",
-      "referenceAr": "أبو داود 3641، الترمذي 2682",
-      "gradeAr": "حسن صحيح",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح أبي داود",
-      "reflectionAr": "ومضة دِثار: ميراث الأنبياء ليس ذهباً ولا فضة، بل علم؛ فمن طلبه، أخذ نصيباً حقيقياً من ميراث النبوة.",
-      "textEn": "Abu al-Darda reported that the Prophet, peace and blessings be upon him, said: \"The superiority of the scholar over the worshipper is like the superiority of the moon over all other stars. Indeed, the scholars are the heirs of the prophets, and the prophets did not leave behind a dinar or a dirham as inheritance, but they left knowledge; so whoever acquires it has acquired an abundant share.\"",
-      "reflectionEn": "DITHAR reflection: The inheritance of the prophets is not gold or silver, but knowledge - whoever seeks it has taken a genuine share of the inheritance of prophethood."
-    },
-    {
-      "id": 190,
-      "topicAr": "عقوبة كتمان العلم (نادر التصوير)",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «من سُئل عن علم فكتمه، أُلجم يوم القيامة بلجام من نار»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "سنن أبي داود، كتاب العلم / سنن الترمذي وابن ماجه",
-      "referenceAr": "أبو داود 3658، الترمذي 2649",
-      "gradeAr": "حسن صحيح",
-      "gradingSourceAr": "حسّنه الترمذي وصححه الألباني في صحيح أبي داود وصحيح الجامع",
-      "reflectionAr": "ومضة دِثار: إن سُئلت عن علم شرعي تعرفه وكتمته دون عذر، فتذكر هذا اللجام الناري الذي وصفه النبي.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Whoever is asked about knowledge and conceals it will be bridled with a bridle of fire on the Day of Resurrection.\"",
-      "reflectionEn": "DITHAR reflection: If you are asked about religious knowledge you possess and withhold it without excuse, remember this bridle of fire the Prophet described."
-    },
-    {
       "id": 191,
       "topicAr": "الأمر بتبليغ العلم ولو قليلاً",
       "textAr": "عن عبدالله بن عمرو رضي الله عنهما عن النبي صلى الله عليه وسلم قال: «بلّغوا عني ولو آية، وحدّثوا عن بني إسرائيل ولا حرج، ومن كذب عليّ متعمداً فليتبوأ مقعده من النار»",
@@ -2490,32 +1281,6 @@
       "reflectionAr": "ومضة دِثار: لا تحتاج أن تكون عالماً لتنشر الخير؛ فحتى آية واحدة تعرفها كافية لتبلغها لغيرك.",
       "textEn": "Abdullah ibn Amr reported that the Prophet, peace and blessings be upon him, said: \"Convey from me, even if it is just one verse. Narrate from the Children of Israel, and there is no harm in that. And whoever deliberately lies about me, let him take his seat in the Fire.\"",
       "reflectionEn": "DITHAR reflection: You don't need to be a scholar to spread good - even a single verse you know is enough to convey to someone else."
-    },
-    {
-      "id": 192,
-      "topicAr": "دعاء لمن نقل الحديث بدقة (نادر ومرتبط بمشروعنا)",
-      "textAr": "عن زيد بن ثابت رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: «نضّر الله امرأً سمع مقالتي فوعاها، ثم أدّاها كما سمعها، فربّ مبلَّغ أوعى من سامع»",
-      "narratorAr": "زيد بن ثابت رضي الله عنه",
-      "sourceAr": "سنن الترمذي، كتاب العلم / سنن أبي داود وابن ماجه",
-      "referenceAr": "الترمذي 2656",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "صححه الترمذي والألباني في صحيح الترمذي",
-      "reflectionAr": "ومضة دِثار: دعاء النبي بالنضارة كان لمن ينقل كلامه بدقة تامة كما سمعه؛ وهذا بالضبط ما حاولنا الوفاء به في توثيق كل حديث هنا.",
-      "textEn": "Zayd ibn Thabit reported that he heard the Messenger of Allah, peace and blessings be upon him, say: \"May Allah brighten the face of a man who hears my words, retains them, and conveys them exactly as he heard them, for many a conveyer of knowledge conveys it to one more retentive than himself.\"",
-      "reflectionEn": "DITHAR reflection: The Prophet's prayer for radiance was for one who conveys his words with exact precision - and that is exactly what this entire project has tried to honor with every single hadith documented here."
-    },
-    {
-      "id": 193,
-      "topicAr": "ميراث العلم بعد الموت",
-      "textAr": "عن أبي هريرة رضي الله عنه عن النبي صلى الله عليه وسلم قال: «إذا مات الإنسان انقطع عمله إلا من ثلاث: صدقة جارية، أو علم يُنتفع به، أو ولد صالح يدعو له»",
-      "narratorAr": "أبو هريرة رضي الله عنه",
-      "sourceAr": "صحيح مسلم، كتاب الوصية",
-      "referenceAr": "1631",
-      "gradeAr": "صحيح",
-      "gradingSourceAr": "مسلم",
-      "reflectionAr": "ومضة دِثار: استثمر في هذه الثلاث الآن: صدقة جارية، علم ينفع، أو تربية ولد صالح؛ فهي وحدها ما يستمر بعد موتك.",
-      "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"When a person dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him.\"",
-      "reflectionEn": "DITHAR reflection: Invest in these three now: ongoing charity, beneficial knowledge, or raising a righteous child - these alone continue after your death."
     },
     {
       "id": 194,
@@ -2594,19 +1359,6 @@
       "reflectionAr": "ومضة دِثار: كل حديث مررت به في هذا المشروع كان في الحقيقة شعبة من شعب هذا الإيمان الواحد الجامع، من التوحيد إلى إماطة الأذى.",
       "textEn": "Abu Hurayrah reported that the Prophet, peace and blessings be upon him, said: \"Faith has over seventy, or over sixty, branches. The most excellent of them is saying 'There is no god but Allah,' and the least of them is removing a harmful object from the road, and modesty is a branch of faith.\"",
       "reflectionEn": "DITHAR reflection: Every hadith you have encountered in this project was, in truth, a branch of this one comprehensive faith - from the declaration of monotheism to removing harm from a road."
-    },
-    {
-      "id": 200,
-      "topicAr": "ختام المشروع: الإحسان — أعلى درجات الدين",
-      "textAr": "عن عمر بن الخطاب رضي الله عنه في حديث جبريل الطويل، قال النبي صلى الله عليه وسلم: «الإحسان أن تعبد الله كأنك تراه، فإن لم تكن تراه فإنه يراك»",
-      "narratorAr": "عمر بن الخطاب رضي الله عنه",
-      "sourceAr": "صحيح البخاري، كتاب الإيمان / صحيح مسلم",
-      "referenceAr": "البخاري 50، مسلم 8",
-      "gradeAr": "صحيح متفق عليه",
-      "gradingSourceAr": "البخاري ومسلم",
-      "reflectionAr": "ومضة دِثار: بعد كل هذه الأحاديث المئتين، تذكر الجوهر الجامع لها كلها: تصرف في كل لحظة كأن الله يراك، فإن لم تستحضر ذلك، فتذكر أنه يراك فعلاً.",
-      "textEn": "Umar ibn al-Khattab reported, in the long hadith of Gabriel, that the Prophet, peace and blessings be upon him, said: \"Excellence (ihsan) is to worship Allah as though you see Him, and if you do not see Him, then indeed He sees you.\"",
-      "reflectionEn": "DITHAR reflection: After these two hundred hadiths, remember the unifying essence of them all: act in every moment as though you see Allah, and if you cannot achieve that, remember that He truly sees you."
     }
   ]
 }

@@ -9,7 +9,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:android:optimized": "tsc -b && VITE_AUDIO_VARIANT=optimized vite build && VITE_AUDIO_VARIANT=optimized node scripts/audio/apply-optimized-audio.mjs dist && cap sync android"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.1",

@@ -1,9 +1,10 @@
-import { Pause, Play, Square } from "lucide-react";
+import { useSyncExternalStore } from "react";
+import { Pause, Play, SkipForward, Square } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { homeDashboardLabels } from "../data/homeDashboardLabels";
 import { NowPlayingPanel, NowPlayingView } from "./AudioAdhkarScreen";
 import { audioAdhkarItems, AUDIO_VARIOUS_ITEMS } from "../data/audio-adhkar";
-import { pauseAudioAdhkar, resumeAudioAdhkar, stopAudioAdhkarPlayback } from "../lib/audioAdhkarPlayer";
+import { canSkipAudioAdhkar, pauseAudioAdhkar, resumeAudioAdhkar, skipAudioAdhkar, stopAudioAdhkarPlayback, subscribeAudioAdhkarSkip } from "../lib/audioAdhkarPlayer";
 import type { AudioAdhkarNowPlaying } from "../lib/audioAdhkarPlayback";
 import { pauseAdhan, resumeAdhan, stopAdhan } from "../lib/adhanPlayback";
 import { useAdhanProgress } from "../lib/useAdhanProgress";
@@ -28,6 +29,8 @@ export function HomeNowPlaying({ playback }: { playback: AudioAdhkarNowPlaying }
   const { language } = useLanguage();
   const t = homeDashboardLabels[language];
   const playing = playback.status === "playing";
+  // «الذكر التالي»: while another dhikr follows (a Morning/Evening session or «تشغيل الكل»).
+  const canSkip = useSyncExternalStore(subscribeAudioAdhkarSkip, canSkipAudioAdhkar, () => false);
   return (
     <div data-home-now-playing={playback.status}>
       <NowPlayingPanel
@@ -46,6 +49,19 @@ export function HomeNowPlaying({ playback }: { playback: AudioAdhkarNowPlaying }
             >
               {playing ? <Pause size={19} /> : <Play size={19} />}
             </button>
+            {canSkip && (
+              <button
+                type="button"
+                onClick={() => void skipAudioAdhkar()}
+                aria-label={t.nextDhikr}
+                title={t.nextDhikr}
+                className="flex h-10 w-10 items-center justify-center rounded-full"
+                style={{ boxShadow: "inset 0 0 0 1.5px var(--color-gold-soft)", color: "var(--color-text-primary)" }}
+                data-home-player-next=""
+              >
+                <SkipForward size={16} className="rtl:-scale-x-100" />
+              </button>
+            )}
             <button
               type="button"
               onClick={() => stopAudioAdhkarPlayback()}

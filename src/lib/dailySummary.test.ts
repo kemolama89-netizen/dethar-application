@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { buildSummarySnapshot, loadSummarySettings, saveSummarySettings } from "./dailySummary";
+import { buildSummarySnapshot, dayRecordStatus, loadSummarySettings, readDayRecords, saveSummarySettings, unavailableSummarySnapshot } from "./dailySummary";
 import { clearAllStats, getDailyActivity, recordAudioListening, recordAudioRepetitions, recordFloatingTasbeehRepetitions, recordListenedSessions, recordTasbeehRepetitions, recordWirdComplete, recordWrittenRepetition, subscribeStatsChanges, todayLocalDate } from "./stats";
 
 describe("end-of-day summary data", () => {
@@ -51,7 +51,8 @@ describe("end-of-day summary data", () => {
     const snap = buildSummarySnapshot();
     expect(snap.taken.floatingThrough).toBe(5_000);
     expect([...snap.taken.audioIds].sort()).toEqual(["c1", "l1", "s1"]);
-    expect(snap.today).toMatchObject({ writtenRepetitions: 1, tasbeehRepetitions: 9, wirds: ["evening"] });
+    // 5 Floating + 4 manual + the Audio "Various" recording heard to the end — the Statistics screen's Tasbeeh count.
+    expect(snap.today).toMatchObject({ writtenRepetitions: 1, tasbeehRepetitions: 10, wirds: ["evening"] });
     // Another day's snapshot holds none of today's.
     expect(buildSummarySnapshot("2000-01-01").taken).toEqual({ floatingThrough: null, audioIds: [] });
   });
@@ -71,5 +72,70 @@ describe("end-of-day summary data", () => {
     expect(loadSummarySettings()).toEqual({ enabled: true, time: "22:15", content: "stats" });
     localStorage.setItem("dithar:daily-summary:v1", JSON.stringify({ enabled: true, time: "99:99", content: "loud" }));
     expect(loadSummarySettings()).toEqual({ enabled: true, time: "21:30", content: "combined" });
+  });
+});
+
+describe("one verified status for the day's records", () => {
+  const STATS_KEY = "dithar:stats:events:v1";
+  const reload = () => window.dispatchEvent(new StorageEvent("storage", { key: null }));
+  const noAudio = { completedPlays: 0, listenedMs: 0 };
+
+  beforeEach(() => {
+    localStorage.clear();
+    clearAllStats();
+  });
+
+  it("recorded: the status and the counts come from the same read", () => {
+    recordWrittenRepetition("evening", "evening_001");
+    recordWirdComplete("prayer");
+    const day = readDayRecords(todayLocalDate());
+    expect(day.status).toBe("recorded");
+    expect(day.today).toMatchObject({ writtenRepetitions: 1, prayerSessions: 1 });
+    const snap = buildSummarySnapshot();
+    expect(snap.status).toBe("ok");
+    expect(snap.today).toEqual(day.today);
+  });
+
+  it("empty: a readable log with nothing today is verifiably empty", () => {
+    expect(readDayRecords(todayLocalDate()).status).toBe("empty");
+    expect(buildSummarySnapshot().status).toBe("ok");
+  });
+
+  it("a completed wird or prayer session alone is a record, even with no repetitions", () => {
+    const zero = { date: "2026-10-23", writtenRepetitions: 0, tasbeehRepetitions: 0, wirds: [], wirdsHow: { morning: [], evening: [] }, prayerSessions: 0, total: 0 };
+    expect(dayRecordStatus({ ...zero, wirds: ["evening"] }, noAudio, true)).toBe("recorded");
+    expect(dayRecordStatus({ ...zero, prayerSessions: 1 }, noAudio, true)).toBe("recorded");
+    expect(dayRecordStatus(zero, { completedPlays: 0, listenedMs: 30_000 }, true)).toBe("listening");
+    expect(dayRecordStatus(zero, noAudio, true)).toBe("empty");
+    // Inconsistent: counts that can't be trusted are never reported as either "recorded" or "empty".
+    expect(dayRecordStatus({ ...zero, total: 5, tasbeehRepetitions: 5 }, noAudio, false)).toBe("unavailable");
+    expect(dayRecordStatus(zero, noAudio, false)).toBe("unavailable");
+  });
+
+  it("an unreadable log is unavailable — never 'nothing recorded' — and the snapshot says so", () => {
+    localStorage.setItem(STATS_KEY, "{not json");
+    reload();
+    expect(readDayRecords(todayLocalDate()).status).toBe("unavailable");
+    const snap = buildSummarySnapshot();
+    expect(snap.status).toBe("unavailable");
+    expect(snap.date).toBe(todayLocalDate());
+  });
+
+  it("storage that can't be reached is unavailable too", () => {
+    const spy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    try {
+      reload();
+      expect(readDayRecords(todayLocalDate()).status).toBe("unavailable");
+    } finally {
+      spy.mockRestore();
+      reload();
+    }
+    expect(readDayRecords(todayLocalDate()).status).toBe("empty");
+  });
+
+  it("the fallback snapshot is dated and marked unavailable", () => {
+    expect(unavailableSummarySnapshot("2026-10-23")).toMatchObject({ date: "2026-10-23", status: "unavailable", today: { total: 0 } });
   });
 });

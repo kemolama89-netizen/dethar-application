@@ -8,6 +8,7 @@ import { loadEveningAudioSettings } from "../lib/eveningAudioSettings";
 import { loadDailySchedule, loadExcludedAdhkar, loadMiscSchedule, loadSectionReciterChoice } from "../lib/audioAdhkarScheduleSettings";
 import { LANGUAGE_STORAGE_KEY } from "../lib/appearancePreferences";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
+import { loadMiscDayTimes } from "../lib/weeklySchedule";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -255,5 +256,24 @@ describe("Settings → إعدادات الأذكار الصوتية", () => {
     const morning = container.querySelector("[data-adhkar-checklist='morning']")!;
     expect(morning.textContent).toContain("Ayat al-Kursi");
     expect(morning.textContent).not.toMatch(/[\u0600-\u06FF]/);
+  });
+});
+
+describe("Misc: its own period on chosen weekdays", () => {
+  it("sets Saturday 12:00–22:00 only, keeps it after a restart, and clears it", async () => {
+    await click(row("misc"));
+    expect(container.querySelector('[data-weekday-times="misc"]')).not.toBeNull();
+    await setInput("#misc-day-6-0", "12:00");
+    await setInput("#misc-day-6-1", "22:00");
+    expect(loadMiscDayTimes()).toEqual({ start: ["", "", "", "", "", "", "12:00"], end: ["", "", "", "", "", "", "22:00"] });
+    restart();
+    await click(row("misc"));
+    expect(container.querySelector<HTMLInputElement>("#misc-day-6-0")!.value).toBe("12:00");
+    const clear = container.querySelector('[data-weekday-row="6"] button') as HTMLButtonElement;
+    await click(clear);
+    expect(loadMiscDayTimes().start[6]).toBe("");
+    expect(loadMiscDayTimes().end[6]).toBe("");
+    // The usual period is untouched.
+    expect(loadMiscSchedule().startTime).toBe("09:00");
   });
 });

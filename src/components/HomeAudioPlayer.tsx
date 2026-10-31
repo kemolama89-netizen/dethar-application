@@ -31,7 +31,7 @@ export function HomeAudioPlayer({ className = "" }: { className?: string }) {
   );
   return (
     <section
-      className={`flex flex-col justify-center border px-3.5 py-3 ${className}`}
+      className={`dithar-glass flex flex-col justify-center border px-3.5 py-3 ${className}`}
       style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", borderRadius: "var(--card-radius)", boxShadow: "0 2px 10px rgba(var(--color-gold-rgb), 0.08)" }}
       aria-label={t.player}
       data-home-player={state}
@@ -100,7 +100,7 @@ export function HomeActivePlayback({ className = "" }: { className?: string }) {
   if (!adhan && !active) return null;
   return (
     <section
-      className={`flex flex-col justify-center border px-3.5 py-2.5 ${className}`}
+      className={`dithar-glass flex flex-col justify-center border px-3.5 py-2.5 ${className}`}
       style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", borderRadius: "var(--card-radius)", boxShadow: "0 2px 10px rgba(var(--color-gold-rgb), 0.08)" }}
       aria-label={t.player}
       data-home-player={adhan ? `adhan-${adhan.status}` : active!.status}

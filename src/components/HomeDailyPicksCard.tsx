@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { homeDashboardLabels } from "../data/homeDashboardLabels";
-import { isPageVisible, subscribePageVisibility } from "../lib/pageVisibility";
+import { useLocalDateKey } from "../lib/useLocalDateKey";
 import type { MiscCategoryKey } from "../data/misc-library";
 
 // Home's «مختارات اليوم» card: today's first Daily Pick (lib/dailyPicks.ts —
@@ -33,22 +33,19 @@ async function loadTodayPick(): Promise<Pick | null> {
 
 function useTodayPick(): Pick | null {
   const [pick, setPick] = useState<Pick | null>(null);
+  // A new local day — at midnight with Home open, or back in the app the next morning — reads the day's pick again.
+  const day = useLocalDateKey({ atMidnight: true });
   useEffect(() => {
     let cancelled = false;
-    const read = () =>
-      void loadTodayPick()
-        .then((first) => {
-          if (!cancelled && first) setPick(first);
-        })
-        .catch(() => {});
-    read();
-    // Back in the app (possibly on a new day): the day's pick again.
-    const unsubscribe = subscribePageVisibility(() => isPageVisible() && read());
+    void loadTodayPick()
+      .then((first) => {
+        if (!cancelled && first) setPick(first);
+      })
+      .catch(() => {});
     return () => {
       cancelled = true;
-      unsubscribe();
     };
-  }, []);
+  }, [day]);
   return pick;
 }
 
@@ -64,7 +61,7 @@ export function HomeDailyPicksCard({ onOpen, className = "" }: { onOpen: (pick: 
         if (pick) onOpen(pick);
         else void loadTodayPick().then((p) => p && onOpen(p));
       }}
-      className={`flex w-full items-center gap-3 border px-3 py-2 text-start ${className}`}
+      className={`dithar-glass flex w-full items-center gap-3 border px-3 py-2 text-start ${className}`}
       style={{
         borderColor: "var(--color-gold-soft)",
         background: "linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface) 60%, rgba(var(--color-gold-rgb), 0.12) 100%)",

@@ -1,19 +1,23 @@
 // @vitest-environment jsdom
 //
 // Bottom-tab navigation through the real AppRouter (useScreenNavigation):
-// the Audio Adhkar tab opens the Audio Adhkar screen directly from EVERY
-// screen that shows the bottom navigation, and Back still walks the stack.
+// the Adhkar tab opens the Adhkar screen from EVERY screen that shows the
+// bottom navigation, its two cards open Audio Adhkar and Written Adhkar, and
+// Back still walks the stack.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import App from "./App";
-import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels } from "./data/misc-library";
+import { MISC_DUAS } from "./data/misc-library";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels } from "./data/written-adhkar";
 import { resetQuranReadingCacheForTesting, saveQuranPosition } from "./lib/quranReading";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-const TAB = { home: "الرئيسية", settings: "الإعدادات", audio: "الأذكار المسموعة", written: "الأذكار المكتوبة", tasbih: "السبحة", quran: "المصحف" };
+const TAB = { home: "الرئيسية", settings: "الإعدادات", adhkar: "الأذكار", tasbih: "السبحة", quran: "المصحف" };
+/** The Adhkar screen's two cards, and the screens they open (titled as before). */
+const AUDIO = "الأذكار المسموعة";
+const WRITTEN = "الأذكار المكتوبة";
 
 let container: HTMLDivElement;
 let root: Root;
@@ -32,7 +36,7 @@ afterEach(async () => {
   container.remove();
 });
 
-const tab = (label: string) => Array.from(container.querySelectorAll<HTMLButtonElement>("nav button")).find((b) => b.textContent?.includes(label))!;
+const tab = (label: string) => Array.from(container.querySelectorAll<HTMLButtonElement>("nav button")).find((b) => b.textContent === label)!;
 /** The highlighted bottom tab (each screen marks its own section). */
 const activeTab = () => container.querySelector('nav button[aria-current="page"]')?.textContent ?? "";
 const heading = () => container.querySelector("h1")?.textContent?.trim() ?? "";
@@ -54,11 +58,18 @@ async function click(el: Element | null | undefined, what: string) {
 const tap = (label: string) => click(tab(label), `"${label}" tab`);
 const button = (text: string) => Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(text));
 
-/** The Audio Adhkar MAIN screen (not one of its lists). */
+/** The Audio Adhkar MAIN screen (not one of its lists) — under the Adhkar tab. */
 const expectAudioAdhkar = async () => {
-  await expectScreen(TAB.audio);
-  await expectHeading(TAB.audio);
+  await expectScreen(TAB.adhkar);
+  await expectHeading(AUDIO);
 };
+
+/** The Adhkar tab, then the Adhkar screen's card for Audio or Written Adhkar. */
+async function openAdhkarCard(card: "audio" | "written") {
+  await tap(TAB.adhkar);
+  await expectHeading(TAB.adhkar);
+  await click(container.querySelector(`[data-adhkar-card="${card}"]`), `${card} card`);
+}
 
 /** The browser Back button: consumes the history guard entry (see useScreenNavigation). */
 async function browserBack() {
@@ -67,8 +78,8 @@ async function browserBack() {
 
 async function openWritten() {
   await expectScreen(TAB.home);
-  await tap(TAB.written);
-  await expectHeading(TAB.written);
+  await openAdhkarCard("written");
+  await expectHeading(WRITTEN);
 }
 
 // How to reach each screen that shows the bottom navigation.
@@ -107,28 +118,10 @@ const SCREENS: { name: string; open: () => Promise<void> }[] = [
     },
   },
   {
-    name: "Misc Library",
-    open: async () => {
-      await openWritten();
-      await click(button(writtenAdhkarCategoryLabels.misc.ar), "Various card");
-      await expectHeading(miscLibraryLabels.ar.screenTitle);
-    },
-  },
-  {
-    name: "Misc Category",
-    open: async () => {
-      await openWritten();
-      await click(button(writtenAdhkarCategoryLabels.misc.ar), "Various card");
-      await expectHeading(miscLibraryLabels.ar.screenTitle);
-      await click(button(MISC_CATEGORIES.comprehensive.title_ar), "category tile");
-      await expectHeading(MISC_CATEGORIES.comprehensive.title_ar);
-    },
-  },
-  {
     name: "Audio Adhkar list",
     open: async () => {
       await expectScreen(TAB.home);
-      await tap(TAB.audio);
+      await openAdhkarCard("audio");
       await expectAudioAdhkar();
       await click(button(writtenAdhkarCategoryLabels.morning.ar), "Morning card");
       await expectHeading(writtenAdhkarCategoryLabels.morning.ar);
@@ -136,36 +129,93 @@ const SCREENS: { name: string; open: () => Promise<void> }[] = [
   },
 ];
 
-describe("the Audio Adhkar tab opens Audio Adhkar directly", () => {
+describe("the Adhkar tab opens the Adhkar screen, whose cards open Audio and Written Adhkar", () => {
   it.each(SCREENS)("from $name", async ({ open }) => {
     await open();
-    await tap(TAB.audio);
+    await openAdhkarCard("audio");
     await expectAudioAdhkar();
+  });
+
+  it("the Written Adhkar card opens Written Adhkar, and Back returns to the Adhkar screen, then Home", async () => {
+    await openWritten();
+    expect(activeTab()).toBe(TAB.adhkar);
+    await browserBack();
+    await expectHeading(TAB.adhkar);
+    await browserBack();
+    await expectScreen(TAB.home);
+  });
+
+  it("the bar has exactly five tabs, Home in the centre", async () => {
+    await expectScreen(TAB.home);
+    // Left to right on screen; i.e. right to left: Tasbeeh, Adhkar, Home, Mushaf, Settings.
+    expect(Array.from(container.querySelectorAll("nav button")).map((b) => b.textContent)).toEqual([TAB.settings, TAB.quran, TAB.home, TAB.adhkar, TAB.tasbih]);
+  });
+});
+
+describe("the back arrows", () => {
+  const backArrow = () => container.querySelector<HTMLElement>("[data-back-arrow]");
+
+  it("the Adhkar screen's arrow returns to the previous screen (Home, or Settings)", async () => {
+    await expectScreen(TAB.home);
+    await tap(TAB.adhkar);
+    await expectHeading(TAB.adhkar);
+    await click(backArrow(), "Adhkar back arrow");
+    await expectScreen(TAB.home);
+    await tap(TAB.settings);
+    await expectScreen(TAB.settings);
+    await tap(TAB.adhkar);
+    await expectHeading(TAB.adhkar);
+    await click(backArrow(), "Adhkar back arrow");
+    await expectScreen(TAB.settings);
+  });
+
+  it("Audio Adhkar's and Written Adhkar's arrows return to the Adhkar screen", async () => {
+    await expectScreen(TAB.home);
+    await openAdhkarCard("audio");
+    await expectAudioAdhkar();
+    await click(backArrow(), "Audio Adhkar back arrow");
+    await expectHeading(TAB.adhkar);
+    await click(container.querySelector('[data-adhkar-card="written"]'), "written card");
+    await expectHeading(WRITTEN);
+    await click(backArrow(), "Written Adhkar back arrow");
+    await expectHeading(TAB.adhkar);
+    // …and from there, back to Home.
+    await click(backArrow(), "Adhkar back arrow");
+    await expectScreen(TAB.home);
+  }, 20_000);
+
+  it("the Written Adhkar card shows an open book with a bookmark — no star ornament", async () => {
+    await expectScreen(TAB.home);
+    await tap(TAB.adhkar);
+    await expectHeading(TAB.adhkar);
+    const card = container.querySelector('[data-adhkar-card="written"]')!;
+    expect(card.querySelectorAll("svg rect")).toHaveLength(0);
+    expect(card.innerHTML).not.toContain("rotate(45)");
   });
 });
 
 describe("Back behavior is unchanged", () => {
-  it("Settings → Audio Adhkar, then Back → Settings → Home", async () => {
+  it("Settings → Adhkar → Audio Adhkar, then Back → Adhkar → Settings → Home", async () => {
     await SCREENS[0].open();
-    await tap(TAB.audio);
+    await openAdhkarCard("audio");
     await expectAudioAdhkar();
+    await browserBack();
+    await expectHeading(TAB.adhkar);
     await browserBack();
     await expectScreen(TAB.settings);
     await browserBack();
     await expectScreen(TAB.home);
   });
 
-  it("Search → Audio Adhkar, then Back → Search → Written Adhkar → Home", async () => {
+  it("Search → Adhkar → Audio Adhkar, then Back → Adhkar → Home (the Adhkar screen was already on the way to Search: the stack rewinds to it)", async () => {
     await SCREENS.find((s) => s.name === "Search")!.open();
-    await tap(TAB.audio);
+    await openAdhkarCard("audio");
     await expectAudioAdhkar();
     await browserBack();
-    await expectHeading(writtenAdhkarLabels.ar.searchTitle);
-    await browserBack();
-    await expectHeading(TAB.written);
+    await expectHeading(TAB.adhkar);
     await browserBack();
     await expectScreen(TAB.home);
-  });
+  }, 20_000);
 });
 
 describe("the Mushaf tab", () => {
@@ -207,6 +257,14 @@ describe("the Mushaf tab", () => {
     await browserBack();
     await expectScreen(TAB.home);
   }, 20_000);
+});
+
+describe("Written Adhkar categories", () => {
+  it("offers Morning, Evening and Prayer only — no Misc Duas card", async () => {
+    await openWritten();
+    for (const key of ["morning", "evening", "prayer"] as const) expect(button(writtenAdhkarCategoryLabels[key].ar), key).toBeDefined();
+    expect(button(writtenAdhkarCategoryLabels.misc.ar)).toBeUndefined();
+  });
 });
 
 describe("«مختارات اليوم» on Home", () => {

@@ -24,7 +24,7 @@ import type { AdhanWindow } from "./adhanSuppression";
 import { REPETITION_PAUSE_MS } from "./audioAdhkarPlayback";
 import { calculatePrayerDay } from "./prayerTimes";
 import type { PrayerLocation } from "./prayerTimes";
-import { addDays, localDateIn } from "./locationTime";
+import { addDays, localDateIn, zonedInstant } from "./locationTime";
 import type { LocalDate } from "./locationTime";
 import { originalAudioPath } from "./audioAssets";
 
@@ -42,6 +42,8 @@ export interface DailyWindow {
 export interface DailySlot extends DailyWindow {
   /** The planned start, epoch millis — window.start <= at, and the session ends by window.end. */
   at: number;
+  /** A weekly holiday's start that day, epoch millis: nothing of the session (not even its heads-up) before it. */
+  notBefore?: number;
 }
 
 const DURATIONS: Readonly<Record<string, number>> = audioDurations;
@@ -102,30 +104,8 @@ export function sessionDurationMs(playlist: readonly NativePlaylistItem[], durat
   return total + Math.max(0, playbacks - 1) * REPETITION_PAUSE_MS;
 }
 
-/** The location's wall-clock offset from UTC at `instant`, in millis. */
-function zoneOffsetMs(instant: number, timezone: string): number {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone,
-    hourCycle: "h23",
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  }).formatToParts(new Date(instant));
-  const get = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find((p) => p.type === type)?.value);
-  const wall = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second"));
-  return wall - Math.floor(instant / 1000) * 1000;
-}
-
-/** The instant it is `minutes` after midnight of `date` at the location (DST-safe: re-checked at the result). */
-export function zonedInstant(date: LocalDate, minutes: number, timezone: string): number {
-  const wall = Date.UTC(date.year, date.month - 1, date.day, 0, minutes);
-  let at = wall - zoneOffsetMs(wall, timezone);
-  at = wall - zoneOffsetMs(at, timezone);
-  return at;
-}
+// zonedInstant moved to locationTime.ts (prayer schedules use it too); re-exported for existing callers.
+export { zonedInstant } from "./locationTime";
 
 /** The section's window on the location's day `date`, or null when the prayer times don't give one. */
 export function dailyWindowFor(section: DailySection, date: LocalDate, location: PrayerLocation): DailyWindow | null {
@@ -197,6 +177,13 @@ export interface DailySlotsInput {
    * usual `startMinutes` that day) — the section's "customize by day" times.
    */
   dayStartMinutes?: readonly number[];
+  /**
+   * The weekly holiday start per weekday (same indexing; -1 = not a
+   * holiday): that day's session starts no earlier — a usual start moves
+   * to the nearest fitting minute from there, a day's own time to it — and
+   * a day where it no longer fits its window has none.
+   */
+  holidayStartMinutes?: readonly number[];
   playlist: readonly NativePlaylistItem[];
   location: PrayerLocation;
   adhanWindows: readonly AdhanWindow[];
@@ -210,7 +197,18 @@ export interface DailySlotsInput {
  * own day's window — a day where the session can't fit has none. Windows
  * already over are left out.
  */
-export function buildDailySlots({ section, startMinutes, dayStartMinutes, playlist, location, adhanWindows, now, days = 30, durationOf = audioDurationMs }: DailySlotsInput): DailySlot[] {
+export function buildDailySlots({
+  section,
+  startMinutes,
+  dayStartMinutes,
+  holidayStartMinutes,
+  playlist,
+  location,
+  adhanWindows,
+  now,
+  days = 30,
+  durationOf = audioDurationMs,
+}: DailySlotsInput): DailySlot[] {
   if (startMinutes < 0 || playlist.length === 0) return [];
   const durationMs = sessionDurationMs(playlist, durationOf);
   const redoMs = Math.max(0, ...playlist.map((item) => itemDurationMs(item, durationOf) ?? 0)) + REPETITION_PAUSE_MS;
@@ -219,12 +217,45 @@ export function buildDailySlots({ section, startMinutes, dayStartMinutes, playli
   for (let offset = 0; offset < days; offset++) {
     const date = addDays(today, offset);
     const window = dailyWindowFor(section, date, location);
-    if (!window || window.end <= now.getTime()) continue;
-    // That weekday's own start time when one is set, else the usual one.
     const weekday = new Date(Date.UTC(date.year, date.month - 1, date.day)).getUTCDay();
     const dayStart = dayStartMinutes?.[weekday] ?? -1;
-    const at = planStartInWindow(window, zonedInstant(date, dayStart >= 0 ? dayStart : startMinutes, location.timezone), durationMs, adhanWindows, redoMs);
-    if (at !== null) slots.push({ ...window, at });
+    const holiday = holidayStartMinutes?.[weekday] ?? -1;
+    const notBefore = holiday >= 0 ? zonedInstant(date, holiday, location.timezone) : undefined;
+    const floor = (at: number) => (notBefore === undefined ? at : Math.max(at, notBefore));
+    const marked = (slot: DailySlot): DailySlot => (notBefore === undefined ? slot : { ...slot, notBefore });
+    if (dayStart >= 0) {
+      // That weekday's own time plays at exactly that time — also outside the prayer-time window.
+      const slot = exactDaySlot(window, floor(zonedInstant(date, dayStart, location.timezone)), durationMs, adhanWindows, redoMs);
+      if (slot.end > now.getTime()) slots.push(marked(slot));
+      continue;
+    }
+    if (!window || window.end <= now.getTime()) continue;
+    // A holiday start narrows where the session may start (the window itself — its identity for native — stays).
+    const allowed = { start: floor(window.start), end: window.end };
+    if (allowed.start >= allowed.end) continue;
+    const at = planStartInWindow(allowed, floor(zonedInstant(date, startMinutes, location.timezone)), durationMs, adhanWindows, redoMs);
+    if (at !== null) slots.push(marked({ ...window, at }));
   }
   return slots;
+}
+
+/** How long a weekday-time session may run when the length of its adhkar isn't known. */
+const UNKNOWN_SESSION_MS = 2 * 60 * MINUTE_MS;
+
+/**
+ * A weekday's own time: the session starts at `at` exactly (native only
+ * waits out an adhan pause, as for every session), and its window is
+ * widened to hold it — from the earlier of the day's window start and
+ * `at` (so native still sees ONE session per day: a day whose window
+ * already had a session never plays again, even after its time is
+ * changed), to the later of the window's end and the session's end plus
+ * the usual margin (a slightly late alarm still plays).
+ */
+export function exactDaySlot(window: DailyWindow | null, at: number, durationMs: number | null, adhanWindows: readonly AdhanWindow[], redoMs: number): DailySlot {
+  const sessionEnd = durationMs === null ? at + UNKNOWN_SESSION_MS : sessionEndMs(at, durationMs, adhanWindows, redoMs);
+  return {
+    start: Math.min(window?.start ?? at, at),
+    end: Math.max(window && at < window.end ? window.end : at, sessionEnd + MARGIN_MS),
+    at,
+  };
 }

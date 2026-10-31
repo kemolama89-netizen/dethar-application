@@ -246,31 +246,54 @@ class AudioAdhkarLogicTest {
     private fun rotating(id: String, files: (String) -> List<String>) =
         PlaylistItem(id, id, "", Recitation(files(RECITERS[0])), 1, rotation = RECITERS.map { Recitation(files(it)) })
 
+    /** A fixed "random" source: always the [n]th of whatever is offered. */
+    private fun fixed(n: Int): (Int) -> Int = { size -> n.coerceAtMost(size - 1) }
+
     @Test
-    fun rotationGivesEachQuranicRecitationTheNextReciterAndPersistsThePosition() {
+    fun randomRotationGivesEachQuranicRecitationARandomReciterAndRemembersTheLast() {
         val playlist = listOf(rotating("morning_001", ::kursi), item("morning_003", 1), rotating("morning_002", ::ikhlas))
-        val first = AudioAdhkarRotation.apply(playlist, startIndex = 3)
+        val first = AudioAdhkarRotation.apply(playlist, lastSlot = -1, random = fixed(3))
         assertEquals(kursi("alafasy-murattal"), first.items[0].recitation.assetPaths)
         assertEquals(playlist[1], first.items[1]) // non-Quran items are untouched
+        // Slot 3 is excluded now (just used): the 4th remaining choice is sudais (slot 4).
         assertEquals(ikhlas("sudais-murattal"), first.items[2].recitation.assetPaths)
-        assertEquals(0, first.nextIndex) // wraps around
-        val next = AudioAdhkarRotation.apply(playlist, first.nextIndex)
-        assertEquals(kursi("abdulbasit-murattal"), next.items[0].recitation.assetPaths)
-        assertEquals(ikhlas("minshawi-murattal"), next.items[2].recitation.assetPaths)
+        assertEquals(4, first.lastSlot)
+    }
+
+    @Test
+    fun randomRotationNeverRepeatsAReciterBackToBackEvenAcrossSessions() {
+        val playlist = List(6) { rotating("morning_00$it", ::kursi) }
+        var last = -1
+        val rng = java.util.Random(7)
+        val used = mutableListOf<String>()
+        repeat(40) {
+            val applied = AudioAdhkarRotation.apply(playlist, last) { rng.nextInt(it) }
+            for (item in applied.items) used.add(item.recitation.assetPaths.single())
+            last = applied.lastSlot
+        }
+        for (i in 1 until used.size) assertFalse("recitation $i repeats the previous reciter", used[i] == used[i - 1])
+        assertEquals(RECITERS.map { kursi(it).single() }.toSet(), used.toSet()) // every reciter comes up
+    }
+
+    @Test
+    fun withASingleReciterRotationAlwaysUsesIt() {
+        val single = PlaylistItem("morning_001", "", "", Recitation(kursi(RECITERS[0])), 1, rotation = listOf(Recitation(kursi("husary-murattal"))))
+        val applied = AudioAdhkarRotation.apply(listOf(single, single), lastSlot = 0, random = fixed(0))
+        assertTrue(applied.items.all { it.recitation.assetPaths == kursi("husary-murattal") })
     }
 
     @Test
     fun rotationKeepsAllAyahsOfOneRecitationWithOneReciter() {
-        val applied = AudioAdhkarRotation.apply(listOf(rotating("morning_002", ::ikhlas)), startIndex = 2)
+        val applied = AudioAdhkarRotation.apply(listOf(rotating("morning_002", ::ikhlas)), lastSlot = -1, random = fixed(2))
         assertEquals(ikhlas("husary-murattal"), applied.items.single().recitation.assetPaths)
     }
 
     @Test
-    fun withoutRotationThePlaylistAndPositionAreUnchanged() {
+    fun aSpecificReciterLeavesThePlaylistAndTheLastSlotUnchanged() {
         val playlist = listOf(PlaylistItem("morning_002", "t", "", Recitation(ikhlas("husary-murattal")), 3), item("morning_003", 1))
-        val applied = AudioAdhkarRotation.apply(playlist, startIndex = 4)
+        val applied = AudioAdhkarRotation.apply(playlist, lastSlot = 4)
         assertEquals(playlist, applied.items)
-        assertEquals(4, applied.nextIndex)
+        assertEquals(4, applied.lastSlot)
     }
 
     // ---- one-minute pre-playback warning ----------------------------------
@@ -396,7 +419,7 @@ class AudioAdhkarLogicTest {
     fun rotationGivesEachRecitationItsOwnReciterBasmala() {
         val playlist = listOf(PlaylistItem("morning_002", "", "", withBasmala(RECITERS[0]), 1, rotation = RECITERS.map(::withBasmala)))
         for ((i, reciter) in RECITERS.withIndex()) {
-            val files = AudioAdhkarRotation.apply(playlist, startIndex = i).items.single().filesFor(1)
+            val files = AudioAdhkarRotation.apply(playlist, lastSlot = -1, random = fixed(i)).items.single().filesFor(1)
             assertEquals(basmala(reciter), files.first())
             assertTrue(files.all { "/$reciter/" in it }) // never another reciter's voice
         }

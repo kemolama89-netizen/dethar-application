@@ -1,12 +1,12 @@
 import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode, Ref } from "react";
-import { Bookmark, BookmarkCheck, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ExternalLink, Home, List, Maximize2, Minus, Plus, RectangleHorizontal, RectangleVertical, Search, Settings2, Trash2, Volume2, VolumeX, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Bookmark, BookmarkCheck, Share2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ExternalLink, Home, List, Maximize2, Minus, Plus, RectangleHorizontal, RectangleVertical, Search, Settings2, Trash2, Volume2, VolumeX, X, ZoomIn, ZoomOut } from "lucide-react";
 import "./quranReader.css";
 import { DeviceFrame } from "./DeviceFrame";
 import { BottomNav } from "./BottomNav";
 import { useLanguage } from "../theme/LanguageContext";
 import { quranLabels } from "../data/quranLabels";
-import { QURAN_VERSES, TANZIL_NOTICE, pageOpeningWords } from "../lib/quranText";
+import { QURAN_VERSES, TANZIL_NOTICE, pageOpeningWords, verseForSharing } from "../lib/quranText";
 import { JUZ_STARTS, MUSHAF_SHOWN_BOX, SURAH_META, TOTAL_PAGES, arabicDigits, hizbOf, juzOf, mushafViewBox, pageOf, pageVerses, quarterMarksOnPage, quarterStart, quarterStartsOnPage, surahMeta } from "../lib/quranMeta";
 import { QURAN_SEARCH_MIN, normalizeQuery, searchQuran } from "../lib/quranSearch";
 import { lockReaderOrientation } from "../lib/orientationNative";
@@ -30,6 +30,8 @@ import { useKeepScreenAwake } from "../lib/screenAwake";
 import { surahHeadingFrames } from "../lib/mushafHeadings";
 import { openingArtwork } from "../lib/mushafOpening";
 import { MushafSurahFrame, MushafSurahFrameDefs } from "./MushafSurahFrame";
+import { ShareMenu } from "./ShareMenu";
+import type { ShareableContent } from "../lib/shareContent";
 
 // The Qur'an reader: the pages of the King Fahd Complex's 1441H Madinah
 // Mushaf (Hafs), one at a time, as printed — each page is the edition's own
@@ -494,6 +496,8 @@ function parseVerseKey(key: string): QuranTarget {
 /** Room under the page for its printed number and the next page's opening words, and above it (px). */
 const FOLIO_PX = 30;
 const TOP_PAD_PX = 4;
+/** Room at each side of the page for the edges of the leaves beneath it (quranReader.css). */
+const PAGE_EDGES_PX = 7;
 /** A press held this long on a verse selects it (a tap only shows or hides the controls). */
 const LONG_PRESS_MS = 450;
 
@@ -765,6 +769,9 @@ function MushafReader({
   // The screen stays on while a page is open; the phone's own timeout returns when the reader closes.
   useKeepScreenAwake();
   const [selected, setSelected] = useState<string | null>(null);
+  // Sharing the selected verse (as text or as an image card — components/ShareMenu.tsx).
+  // Open only while its verse is still selected; a new selection starts with it closed (selectVerse).
+  const [sharing, setSharing] = useState(false);
   const [zoom, setZoom] = useState(loadQuranZoom);
   const [area, setArea] = useState({ w: 0, h: 0 });
   // Each page's verse shapes, as they arrive; pages whose image failed to load.
@@ -844,7 +851,8 @@ function MushafReader({
   /** A page's size on this screen, at a zoom. */
   const fitSheet = (p: number, z: number) => {
     const aspect = pageAspect(p);
-    const base = !measured ? 0 : wide ? area.w : Math.min(area.w, Math.max(0, area.h - FOLIO_PX - TOP_PAD_PX) * aspect);
+    const room = Math.max(0, area.w - 2 * PAGE_EDGES_PX);
+    const base = !measured ? 0 : wide ? room : Math.min(room, Math.max(0, area.h - FOLIO_PX - TOP_PAD_PX) * aspect);
     const w = Math.floor(base * z);
     return { w, h: Math.floor(w / aspect) };
   };
@@ -1159,6 +1167,7 @@ function MushafReader({
   const selectVerse = useCallback(
     (key: string) => {
       longPressed.current = true;
+      setSharing(false);
       setSelected(key);
       setControls(true);
       moveTo(parseVerseKey(key), "now");
@@ -1181,6 +1190,14 @@ function MushafReader({
   const markKey = selected ?? verseKey(position.surah, position.ayah);
   const mark = parseVerseKey(markKey);
   const marked = isQuranBookmarked(mark.surah, mark.ayah);
+  // The selected verse for sharing: its complete text exactly as in the Mushaf's Tanzil text, without the
+  // surah's heading basmala (lib/quranText.ts verseForSharing; sharing never adds brackets or changes a
+  // letter — lib/quranBrackets.ts), with its surah and verse number; the image card adds DITHAR's name
+  // (lib/shareImage.ts).
+  const shareText = selected !== null ? verseForSharing(mark.surah, mark.ayah) : null;
+  const shareContent: ShareableContent | null = shareText
+    ? { kindLabel: t.shareKind, textAr: shareText, reference: `${t.surah(surahName(mark.surah, language))} · ${t.ayah(digits(mark.ayah))}` }
+    : null;
   const toggleMark = (p: QuranTarget) => {
     toggleQuranBookmark(p.surah, p.ayah);
     setBookmarkVersion((v) => v + 1);
@@ -1399,6 +1416,12 @@ function MushafReader({
                 {marked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
                 {marked ? t.removeBookmark : t.addBookmark}
               </button>
+              {shareContent && (
+                <button type="button" onClick={() => setSharing(true)} className="flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold" style={{ boxShadow: "inset 0 0 0 1px var(--color-gold-soft)", color: "var(--color-text-primary)" }} data-quran-select-share="">
+                  <Share2 size={14} />
+                  {t.shareAyah}
+                </button>
+              )}
               <button type="button" onClick={() => setSelected(null)} aria-label={t.close} className="p-1" style={{ color: "var(--color-text-muted)" }}>
                 <X size={16} />
               </button>
@@ -1551,6 +1574,7 @@ function MushafReader({
           </div>
         </div>
       )}
+      {shareContent && <ShareMenu content={shareContent} open={sharing && selected !== null} onClose={() => setSharing(false)} />}
     </div>
   );
 }

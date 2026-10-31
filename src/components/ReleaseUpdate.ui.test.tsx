@@ -3,6 +3,19 @@
 // Hadith overlay, the Home dashboard, the now-playing panel, the Lataif in
 // the full-screen reflection, and the prayer countdown's progress.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// This file tests the review workflow itself (defaults, decisions, edits) on
+// fixed fixtures; the religious-content audit's own gating — including that
+// an approved edit withholds an audited Hadith or Latifa — is tested in
+// lib/religiousAudit.test.tsx. Here it is switched off.
+vi.mock("../lib/religiousAudit", () => ({
+  AUDIT_ENFORCED: false,
+  inAuditScope: () => false,
+  auditShowsArabic: () => true,
+  auditShowsEnglish: () => true,
+  reminderAuditApproved: () => true,
+  auditPublishesByDefault: () => false,
+}));
+
 import { act } from "react";
 import type { ReactNode } from "react";
 import { createRoot } from "react-dom/client";
@@ -18,7 +31,7 @@ import { LANGUAGE_STORAGE_KEY } from "../lib/appearancePreferences";
 import { ContentReviewView } from "./ContentReviewView";
 import { POEMS } from "../data/widgetContent";
 import { StartupHadithOverlay } from "./StartupHadithOverlay";
-import { FADE_MS, MAX_VISIBLE_MS, MIN_VISIBLE_MS, dismissStartupOverlay, resetStartupOverlayForTesting } from "../lib/startupOverlay";
+import { FADE_MS, LOGO_VISIBLE_MS, MAX_VISIBLE_MS, MIN_VISIBLE_MS, dismissStartupOverlay, holdLaunchCover, resetStartupOverlayForTesting } from "../lib/startupOverlay";
 import { DailyProgressCard } from "./HomeDashboard";
 import { NowPlayingPanel } from "./AudioAdhkarScreen";
 import { PROGRESS_POLL_MS } from "../lib/useAudioAdhkarProgress";
@@ -97,10 +110,10 @@ describe("Religious Content Review", () => {
 describe("Religious Content Review — categories and one-tap decisions", () => {
   const card = (id: string) => container.querySelector(`[data-review-item='${id}']`)!;
 
-  it("offers the six categories, and a category lists its items in full", async () => {
+  it("offers the Lataif tab and the six categories, and a category lists its items in full", async () => {
     mount(<ContentReviewView onBack={() => {}} />);
     const cats = [...container.querySelectorAll("[data-review-category]")].map((b) => b.getAttribute("data-review-category"));
-    expect(cats).toEqual(["all", "quran", "tafsir-reflections", "hadith", "dua-adhkar", "poetry", "comments-translations"]);
+    expect(cats).toEqual(["wamdat", "all", "quran", "tafsir-reflections", "hadith", "dua-adhkar", "poetry", "comments-translations"]);
     await click(container.querySelector("[data-review-category='quran']")!);
     await type(container.querySelector<HTMLInputElement>("[data-review-search]")!, "q33-41");
     const latifa = card("lataif:q33-41");
@@ -213,6 +226,113 @@ describe("launch intro (startup Hadith)", () => {
     mount(<StartupHadithOverlay appReady />);
     expect(document.getElementById("dithar-launch-cover")).toBeNull();
     setReview(STARTUP_HADITH_REVIEW_ID, { status: "approved" });
+  });
+
+  describe("with the DITHAR logo first (index.html's launch cover, on a fresh launch)", () => {
+    const logoCover = () => {
+      const cover = document.createElement("div");
+      cover.id = "dithar-launch-cover";
+      cover.setAttribute("data-logo", "");
+      document.body.appendChild(cover);
+      return cover;
+    };
+    /** index.html reports the logo's first frame on screen. */
+    const logoPainted = () =>
+      act(() => {
+        window.__ditharLogoShownAt = performance.now();
+        window.dispatchEvent(new Event("dithar-logo-shown"));
+      });
+    afterEach(() => {
+      document.getElementById("dithar-launch-cover")?.remove();
+      delete window.__ditharLogoShownAt;
+    });
+
+    it("keeps the logo LOGO_VISIBLE_MS from its first frame, mounting Home beneath it, then fades it to the Hadith", async () => {
+      const cover = logoCover();
+      const shown = vi.fn();
+      mount(<StartupHadithOverlay appReady={false} onShown={shown} />);
+      await flushFont();
+      // Home loads while the logo shows; the Hadith waits beneath it, its time not started.
+      expect(shown).toHaveBeenCalled();
+      expect(container.querySelector("[data-startup-overlay]")!.className).not.toContain("is-text-ready");
+      logoPainted();
+      act(() => vi.advanceTimersByTime(LOGO_VISIBLE_MS - 100));
+      expect(cover.isConnected).toBe(true);
+      expect(cover.style.opacity).toBe("");
+      act(() => vi.advanceTimersByTime(200));
+      expect(cover.style.opacity).toBe("0"); // fading out over the Hadith
+      await flushFont();
+      expect(container.querySelector("[data-startup-overlay]")!.className).toContain("is-text-ready");
+      act(() => vi.advanceTimersByTime(FADE_MS));
+      expect(cover.isConnected).toBe(false);
+      // The Hadith's own time starts now, as before.
+      act(() => vi.advanceTimersByTime(MIN_VISIBLE_MS - 600));
+      expect(container.querySelector("[data-startup-overlay='visible']")).not.toBeNull();
+    });
+
+    it("counts the logo's time from its first frame, not from when the app started", async () => {
+      const cover = logoCover();
+      mount(<StartupHadithOverlay appReady />);
+      act(() => vi.advanceTimersByTime(LOGO_VISIBLE_MS)); // the logo image hasn't been painted yet
+      expect(cover.style.opacity).toBe("");
+      logoPainted();
+      act(() => vi.advanceTimersByTime(LOGO_VISIBLE_MS + 10));
+      expect(cover.style.opacity).toBe("0");
+    });
+
+    it("leads straight to Home when the Hadith isn't shown", () => {
+      const cover = logoCover();
+      setReview(STARTUP_HADITH_REVIEW_ID, { status: "needs-verification" });
+      const shown = vi.fn();
+      mount(<StartupHadithOverlay appReady onShown={shown} />);
+      expect(shown).toHaveBeenCalled();
+      logoPainted();
+      act(() => vi.advanceTimersByTime(LOGO_VISIBLE_MS + 10));
+      expect(cover.style.opacity).toBe("0");
+      setReview(STARTUP_HADITH_REVIEW_ID, { status: "approved" });
+    });
+
+    it("while held (a tapped reminder loading), the cover stays — removal waits for the release", async () => {
+      const cover = logoCover();
+      const hold = holdLaunchCover();
+      mount(<StartupHadithOverlay appReady />);
+      logoPainted();
+      act(() => vi.advanceTimersByTime(LOGO_VISIBLE_MS + 10));
+      expect(cover.style.opacity).toBe(""); // the logo's time is over, but the hold keeps it
+      act(() => dismissStartupOverlay());
+      expect(cover.isConnected).toBe(true); // the reminder's view hasn't painted yet
+      act(() => hold.release());
+      expect(cover.isConnected).toBe(false);
+    });
+
+    it("a hold given up by an effect's cleanup doesn't act (what was asked waits for the next hold's release); a lost hold ends by itself", () => {
+      let cover = logoCover();
+      const first = holdLaunchCover();
+      act(() => dismissStartupOverlay());
+      first.cancel(); // StrictMode's effect cleanup
+      expect(cover.isConnected).toBe(true);
+      const second = holdLaunchCover();
+      second.release();
+      expect(cover.isConnected).toBe(false);
+      cover = logoCover();
+      const third = holdLaunchCover();
+      third.release();
+      expect(cover.isConnected).toBe(true); // nothing asked: the launch goes on (the logo keeps its time)
+      holdLaunchCover(500);
+      act(() => dismissStartupOverlay());
+      act(() => vi.advanceTimersByTime(501));
+      expect(cover.isConnected).toBe(false);
+    });
+
+    it("a reminder opened from the widget ends the logo at once too", async () => {
+      logoCover();
+      mount(<StartupHadithOverlay appReady />);
+      await flushFont();
+      logoPainted();
+      act(() => dismissStartupOverlay());
+      expect(document.getElementById("dithar-launch-cover")).toBeNull();
+      expect(container.querySelector("[data-startup-overlay='leaving']")).not.toBeNull();
+    });
   });
 
   it("appears once per launch — a WebView reload in the same launch too — and not at all unless approved", () => {

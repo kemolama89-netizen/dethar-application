@@ -14,30 +14,35 @@ import { reminderPool } from "./reminderContent";
 import type { ReminderItem } from "./reminderContent";
 import { REMINDER_CATEGORIES } from "./reminderContent";
 import { reminderLabels } from "../data/reminderLabels";
-import { subscribeWeeklySchedule, weeklyDayStarts } from "./weeklySchedule";
-import { buildSummarySnapshot, loadSummarySettings, subscribeSummarySettings } from "./dailySummary";
+import { holidayDayStarts, subscribeWeeklySchedule } from "./weeklySchedule";
+import { buildSummarySnapshot, loadSummarySettings, subscribeSummarySettings, unavailableSummarySnapshot } from "./dailySummary";
 import { subscribeStatsChanges } from "./stats";
 import { startTimeToMinutes } from "./eveningAudioSettings";
 import { loadLanguagePreference, loadThemePreference } from "./appearancePreferences";
-import { loadStoredPalettes, subscribePaletteChanges } from "../theme/paletteStore";
+import { ACTIVE_PALETTE, subscribePaletteChanges } from "../theme/paletteStore";
 import { widgetColors } from "../theme/palettes";
 import { startFavoritesSync } from "./favoritesSync";
 import { subscribeContentReview } from "./contentReview";
 import { resolveKnownLocationRecord, subscribeLocationChanges } from "./locationSettings";
 import { trackNativeSync } from "./appExit";
 import type { Language } from "../theme/LanguageContext";
-import { isWidgetComment, isWidgetItem, widgetDetail } from "./widgetFeed";
+import { isWidgetComment, isWidgetItem, widgetDetail, widgetQuranText } from "./widgetFeed";
 import { bindDetachedMarks, tidyArabicSpacing } from "./arabicTypography";
 
 export function nativeReminderItem(item: ReminderItem, language: Language): NativeReminderItem {
   const t = reminderLabels[language];
+  const text = forWidget(item.textAr);
+  const widgetText = widgetQuranText(item, text);
   return {
     id: item.id,
     category: item.category,
     title: t.kindTitle[item.kind],
     // Spacing around punctuation is fixed for the widget and notifications (lib/arabicTypography.ts):
     // whitespace only — the wording itself, kept unchanged in the app, is the same letter for letter.
-    text: forWidget(item.textAr),
+    text,
+    // On the widget only, a Qur'anic verse in its brackets ﴿ … ﴾; notifications and the
+    // opened reminder keep `text` (lib/widgetFeed.ts widgetQuranText).
+    widgetText: widgetText === text ? "" : widgetText,
     meaning: language === "en" ? bindDetachedMarks(item.meaningEn ?? "") : "",
     source: language === "en" ? bindDetachedMarks(item.sourceEn ?? "") : forWidget(item.sourceAr),
     theme: item.theme,
@@ -52,10 +57,9 @@ function forWidget(text: string): string {
   return bindDetachedMarks(tidyArabicSpacing(text));
 }
 
-/** The current identity's palette colors for the widget. */
+/** The current identity's colors for the widget (manual colour selection is gone: always the identity's own). */
 function currentWidgetColors(): { accent: string; tint: string } {
-  const theme = loadThemePreference();
-  return widgetColors(theme, loadStoredPalettes()[theme]);
+  return widgetColors(loadThemePreference(), ACTIVE_PALETTE);
 }
 
 /** The latitude, only when it describes where the user really is (for the season). */
@@ -83,7 +87,8 @@ export async function syncReminders({ withPool = false }: { withPool?: boolean }
       endMinutes: startTimeToMinutes(s.endTime),
       fullScreen: s.fullScreen,
       language,
-      dayStartMinutes: weeklyDayStarts(),
+      // The weekly holiday start on holidays; other days keep the reminders' own period.
+      dayStartMinutes: holidayDayStarts(),
       backgroundMode: s.backgroundMode,
       fixedBackground: s.fixedBackground,
       latitude: reliableLatitude(),
@@ -123,7 +128,14 @@ export async function syncCustomBackground(): Promise<void> {
 export async function syncSummary(): Promise<void> {
   if (!isRemindersNativeAvailable()) return;
   const s = loadSummarySettings();
-  await trackNativeSync(RemindersNative.setSummary({ enabled: s.enabled, minutes: startTimeToMinutes(s.time), mode: s.content, snapshot: buildSummarySnapshot() }));
+  let snapshot;
+  try {
+    snapshot = buildSummarySnapshot();
+  } catch {
+    // Pushed as unknown rather than not at all: a stale snapshot would read as "nothing recorded today".
+    snapshot = unavailableSummarySnapshot();
+  }
+  await trackNativeSync(RemindersNative.setSummary({ enabled: s.enabled, minutes: startTimeToMinutes(s.time), mode: s.content, snapshot }));
 }
 
 /** Once per launch (Android): pushes everything, then keeps it current. */

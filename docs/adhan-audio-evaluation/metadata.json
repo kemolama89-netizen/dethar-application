@@ -1,0 +1,91 @@
+{
+  "purpose": "Local evaluation copies only. Not app assets. Do not copy into the app's asset folders without completing the release checklist in docs/adhan-licensing-research.md.",
+  "retrieved": "2026-10-09",
+  "files": [
+    {
+      "filename": "Developer_Athan-1.mp3",
+      "title": "Developer Athan 1 (standard adhan)",
+      "performer": "Ahmed Khalaf (repo author; README: \"ثلاثة منها بصوتي أنا\" / \"Three are my own\")",
+      "recordist_and_licensor": "Ahmed Khalaf",
+      "source_repository": "https://github.com/nandxorandor/Athan",
+      "source_commit": "821da16cfef191c2d4749c4a5b2f31a37c49ae81",
+      "source_url": "https://raw.githubusercontent.com/nandxorandor/Athan/821da16cfef191c2d4749c4a5b2f31a37c49ae81/app/src/main/assets/athan/developer/Developer_Athan-1.mp3",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "license_evidence": [
+        "https://github.com/nandxorandor/Athan/blob/821da16cfef191c2d4749c4a5b2f31a37c49ae81/LICENSE",
+        "https://github.com/nandxorandor/Athan/blob/2931834dcc/LICENSE (v1.0, 2026-08-13: same CC BY 4.0 grant)",
+        "https://github.com/nandxorandor/Athan/blob/821da16cfef191c2d4749c4a5b2f31a37c49ae81/README.md (Licence section and Arabic overview)"
+      ],
+      "attribution": "Adhan recorded by Ahmed Khalaf, CC BY 4.0, https://github.com/nandxorandor/Athan (state any changes, e.g. loudness-normalised)",
+      "share_alike": false,
+      "git_blob_sha1": "382bfdd14010d7fe22091b6c910f46427d1ff0d5",
+      "sha1": "b59ea280615007d4c2f3521f0efd6907172cb811",
+      "sha256": "48ce7a63922bc666be0d4919056a31445ace775b3b7ffc4ab07325d8edf9ddb6",
+      "bytes": 1736351,
+      "technical": "MP3, 96 kbps, 44.1 kHz, mono, 2:24.7, integrated loudness -12.2 LUFS",
+      "rights_status": "Openly licensed; performer = licensor documented by the author's own statement"
+    },
+    {
+      "filename": "Developer_Athan-3_Fajr.mp3",
+      "title": "Developer Athan 3 — Fajr (with as-salatu khayrun mina n-nawm)",
+      "performer": "Ahmed Khalaf (same statements as above)",
+      "recordist_and_licensor": "Ahmed Khalaf",
+      "source_repository": "https://github.com/nandxorandor/Athan",
+      "source_commit": "821da16cfef191c2d4749c4a5b2f31a37c49ae81",
+      "source_url": "https://raw.githubusercontent.com/nandxorandor/Athan/821da16cfef191c2d4749c4a5b2f31a37c49ae81/app/src/main/assets/athan/fajr/Developer_Athan-3_Fajr.mp3",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "license_evidence": [
+        "https://github.com/nandxorandor/Athan/blob/821da16cfef191c2d4749c4a5b2f31a37c49ae81/LICENSE"
+      ],
+      "attribution": "Adhan (Fajr) recorded by Ahmed Khalaf, CC BY 4.0, https://github.com/nandxorandor/Athan (state any changes)",
+      "share_alike": false,
+      "git_blob_sha1": "0282b37bbb4eb07a598798cff126a4422f25b179",
+      "sha1": "deb914243d02f53dde75d79c3b0605bd3ce8e9b8",
+      "sha256": "18b43fca35558ed05de0cbf8fcf468fd606e17cacb688bfed065e45787f56378",
+      "bytes": 1194414,
+      "technical": "MP3, 96 kbps, 44.1 kHz, mono, 1:39.5, integrated loudness -28.9 LUFS (very quiet; needs normalisation)",
+      "rights_status": "Openly licensed; performer = licensor documented by the author's own statement"
+    },
+    {
+      "filename": "Eid_al-Fitr_Fajr_azan_at_Malmö_Mosque_-_19_August_2012.webm",
+      "title": "Eid al-Fitr Fajr azan at Malmö Mosque — 19 August 2012",
+      "performer": "Not reliably identified (YouTube title/description names 'Besim Azemi' without stating his role)",
+      "recordist_and_licensor": "Islamic Center Malmö (YouTube channel 'Islamic Center i Malmö - Moskén', channel ID UCJ3qaE4vPHGWvJaB2BDJqww)",
+      "original_source": "https://www.youtube.com/watch?v=0IHfm4Y82xA",
+      "commons_page": "https://commons.wikimedia.org/wiki/File:Eid_al-Fitr_Fajr_azan_at_Malm%C3%B6_Mosque_-_19_August_2012.webm",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Eid_al-Fitr_Fajr_azan_at_Malm%C3%B6_Mosque_-_19_August_2012.webm",
+      "license": "CC BY 3.0 Unported",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "license_evidence": [
+        "Live YouTube page checked 2026-10-09: 'License: Creative Commons Attribution license (reuse allowed)'",
+        "Commons {{YouTubeReview}} 2020-02-12, archive https://web.archive.org/web/20200212214614/https://www.youtube.com/watch?v=0IHfm4Y82xA"
+      ],
+      "attribution": "Fajr adhan, Islamic Center Malmö (https://www.youtube.com/watch?v=0IHfm4Y82xA), CC BY 3.0; audio extracted and edited",
+      "share_alike": false,
+      "sha1": "bc75d5cee271efb67f03d3f35474a9362fce103f",
+      "sha1_matches_commons": true,
+      "sha256": "899a3325aafb03e09381b3e40149e88d06b00b40ce2b1eeb09d63e594c9c1742",
+      "bytes": 78385315,
+      "technical": "WebM video 1280x720, Opus 48 kHz stereo, 4:07.6, integrated loudness -13.8 LUFS; live congregation ambience. Commons copy is a video2commons transcode of the YouTube original.",
+      "download_note": "A fresh download on 2026-10-09 was rate-limited (HTTP 429). This copy was downloaded earlier the same day from the same URL; its SHA-1 matches the Commons checksum.",
+      "rights_status": "Openly licensed by the mosque as institutional rights holder; muadhin's personal consent not documented"
+    }
+  ],
+  "not_downloaded": [
+    {
+      "title": "The Adhan - Muslim Call to Prayer - Aaqib Azeez",
+      "official_url": "https://commons.wikimedia.org/wiki/File:The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3",
+      "direct_file": "https://upload.wikimedia.org/wikipedia/commons/7/7d/The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3",
+      "license": "CC BY-SA 4.0",
+      "reason": "Uploader (Atcovi) is very probably the reciter (circumstantial evidence) but never states it; held back pending confirmation"
+    },
+    {
+      "title": "Azan.ogg",
+      "official_url": "https://commons.wikimedia.org/wiki/File:Azan.ogg",
+      "license": "CC BY-SA 4.0 (as tagged)",
+      "reason": "Uploader 'Andrewler' is listed in Category:Sockpuppets of Hadysylmy, the same sockpuppet group as the uploader of the rejected 'Beautiful adhan.ogg'; the 'own work' claim is unreliable"
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { LanguageProvider } from "./LanguageContext";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import { PaletteProvider, usePalette } from "./PaletteContext";
-import { PALETTE_STORAGE_KEY, loadStoredPalettes } from "./paletteStore";
+import { ACTIVE_PALETTE } from "./paletteStore";
 import { LEGACY_PALETTE_MAP, ORIGINAL_COLORS, PALETTES, PALETTE_IDS, migratePaletteId, paletteStylesheet, paletteTokens, widgetColors } from "./palettes";
 import type { PaletteColors } from "./palettes";
 import { AppearanceSettings } from "../components/AppearanceSettings";
@@ -157,51 +157,39 @@ afterEach(async () => {
   if (container?.isConnected) await unmount();
 });
 
-describe("the selected palette", () => {
-  it("is applied to the whole document (not just the preview) and its CSS is installed", async () => {
+// Manual colour selection was removed (theme/paletteStore.ts): the colours come from the identity and the
+// appearance theme alone. A palette saved by an earlier version must no longer recolour anything.
+const OLD_PALETTE_KEY = "dithar:appearance:palette:v1";
+
+describe("the interface colour (no manual choice any more)", () => {
+  it("is always the identity's own — no palette CSS is installed", async () => {
     await mount();
+    expect(ACTIVE_PALETTE).toBe("original");
+    expect(palette!.activePalette).toBe("original");
     expect(document.documentElement.getAttribute("data-palette")).toBe("original");
-    expect(document.getElementById("dithar-palettes")?.textContent).toContain('html[data-palette="emerald"]');
-    await act(async () => palette!.selectPalette("emerald"));
-    expect(document.documentElement.getAttribute("data-palette")).toBe("emerald");
+    expect(document.getElementById("dithar-palettes")).toBeNull();
   });
 
-  it("survives a restart, per identity, and switching identity applies that identity's own choice", async () => {
+  it("ignores a palette saved by an earlier version, for both identities", async () => {
+    localStorage.setItem(OLD_PALETTE_KEY, JSON.stringify({ men: "teal", women: "royal" }));
     await mount();
-    await act(async () => palette!.selectPalette("teal"));
+    expect(palette!.activePalette).toBe("original");
+    expect(document.documentElement.getAttribute("data-palette")).toBe("original");
     await act(async () => theme!.toggleTheme()); // → women
-    await act(async () => palette!.selectPalette("royal"));
-    await unmount();
-
-    expect(loadStoredPalettes()).toEqual({ men: "teal", women: "royal" });
-    await mount(); // a fresh launch: the women identity was saved last
-    expect(palette!.activePalette).toBe("royal");
-    expect(document.documentElement.getAttribute("data-palette")).toBe("royal");
-    await act(async () => theme!.toggleTheme()); // → men
-    expect(document.documentElement.getAttribute("data-palette")).toBe("teal");
+    expect(palette!.activePalette).toBe("original");
+    expect(document.documentElement.getAttribute("data-palette")).toBe("original");
   });
 
-  it("restores a choice saved by the earlier palette set as its closest new palette", async () => {
-    localStorage.setItem(PALETTE_STORAGE_KEY, JSON.stringify({ men: "forest", women: "mauve" }));
-    await mount();
-    expect(palette!.activePalette).toBe("emerald");
-  });
-
-  it("can be chosen in Settings → Appearance → Colors, with the current identity's swatches", async () => {
+  it("has no colour controls in Settings → Appearance — only «تخصيص المظهر»", async () => {
     await mount(
       <>
         <Probe />
         <AppearanceSettings onBack={() => {}} />
       </>,
     );
-    const colorsRow = [...container.querySelectorAll("button")].find((b) => b.textContent?.includes("الألوان"))!;
-    await act(async () => colorsRow.dispatchEvent(new MouseEvent("click", { bubbles: true })));
-    const options = container.querySelectorAll("[data-palette-option]");
-    expect(options).toHaveLength(PALETTES.length);
-    const burgundy = container.querySelector<HTMLButtonElement>("[data-palette-option='burgundy']")!;
-    await act(async () => burgundy.dispatchEvent(new MouseEvent("click", { bubbles: true })));
-    expect(burgundy.getAttribute("aria-pressed")).toBe("true");
-    expect(document.documentElement.getAttribute("data-palette")).toBe("burgundy");
-    expect(loadStoredPalettes().men).toBe("burgundy");
+    const rows = [...container.querySelectorAll("button")].map((b) => b.textContent ?? "");
+    expect(rows.some((text) => text.includes("الألوان"))).toBe(false);
+    expect(container.querySelector("[data-palette-option]")).toBeNull();
+    expect(container.querySelector("[data-appearance-look-row]")).not.toBeNull();
   });
 });

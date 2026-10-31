@@ -1,4 +1,4 @@
-// UI strings for the weekly schedule (WeeklyScheduleView), the per-day
+// UI strings for the weekly holiday start (WeeklyScheduleView), the per-day
 // Morning/Evening times and the Islamic-occasions card (AudioAdhkarSettingsView).
 import type { OccasionKey } from "../lib/islamicOccasions";
 
@@ -9,7 +9,7 @@ const WEEKDAYS_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Fr
 export const weeklyScheduleLabels = {
   ar: {
     row: "الجدول الأسبوعي",
-    rowHint: "وقت بدء مختلف لكل يوم من أيام الأسبوع",
+    rowHint: "أيام الإجازة ووقت البدء فيها",
     pageTitle: "الجدول الأسبوعي",
     back: "رجوع",
     enable: "تفعيل",
@@ -17,18 +17,15 @@ export const weeklyScheduleLabels = {
     enabled: "مفعّل",
     disabled: "متوقف",
     weekdays: WEEKDAYS_AR,
-    intro:
-      "اختر وقت بدء يومك لكل يوم على حدة، فأيام العمل تختلف عن أيام الإجازة. لن يبدأ في أي يوم قبل وقته: الأذكار المتنوعة المتكررة، وتذكيرات الأدعية والأحاديث، ومحتوى الودجت. أمّا أذكار الصباح والمساء فلها أوقاتها الخاصة (ويمكن تخصيصها لكل يوم من صفحتها)، ومواقيت الصلاة والأذان لا تتغير أبدًا.",
-    floorNote: "إذا كان لقسمٍ وقت بدء أحدث من وقت اليوم، يُعتمد الأحدث منهما.",
-    noRestriction: "بلا تقييد",
-    clear: "مسح",
-    copyToAll: (day: string) => `نسخ وقت ${day} إلى كل الأيام`,
-    applyToWorkdays: "تطبيق على أيام العمل",
-    applyToWeekend: "تطبيق على الجمعة والسبت",
+    holidayTitle: "وقت بدء أيام الإجازة",
+    holidayIntro:
+      "اختر أيام إجازتك الأسبوعية ووقتًا واحدًا لها. في هذه الأيام لا يبدأ شيء قبل هذا الوقت: الأذكار المتنوعة (وتبقى نهايتها كما هي)، وأذكار الصباح والمساء، وتنبيهات الصلاة والأذان، وتذكيرات الودجت. أول تنبيه صلاة يكون لأول صلاة في هذا الوقت أو بعده، وما بعده يبقى على موعده المعتاد. ويستمر هذا كل أسبوع حتى تغيّره.",
+    holidayDays: "أيام الإجازة",
+    holidayTime: "لا شيء قبل",
   },
   en: {
     row: "Weekly schedule",
-    rowHint: "A different start time for each day of the week",
+    rowHint: "Your days off and when they start",
     pageTitle: "Weekly schedule",
     back: "Back",
     enable: "Enable",
@@ -36,29 +33,66 @@ export const weeklyScheduleLabels = {
     enabled: "On",
     disabled: "Off",
     weekdays: WEEKDAYS_EN,
-    intro:
-      "Choose when your day starts, separately for each day — workdays and days off differ. On each day nothing recurring starts before its time: the repeating Miscellaneous audio dhikr, dua and hadith reminders, and widget content. Morning and Evening Adhkar keep their own times (which can be set per day on their pages), and prayer times and the adhan never change.",
-    floorNote: "If a section's own start time is later than the day's, the later one applies.",
-    noRestriction: "No restriction",
-    clear: "Clear",
-    copyToAll: (day: string) => `Copy ${day}'s time to every day`,
-    applyToWorkdays: "Apply to workdays",
-    applyToWeekend: "Apply to Fri & Sat",
+    holidayTitle: "Holiday start time",
+    holidayIntro:
+      "Choose your weekly days off and one time for them. On those days nothing starts before it: the Miscellaneous audio dhikr (its end time stays), Morning and Evening Adhkar, prayer notifications and the adhan, and widget reminders. The first prayer notification is for the first prayer at or after that time; everything after keeps its usual time. It repeats every week until you change it.",
+    holidayDays: "Days off",
+    holidayTime: "Nothing before",
   },
 };
 
 export const dailyDayTimesLabels = {
   ar: {
     summary: "تخصيص الوقت حسب اليوم",
-    hint: "اترك اليوم فارغًا ليُستخدم وقت البدء المعتاد. ويبقى التشغيل داخل فترة الأذكار نفسها وفق مواقيت الصلاة.",
+    hint: "اترك اليوم فارغًا ليُستخدم وقت البدء المعتاد. واليوم الذي تحدّد له وقتًا تبدأ أذكاره في هذا الوقت تمامًا، ولو خارج فترة الأذكار المعتادة (مع انتظار فترة الأذان إن وافقتها)، وتبقى الأيام الأخرى على وقتها المعتاد.",
     usual: "الوقت المعتاد",
     clear: "مسح",
   },
   en: {
     summary: "Customize the time by day",
-    hint: "Leave a day empty to use the usual start time. Playback still stays inside the same prayer-time window.",
+    hint: "Leave a day empty to use the usual start time. A day with its own time starts at exactly that time, even outside the usual prayer-time window (it still waits out an adhan pause); every other day keeps the usual time.",
     usual: "Usual time",
     clear: "Clear",
+  },
+};
+
+/** Misc: its own start and end on chosen weekdays. */
+export const miscDayTimesLabels = {
+  ar: {
+    summary: "تخصيص الفترة حسب اليوم",
+    hint: "حدّد لليوم بدايةً أو نهايةً أو كليهما؛ وما تتركه فارغًا يبقى على الوقت المعتاد. ويظلّ الفاصل بين الأذكار كما هو، ويُطبَّق الجدول الأسبوعي (أبكر وقت للبدء) فوق ذلك.",
+    usual: "الفترة المعتادة",
+    clear: "مسح",
+    from: "من",
+    to: "إلى",
+  },
+  en: {
+    summary: "Customize the period by day",
+    hint: "Set a start, an end or both for a day; whatever you leave empty keeps the usual time. The interval stays the same, and the weekly schedule's earliest start still applies on top.",
+    usual: "Usual period",
+    clear: "Clear",
+    from: "From",
+    to: "To",
+  },
+};
+
+/** The Adhan: a later time for one prayer on chosen weekdays. */
+export const adhanDayTimesLabels = {
+  ar: {
+    title: "وقت الأذان حسب اليوم",
+    summary: (prayer: string) => `تأخير أذان ${prayer} في أيام محددة`,
+    hint: "يُؤخَّر الأذان وتنبيه الصلاة إلى هذا الوقت في هذا اليوم وحده. ولا يُرفع الأذان قبل دخول الوقت أبدًا: إن كان الوقت المحدد قبل وقت الصلاة أو بعد دخول الصلاة التالية، رُفع الأذان في وقت الصلاة.",
+    usual: "وقت الصلاة",
+    clear: "مسح",
+    prayer: "الصلاة",
+  },
+  en: {
+    title: "Adhan time by day",
+    summary: (prayer: string) => `Delay the ${prayer} Adhan on chosen days`,
+    hint: "The Adhan and the prayer notification move to this time on that day only. The Adhan is never called before the prayer time: if the chosen time is before it, or after the next prayer has begun, the Adhan plays at the prayer time.",
+    usual: "Prayer time",
+    clear: "Clear",
+    prayer: "Prayer",
   },
 };
 

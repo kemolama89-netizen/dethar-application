@@ -7,16 +7,12 @@ import { BottomNav } from "./BottomNav";
 import { useLanguage } from "../theme/LanguageContext";
 import { writtenAdhkarCategoryLabels, writtenAdhkarItems, writtenAdhkarLabels } from "../data/written-adhkar";
 import type { WrittenAdhkarCategoryKey } from "../data/written-adhkar";
-import { MISC_CATEGORIES, MISC_DUAS } from "../data/misc-library";
-import type { MiscCategoryKey } from "../data/misc-library";
 
 // Where a search result actually navigates to, once tapped — see App.tsx's
 // `handleSelectSearchResult`, the only place that acts on this. A plain
 // discriminated union (not a screen name) so this component stays
 // completely decoupled from AppRouter's own navigation state.
-export type WrittenSearchResult =
-  | { kind: "written"; category: WrittenAdhkarCategoryKey; itemId: string }
-  | { kind: "misc"; category: MiscCategoryKey; itemId: string };
+export type WrittenSearchResult = { kind: "written"; category: WrittenAdhkarCategoryKey; itemId: string };
 
 interface SearchHit {
   key: string;
@@ -36,11 +32,8 @@ interface WrittenAdhkarSearchScreenProps {
 }
 
 // Morning/Evening/Prayer — searched from `writtenAdhkarItems` directly.
-// "misc" is deliberately excluded from this list: that key only ever held
-// the small pre-Misc-Library legacy dataset (see written-adhkar.ts), never
-// the actual 89-record Miscellaneous/Various Adhkar content a user reads
-// today (MISC_DUAS, from misc-library.ts) — searched separately below so
-// results always point at real, currently-reachable content.
+// "misc" is deliberately excluded: Written Adhkar no longer has a Misc
+// Duas category, so search only points at content the user can reach.
 const WRITTEN_SEARCH_CATEGORIES: WrittenAdhkarCategoryKey[] = ["morning", "evening", "prayer"];
 
 // Search-time-only normalization (see `results` below for where this is
@@ -65,9 +58,7 @@ function normalizeArabic(input: string): string {
 // Adhkar section (treated as one unified searchable set here, per this
 // task's spec, even though it still opens into its own existing
 // category screens/navigation once a result is picked). Plain substring
-// matching against whichever language is currently active — same
-// approach already used by Miscellaneous Adhkar's own in-category search
-// (see MiscLibraryScreen.tsx), just widened to the whole library and to
+// matching against whichever language is currently active, with
 // results that carry enough context (category + a text snippet) to
 // recognize which Dhikr they point to before tapping one.
 export function WrittenAdhkarSearchScreen({
@@ -118,23 +109,6 @@ export function WrittenAdhkarSearchScreen({
             navigate: { kind: "written", category, itemId: item.id },
           });
         }
-      });
-    });
-
-    MISC_DUAS.forEach((item) => {
-      const body =
-        language === "ar" ? item.text_ar : [item.englishMeaning, item.englishTransliteration].filter(Boolean).join(" ");
-      if (!norm(body).includes(needle)) return;
-      // A dua can belong to several categories (see MiscDuaItem.categories)
-      // — the first one listed is where the result navigates to, matching
-      // that item's own primary categorization in the source data.
-      const primaryCategory = item.categories[0];
-      const miscMeta = MISC_CATEGORIES[primaryCategory];
-      hits.push({
-        key: `misc-${item.id}`,
-        contextLabel: `${writtenAdhkarCategoryLabels.misc[language]} — ${language === "en" ? miscMeta.title_en : miscMeta.title_ar}`,
-        snippet: language === "ar" ? item.text_ar : (item.englishMeaning ?? item.text_ar),
-        navigate: { kind: "misc", category: primaryCategory, itemId: item.id },
       });
     });
 

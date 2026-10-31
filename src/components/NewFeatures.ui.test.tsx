@@ -17,7 +17,7 @@ import { AudioAdhkarSettingsView } from "./AudioAdhkarSettingsView";
 import { MiscDuaCard } from "./MiscDuaCard";
 import { ResumeAdhkarBanner } from "./ResumeAdhkarBanner";
 import { MISC_DUAS } from "../data/misc-library";
-import { loadWeeklySchedule } from "../lib/weeklySchedule";
+import { loadHolidayStart, loadWeeklySchedule } from "../lib/weeklySchedule";
 import { loadReminderSettings } from "../lib/reminderSettings";
 import { loadSummarySettings } from "../lib/dailySummary";
 import { loadOccasionSettings } from "../lib/islamicOccasions";
@@ -140,14 +140,27 @@ describe("Settings → Reminders & widget", () => {
 });
 
 describe("Settings → Weekly schedule", () => {
-  it("sets a separate time per weekday and copies one to all days", async () => {
+  it("shows only the holiday start settings — no per-weekday times", () => {
     mount(<WeeklyScheduleView onBack={() => {}} />);
-    await click(container.querySelector("[data-weekly-switch]")!);
-    await setInput("#weekly-day-5", "10:30");
-    expect(loadWeeklySchedule()).toEqual({ enabled: true, days: ["", "", "", "", "", "10:30", ""] });
-    expect(container.querySelector("[data-weekday='5']")!.textContent).toContain("الجمعة");
-    await click([...container.querySelectorAll("button")].find((b) => b.textContent?.includes("كل الأيام"))!);
-    expect(loadWeeklySchedule().days).toEqual(Array(7).fill("10:30"));
+    expect(container.querySelector("[data-holiday-start]")).not.toBeNull();
+    expect(container.querySelector("[data-weekly-switch]")).toBeNull();
+    expect(container.querySelector("[data-weekday]")).toBeNull();
+    expect(container.querySelectorAll("input[type='time']")).toHaveLength(1);
+    expect(container.textContent).not.toContain("بلا تقييد");
+  });
+  it("sets the holiday days and one start time for them, independently of the weekly times", async () => {
+    mount(<WeeklyScheduleView onBack={() => {}} />);
+    const card = container.querySelector("[data-holiday-start]")!;
+    expect(card.textContent).toContain("وقت بدء أيام الإجازة");
+    // Off by default, with Friday and Saturday preselected.
+    expect(loadHolidayStart()).toEqual({ enabled: false, days: [5, 6], time: "12:00" });
+    expect(card.querySelector("[data-holiday-day='5']")!.getAttribute("aria-pressed")).toBe("true");
+    await click(card.querySelector("[data-holiday-switch]")!);
+    await click(card.querySelector("[data-holiday-day='6']")!); // Saturday off
+    await click(card.querySelector("[data-holiday-day='4']")!); // Thursday on
+    await setInput("#holiday-start-time", "11:00");
+    expect(loadHolidayStart()).toEqual({ enabled: true, days: [4, 5], time: "11:00" });
+    expect(loadWeeklySchedule().enabled).toBe(false);
   });
 });
 
@@ -171,6 +184,34 @@ describe("Settings → End-of-day summary", () => {
     expect(today).toContain("لم تُسجَّل بعدُ قراءةٌ في الأذكار المكتوبة ولا تسبيح");
     // Its listening time, kept apart from repetitions.
     expect(container.querySelector("[data-summary-listening]")!.textContent).toContain("دقيقتان");
+  });
+
+  it("a day with recorded adhkar shows them, never the empty status beside them", async () => {
+    const { clearAllStats, recordTasbeehRepetitions, recordWirdComplete } = await import("../lib/stats");
+    clearAllStats();
+    recordWirdComplete("morning");
+    recordTasbeehRepetitions(1, 33);
+    mount(<DailySummarySettingsView onBack={() => {}} />);
+    const status = container.querySelector("[data-summary-status]")!;
+    expect(status.getAttribute("data-summary-status")).toBe("recorded");
+    expect(status.textContent).toContain("أذكار الصباح ✓");
+    expect(status.textContent).toContain("التسبيح 33");
+    expect(container.querySelector("[data-summary-today]")!.textContent).not.toContain("لم يُسجَّل شيء اليوم بعد");
+    clearAllStats();
+  });
+
+  it("unreadable statistics are reported as unreadable — never as nothing recorded", async () => {
+    const { clearAllStats } = await import("../lib/stats");
+    localStorage.setItem("dithar:stats:events:v1", "{not json");
+    // Drops the in-memory log, as another tab writing it would: the next read loads the broken text.
+    window.dispatchEvent(new StorageEvent("storage", { key: null }));
+    mount(<DailySummarySettingsView onBack={() => {}} />);
+    const today = container.querySelector("[data-summary-today]")!.textContent!;
+    expect(container.querySelector("[data-summary-status]")!.getAttribute("data-summary-status")).toBe("unavailable");
+    expect(today).toContain("تعذّرت قراءة سجلّ اليوم");
+    expect(today).not.toContain("لم يُسجَّل شيء اليوم بعد");
+    expect(today).not.toContain("لم يُستمع اليوم إلى أي تسجيل بعد");
+    clearAllStats();
   });
 });
 

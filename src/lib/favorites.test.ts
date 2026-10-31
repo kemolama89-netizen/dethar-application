@@ -119,10 +119,12 @@ describe("widget hearts → Favorites", () => {
   });
 
   it("falls back to the widget's own snapshot for content the app no longer has", () => {
-    const entry = entryFromNativeOp(op(1, "hadith:gone", true, { text: "نص محفوظ", source: "مصدر", commentId: "x", commentText: "تأمل" }))!;
+    const entry = entryFromNativeOp(op(1, "dua:gone", true, { text: "نص محفوظ", source: "مصدر", commentId: "x", commentText: "تأمل" }))!;
     expect(entry.textAr).toBe("نص محفوظ");
     expect(entry.comment).toEqual({ id: "x", ar: "تأمل", en: "تأمل" });
-    expect(entryFromNativeOp(op(2, "hadith:gone", true))).toBeNull(); // nothing to save
+    expect(entryFromNativeOp(op(2, "dua:gone", true))).toBeNull(); // nothing to save
+    // A Hadith the religious-content audit has no record of is never saved from a snapshot.
+    expect(entryFromNativeOp(op(3, "hadith:gone", true, { text: "نص محفوظ", source: "مصدر" }))).toBeNull();
   });
 
   it("applies taps in order — add, remove, add again ends saved once — and reports the last merged tap", () => {

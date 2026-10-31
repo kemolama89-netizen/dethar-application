@@ -10,9 +10,10 @@ import { writtenAdhkarItems } from "./written-adhkar";
 import { MISC_DUAS } from "./misc-library";
 import { insightCardContent } from "./content";
 
-// The only Wamdat entries whose source gives no ayah number (both
-// al-Fatihah, verse text only). Left unresolved on purpose — see report.
-const WAMDA_UNRESOLVED_IDS = [1, 2];
+// The only Wamdat entry whose source gives no ayah number (al-Fatihah,
+// verse text only; entry 2, the other one, was removed by the 2026-10-30
+// audit cleanup). Left unresolved on purpose — see report.
+const WAMDA_UNRESOLVED_IDS = [1];
 
 describe("Wamdat Quran refs", () => {
   it("resolves every entry except the known unresolved ones", () => {
@@ -32,14 +33,14 @@ describe("Wamdat Quran refs", () => {
   it("parses single ayahs, ranges and the repeated-surah marker", () => {
     const byId = (id: number) => getWamdaQuranRef(WAMDAT.find((e) => e.id === id)!);
     expect(byId(3)).toEqual({ surah: 2, fromAyah: 186, toAyah: 186 });
-    expect(byId(183)).toEqual({ surah: 3, fromAyah: 124, toAyah: 124 });
+    expect(byId(20)).toEqual({ surah: 3, fromAyah: 159, toAyah: 159 });
     const range = WAMDAT.find((e) => /\[الآية\s*\d+\s*-\s*\d+\]$/.test(e.ayah))!;
     const [, from, to] = range.ayah.match(/\[الآية\s*(\d+)\s*-\s*(\d+)\]$/)!;
     expect(getWamdaQuranRef(range)).toMatchObject({ fromAyah: Number(from), toAyah: Number(to) });
   });
 
   it("rejects markers that contradict the entry or run past the surah", () => {
-    const base = WAMDAT.find((e) => e.id === 183)!;
+    const base = WAMDAT.find((e) => e.id === 20)!;
     expect(getWamdaQuranRef({ ...base, ayah: "{…} [الآية 124 - البقرة]" })).toBeNull();
     expect(getWamdaQuranRef({ ...base, ayah: "{…} [الآية 201]" })).toBeNull();
     expect(getWamdaQuranRef({ ...base, ayah: "{…} [الآية 5-3]" })).toBeNull();

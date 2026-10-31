@@ -10,8 +10,8 @@
 //     only has room for the verse;
 //   - its text is too long to read at a glance (WIDGET_MAX_TEXT_CHARS) —
 //     the widget never cuts a religious text short;
-//   - its text contains characters that do not render reliably in a
-//     widget (widgetTextProblem);
+//   - its text (or, in English, its meaning) contains characters that do
+//     not render reliably in a widget (widgetTextProblem);
 //   - in English, it has no English meaning (it would be unreadable);
 //   - it is one of the Hadiths listed in WIDGET_EXCLUDED_HADITHS;
 //   - it is a dhikr virtue without its virtue text in the interface language
@@ -19,21 +19,27 @@
 //     under the title «فضل الذكر» with the source of a virtue it never
 //     shows; with it, the virtue is drawn labelled under the phrase
 //     (widgetDetail);
-//   - its wording awaits correction (WIDGET_WORDING_REVIEW).
+//   - its wording awaits correction (WIDGET_WORDING_REVIEW);
+//   - it is a Hadith or Latifa that has not passed the religious-content
+//     audit in the interface language (lib/religiousAudit.ts).
 // A comment is left out when it is long, or when it is the one generic dua
 // line repeated under every dua.
 //
 // Native (reminders/DhikrWidgetProvider.kt) then measures each candidate at
 // the widget's real size and only shows one that fits in full.
 import type { ReminderItem } from "./reminderContent";
+import { withQuranBrackets } from "./quranBrackets";
+export { QURANIC_PORTIONS } from "./quranBrackets";
 import type { EditorialComment } from "../data/widgetContent";
 import type { Language } from "../theme/LanguageContext";
+import { approvedEdits } from "./contentReview";
+import { AUDIT_ENFORCED, inAuditScope, reminderAuditApproved } from "./religiousAudit";
 
 /** Longest text (characters, diacritics included) the widget is offered. */
 export const WIDGET_MAX_TEXT_CHARS = 190;
 /** Longest DITHAR comment the widget is offered. */
 export const WIDGET_MAX_COMMENT_CHARS = 90;
-/** The generic dua line shown under every dua — repetitive on a widget. */
+/** The generic dua line once shown under every dua — repetitive on a widget (replaced by data/duaReflections.ts; kept out should it come back). */
 export const GENERIC_DUA_COMMENT_ID = "theme:dua:legacy";
 
 /**
@@ -42,53 +48,32 @@ export const GENERIC_DUA_COMMENT_ID = "theme:dua:legacy";
  */
 export const WIDGET_EXCLUDED_HADITHS: Readonly<Record<string, "legal-ruling" | "needs-explanation" | "obscure-wording" | "fragment" | "seasonal">> = {
   // A legal ruling or etiquette detail, better read with its context.
-  "hadith:27": "legal-ruling",
-  "hadith:47": "legal-ruling",
-  "hadith:55": "legal-ruling",
-  "hadith:101": "legal-ruling",
   "hadith:134": "legal-ruling",
-  "hadith:135": "legal-ruling",
-  "hadith:136": "legal-ruling",
-  "hadith:146": "legal-ruling",
   "hadith:151": "legal-ruling",
-  "hadith:159": "legal-ruling",
-  "hadith:164": "legal-ruling",
   "hadith:176": "legal-ruling",
-  "hadith:177": "legal-ruling",
-  "hadith:178": "legal-ruling",
-  "hadith:179": "legal-ruling",
   "hadith:181": "legal-ruling",
   "hadith:186": "legal-ruling",
   // Its meaning depends on a scholar's explanation (kufr, nullified deeds, images, trials…).
   "hadith:61": "needs-explanation",
-  "hadith:63": "needs-explanation",
   "hadith:76": "needs-explanation",
   "hadith:77": "needs-explanation",
-  "hadith:78": "needs-explanation",
   "hadith:80": "needs-explanation",
-  "hadith:85": "needs-explanation",
-  "hadith:93": "needs-explanation",
   "hadith:99": "needs-explanation",
   "hadith:127": "needs-explanation",
   "hadith:128": "needs-explanation",
-  "hadith:129": "needs-explanation",
   "hadith:150": "needs-explanation",
-  "hadith:172": "needs-explanation",
-  "hadith:190": "needs-explanation",
   "hadith:191": "needs-explanation",
   "hadith:195": "needs-explanation",
   "hadith:196": "needs-explanation",
   "hadith:197": "needs-explanation",
   // Words most readers won't know without a gloss (قتّات، لقست، تعس… انتكس، لا هامة ولا صفر، تربت يداك).
   "hadith:42": "obscure-wording",
-  "hadith:60": "obscure-wording",
   "hadith:65": "obscure-wording",
   "hadith:160": "obscure-wording",
   "hadith:163": "obscure-wording",
   // Part of a longer report, or with the narrator's own doubt in the text.
   "hadith:110": "fragment",
   "hadith:166": "fragment",
-  "hadith:175": "fragment",
   // Tied to one season.
   "hadith:143": "seasonal",
 };
@@ -136,7 +121,14 @@ export function widgetDetail(item: ReminderItem, language: Language): string {
   return (language === "en" ? item.evidence.en : item.evidence.ar)?.trim() ?? "";
 }
 
+/** A Hadith or Latifa verified by the audit in [language], and not edited since; anything else passes. */
+export function widgetAuditApproved(id: string, language: Language): boolean {
+  if (!reminderAuditApproved(id, language)) return false;
+  return !(AUDIT_ENFORCED && inAuditScope(id) && Object.keys(approvedEdits(id)).length > 0);
+}
+
 export function isWidgetItem(item: ReminderItem, language: Language): boolean {
+  if (!widgetAuditApproved(item.id, language)) return false;
   if (WAMDA_ID.test(item.id) || item.id in WIDGET_EXCLUDED_HADITHS || item.id in WIDGET_WORDING_REVIEW) return false;
   if (item.category === "virtue") {
     const detail = widgetDetail(item, language);
@@ -145,6 +137,8 @@ export function isWidgetItem(item: ReminderItem, language: Language): boolean {
   if (item.textAr.length > WIDGET_MAX_TEXT_CHARS) return false;
   if (widgetTextProblem(item.textAr)) return false;
   if (language === "en" && !item.meaningEn) return false;
+  // The English line is drawn too: a published translation's «ﷺ» (a presentation form) can't be drawn reliably.
+  if (language === "en" && widgetTextProblem(item.meaningEn!)) return false;
   return true;
 }
 
@@ -153,3 +147,9 @@ export function isWidgetComment(comment: EditorialComment, language: Language): 
   const text = language === "en" ? comment.en : comment.ar;
   return text.length > 0 && text.length <= WIDGET_MAX_COMMENT_CHARS && !widgetTextProblem(text);
 }
+
+/**
+ * The text as the widget draws it: every Qur'anic verse in the Qur'anic
+ * brackets ﴿ … ﴾ — the same rule as every full-screen view (lib/quranBrackets.ts).
+ */
+export const widgetQuranText = withQuranBrackets;

@@ -3,10 +3,11 @@
 // own gain — the phone's media volume is never changed — and persist
 // (lib/audioVolumeSettings.ts), reaching the native player for scheduled
 // and background playback too. Moving a slider plays a short sample at the
-// chosen level (lib/volumePreview.ts) — never over real playback, which
-// instead takes the new level itself.
+// chosen level (lib/volumePreview.ts), and each slider's «تجربة الصوت»
+// button plays it on demand (tap again to stop) — never over real playback
+// or a call; real playback instead takes the new level itself.
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Square, Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { settingsLabels } from "../data/settings";
 import {
@@ -19,7 +20,15 @@ import {
   VOLUME_STEP,
 } from "../lib/audioVolumeSettings";
 import type { VolumeCategory } from "../lib/audioVolumeSettings";
-import { endVolumePreview, previewVolume, stopVolumePreview } from "../lib/volumePreview";
+import {
+  blockedPreviewCategory,
+  endVolumePreview,
+  previewingCategory,
+  previewVolume,
+  stopVolumePreview,
+  subscribeVolumePreview,
+  testVolumePreview,
+} from "../lib/volumePreview";
 import { loadQuranTurnSound, saveQuranTurnSound } from "../lib/quranReading";
 
 type Labels = (typeof settingsLabels)["ar"];
@@ -39,7 +48,19 @@ export function AudioSettingsView({ onBack }: { onBack: () => void }) {
   // The Qur'an reader's page-turn sound: the same setting as the reader's own toggle (on by default).
   const [turnSound, setTurnSound] = useState(loadQuranTurnSound);
 
+  // Which sample plays (its button reads "Stop"), or was just refused.
+  const [previewing, setPreviewing] = useState(previewingCategory);
+  const [blocked, setBlocked] = useState(blockedPreviewCategory);
+
   useEffect(() => subscribeAudioVolumes(setVolumes), []);
+  useEffect(
+    () =>
+      subscribeVolumePreview(() => {
+        setPreviewing(previewingCategory());
+        setBlocked(blockedPreviewCategory());
+      }),
+    [],
+  );
   // Leaving the screen stops the sample.
   useEffect(() => () => stopVolumePreview(), []);
 
@@ -70,6 +91,7 @@ export function AudioSettingsView({ onBack }: { onBack: () => void }) {
           const id = `audio-volume-${category}`;
           const value = volumes[category];
           const Icon = value === 0 ? VolumeX : Volume2;
+          const playing = previewing === category;
           return (
             <div key={category} className="flex flex-col gap-1.5" data-volume-category={category}>
               <div className="flex items-center justify-between gap-3">
@@ -102,6 +124,28 @@ export function AudioSettingsView({ onBack }: { onBack: () => void }) {
                 className="w-full"
                 style={{ accentColor: "var(--color-gold)" }}
               />
+              <div className="flex items-center justify-end gap-2">
+                {blocked === category && (
+                  <span role="status" className="min-w-0 flex-1 text-[11px] leading-[1.5]" style={{ color: "var(--color-text-muted)" }}>
+                    {t.audioTestBusy}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  data-volume-test={category}
+                  aria-pressed={playing}
+                  onClick={() => (playing ? stopVolumePreview() : testVolumePreview(category, value))}
+                  className="flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-medium"
+                  style={{
+                    borderColor: playing ? "var(--color-gold)" : "var(--color-gold-soft)",
+                    background: playing ? "var(--color-primary)" : "var(--color-surface)",
+                    color: playing ? "var(--color-gold)" : "var(--color-text-primary)",
+                  }}
+                >
+                  {playing ? <Square size={12} strokeWidth={2} aria-hidden="true" /> : <Play size={12} strokeWidth={2} aria-hidden="true" />}
+                  {playing ? t.audioTestStop : t.audioTest}
+                </button>
+              </div>
             </div>
           );
         })}

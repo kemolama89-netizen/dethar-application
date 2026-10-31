@@ -8,9 +8,11 @@ import { requestOpenReminder } from "../lib/reminderOpenRequests";
 import type { FavoriteEntry } from "../lib/favorites";
 import { loadMiscFavorites, saveMiscFavorites } from "../lib/miscFavorites";
 import { findReminderCandidate } from "../lib/reminderContent";
+import { auditShowsEnglish, reminderAuditApproved } from "../lib/religiousAudit";
 import { reminderShareSections } from "../lib/reminderShare";
 import type { ShareableContent, ShareSection } from "../lib/shareContent";
 import { ShareMenu } from "./ShareMenu";
+import { withQuranBrackets } from "../lib/quranBrackets";
 
 // Settings → «المفضلة» / Favorites: everything the user saved — from the
 // home-screen widget's heart, the full-screen reflection, and the written
@@ -27,6 +29,8 @@ interface Row {
   key: string;
   kindTitle: string;
   textAr: string;
+  /** The text as shown: any Qur'anic verse in the Qur'anic brackets ﴿ … ﴾ (lib/quranBrackets.ts). */
+  shownAr: string;
   meaningEn?: string;
   sourceAr?: string;
   sourceEn?: string;
@@ -62,11 +66,14 @@ export function FavoritesView({ onBack }: { onBack: () => void }) {
   useEffect(() => subscribeFavorites(() => setEntries(loadFavorites())), []);
 
   const rows = useMemo<Row[]>(() => {
-    const saved: Row[] = entries.map((e) => ({
+    // A saved Hadith or Latifa is shown only if it passed the religious-content
+    // audit, with its English only when verified (lib/religiousAudit.ts); other saved items are unaffected.
+    const saved: Row[] = entries.filter((e) => reminderAuditApproved(e.key, "ar")).map((e) => ({
       key: e.key,
       kindTitle: r.kindTitle[e.kind] ?? r.categoryTitle[e.category],
       textAr: e.textAr,
-      meaningEn: e.meaningEn,
+      shownAr: withQuranBrackets({ id: e.key, kind: e.kind }, e.textAr),
+      meaningEn: auditShowsEnglish(e.key) ? e.meaningEn : undefined,
       sourceAr: e.sourceAr,
       sourceEn: e.sourceEn,
       gradeAr: e.gradeAr,
@@ -84,6 +91,7 @@ export function FavoritesView({ onBack }: { onBack: () => void }) {
       key: `${LIBRARY_PREFIX}${d.id}`,
       kindTitle: d.isQuranic ? r.kindTitle["quran-dua"] : t.libraryDua,
       textAr: d.text_ar,
+      shownAr: withQuranBrackets({ id: `dua:${d.id}`, kind: d.isQuranic ? "quran-dua" : "dua" }, d.text_ar),
       meaningEn: d.englishMeaning || undefined,
       sourceAr: d.source_ar,
       sourceEn: d.source_en,
@@ -225,7 +233,7 @@ export function FavoritesView({ onBack }: { onBack: () => void }) {
                     className={`mt-2 text-[16px] leading-[2] ${row.isPoetry ? "whitespace-pre-line" : ""} ${open ? "" : "line-clamp-4"} ${row.open ? "cursor-pointer" : ""}`}
                     style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}
                   >
-                    {row.textAr}
+                    {row.shownAr}
                   </p>
 
                   {open && (

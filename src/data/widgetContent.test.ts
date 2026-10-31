@@ -1,3 +1,4 @@
+import { reminderAuditApproved } from "../lib/religiousAudit";
 import { beforeAll, describe, expect, it } from "vitest";
 import { approveAllNewContentForTesting, defaultReviewStatus } from "../lib/contentReview";
 import { isWidgetItem } from "../lib/widgetFeed";
@@ -161,7 +162,8 @@ describe("editorial comments", () => {
   it("the Hadith library's own reflection is reused without its label prefix", () => {
     expect(stripReflectionLabel("ومضة دِثار: نص", "ar")).toBe("نص");
     expect(stripReflectionLabel("DITHAR reflection: text", "en")).toBe("text");
-    const item = reminderPool().find((i) => i.id === `hadith:${HADITHS[0].id}`)!;
+    // The first library Hadith that passed the religious-content audit (lib/religiousAudit.ts).
+    const item = reminderPool().find((i) => i.id.startsWith("hadith:") && HADITHS.some((h) => i.id === `hadith:${h.id}`))!;
     expect(item.comments[0].ar).not.toMatch(/^ومضة دِثار/);
   });
 });
@@ -171,7 +173,9 @@ describe("the reminder pool is richer", () => {
     const pool = reminderPool();
     const count = (c: string) => pool.filter((i) => i.category === c).length;
     expect(count("dua")).toBeGreaterThanOrEqual(60);
-    expect(count("hadith")).toBeGreaterThanOrEqual(230);
+    // Only Hadiths that passed the religious-content audit are published (lib/religiousAudit.ts).
+    expect(count("hadith")).toBe(pool.filter((i) => i.category === "hadith" && reminderAuditApproved(i.id, "ar")).length);
+    expect(count("hadith")).toBeGreaterThanOrEqual(150);
     expect(count("poetry")).toBeGreaterThanOrEqual(15);
     expect(new Set(pool.map((i) => i.id)).size).toBe(pool.length);
   });

@@ -5,7 +5,8 @@
 //   dua     the written library's general-purpose duas (the Daily Picks
 //           pool — situational duas are left out — plus a few general
 //           ones listed in data/widgetContent.ts), and the source-checked
-//           Qur'anic and Prophetic duas added there, each with its source.
+//           Qur'anic and Prophetic duas added there and in
+//           data/importedDuas.ts, each with its source.
 //   hadith  the curated Hadith library (all graded sahih/hasan with
 //           source), except the one entry whose grading is noted as
 //           disputed and the longest texts that can't be read at a glance;
@@ -24,7 +25,10 @@
 // PUBLICATION: `reminderCandidates()` is everything; `reminderPool()` is
 // what is published — only items (and comments) whose review status is
 // "approved" (lib/contentReview.ts). Newly added content is pending until a
-// reviewer approves it in the Religious Content Review screen.
+// reviewer approves it in the Religious Content Review screen. Hadiths and
+// the Quranic Lataif are also gated by the religious-content audit
+// (lib/religiousAudit.ts): only verified ones are published, with their
+// English only when verified; every other category is untouched by it.
 //
 // Every item keeps its evidence separate from DITHAR's own words: its
 // `comments` (several short editorial comments, varied by style, chosen in
@@ -36,8 +40,10 @@ import { HADITHS, translateHadithGradeToEnglish, translateHadithReferenceToEngli
 import { dhikrItems, sourceAr as tasbeehSourceAr } from "../data/tasbeeh";
 import { WAMDAT, getWamdaSourceCitation, getWamdaVerseReference, getWamdaVerseText } from "../data/wamdat";
 import { QURAN_LATAIF } from "../data/quranLataif";
-import { contentReviewVersion, isPublished } from "./contentReview";
+import { approvedEdits, contentReviewVersion, isPublished } from "./contentReview";
+import { AUDIT_ENFORCED, auditShowsEnglish, inAuditScope, reminderAuditApproved } from "./religiousAudit";
 import { DHIKR_REFLECTIONS, TASBEEH_REFLECTION_THEME } from "../data/dhikrReflections";
+import { DUA_REFLECTIONS } from "../data/duaReflections";
 import type { ReflectionTheme } from "../data/dhikrReflections";
 import {
   DHIKR_THEME_COMMENTS,
@@ -51,6 +57,7 @@ import {
 } from "../data/widgetContent";
 import type { DuaCommentGroup, EditorialComment, PoemAttribution } from "../data/widgetContent";
 import { WIDGET_VERSES } from "../data/widgetVerses";
+import { IMPORTED_DUAS } from "../data/importedDuas";
 import { dailyPicksPool } from "./dailyPicks";
 import type { Language } from "../theme/LanguageContext";
 
@@ -78,7 +85,7 @@ export interface ReminderItem {
   id: string;
   category: ReminderCategory;
   kind: ReminderKind;
-  /** The Arabic text shown large — never altered. Poetry: one verse per line. */
+  /** The Arabic text shown large — never altered, except by a reviewer's approved edit (published pool only). Poetry: one verse per line. */
   textAr: string;
   /** Its established English meaning, when there is one. */
   meaningEn?: string;
@@ -126,8 +133,6 @@ function duaCommentGroup(item: MiscDuaItem): DuaCommentGroup {
   return key in DUA_CATEGORY_COMMENTS ? (key as DuaCommentGroup) : "general";
 }
 
-/** The dua reflection the app shipped before per-category comments — the fallback while those are pending review. */
-const LEGACY_DUA_COMMENT: EditorialComment = { id: "theme:dua:legacy", style: "reflection", ...DHIKR_REFLECTIONS.dua.reflection };
 
 function libraryDuaItems(): ReminderItem[] {
   const pool = dailyPicksPool(MISC_DUAS);
@@ -141,13 +146,14 @@ function libraryDuaItems(): ReminderItem[] {
     sourceAr: d.source_ar ?? "",
     sourceEn: d.source_en || undefined,
     evidence: evidenceForTheme("dua"),
-    comments: [...DUA_CATEGORY_COMMENTS[duaCommentGroup(d)], LEGACY_DUA_COMMENT],
+    // The category's own comments, then DITHAR's varied dua reflections — one shown at a time, in turn.
+    comments: [...DUA_CATEGORY_COMMENTS[duaCommentGroup(d)], ...DUA_REFLECTIONS],
     theme: "dua" as const,
   }));
 }
 
 function enrichedDuaItems(): ReminderItem[] {
-  return ENRICHED_DUAS.filter((d) => inDefaultFeed(d.review)).map((d) => ({
+  return [...ENRICHED_DUAS, ...IMPORTED_DUAS].filter((d) => inDefaultFeed(d.review)).map((d) => ({
     id: `dua:${d.id}`,
     category: "dua" as const,
     kind: d.kind === "quran" ? ("quran-dua" as const) : ("dua" as const),
@@ -157,7 +163,7 @@ function enrichedDuaItems(): ReminderItem[] {
     sourceEn: d.sourceEn,
     evidence: d.kind === "quran" ? undefined : evidenceForTheme("dua"),
     // The item's own comments first, then its kind's — so even these rotate through several.
-    comments: [...d.comments, ...DUA_CATEGORY_COMMENTS[d.kind === "quran" ? "quran" : "general"]],
+    comments: [...d.comments, ...DUA_CATEGORY_COMMENTS[d.kind === "quran" ? "quran" : "general"], ...DUA_REFLECTIONS],
     theme: "dua" as const,
   }));
 }
@@ -306,6 +312,22 @@ export function reminderCandidates(): ReminderItem[] {
   ]);
 }
 
+/**
+ * A Hadith or Latifa as the audit lets it be shown: its English only when
+ * verified, and a Wamadat reflection credited as drawn from its tafsir
+ * («مستفاد من»), never as a quotation, in Arabic only (its English rendering
+ * is DITHAR's and was not verified). Everything else is returned unchanged.
+ */
+function auditedItem(item: ReminderItem): ReminderItem {
+  if (!inAuditScope(item.id)) return item;
+  const english = auditShowsEnglish(item.id);
+  const evidence =
+    item.evidence?.kind === "insight"
+      ? { ...item.evidence, en: undefined, sourceAr: `مستفاد من: ${item.evidence.sourceAr}`, sourceEn: item.evidence.sourceEn ? `Drawn from: ${item.evidence.sourceEn}` : undefined }
+      : item.evidence;
+  return { ...item, meaningEn: english ? item.meaningEn : undefined, evidence };
+}
+
 let published: { version: number; items: ReminderItem[] } | null = null;
 
 /**
@@ -316,14 +338,36 @@ export function reminderPool(): ReminderItem[] {
   const version = contentReviewVersion();
   if (published?.version === version) return published.items;
   const items = reminderCandidates()
-    .filter((item) => isPublished(item.id))
-    .map((item) => {
+    // Hadiths and Lataif must pass the audit; an approved reviewer edit to one changes what was audited.
+    .filter((item) => isPublished(item.id) && reminderAuditApproved(item.id, "ar") && !(AUDIT_ENFORCED && inAuditScope(item.id) && Object.keys(approvedEdits(item.id)).length > 0))
+    .map((candidate) => {
+      const item = auditedItem(candidate);
       const comments = item.comments.filter((c) => isPublished(c.id));
-      // The legacy dua line is only a fallback: shown while none of the dua's newer comments is approved.
-      const own = comments.filter((c) => c.id !== LEGACY_DUA_COMMENT.id);
       // A dhikr theme's longer reflection is published on its own decision too.
       const reflection = item.reflection && item.category === "virtue" && !isPublished(`reflection:theme:${item.theme}`) ? undefined : item.reflection;
-      return { ...item, reflection, comments: own.length > 0 ? own : comments };
+      // A reviewer's APPROVED edits replace the shipped wording here; drafts never reach this pool.
+      const edits = approvedEdits(item.id);
+      const evidenceEdited = item.evidence && (edits.reflectionAr !== undefined || edits.reflectionEn !== undefined || edits.tafsirSource !== undefined);
+      return {
+        ...item,
+        // A Wamdat latifa's reflection lives in its evidence. An edited tafsir
+        // source drops the shipped English citation, which would name the old one.
+        evidence: evidenceEdited
+          ? {
+              ...item.evidence!,
+              ar: edits.reflectionAr ?? item.evidence!.ar,
+              en: edits.reflectionEn !== undefined ? edits.reflectionEn || undefined : item.evidence!.en,
+              sourceAr: edits.tafsirSource ?? item.evidence!.sourceAr,
+              sourceEn: edits.tafsirSource !== undefined ? undefined : item.evidence!.sourceEn,
+            }
+          : item.evidence,
+        textAr: edits.textAr ?? item.textAr,
+        meaningEn: edits.textEn ?? item.meaningEn,
+        sourceAr: edits.reference ?? item.sourceAr,
+        gradeAr: edits.grade ?? item.gradeAr,
+        reflection,
+        comments,
+      };
     });
   published = { version, items };
   return items;

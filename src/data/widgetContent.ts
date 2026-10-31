@@ -74,7 +74,7 @@ const QURAN_SOURCE_CHECK = "Qur'an text (Tanzil «quran-simple», via fawazahmed
  * unnumbered (2700, 2733, 2759) take the slot between their neighbours;
  * those links are flagged for confirmation in the review screen.
  */
-export const SUNNAH_IN_BOOK: Readonly<Record<string, string>> = {"muslim-38": "1/66", "muslim-373": "3/147", "muslim-482": "4/245", "muslim-798": "6/290", "muslim-804": "6/302", "muslim-817": "6/325", "muslim-2553": "45/16", "muslim-2564": "45/42", "muslim-2566": "45/46", "muslim-2695": "48/42", "muslim-2700": "48/50", "muslim-2733": "48/121", "muslim-2734": "48/123", "muslim-2749": "50/13", "muslim-2759": "50/36", "muslim-2822": "53/1", "muslim-2963": "55/14", "muslim-2965": "55/16", "bukhari-39": "2/32", "bukhari-69": "3/11", "bukhari-1145": "19/26", "bukhari-1283": "23/43", "bukhari-1469": "24/71", "bukhari-2320": "41/1", "bukhari-2996": "56/205", "bukhari-5269": "68/19", "bukhari-5986": "78/17", "bukhari-5991": "78/22", "bukhari-6116": "78/143", "bukhari-6168": "78/194", "bukhari-6309": "80/6", "bukhari-6340": "80/37", "bukhari-6407": "80/102", "bukhari-6412": "81/1", "bukhari-6416": "81/5", "bukhari-6446": "81/35", "tirmidhi-1162": "12/17", "tirmidhi-1987": "27/93", "tirmidhi-2346": "36/43", "tirmidhi-2399": "36/97", "tirmidhi-2518": "37/104", "tirmidhi-3372": "48/3", "tirmidhi-3375": "48/6", "tirmidhi-3377": "48/8", "tirmidhi-3556": "48/187", "ibnmajah-3818": "33/162", "ibnmajah-4032": "36/107", "muslim-2654": "46/29", "muslim-2722": "48/99", "bukhari-3841": "63/66", "bukhari-6012": "78/43", "bukhari-6064": "78/94", "bukhari-6477": "81/66", "bukhari-6011": "78/42", "bukhari-6035": "78/65", "bukhari-2989": "56/198", "bukhari-6018": "78/49", "bukhari-6464": "81/53", "bukhari-834": "10/227", "muslim-2717": "48/92", "bukhari-6316": "80/13"};
+export const SUNNAH_IN_BOOK: Readonly<Record<string, string>> = {"muslim-38": "1/66", "muslim-373": "3/147", "muslim-482": "4/245", "muslim-798": "6/290", "muslim-804": "6/302", "muslim-817": "6/325", "muslim-2553": "45/16", "muslim-2564": "45/42", "muslim-2566": "45/46", "muslim-2695": "48/42", "muslim-2700": "48/50", "muslim-2733": "48/121", "muslim-2734": "48/123", "muslim-2749": "50/13", "muslim-2759": "50/36", "muslim-2822": "53/1", "muslim-2963": "55/14", "muslim-2965": "55/16", "bukhari-39": "2/32", "bukhari-69": "3/11", "bukhari-1145": "19/26", "bukhari-1283": "23/43", "bukhari-1469": "24/71", "bukhari-2320": "41/1", "bukhari-2996": "56/205", "bukhari-5269": "68/19", "bukhari-5986": "78/17", "bukhari-5991": "78/22", "bukhari-6116": "78/143", "bukhari-6309": "80/6", "bukhari-6340": "80/37", "bukhari-6407": "80/102", "bukhari-6412": "81/1", "bukhari-6416": "81/5", "bukhari-6446": "81/35", "tirmidhi-1987": "27/93", "tirmidhi-2346": "36/43", "tirmidhi-2399": "36/97", "tirmidhi-2518": "37/104", "tirmidhi-3372": "48/3", "tirmidhi-3375": "48/6", "tirmidhi-3377": "48/8", "tirmidhi-3556": "48/187", "ibnmajah-3818": "33/162", "ibnmajah-4032": "36/107", "muslim-2654": "46/29", "muslim-2722": "48/99", "bukhari-3841": "63/66", "bukhari-6012": "78/43", "bukhari-6064": "78/94", "bukhari-6477": "81/66", "bukhari-6011": "78/42", "bukhari-6035": "78/65", "bukhari-2989": "56/198", "bukhari-6018": "78/49", "bukhari-6464": "81/53", "bukhari-834": "10/227", "muslim-2717": "48/92", "bukhari-6316": "80/13"};
 export const DERIVED_IN_BOOK = new Set(["muslim-2700", "muslim-2733", "muslim-2759"]);
 
 const SUNNAH_SLUG: Record<string, string> = { bukhari: "bukhari", muslim: "muslim", tirmidhi: "tirmidhi", ibnmajah: "ibnmajah" };
@@ -515,22 +515,11 @@ export const ENRICHED_HADITHS: readonly EnrichedHadith[] = [
     book: "bukhari", number: "6116", chapterAr: "كتاب الأدب", chapterEn: "Book of Good Manners (Al-Adab)",
     narratorAr: "أبو هريرة رضي الله عنه",
     textAr: "عن أبي هريرة رضي الله عنه أن رجلًا قال للنبي صلى الله عليه وسلم: أوصني، قال: «لا تغضب»، فردد مرارًا، قال: «لا تغضب»",
-    meaningEn: "A man said to the Prophet ﷺ: \"Advise me.\" He said: \"Do not become angry.\" The man repeated (his request) several times, and he said: \"Do not become angry.\"",
-    grade: "sahih",
+    meaningEn: "Narrated Abu Huraira: A man said to the Prophet (ﷺ), \"Advise me!\" The Prophet (ﷺ) said, \"Do not become angry and furious.\" The man asked (the same) again and again, and the Prophet (ﷺ) said in each case, \"Do not become angry and furious.\"",
+    grade: "sahih", translation: PUBLISHED_EN_BUKHARI,
     comments: [
       ["reflection", "وصيةٌ قصيرة تكررت مرارًا: لا تغضب؛ لأن الغضب يفتح أبوابًا يصعب إغلاقها.", "A short counsel, repeated again and again: do not be angry — anger opens doors that are hard to close."],
       ["practice", "حين تشعر بالغضب اليوم، أجّل الكلام دقيقةً واحدة.", "When you feel anger today, delay your words by one minute."],
-    ],
-  }),
-  hadith({
-    book: "bukhari", number: "6168", chapterAr: "كتاب الأدب", chapterEn: "Book of Good Manners (Al-Adab)", also: { book: "muslim", number: "2640" },
-    narratorAr: "عبد الله بن مسعود رضي الله عنه",
-    textAr: "عن عبد الله بن مسعود رضي الله عنه عن النبي صلى الله عليه وسلم أنه قال: «المرء مع من أحب»",
-    meaningEn: "A person will be with those whom he loves.",
-    grade: "agreed",
-    comments: [
-      ["reflection", "محبتك للصالحين ترفعك، وإن لم تبلغ بعدُ أعمالهم.", "Your love for the righteous lifts you, even if you haven't yet reached their deeds."],
-      ["practice", "اختر من تحب بعناية، وأحسن صحبة من تحب.", "Choose carefully whom you love, and keep good company with them."],
     ],
   }),
   hadith({
@@ -597,17 +586,6 @@ export const ENRICHED_HADITHS: readonly EnrichedHadith[] = [
     comments: [
       ["meaning", "الغنى الحقيقي قناعةٌ في النفس، لا كثرةٌ في اليد.", "True wealth is contentment of the soul, not abundance in the hand."],
       ["practice", "عدّد ما عندك قبل أن تفكر فيما ينقصك.", "Count what you have before thinking about what you lack."],
-    ],
-  }),
-  hadith({
-    book: "tirmidhi", number: "1162", chapterAr: "أبواب الرضاع", chapterEn: "Chapters on Suckling",
-    narratorAr: "أبو هريرة رضي الله عنه",
-    textAr: `عن أبي هريرة رضي الله عنه قال: ${PROPHET}: «أكمل المؤمنين إيمانًا أحسنهم خلقًا، وخياركم خياركم لنسائهم خلقًا»`,
-    meaningEn: "The most complete of the believers in faith is the one with the best character, and the best of you are those who are best in character to their wives.",
-    grade: "hasan-sahih", gradedByAr: "الترمذي، والألباني", gradedByEn: "at-Tirmidhi; al-Albani",
-    comments: [
-      ["meaning", "كمال الإيمان يظهر في الخُلُق، وأولى الناس بحسن خلقك أهل بيتك.", "Complete faith shows in character, and your household are the first to deserve it."],
-      ["practice", "قل اليوم كلمةً طيبةً لزوجك أو لأهل بيتك.", "Say a kind word today to your spouse or your household."],
     ],
   }),
   hadith({

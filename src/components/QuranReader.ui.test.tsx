@@ -16,10 +16,23 @@ import { pageTurnTooSlow, resetPageTurnPerformanceForTesting } from "../lib/page
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
+// The reader's «مشاركة»: what reaches the share sheet's image action (the image itself is drawn by
+// lib/shareImage.ts, tested on its own).
+const sharedImages = vi.hoisted(() => [] as unknown[]);
+vi.mock("../lib/shareContent", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib/shareContent")>()),
+  shareAsImage: vi.fn(async (content: unknown) => {
+    sharedImages.push(content);
+    return "shared";
+  }),
+}));
+
 const PAGE_ASPECT = (() => {
   const [, , w, h] = MUSHAF_SHOWN_BOX.split(" ").map(Number);
   return w / h;
 })();
+/** QuranReaderScreen.tsx PAGE_EDGES_PX: room at each side for the edges of the leaves beneath the page. */
+const PAGE_EDGES = 7;
 
 let container: HTMLDivElement;
 let root: ReturnType<typeof createRoot>;
@@ -265,6 +278,39 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     click(container.querySelector("[data-quran-zoom='fit']")!);
     expect(loadQuranZoom()).toBe(QURAN_ZOOM_FIT);
     expect(container.querySelector("[data-quran-area]")!.hasAttribute("data-zoomed")).toBe(false);
+  });
+
+  it("shares a long-pressed verse as an image: the complete verse as written, its surah and verse number", async () => {
+    sharedImages.length = 0;
+    await open(2, 255);
+    // Nothing to share before a verse is selected.
+    expect(container.querySelector("[data-quran-select-share]")).toBeNull();
+    act(() => void container.querySelector("[data-verse='2:255']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+    click(container.querySelector("[data-quran-select-share]")!);
+    const menu = document.querySelector("[data-share-menu]")!;
+    expect(menu).not.toBeNull();
+    await act(async () => void menu.querySelector("[data-share-option='image']")!.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+    expect(sharedImages).toEqual([{ kindLabel: "القرآن الكريم", textAr: QURAN_VERSES[1][254], reference: "سورة البقرة · الآية ٢٥٥" }]);
+    expect(document.querySelector("[data-share-menu]")).toBeNull(); // shared: the sheet closes
+
+    // Verse 1 of a surah: the verse itself, without the basmala heading the surah.
+    act(() => void container.querySelector("[data-verse='2:256']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+    expect(container.querySelector("[data-quran-selection]")!.getAttribute("data-quran-selection")).toBe("2:256");
+    click(container.querySelector("[data-quran-select-share]")!);
+    await act(async () => void document.querySelector("[data-share-option='image']")!.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+    expect(sharedImages[1]).toMatchObject({ textAr: QURAN_VERSES[1][255], reference: "سورة البقرة · الآية ٢٥٦" });
+  });
+
+  it("shares verse 1 of a surah without the basmala that heads it", async () => {
+    sharedImages.length = 0;
+    await open(36, 1);
+    act(() => void container.querySelector("[data-verse='36:1']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+    click(container.querySelector("[data-quran-select-share]")!);
+    await act(async () => void document.querySelector("[data-share-option='image']")!.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+    const verse = (sharedImages[0] as { textAr: string }).textAr;
+    expect(QURAN_VERSES[35][0].endsWith(verse)).toBe(true);
+    expect(verse).not.toContain("بِسْمِ");
+    expect(sharedImages[0]).toMatchObject({ reference: "سورة يس · الآية ١" });
   });
 
   it("says so when a page's image can't be loaded", async () => {
@@ -565,7 +611,8 @@ describe("Qur'an reader — immersive full-screen reading", () => {
   it("portrait: one whole page fits the screen — as wide as it allows, at its own proportions — and nothing scrolls", async () => {
     await open(2, 6);
     const { w, h } = sheet();
-    expect(w).toBe(400);
+    // The full width, less the room at each side for the edges of the leaves beneath the page.
+    expect(w).toBe(400 - 2 * PAGE_EDGES);
     expect(Math.abs(w / h - PAGE_ASPECT)).toBeLessThan(0.01);
     expect(h + 18).toBeLessThanOrEqual(820);
     expect(container.querySelectorAll("[data-quran-sheet]")).toHaveLength(1);
@@ -575,7 +622,7 @@ describe("Qur'an reader — immersive full-screen reading", () => {
   it("landscape: the page takes the full width and scrolls vertically — scrolling or a vertical drag never turns the page; a horizontal swipe does", async () => {
     await open(2, 6);
     rotate(820, 380);
-    expect(sheet().w).toBe(820);
+    expect(sheet().w).toBe(820 - 2 * PAGE_EDGES);
     const area = container.querySelector<HTMLElement>("[data-quran-area]")!;
     expect(area.hasAttribute("data-scrollable")).toBe(true);
     act(() => {
@@ -606,11 +653,11 @@ describe("Qur'an reader — immersive full-screen reading", () => {
     expect([...container.querySelectorAll<SVGElement>("[data-quran-sheet='42'] [data-verse]")].map((e) => e.dataset.verse)).toEqual(versesBefore);
     expect(current()).toBe("2:255");
     const wide = sheet();
-    expect(wide.w).toBe(820);
+    expect(wide.w).toBe(820 - 2 * PAGE_EDGES);
     expect(Math.abs(wide.w / wide.h - PAGE_ASPECT)).toBeLessThan(0.01);
     expect(isQuranBookmarked(2, 255)).toBe(true);
     rotate(400, 820);
-    expect(sheet().w).toBe(400);
+    expect(sheet().w).toBe(400 - 2 * PAGE_EDGES);
     expect(current()).toBe("2:255");
   });
 
@@ -619,7 +666,7 @@ describe("Qur'an reader — immersive full-screen reading", () => {
     localStorage.setItem("dithar:quran:landscape-fit:v1", '"page"');
     await open(2, 6);
     rotate(820, 380);
-    expect(sheet().w).toBe(820);
+    expect(sheet().w).toBe(820 - 2 * PAGE_EDGES);
     click(container.querySelector("[data-quran-open-settings]")!);
     expect(container.querySelector("[data-quran-fit]")).toBeNull();
     expect(container.querySelector("[data-quran-zoom='fit']")!.textContent).toBe("ملء العرض");

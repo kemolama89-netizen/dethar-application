@@ -13,11 +13,12 @@
 import { HADITHS } from "../data/hadith";
 import type { HadithEntry } from "../data/hadith";
 import { MISC_DUAS } from "../data/misc-library";
-import { WAMDAT } from "../data/wamdat";
+import { WAMDAT, WAMDA_NEEDS_VERIFICATION } from "../data/wamdat";
 import { dhikrItems } from "../data/tasbeeh";
 import { DHIKR_REFLECTIONS } from "../data/dhikrReflections";
 import type { ReflectionTheme } from "../data/dhikrReflections";
 import { DERIVED_IN_BOOK, ENRICHED_DUAS, ENRICHED_HADITHS, POEMS } from "../data/widgetContent";
+import { IMPORTED_DUAS } from "../data/importedDuas";
 import type { EditorialComment } from "../data/widgetContent";
 import { QURAN_LATAIF } from "../data/quranLataif";
 import { WIDGET_VERSES, WIDGET_VERSE_SOURCE_CHECK } from "../data/widgetVerses";
@@ -91,7 +92,8 @@ export interface CatalogItem {
 const REMINDER_USAGE: UsageKey[] = ["widget", "notifications", "reflection-screen", "favorites"];
 
 const enrichedHadith = new Map(ENRICHED_HADITHS.map((h) => [`hadith:${h.id}`, h]));
-const enrichedDua = new Map(ENRICHED_DUAS.map((d) => [`dua:${d.id}`, d]));
+const enrichedDua = new Map([...ENRICHED_DUAS, ...IMPORTED_DUAS].map((d) => [`dua:${d.id}`, d]));
+const importedDuaIds = new Set(IMPORTED_DUAS.map((d) => d.id));
 const poems = new Map(POEMS.map((p) => [`poetry:${p.id}`, p]));
 const lataif = new Map(QURAN_LATAIF.map((l) => [`lataif:${l.id}`, l]));
 
@@ -171,7 +173,7 @@ function describe(item: ReminderItem): CatalogItem {
         url: added.url,
         verseRef: added.kind === "quran" ? added.sourceAr : undefined,
         translationSource: added.translation.source,
-        storage: `src/data/widgetContent.ts → ENRICHED_DUAS (${added.id})`,
+        storage: importedDuaIds.has(added.id) ? `src/data/importedDuas.ts → IMPORTED_DUAS (${added.id})` : `src/data/widgetContent.ts → ENRICHED_DUAS (${added.id})`,
         dataNote: added.review.note,
       });
       if (!added.translation.reviewed) c.warnings.push("unverified-translation");
@@ -181,13 +183,17 @@ function describe(item: ReminderItem): CatalogItem {
         sourceName: d?.source_ar,
         narrator: d?.narrator_ar,
         verseRef: d?.isQuranic ? d.source_ar : undefined,
-        translationSource: d?.englishMeaning ? "Written library's own English (source not recorded)" : undefined,
+        url: d?.url,
+        translationSource: d?.translation?.source ?? (d?.englishMeaning ? "Written library's own English (source not recorded)" : undefined),
         storage: `src/data/misc-library.ts → MISC_DUAS (${rawId})`,
+        dataNote: d?.reviewNote,
       });
       c.usage.push("written-library");
       if (dailyPicksPool(MISC_DUAS).some((x) => x.id === rawId)) c.usage.push("daily-picks");
-      if (!d?.isQuranic) c.warnings.push("missing-url");
-      if (d?.englishMeaning) c.warnings.push("translation-source-unknown");
+      if (!c.url && !d?.isQuranic) c.warnings.push("missing-url");
+      if (d?.translation) {
+        if (!d.translation.reviewed) c.warnings.push("unverified-translation");
+      } else if (d?.englishMeaning) c.warnings.push("translation-source-unknown");
     }
   } else if (item.category === "virtue") {
     const d = dhikrItems.find((x) => String(x.id) === rawId);
@@ -253,6 +259,7 @@ function describe(item: ReminderItem): CatalogItem {
         tafsirSource: w?.source,
         translationSource: w?.insightEn ? "Wamdat's own English rendering of the reflection (not a Qur'an translation)" : undefined,
         storage: `src/data/wamdat.ts → WAMDAT (id ${w?.id})`,
+        dataNote: w ? WAMDA_NEEDS_VERIFICATION[w.id] : undefined,
       });
       c.usage.push("home-legacy");
       c.warnings.push("paraphrased-tafsir", "missing-url");
@@ -289,6 +296,7 @@ function commentStorage(id: string): string {
   if (id.startsWith("widget-verse:")) return "src/data/widgetVerses.ts (comments)";
   if (id.startsWith("lataif:")) return "src/data/quranLataif.ts (comments)";
   if (id.startsWith("theme:dua:legacy")) return "src/data/dhikrReflections.ts → DHIKR_REFLECTIONS.dua";
+  if (id.startsWith("dua-reflection:")) return "src/data/duaReflections.ts (DUA_REFLECTIONS)";
   if (id.startsWith("theme:") || id.startsWith("dua-cat:")) return "src/data/widgetContent.ts (DHIKR_THEME_COMMENTS / DUA_CATEGORY_COMMENTS)";
   if (/^hadith:\d+:reflection$/.test(id)) return "ASSETS/dithar_hadith_library_final.json → reflectionAr/reflectionEn";
   return "src/data/widgetContent.ts (item comments)";

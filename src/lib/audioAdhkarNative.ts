@@ -106,7 +106,7 @@ export interface NativeDailySchedule extends NativeSectionSchedule {
    * [window start, session start, window end], epoch millis. Native plays
    * each at most once and never continues one past its window's end.
    */
-  slots: (readonly [number, number, number])[];
+  slots: (readonly [number, number, number] | readonly [number, number, number, number])[];
 }
 
 export interface NativeMiscSchedule extends NativeSectionSchedule {
@@ -120,6 +120,8 @@ export interface NativeMiscSchedule extends NativeSectionSchedule {
    * the earliest minute a dhikr may start that day (-1 = no restriction).
    */
   dayStartMinutes?: number[];
+  /** Misc's own start/end per weekday, Sunday first (-1 = the usual time that day) — native MiscDayTimes. */
+  dayTimes?: { startMinutes: number[]; endMinutes: number[] };
   /** Adapt to Fridays and Islamic occasions (lib/islamicOccasions.ts). */
   occasionsEnabled?: boolean;
   /** Hijri occasion days: [local day start, next local midnight, key]; Friday is decided natively. */
@@ -196,7 +198,8 @@ export interface AudioAdhkarPlugin {
   /** "Resume Adhkar" in the app: continues that saved session from where it stopped. */
   resumeSaved(options: { section: "morning" | "evening" }): Promise<{ started: boolean }>;
   /** `busy`: anything plays natively now — an adhkar session or the adhan (which has no adhkar state). */
-  getPlaybackState(): Promise<{ state: NativeAudioAdhkarState | null; busy?: boolean }>;
+  /** `busy`: anything playing natively (the adhan included); `inCall`: the phone is ringing or in a call (absent from older builds). */
+  getPlaybackState(): Promise<{ state: NativeAudioAdhkarState | null; busy?: boolean; inCall?: boolean }>;
   /**
    * The app's own volume per kind of audio (gain 0–1; Settings → إعدادات
    * الصوت): stored natively and applied at once to what is playing and to
@@ -222,6 +225,8 @@ export interface AudioAdhkarPlugin {
   /** Stops a scheduled session that is playing (never «استماع» or the adhan) and clears pending Audio Adhkar notices — the master switch turned off. */
   stopScheduled(): Promise<void>;
   pause(): Promise<void>;
+  /** «الذكر التالي»: skips the rest of the dhikr playing now (its unplayed repetitions are never counted) for the next one. */
+  next(): Promise<void>;
   resume(): Promise<void>;
   stop(): Promise<void>;
   /** The adhan playing now (null when none) — lib/adhanPlayback.ts. */

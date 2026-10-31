@@ -20,16 +20,19 @@ export function DeviceFrame({
   children,
   scrollLocked = false,
   background,
+  wallpaper = false,
 }: {
   children: ReactNode;
   scrollLocked?: boolean;
   background?: string;
+  /** The Home screen: the look's wallpaper behind it, and its frosted cards (index.css .dithar-home-screen). */
+  wallpaper?: boolean;
 }) {
   const style = { ...(scrollLocked ? { overflow: "hidden" } : null), ...(background ? { background } : null) };
   return (
     <div className="device-backdrop">
       <div className="device-frame">
-        <div className="device-screen" style={Object.keys(style).length ? style : undefined}>
+        <div className={wallpaper ? "device-screen dithar-home-screen" : "device-screen"} style={Object.keys(style).length ? style : undefined} data-home-wallpaper={wallpaper ? "" : undefined}>
           {children}
         </div>
       </div>

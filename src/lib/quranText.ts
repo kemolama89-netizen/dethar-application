@@ -88,6 +88,17 @@ export function splitBasmala(surah: number, ayah: number, text: string): { basma
   return { basmala, rest: text.slice(basmala.length) };
 }
 
+/**
+ * A verse's complete text for sharing (the reader's «مشاركة»), exactly as in Tanzil's text — without the
+ * basmala that heads its surah (splitBasmala: it is not part of verse 1, except al-Fatihah's, where it IS
+ * the verse). Null for a verse that doesn't exist.
+ */
+export function verseForSharing(surah: number, ayah: number): string | null {
+  const text = QURAN_VERSES[surah - 1]?.[ayah - 1];
+  if (!text) return null;
+  return splitBasmala(surah, ayah, text)?.rest ?? text;
+}
+
 /** A word as written — not a standalone annotation sign (a pause or sajdah mark, ۞). */
 const HAS_LETTER = /[\u0621-\u064A\u066E-\u06D3\u06FA-\u06FC]/;
 

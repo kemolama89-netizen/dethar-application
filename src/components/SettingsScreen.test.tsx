@@ -16,6 +16,7 @@ import { LanguageProvider } from "../theme/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
 import { QuranReciterProvider } from "../theme/QuranReciterContext";
+import { AdhkarNavContext } from "../lib/adhkarNav";
 import { settingsLabels } from "../data/settings";
 import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
@@ -23,7 +24,7 @@ import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 const t = settingsLabels.ar; // LanguageProvider's own initial language
 
-async function mountSettingsScreen(onNavigateToAudio: () => void = () => {}) {
+async function mountSettingsScreen(onNavigateToAudio: () => void = () => {}, openAdhkar: (() => void) | null = null) {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
@@ -33,12 +34,14 @@ async function mountSettingsScreen(onNavigateToAudio: () => void = () => {}) {
         <ThemeProvider>
           <PaletteProvider>
             <QuranReciterProvider>
-              <SettingsScreen
-                onNavigateHome={() => {}}
-                onNavigateToTasbeeh={() => {}}
-                onNavigateToWritten={() => {}}
-                onNavigateToAudio={onNavigateToAudio}
-              />
+              <AdhkarNavContext.Provider value={openAdhkar}>
+                <SettingsScreen
+                  onNavigateHome={() => {}}
+                  onNavigateToTasbeeh={() => {}}
+                  onNavigateToWritten={() => {}}
+                  onNavigateToAudio={onNavigateToAudio}
+                />
+              </AdhkarNavContext.Provider>
             </QuranReciterProvider>
           </PaletteProvider>
         </ThemeProvider>
@@ -73,12 +76,12 @@ beforeEach(() => {
 });
 
 describe("SettingsScreen — bottom navigation", () => {
-  it("the Audio Adhkar tab opens Audio Adhkar directly", async () => {
-    const onNavigateToAudio = vi.fn();
-    const { container, unmount } = await mountSettingsScreen(onNavigateToAudio);
-    const tab = Array.from(container.querySelectorAll("nav button")).find((b) => b.textContent?.includes("الأذكار المسموعة"))!;
+  it("the Adhkar tab opens the Adhkar screen (its cards lead to Audio and Written Adhkar)", async () => {
+    const openAdhkar = vi.fn();
+    const { container, unmount } = await mountSettingsScreen(() => {}, openAdhkar);
+    const tab = Array.from(container.querySelectorAll("nav button")).find((b) => b.textContent === "الأذكار")!;
     await act(async () => (tab as HTMLButtonElement).click());
-    expect(onNavigateToAudio).toHaveBeenCalledTimes(1);
+    expect(openAdhkar).toHaveBeenCalledTimes(1);
     await unmount();
   });
 });

@@ -367,6 +367,8 @@ describe("schedule sync — Morning, Evening and Misc, each independent", () => 
       language: "ar",
       // No weekly schedule set: no day is restricted.
       dayStartMinutes: [-1, -1, -1, -1, -1, -1, -1],
+      // No weekday of its own set: the usual period every day.
+      dayTimes: { startMinutes: [-1, -1, -1, -1, -1, -1, -1], endMinutes: [-1, -1, -1, -1, -1, -1, -1] },
       // Fridays and Islamic occasions (lib/islamicOccasions.ts), on by default.
       occasionsEnabled: true,
       occasions: expect.any(Array),
@@ -825,6 +827,15 @@ describe("the native service keeps playing with the screen off (source guards �
     expect(body("resumePlayback")).toContain("acquireSessionWakeLock()");
     expect(body("endSession")).toContain("releaseSessionWakeLock()");
     expect(body("cancelSilence")).not.toContain("release"); // the old gap lock dropped it before the next file was ready
+  });
+
+  it("the alarm-started adhan plays without a tap when its focus is refused with no call (Motorola, Android 15+)", () => {
+    // Android 15+ refuses focus to an app that isn't yet the top app or a settled foreground service — the
+    // alarm's start. Waiting for a grant left the adhan paused until the user tapped Play; adhkar never waited.
+    const begin = body("beginPlayback");
+    expect(begin).toContain("!AdhanFocusPolicy.startsNow(focus, inCall())");
+    expect(begin).not.toMatch(/focus != AdhanFocusPolicy\.REQUEST_GRANTED\)\s*\{/);
+    expect(begin).toContain("handler.postDelayed(adhanFocusFollowUp");
   });
 
   it("«استماع» is a native session: allowed in an adhan pause, stopped at the adhan, never resumed after it", () => {

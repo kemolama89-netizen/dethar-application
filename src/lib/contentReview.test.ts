@@ -3,7 +3,21 @@
 // that review decisions gate widgets/reminders, that they persist across a
 // restart, and the review screen's catalog (read from the live data),
 // filters, duplicates and export.
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+// This file tests the review workflow itself (defaults, decisions, edits) on
+// fixed fixtures; the religious-content audit's own gating — including that
+// an approved edit withholds an audited Hadith or Latifa — is tested in
+// lib/religiousAudit.test.tsx. Here it is switched off.
+vi.mock("./religiousAudit", () => ({
+  AUDIT_ENFORCED: false,
+  inAuditScope: () => false,
+  auditShowsArabic: () => true,
+  auditShowsEnglish: () => true,
+  reminderAuditApproved: () => true,
+  auditPublishesByDefault: () => false,
+}));
+
+import { DUA_REFLECTIONS } from "../data/duaReflections";
 import {
   STARTUP_HADITH_REVIEW_ID,
   defaultReviewStatus,
@@ -38,8 +52,8 @@ describe("defaults", () => {
   });
 
   it("existing Lataif that cite 'scientific/medical miracle' works are held for verification", () => {
+    // The Lataif that cited such works were removed by the 2026-10-30 audit cleanup; any new one is still held.
     const flagged = contentCatalog().filter((i) => i.warnings.includes("miracle-claim"));
-    expect(flagged.length).toBeGreaterThan(0);
     for (const item of flagged) {
       expect(reviewStatusOf(item.id)).toBe("needs-verification");
       expect(findReminderItem(item.id)).toBeUndefined();
@@ -76,12 +90,17 @@ describe("publication gating", () => {
     expect(findReminderItem(existing)).toBeUndefined();
   });
 
-  it("comments are gated one by one; a dua falls back to its existing reflection until its new comments are approved", () => {
+  it("comments are gated one by one: a dua shows DITHAR's dua reflections, and each category comment once approved", () => {
+    const reflections = DUA_REFLECTIONS.map((c) => c.id);
     const dua = findReminderItem("dua:dua-al-karb")!;
-    expect(dua.comments.map((c) => c.id)).toEqual(["theme:dua:legacy"]);
+    expect(dua.comments.map((c) => c.id)).toEqual(reflections);
     const firstNew = findReminderCandidate("dua:dua-al-karb")!.comments[0];
+    expect(firstNew.id.startsWith("dua-cat:")).toBe(true);
     setReview(firstNew.id, { status: "approved" });
-    expect(findReminderItem("dua:dua-al-karb")!.comments.map((c) => c.id)).toEqual([firstNew.id]);
+    expect(findReminderItem("dua:dua-al-karb")!.comments.map((c) => c.id)).toEqual([firstNew.id, ...reflections]);
+    // A reflection can be held back like any comment.
+    setReview(reflections[0], { status: "rejected", notes: "test" });
+    expect(findReminderItem("dua:dua-al-karb")!.comments.map((c) => c.id)).not.toContain(reflections[0]);
   });
 
   it("the original text is never touched by a review decision", () => {

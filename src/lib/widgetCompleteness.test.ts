@@ -116,7 +116,7 @@ describe("the widget's content", () => {
   });
 
   it("DITHAR's reflections don't quote a Hadith in part as if whole", () => {
-    const h184 = HADITHS.find((h) => h.id === 184);
-    expect(h184?.reflectionAr).not.toContain("ويل له، ويل له");
+    // Hadith 184's reflection did (it was removed by the 2026-10-30 audit cleanup).
+    for (const h of HADITHS) expect(h.reflectionAr, `hadith:${h.id}`).not.toContain("ويل له، ويل له");
   });
 });

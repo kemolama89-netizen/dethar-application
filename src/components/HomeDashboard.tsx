@@ -62,7 +62,7 @@ function WirdRing({ done, label }: { done: number; label: string }) {
 
 function Stat({ label, value, testId }: { label: string; value: string | number; testId: string }) {
   return (
-    <div className="flex min-w-0 flex-col items-center rounded-xl px-1 py-1" style={{ background: "var(--color-bg)" }} data-home-stat={testId}>
+    <div className="dithar-glass-tile flex min-w-0 flex-col items-center rounded-xl px-1 py-1" style={{ background: "var(--color-bg)" }} data-home-stat={testId}>
       <span className="text-[14px] font-bold tabular-nums" style={{ color: "var(--color-text-primary)", direction: "ltr" }}>
         {value}
       </span>
@@ -82,7 +82,7 @@ export function DailyProgressCard({ className = "" }: { className?: string }) {
   const nothingYet = activity.total === 0 && wirds === 0 && activity.prayerSessions === 0 && audio.completedPlays === 0 && audio.stoppedEarlyPlays === 0 && audio.listenedMs === 0;
   return (
     <section
-      className={`rounded-2xl border px-3 py-2 [@media(min-height:880px)]:py-2.5 ${className}`}
+      className={`dithar-glass rounded-2xl border px-3 py-2 [@media(min-height:880px)]:py-2.5 ${className}`}
       style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", borderRadius: "var(--card-radius)" }}
       data-home-progress=""
       aria-label={t.today}

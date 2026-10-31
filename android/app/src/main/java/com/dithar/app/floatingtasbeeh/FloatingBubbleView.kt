@@ -58,6 +58,10 @@ class FloatingBubbleView(
     // existing drag handling below, never itself consulted for whether a
     // gesture IS a drag.
     private val onPositionChanged: (x: Int, y: Int) -> Unit = { _, _ -> },
+    // Where a dragged position may go (FloatingBubblePlacement.clamp): the
+    // bubble follows the finger freely, but stays on screen and clear of the
+    // status and navigation bars.
+    private val keepInBounds: (x: Int, y: Int) -> FloatingBubblePlacement.Position = { x, y -> FloatingBubblePlacement.Position(x, y) },
 ) : View(context) {
 
     var count: Int = 0
@@ -199,10 +203,14 @@ class FloatingBubbleView(
                 val dy = event.rawY - downRawY
                 if (isDragging || abs(dx) > touchSlop || abs(dy) > touchSlop) {
                     isDragging = true
-                    layoutParams.x = downParamX + dx.toInt()
-                    layoutParams.y = downParamY + dy.toInt()
-                    windowManager.updateViewLayout(this, layoutParams)
-                    onPositionChanged(layoutParams.x, layoutParams.y)
+                    val next = keepInBounds(downParamX + dx.toInt(), downParamY + dy.toInt())
+                    // Held against an edge (or a sub-pixel move): nothing to redraw.
+                    if (next.x != layoutParams.x || next.y != layoutParams.y) {
+                        layoutParams.x = next.x
+                        layoutParams.y = next.y
+                        windowManager.updateViewLayout(this, layoutParams)
+                        onPositionChanged(layoutParams.x, layoutParams.y)
+                    }
                 }
             }
             else -> Unit

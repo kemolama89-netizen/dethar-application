@@ -12,6 +12,7 @@ import tanzilRaw from "../lib/__fixtures__/tanzil-simple-cited.txt?raw";
 import { LanguageProvider } from "../theme/LanguageContext";
 import { SpiritualReminderView } from "./SpiritualReminderView";
 import { WAMDAT } from "../data/wamdat";
+import { quotedQuranInBrackets } from "../lib/quranBrackets";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -32,10 +33,12 @@ describe("full-screen Latifa", () => {
     root = createRoot(container);
     act(() => root.render(<LanguageProvider><SpiritualReminderView itemId="lataif:w252" onClose={() => {}} /></LanguageProvider>));
     const text = container.querySelector("[data-reminder-text]")!;
-    expect(text.textContent!.normalize("NFC")).toBe(verse("28:79").normalize("NFC"));
-    expect(text.textContent!.normalize("NFC").endsWith("إِنَّهُ لَذُو حَظٍّ عَظِيمٍ".normalize("NFC"))).toBe(true);
+    // The whole verse, in the Qur'anic brackets ﴿ … ﴾ (lib/quranBrackets.ts).
+    expect(text.textContent!.normalize("NFC")).toBe(`\uFD3F\u00A0${verse("28:79")}\u00A0\uFD3E`.normalize("NFC"));
+    expect(text.textContent!.normalize("NFC").endsWith("إِنَّهُ لَذُو حَظٍّ عَظِيمٍ\u00A0\uFD3E".normalize("NFC"))).toBe(true);
     const evidence = container.querySelector("[data-reminder-evidence]")!;
-    expect(evidence.textContent).toContain(WAMDAT.find((e) => e.id === 252)!.insightAr);
+    // Its reflection whole — any Qur'anic words it quotes in ﴿ … ﴾ instead of braces.
+    expect(evidence.textContent).toContain(quotedQuranInBrackets(WAMDAT.find((e) => e.id === 252)!.insightAr));
     expect(evidence.textContent).toContain("المقارنات المادية الاجتماعية");
     const scroller = text.closest(".overflow-y-auto")!;
     expect(scroller.className).toContain("justify-center-safe");

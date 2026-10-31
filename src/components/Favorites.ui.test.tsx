@@ -18,6 +18,7 @@ import { MISC_DUAS } from "../data/misc-library";
 import { subscribeOpenReminderRequests } from "../lib/reminderOpenRequests";
 import type { OpenReminderRequest } from "../lib/reminderOpenRequests";
 import { resolveOpenedReminder } from "../lib/reminderOpen";
+import { withQuranBrackets } from "../lib/quranBrackets";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -171,7 +172,8 @@ describe("Settings → Favorites", () => {
     const dua = MISC_DUAS[0];
     saveMiscFavorites(new Set([dua.id]));
     mount(<FavoritesView onBack={() => {}} />);
-    expect(container.textContent).toContain(dua.text_ar);
+    // A dua from the Qur'an is shown in the Qur'anic brackets ﴿ … ﴾ (lib/quranBrackets.ts), its words unchanged.
+    expect(container.textContent).toContain(withQuranBrackets({ id: `dua:${dua.id}`, kind: dua.isQuranic ? "quran-dua" : "dua" }, dua.text_ar));
     await click(container.querySelector(`[data-favorite-remove='library:${dua.id}']`)!);
     expect(loadMiscFavorites().has(dua.id)).toBe(false);
   });
@@ -184,7 +186,8 @@ describe("Settings → Favorites", () => {
     const card = container.querySelector(`[data-favorite-item='${item.id}']`)!;
     expect(card.textContent).toContain(item.textAr);
     await click([...card.querySelectorAll("button")].find((b) => b.textContent === "Read in full")!);
-    expect(card.textContent).toContain(item.meaningEn!);
+    // Its English is not a verified published translation, so it is not shown (lib/religiousAudit.ts).
+    expect(item.meaningEn).toBeUndefined();
     expect(card.textContent).toContain(item.comments[0].en);
     expect(card.textContent).toContain("Sahih Muslim");
   });

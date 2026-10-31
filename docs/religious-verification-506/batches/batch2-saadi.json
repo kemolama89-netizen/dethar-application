@@ -1,0 +1,402 @@
+{
+ "lataif:q33-41": {
+  "ref": "33:41",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/33:41",
+    "verbatim": true,
+    "len": 292
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/33/41.json",
+    "verbatim": true,
+    "len": 1107
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/33/41.json",
+    "verbatim": true,
+    "len": 292
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q39-53": {
+  "ref": "39:53",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/39:53",
+    "verbatim": true,
+    "len": 915
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/39/53.json",
+    "verbatim": true,
+    "len": 2260
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/39/53.json",
+    "verbatim": true,
+    "len": 915
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q94-5": {
+  "ref": "94:5",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/94:5",
+    "verbatim": true,
+    "len": 374
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/94/5.json",
+    "verbatim": true,
+    "len": 1353
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/94/5.json",
+    "verbatim": true,
+    "len": 374
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q3-134": {
+  "ref": "3:134",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/3:134",
+    "verbatim": true,
+    "len": 1183
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/ar-tafsir-as-saadi/3/134.json",
+    "verbatim": true,
+    "len": 4388
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/3/134.json",
+    "verbatim": true,
+    "len": 1183
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q41-34": {
+  "ref": "41:34",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/41:34",
+    "verbatim": true,
+    "len": 579
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/41/34.json",
+    "verbatim": true,
+    "len": 1007
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/41/34.json",
+    "verbatim": true,
+    "len": 579
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q7-205": {
+  "ref": "7:205",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/7:205",
+    "verbatim": true,
+    "len": 782
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/7/205.json",
+    "verbatim": true,
+    "len": 1224
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/7/205.json",
+    "verbatim": true,
+    "len": 782
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q16-53": {
+  "ref": "16:53",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/16:53",
+    "verbatim": true,
+    "len": 331
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/16/53.json",
+    "verbatim": true,
+    "len": 932
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/16/53.json",
+    "verbatim": true,
+    "len": 331
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q39-10": {
+  "ref": "39:10",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/39:10",
+    "verbatim": true,
+    "len": 1148
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/39/10.json",
+    "verbatim": true,
+    "len": 1150
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/39/10.json",
+    "verbatim": true,
+    "len": 1148
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q16-18": {
+  "ref": "16:18",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/16:18",
+    "verbatim": true,
+    "len": 307
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/16/18.json",
+    "verbatim": true,
+    "len": 1647
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/16/18.json",
+    "verbatim": true,
+    "len": 307
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q70-5": {
+  "ref": "70:5",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/70:5",
+    "verbatim": true,
+    "len": 157
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/70/5.json",
+    "verbatim": true,
+    "len": 2266
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/70/5.json",
+    "verbatim": true,
+    "len": 157
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q14-7": {
+  "ref": "14:7",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/14:7",
+    "verbatim": true,
+    "len": 207
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/14/7.json",
+    "verbatim": true,
+    "len": 1177
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/14/7.json",
+    "verbatim": true,
+    "len": 207
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q49-10": {
+  "ref": "49:10",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/49:10",
+    "verbatim": true,
+    "len": 1211
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/ar-tafsir-as-saadi/49/10.json",
+    "verbatim": true,
+    "len": 1943
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/49/10.json",
+    "verbatim": true,
+    "len": 1211
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q11-115": {
+  "ref": "11:115",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/11:115",
+    "verbatim": true,
+    "len": 208
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/11/115.json",
+    "verbatim": true,
+    "len": 1052
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/11/115.json",
+    "verbatim": true,
+    "len": 208
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q4-86": {
+  "ref": "4:86",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/4:86",
+    "verbatim": true,
+    "len": 897
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/4/86.json",
+    "verbatim": true,
+    "len": 898
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/4/86.json",
+    "verbatim": true,
+    "len": 897
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q93-11": {
+  "ref": "93:11",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/93:11",
+    "verbatim": true,
+    "len": 196
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/93/11.json",
+    "verbatim": true,
+    "len": 1777
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/93/11.json",
+    "verbatim": true,
+    "len": 196
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ },
+ "lataif:q39-9": {
+  "ref": "39:9",
+  "witnesses": {
+   "quran.com tafsir 91": {
+    "url": "https://api.quran.com/api/v4/tafsirs/91/by_ayah/39:9",
+    "verbatim": true,
+    "len": 683
+   },
+   "tafsir_api ar-tafsir-as-saadi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafsir-as-saadi/39/9.json",
+    "verbatim": true,
+    "len": 683
+   },
+   "tafsir_api ar-tafseer-al-saddi": {
+    "url": "https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/ar-tafseer-al-saddi/39/9.json",
+    "verbatim": true,
+    "len": 683
+   },
+   "OpenITI (altafsir.com transcription)": {
+    "url": "https://raw.githubusercontent.com/OpenITI/1400AH/master/data/1376CabdRahmanSacdi/1376CabdRahmanSacdi.TaysirKarimRahman/1376CabdRahmanSacdi.TaysirKarimRahman.Tafsir10098-ara1",
+    "verbatim": true
+   }
+  },
+  "note": "Independent digital witnesses: quran.com tafsir 91 (= tafsir_api al-saddi, same dataset), tafsir_api as-saadi, OpenITI (source: altafsir.com). No printed edition was accessible."
+ }
+}

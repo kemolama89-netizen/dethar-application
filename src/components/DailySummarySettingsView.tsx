@@ -4,8 +4,8 @@ import { useLanguage } from "../theme/LanguageContext";
 import { summaryLabels } from "../data/reminderLabels";
 import { loadSummarySettings, saveSummarySettings } from "../lib/dailySummary";
 import type { DailySummarySettings, SummaryContent } from "../lib/dailySummary";
-import { getDailyActivity, todayLocalDate } from "../lib/stats";
-import { buildSummaryAudio } from "../lib/dailySummary";
+import { todayLocalDate } from "../lib/stats";
+import { readDayRecords } from "../lib/dailySummary";
 import { isRemindersNativeAvailable } from "../lib/remindersNative";
 import { AudioAdhkarNative, isAudioAdhkarNativeAvailable } from "../lib/audioAdhkarNative";
 
@@ -26,10 +26,10 @@ export function DailySummarySettingsView({ onBack }: { onBack: () => void }) {
   const t = summaryLabels[language];
   const BackIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
   const [settings, setSettings] = useState<DailySummarySettings>(() => loadSummarySettings());
-  const today = getDailyActivity(todayLocalDate());
-  const audio = buildSummaryAudio(todayLocalDate());
+  // The same counts the notification and the Statistics screen use, and one status for all of them.
+  const { status, today, audio } = readDayRecords(todayLocalDate());
   const listening =
-    audio.completedPlays === 0 && audio.listenedMs === 0
+    status === "unavailable" || (audio.completedPlays === 0 && audio.listenedMs === 0)
       ? null
       : [
           audio.completedPlays > 0 ? t.listeningPlays(audio.completedPlays) : null,
@@ -137,18 +137,18 @@ export function DailySummarySettingsView({ onBack }: { onBack: () => void }) {
         <p className="text-[13.5px] font-semibold" style={primaryText}>
           {t.todayPreview}
         </p>
-        <p className="text-[12.5px] leading-[1.7]" style={parts.length ? primaryText : muted}>
-          {/* Listening alone is still a record of today: never "nothing recorded" over it. */}
-          {parts.length ? parts.join(" · ") : listening ? t.onlyListening : t.nothingYet}
+        <p className="text-[12.5px] leading-[1.7]" style={status === "recorded" ? primaryText : muted} data-summary-status={status}>
+          {/* Listening alone is still a record of today, and unread records are unknown: never "nothing recorded" over either. */}
+          {status === "unavailable" ? t.unavailable : status === "recorded" ? parts.join(" · ") : status === "listening" ? t.onlyListening : t.nothingYet}
         </p>
         <div className="border-t pt-2" style={{ borderColor: "var(--color-gold-soft)" }} data-summary-listening="">
           <p className="text-[12px] font-semibold" style={primaryText}>
             {t.listeningTitle}
           </p>
           <p className="text-[12px] leading-[1.7]" style={listening ? primaryText : muted}>
-            {listening ?? t.listeningNone}
+            {listening ?? (status === "unavailable" ? t.unavailable : t.listeningNone)}
           </p>
-          {audio.titles.length > 0 && (
+          {status !== "unavailable" && audio.titles.length > 0 && (
             <p dir="rtl" className="text-[11.5px] leading-[1.7]" style={muted} data-summary-titles="">
               {t.listeningOf} {audio.titles.join("، ")}
             </p>

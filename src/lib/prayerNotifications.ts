@@ -21,7 +21,8 @@ import type { PluginListenerHandle } from "@capacitor/core";
 import type { Language } from "../theme/LanguageContext";
 import { labels, prayerNames } from "../data/content";
 import { formatPrayerTime } from "./prayerTimes";
-import { knownPrayerLocation, upcomingPrayerTimes } from "./prayerSchedule";
+import { knownPrayerLocation, upcomingAdhanTimes } from "./prayerSchedule";
+import { holidayDayStarts, holidayStartOn, subscribeWeeklySchedule } from "./weeklySchedule";
 import { loadPrayerReminderSettings, savePrayerReminderSettings } from "./prayerReminderSettings";
 import type { PrayerReminderSettings } from "./prayerReminderSettings";
 import { subscribeLocationChanges } from "./locationSettings";
@@ -40,8 +41,10 @@ export const PRAYER_NOTIFICATION_DAYS = 30;
 
 export interface PrayerNotificationEntry {
   prayer: string;
-  /** The prayer time, epoch millis. */
+  /** When it is delivered (and its adhan plays), epoch millis: the prayer time, or that weekday's later Adhan time. */
   at: number;
+  /** The prayer time itself, epoch millis — its identity: native posts each prayer once, so moving a delayed Adhan never repeats it. */
+  prayerAt: number;
   title: string;
   body: string;
   /** Show the notification (false: the entry is only there for its adhan). */
@@ -107,7 +110,9 @@ const sectionOf = (prayer: string): AdhanSection => (prayer === "fajr" ? "fajr" 
  * on (then silent if its notification is off). Nothing with the master
  * switch off — no notification and no adhan — and nothing while the
  * user's location isn't known yet (the app would only be showing the
- * Kuwait fallback — never for a place that isn't theirs).
+ * Kuwait fallback — never for a place that isn't theirs). On a weekly
+ * holiday nothing before its start time (weeklySchedule.ts): the first
+ * prayer at or after it is the day's first notification and adhan.
  */
 export function buildPrayerNotifications(
   now: Date,
@@ -116,18 +121,22 @@ export function buildPrayerNotifications(
   location = knownPrayerLocation(),
   days = PRAYER_NOTIFICATION_DAYS,
   autoPlay: AdhanAutoPlay = loadAdhanAutoPlay(),
+  holidayStarts: readonly number[] = holidayDayStarts(),
 ): PrayerNotificationEntry[] {
   if (!location || !settings.enabled) return [];
+  const beforeHolidayStart = (at: number) => at < (holidayStartOn(at, location.timezone, holidayStarts) ?? at);
   const t = labels[language];
   const notifies = (prayer: keyof PrayerReminderSettings["prayers"]) => settings.prayers[prayer];
-  return upcomingPrayerTimes(now, location, days)
-    .filter(({ prayer, at }) => (notifies(prayer) || autoPlay[sectionOf(prayer)]) && at > now.getTime())
-    .map(({ prayer, at }) => {
+  return upcomingAdhanTimes(now, location, days)
+    .filter(({ prayer, at }) => (notifies(prayer) || autoPlay[sectionOf(prayer)]) && at > now.getTime() && !beforeHolidayStart(at))
+    .map(({ prayer, at, prayerAt }) => {
       const name = prayerNames[language][prayer];
-      const time = formatPrayerTime(new Date(at), location.timezone);
+      // The title keeps the prayer's own time, also when that weekday's Adhan is set later.
+      const time = formatPrayerTime(new Date(prayerAt), location.timezone);
       return {
         prayer,
         at,
+        prayerAt,
         title: t.prayerNotificationTitle.replace("{prayer}", name).replace("{time}", time),
         body: t.prayerReminderNotificationBody.replace("{prayer}", name),
         notify: notifies(prayer),
@@ -223,9 +232,12 @@ export function startPrayerNotificationSync(): () => void {
   const resync = () => void syncPrayerNotifications().catch(() => {});
   const handles: Promise<PluginListenerHandle>[] = [App.addListener("resume", resync)];
   const unsubscribeLocation = subscribeLocationChanges(resync);
+  // A weekday's Adhan time changed (Settings → Adhan): the prayer alerts move with it.
+  const unsubscribeWeekly = subscribeWeeklySchedule(resync);
   resync();
   return () => {
     unsubscribeLocation();
+    unsubscribeWeekly();
     for (const handle of handles) void handle.then((h) => h.remove());
   };
 }

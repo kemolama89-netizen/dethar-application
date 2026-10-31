@@ -27,8 +27,9 @@ import type { AudioAdhkarDiagnostics, NativeSection } from "../lib/audioAdhkarNa
 import { getAvailableQuranReciters } from "../data/quranReciters";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
 import { audioAdhkarOptionLabel } from "../data/audioAdhkarOptionLabels";
-import { dailyDayTimesLabels, occasionLabels, weeklyScheduleLabels } from "../data/scheduleLabels";
-import { WEEKDAYS, loadDailyDayTimes, saveDailyDayTimes } from "../lib/weeklySchedule";
+import { dailyDayTimesLabels, miscDayTimesLabels, occasionLabels, weeklyScheduleLabels } from "../data/scheduleLabels";
+import { WEEKDAYS, loadDailyDayTimes, loadMiscDayTimes, saveDailyDayTimes, saveMiscDayTimes } from "../lib/weeklySchedule";
+import { WeekdayTimesEditor } from "./WeekdayTimesEditor";
 import { hijriDateOf, loadOccasionSettings, occasionFor, saveOccasionSettings } from "../lib/islamicOccasions";
 import { HIJRI_ADJUSTMENT_MAX, HIJRI_ADJUSTMENT_MIN, loadHijriAdjustment, saveHijriAdjustment } from "../lib/hijriAdjustment";
 import { getDateTimeInfo } from "../lib/dateTime";
@@ -384,8 +385,9 @@ function AdhkarChecklist({ section, items, onChange }: { section: ScheduleSectio
 
 /**
  * Morning/Evening "customize by day": an optional start time per weekday
- * (empty = the usual start time). Saved by weekday index; the plan stays
- * inside the section's prayer-time window either way.
+ * (empty = the usual start time). Saved by weekday index. A day's own time
+ * plays at exactly that time, even outside the prayer-time window
+ * (dailyAzkarWindows.ts exactDaySlot); the other days stay inside it.
  */
 function DailyDayTimes({ section, onChange }: { section: DailySection; onChange: () => void }) {
   const { language } = useLanguage();
@@ -429,6 +431,32 @@ function DailyDayTimes({ section, onChange }: { section: DailySection; onChange:
         ))}
       </div>
     </details>
+  );
+}
+
+/** Misc: its own start and/or end on chosen weekdays (the usual period on every other day). */
+function MiscDayTimesEditor({ onChange }: { onChange: () => void }) {
+  const { language } = useLanguage();
+  const t = miscDayTimesLabels[language];
+  const [times, setTimes] = useState(() => loadMiscDayTimes());
+  return (
+    <WeekdayTimesEditor
+      id="misc"
+      summary={t.summary}
+      hint={t.hint}
+      usual={t.usual}
+      clear={t.clear}
+      columns={[
+        { label: t.from, values: times.start },
+        { label: t.to, values: times.end },
+      ]}
+      onChange={([start, end]) => {
+        const next = { start, end };
+        setTimes(next);
+        saveMiscDayTimes(next);
+        onChange();
+      }}
+    />
   );
 }
 
@@ -719,6 +747,7 @@ function MiscView({ onBack }: { onBack: () => void }) {
             {t.crossesMidnight}
           </p>
         )}
+        <MiscDayTimesEditor onChange={apply} />
         <Row label={t.interval} htmlFor="misc-audio-interval">
           <select
             id="misc-audio-interval"

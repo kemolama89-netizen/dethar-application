@@ -7,6 +7,7 @@ import { dhikrItems } from "../data/tasbeeh";
 import { WAMDAT, getWamdaVerseText } from "../data/wamdat";
 import { DHIKR_REFLECTIONS } from "../data/dhikrReflections";
 import { ENRICHED_DUAS, ENRICHED_HADITHS, POEMS } from "../data/widgetContent";
+import { IMPORTED_DUAS } from "../data/importedDuas";
 import { REMINDER_CATEGORIES, evidenceForTheme, findReminderItem, reminderPool, suggestedBackground } from "./reminderContent";
 import { BACKGROUNDS, autoBackgroundId, dayPeriodAt, isBackgroundId, seasonAt } from "./reminderBackgrounds";
 import { coverPlacement } from "./cropPlacement";
@@ -25,7 +26,7 @@ describe("reminder content — only verified content the app already has", () =>
     for (const item of reminderPool()) {
       const [, id] = item.id.split(":");
       const added =
-        item.category === "dua" ? ENRICHED_DUAS.find((d) => d.id === id)?.textAr : item.category === "hadith" ? ENRICHED_HADITHS.find((h) => h.id === id)?.textAr : undefined;
+        item.category === "dua" ? [...ENRICHED_DUAS, ...IMPORTED_DUAS].find((d) => d.id === id)?.textAr : item.category === "hadith" ? ENRICHED_HADITHS.find((h) => h.id === id)?.textAr : undefined;
       if (item.category === "dua") expect(added ?? MISC_DUAS.find((d) => d.id === id)?.text_ar).toBe(item.textAr);
       if (item.category === "hadith") expect(added ?? HADITHS.find((h) => String(h.id) === id)?.textAr).toBe(item.textAr);
       if (item.category === "virtue") expect(dhikrItems.find((d) => String(d.id) === id)?.dhikr_ar).toBe(item.textAr);
@@ -35,8 +36,8 @@ describe("reminder content — only verified content the app already has", () =>
   });
 
   it("leaves out the hadith whose grading is noted as disputed", () => {
+    // The library's disputed hadiths were removed by the 2026-10-30 audit cleanup; any new one is still left out.
     const disputed = HADITHS.filter((h) => h.gradeAr.includes("خلاف"));
-    expect(disputed.length).toBeGreaterThan(0);
     for (const h of disputed) expect(findReminderItem(`hadith:${h.id}`)).toBeUndefined();
   });
 

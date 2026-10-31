@@ -5,17 +5,17 @@ import type { CSSProperties } from "react";
 // the whole panel is a carved niche — decorative only (aria-hidden). It shows
 // no direction and is no compass: the app does not calculate the Qibla.
 //
-// Built like a real mihrab in burgundy stone and gold, whatever the palette
-// (the panel scopes its own colours: PrayerTimesPanel MIHRAB_PANEL_VARS) —
-// back to front:
-//  - the surround: deep burgundy, lit from above, with a carved girih
+// Built like a real mihrab in stone and metalwork in the active theme's
+// colours — its primary for the stone, its accent-on-primary for the gold
+// (see the colour constants below) — back to front:
+//  - the surround: deep stone, lit from above, with a carved girih
 //    (eight-pointed star) lattice in faint relief;
 //  - the alfiz: a rectangular frame of layered mouldings — a bevelled gold
 //    edge (lit above, shaded below), a dark channel, a fine inner gold line,
 //    a small rosette in each corner;
 //  - the spandrels: a gold eight-pointed star (khatam) roundel each, with
 //    scrolling vines;
-//  - the niche: burgundy, concave — lit at its centre, shaded toward its
+//  - the niche: stone, concave — lit at its centre, shaded toward its
 //    sides and its crown — with a soft shadow inside the arch; in its crown,
 //    above the text only, a carved shell hood (alternate lit and shaded
 //    flutes) over a scalloped cornice, and a hanging lamp where it fits;
@@ -35,17 +35,24 @@ import type { CSSProperties } from "react";
 // them. Drawn in the panel's real pixels (measured), never stretched; on its
 // own compositing layer, so the countdown ticking never repaints it.
 
-// Gold metalwork (fixed, like the app's gold): highlight, body, shadow.
-const GOLD_HI = "#fbe7a8";
-const GOLD = "#d9b25e";
-const GOLD_MID = "#b8893e";
-const GOLD_LO = "#7e5823";
-// Burgundy stone: the niche, the surround around it, and its deepest recesses.
-export const MIHRAB_STONE = "#6e1a2d";
-const SURROUND = "#4b0f1f";
-const SURROUND_DEEP = "#2b0711";
-const SHADE = "#12030a";
-const LAMP_GLOW = "#ffd98a";
+// Every colour follows the active appearance (identity + palette) live:
+// they are CSS expressions of the theme's own tokens, applied through
+// `style` (presentation attributes don't resolve var()), so switching the
+// theme recolours the mihrab at once, without a re-render. Lighter and
+// darker steps are the token mixed toward white / black — the same
+// proportions the original burgundy-and-gold build used.
+const shadeOf = (token: string, share: number, toward: "#ffffff" | "#000000") => `color-mix(in srgb, var(${token}) ${share}%, ${toward})`;
+// Metalwork in the theme's accent-on-primary: highlight, body, shadow.
+const GOLD_HI = shadeOf("--color-gold-on-primary", 55, "#ffffff");
+const GOLD = "var(--color-gold-on-primary)";
+const GOLD_MID = shadeOf("--color-gold-on-primary", 82, "#000000");
+const GOLD_LO = shadeOf("--color-gold-on-primary", 55, "#000000");
+// Stone in the theme's primary: the niche, the surround around it, and its deepest recesses.
+const MIHRAB_STONE = "var(--color-primary)";
+const SURROUND = shadeOf("--color-primary", 68, "#000000");
+const SURROUND_DEEP = shadeOf("--color-primary", 39, "#000000");
+const SHADE = shadeOf("--color-primary", 16, "#000000");
+const LAMP_GLOW = shadeOf("--color-gold-on-primary", 70, "#ffffff");
 
 interface Arch {
   x0: number;
@@ -288,12 +295,12 @@ function MihrabFrameView() {
             {/* The surround's carved girih: eight-pointed stars and crosses in faint relief (a lit edge over a shadow). */}
             <pattern id={id("girih")} width="28" height="28" patternUnits="userSpaceOnUse">
               <g fill="none" strokeWidth="0.9">
-                <path d={khatam(9)} transform="translate(14.6 14.8)" stroke={SHADE} strokeOpacity="0.45" />
-                <path d={khatam(9)} transform="translate(14 14)" stroke={GOLD} strokeOpacity="0.16" />
-                <path d="M0 0 L 5.2 5.2 M28 0 L 22.8 5.2 M0 28 L 5.2 22.8 M28 28 L 22.8 22.8" transform="translate(0.6 0.8)" stroke={SHADE} strokeOpacity="0.4" />
-                <path d="M0 0 L 5.2 5.2 M28 0 L 22.8 5.2 M0 28 L 5.2 22.8 M28 28 L 22.8 22.8" stroke={GOLD} strokeOpacity="0.14" />
+                <path style={{ stroke: SHADE }} d={khatam(9)} transform="translate(14.6 14.8)" strokeOpacity="0.45" />
+                <path style={{ stroke: GOLD }} d={khatam(9)} transform="translate(14 14)" strokeOpacity="0.16" />
+                <path style={{ stroke: SHADE }} d="M0 0 L 5.2 5.2 M28 0 L 22.8 5.2 M0 28 L 5.2 22.8 M28 28 L 22.8 22.8" transform="translate(0.6 0.8)" strokeOpacity="0.4" />
+                <path style={{ stroke: GOLD }} d="M0 0 L 5.2 5.2 M28 0 L 22.8 5.2 M0 28 L 5.2 22.8 M28 28 L 22.8 22.8" strokeOpacity="0.14" />
               </g>
-              <circle cx="14" cy="14" r="1.3" fill={GOLD} fillOpacity="0.2" />
+              <circle style={{ fill: GOLD }} cx="14" cy="14" r="1.3" fillOpacity="0.2" />
             </pattern>
             {/* The surround lit from above, darker toward the floor. */}
             <linearGradient id={id("surround-light")} x1="0" y1="0" x2="0" y2="1">
@@ -321,15 +328,15 @@ function MihrabFrameView() {
               <stop offset="1" style={stop(LAMP_GLOW, 0)} />
             </radialGradient>
             <linearGradient id={id("lamp-glass")} x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" style={stop("#b8893e", 0.85)} />
-              <stop offset="0.45" style={stop("#fff1c4", 0.95)} />
-              <stop offset="1" style={stop("#9a6a2c", 0.85)} />
+              <stop offset="0" style={stop(GOLD_MID, 0.85)} />
+              <stop offset="0.45" style={stop(GOLD_HI, 0.95)} />
+              <stop offset="1" style={stop(GOLD_LO, 0.85)} />
             </linearGradient>
             {/* The band's engraved interlace. */}
             <pattern id={id("engraving")} width="8" height="8" patternUnits="userSpaceOnUse">
-              <circle cx="4" cy="4" r="3" fill="none" stroke={GOLD_LO} strokeOpacity="0.7" strokeWidth="0.6" />
-              <path d="M0 4 a 4 4 0 0 0 4 -4 M4 8 a 4 4 0 0 1 4 -4 M0 4 a 4 4 0 0 1 4 4 M4 0 a 4 4 0 0 0 4 4" fill="none" stroke={GOLD_LO} strokeOpacity="0.45" strokeWidth="0.45" />
-              <circle cx="4" cy="4" r="0.7" fill={GOLD_HI} fillOpacity="0.8" />
+              <circle style={{ stroke: GOLD_LO }} cx="4" cy="4" r="3" fill="none" strokeOpacity="0.7" strokeWidth="0.6" />
+              <path style={{ stroke: GOLD_LO }} d="M0 4 a 4 4 0 0 0 4 -4 M4 8 a 4 4 0 0 1 4 -4 M0 4 a 4 4 0 0 1 4 4 M4 0 a 4 4 0 0 0 4 4" fill="none" strokeOpacity="0.45" strokeWidth="0.45" />
+              <circle style={{ fill: GOLD_HI }} cx="4" cy="4" r="0.7" fillOpacity="0.8" />
             </pattern>
             {/* The niche: lit from within, darker toward its edges and deepest at the crown. */}
             <radialGradient id={id("niche-light")} gradientUnits="userSpaceOnUse" cx={w / 2} cy={(top + spring) / 2 + 10} r={Math.max(w, h) * 0.62}>
@@ -346,7 +353,7 @@ function MihrabFrameView() {
               <feGaussianBlur stdDeviation="3.2" />
             </filter>
             <filter id={id("lift")} x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="1" stdDeviation="0.9" floodColor={SHADE} floodOpacity="0.6" />
+              <feDropShadow style={{ floodColor: SHADE }} dx="0" dy="1" stdDeviation="0.9" floodOpacity="0.6" />
             </filter>
             <clipPath id={id("niche")}>
               <path d={`${archLine(inner, h)} Z`} />
@@ -362,12 +369,12 @@ function MihrabFrameView() {
             </clipPath>
           </defs>
 
-          {/* The surround: deep burgundy stone, lit from above, with its carved girih. */}
+          {/* The surround: deep stone, lit from above, with its carved girih. */}
           <rect width={w} height={h} style={fill(SURROUND)} />
           <rect width={w} height={h} fill={url("girih")} />
           <rect width={w} height={h} fill={url("surround-light")} />
 
-          {/* The niche: burgundy, concave — lit down its middle, deepening toward the sides and the crown. */}
+          {/* The niche: stone, concave — lit down its middle, deepening toward the sides and the crown. */}
           <path d={`${archLine(inner, h)} Z`} style={fill(MIHRAB_STONE)} data-mihrab-niche="" />
           <g clipPath={url("niche")}>
             <rect width={w} height={h} fill={url("niche-light")} />
@@ -375,38 +382,38 @@ function MihrabFrameView() {
             <rect x="0" y={top} width={w} height={Math.max(1, spring - top)} fill={url("niche-depth")} />
             {/* The carved shell hood, above the text only: lit and shaded flutes, their ribs, a scalloped cornice. */}
             <g clipPath={url("hood")} data-mihrab-flutes="">
-              <path d={litFlutes.join(" ")} fill={GOLD_HI} fillOpacity="0.07" />
-              <path d={shadedFlutes.join(" ")} fill={SHADE} fillOpacity="0.2" />
-              <path d={flutes} fill="none" stroke={GOLD} strokeOpacity="0.26" strokeWidth="0.7" />
+              <path style={{ fill: GOLD_HI }} d={litFlutes.join(" ")} fillOpacity="0.07" />
+              <path style={{ fill: SHADE }} d={shadedFlutes.join(" ")} fillOpacity="0.2" />
+              <path style={{ stroke: GOLD }} d={flutes} fill="none" strokeOpacity="0.26" strokeWidth="0.7" />
               {cornice && (
                 <g data-mihrab-cornice="">
-                  <rect x="0" y={corniceY - 1.4} width={w} height="1.4" fill={GOLD} fillOpacity="0.55" />
-                  <path d={cornice} fill={SHADE} fillOpacity="0.25" stroke={GOLD} strokeOpacity="0.5" strokeWidth="0.6" />
+                  <rect style={{ fill: GOLD }} x="0" y={corniceY - 1.4} width={w} height="1.4" fillOpacity="0.55" />
+                  <path style={{ fill: SHADE, stroke: GOLD }} d={cornice} fillOpacity="0.25" strokeOpacity="0.5" strokeWidth="0.6" />
                 </g>
               )}
             </g>
             {showLamp && (
               <g data-mihrab-lamp="">
                 <circle cx={w / 2} cy={lampBottom - lampH * 0.45} r={lampH * 1.5} fill={url("lamp-glow")} />
-                <path d={`M ${w / 2} ${inner.top + 2} V ${lampBottom - lampH}`} stroke={GOLD} strokeOpacity="0.75" strokeWidth="0.6" strokeDasharray="1.6 1" />
+                <path style={{ stroke: GOLD }} d={`M ${w / 2} ${inner.top + 2} V ${lampBottom - lampH}`} strokeOpacity="0.75" strokeWidth="0.6" strokeDasharray="1.6 1" />
                 <g transform={`translate(${w / 2} ${lampBottom - lampH})`} filter={url("lift")}>
                   {/* Cap, the glass body with its flared neck, and the foot. */}
-                  <path d="M -2.4 0 H 2.4 L 3.4 2.4 H -3.4 Z" fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.3" />
-                  <path d="M -3 2.4 C -3 5, -7 7, -7 10.5 C -7 14, -3.6 15.2, 0 15.2 C 3.6 15.2, 7 14, 7 10.5 C 7 7, 3 5, 3 2.4 Z" fill={url("lamp-glass")} stroke={GOLD_LO} strokeWidth="0.4" />
-                  <path d="M -6.6 9.4 H 6.6" stroke={GOLD_LO} strokeOpacity="0.6" strokeWidth="0.5" />
-                  <path d="M -2.6 15.2 H 2.6 L 1.6 17 H -1.6 Z" fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.3" />
+                  <path style={{ stroke: GOLD_LO }} d="M -2.4 0 H 2.4 L 3.4 2.4 H -3.4 Z" fill={url("gold")} strokeWidth="0.3" />
+                  <path style={{ stroke: GOLD_LO }} d="M -3 2.4 C -3 5, -7 7, -7 10.5 C -7 14, -3.6 15.2, 0 15.2 C 3.6 15.2, 7 14, 7 10.5 C 7 7, 3 5, 3 2.4 Z" fill={url("lamp-glass")} strokeWidth="0.4" />
+                  <path style={{ stroke: GOLD_LO }} d="M -6.6 9.4 H 6.6" strokeOpacity="0.6" strokeWidth="0.5" />
+                  <path style={{ stroke: GOLD_LO }} d="M -2.6 15.2 H 2.6 L 1.6 17 H -1.6 Z" fill={url("gold")} strokeWidth="0.3" />
                 </g>
               </g>
             )}
             {/* The shadow the arch casts inside the niche, and the shade along its inner edge. */}
-            <path d={archLine(inner, h)} fill="none" stroke={SHADE} strokeOpacity="0.55" strokeWidth="9" filter={url("soft")} transform="translate(0 3)" />
+            <path style={{ stroke: SHADE }} d={archLine(inner, h)} fill="none" strokeOpacity="0.55" strokeWidth="9" filter={url("soft")} transform="translate(0 3)" />
           </g>
 
           {/* The alfiz: a bevelled gold edge, a dark channel, a fine inner gold line; a rosette in each corner. */}
-          <rect x="5" y="5" width={w - 10} height={h - 10} rx="11" fill="none" stroke={SHADE} strokeOpacity="0.45" strokeWidth="4" filter={url("soft")} />
+          <rect style={{ stroke: SHADE }} x="5" y="5" width={w - 10} height={h - 10} rx="11" fill="none" strokeOpacity="0.45" strokeWidth="4" filter={url("soft")} />
           <rect x="1.2" y="1.2" width={w - 2.4} height={h - 2.4} rx="15" fill="none" stroke={url("gold")} strokeWidth="2.4" />
           <rect x="3.4" y="3.4" width={w - 6.8} height={h - 6.8} rx="13" fill="none" style={{ stroke: SURROUND_DEEP }} strokeWidth="2" />
-          <rect x="4.9" y="4.9" width={w - 9.8} height={h - 9.8} rx="11.5" fill="none" stroke={GOLD} strokeOpacity="0.75" strokeWidth="0.6" />
+          <rect style={{ stroke: GOLD }} x="4.9" y="4.9" width={w - 9.8} height={h - 9.8} rx="11.5" fill="none" strokeOpacity="0.75" strokeWidth="0.6" />
           {[
             [11, 11],
             [w - 11, 11],
@@ -414,7 +421,7 @@ function MihrabFrameView() {
             [w - 11, h - 11],
           ].map(([cx, cy]) => (
             <g key={`${cx}-${cy}`} transform={`translate(${cx} ${cy})`} filter={url("lift")}>
-              <path d={khatam(3.4)} fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.4" />
+              <path style={{ stroke: GOLD_LO }} d={khatam(3.4)} fill={url("gold")} strokeWidth="0.4" />
               <circle r="1.1" style={fill(SURROUND_DEEP)} />
             </g>
           ))}
@@ -429,7 +436,7 @@ function MihrabFrameView() {
               const hgt = Math.max(1, spring - y0);
               const P = (fx: number, fy: number) => `${(ox + sx * span * fx).toFixed(1)} ${(y0 + hgt * fy).toFixed(1)}`;
               return (
-                <g key={side} fill="none" stroke={GOLD} strokeOpacity="0.4" strokeWidth="0.9" strokeLinecap="round">
+                <g style={{ stroke: GOLD }} key={side} fill="none" strokeOpacity="0.4" strokeWidth="0.9" strokeLinecap="round">
                   <path d={`M ${P(0.03, 0.95)} C ${P(0.1, 0.55)} ${P(0.06, 0.25)} ${P(0.32, 0.18)} S ${P(0.62, 0.05)} ${P(0.84, 0.02)}`} />
                   <path d={`M ${P(0.02, 0.36)} C ${P(0.08, 0.13)} ${P(0.2, 0.06)} ${P(0.4, 0.04)}`} strokeOpacity="0.28" />
                   <path d={`M ${P(0.07, 0.6)} c ${4 * sx} -6, ${12 * sx} -5, ${11 * sx} 2 c ${-1 * sx} 5, ${-7 * sx} 5, ${-7 * sx} 1`} />
@@ -442,7 +449,7 @@ function MihrabFrameView() {
                     [0.72, 0.04],
                     [0.19, 0.07],
                   ].map(([fx, fy]) => (
-                    <path key={`${fx}`} d={`M ${P(fx, fy)} q ${3 * sx} -4 ${7 * sx} -2 q ${-3 * sx} 4 ${-7 * sx} 2 Z`} fill={GOLD} fillOpacity="0.32" stroke="none" />
+                    <path style={{ fill: GOLD }} key={`${fx}`} d={`M ${P(fx, fy)} q ${3 * sx} -4 ${7 * sx} -2 q ${-3 * sx} 4 ${-7 * sx} 2 Z`} fillOpacity="0.32" stroke="none" />
                   ))}
                 </g>
               );
@@ -451,32 +458,32 @@ function MihrabFrameView() {
               [rx, w - rx].map((x) => (
                 <g key={x} transform={`translate(${x} ${rosetteY})`} filter={url("lift")}>
                   <circle r={rosetteR} style={fill(SURROUND_DEEP)} stroke={url("gold")} strokeWidth="1.1" />
-                  <path d={khatam(rosetteR * 0.82)} fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.4" />
-                  <path d={khatam(rosetteR * 0.5)} style={fill(SURROUND)} stroke={GOLD_HI} strokeWidth="0.35" />
-                  <circle r={rosetteR * 0.18} fill={GOLD_HI} />
+                  <path style={{ stroke: GOLD_LO }} d={khatam(rosetteR * 0.82)} fill={url("gold")} strokeWidth="0.4" />
+                  <path d={khatam(rosetteR * 0.5)} style={{ fill: SURROUND, stroke: GOLD_HI }} strokeWidth="0.35" />
+                  <circle style={{ fill: GOLD_HI }} r={rosetteR * 0.18} />
                 </g>
               ))}
           </g>
 
           {/* The arch: a band of gold — its shadow first, then the metal, its engraving, the voussoir
               joints, the beaded outer moulding and the cusped inner edge. */}
-          <path d={`${archLine(outer, h)} Z ${archLine(inner, h)} Z`} fillRule="evenodd" fill={SHADE} fillOpacity="0.5" filter={url("soft")} transform="translate(0 2.5)" />
+          <path style={{ fill: SHADE }} d={`${archLine(outer, h)} Z ${archLine(inner, h)} Z`} fillRule="evenodd" fillOpacity="0.5" filter={url("soft")} transform="translate(0 2.5)" />
           <path d={`${archLine(outer, h)} Z ${archLine(inner, h)} Z`} fillRule="evenodd" fill={url("gold-band")} data-mihrab-band="" />
           <path d={`${archLine(outer, h)} Z ${archLine(tier, h)} Z`} fillRule="evenodd" fill={url("engraving")} opacity="0.85" />
           <path d={`${archLine(tier, h)} Z ${archLine(inner, h)} Z`} fillRule="evenodd" fill={url("gold-inner")} data-mihrab-inner-tier="" />
-          <path d={joints.join(" ")} fill="none" stroke={GOLD_LO} strokeOpacity="0.75" strokeWidth="0.6" clipPath={url("outer-tier")} />
+          <path style={{ stroke: GOLD_LO }} d={joints.join(" ")} fill="none" strokeOpacity="0.75" strokeWidth="0.6" clipPath={url("outer-tier")} />
           {/* The recessed channel between the tiers: a dark groove, lit on its lower lip. */}
-          <path d={archLine(tier, h)} fill="none" stroke={SURROUND_DEEP} strokeWidth="1.5" strokeLinejoin="round" />
-          <path d={archLine(inset(tier, 0.9), h)} fill="none" stroke={GOLD_HI} strokeOpacity="0.7" strokeWidth="0.45" strokeLinejoin="round" />
-          <path d={`${cusped} Z ${archLine(inner, h)} Z`} fillRule="evenodd" fill={GOLD_MID} data-mihrab-cusps="" />
-          <path d={cusped} fill="none" stroke={GOLD_LO} strokeWidth="0.8" strokeLinejoin="round" />
-          <path d={cusped} fill="none" stroke={GOLD_HI} strokeOpacity="0.7" strokeWidth="0.5" strokeLinejoin="round" transform="translate(0 -0.6)" />
-          <path d={archLine(outer, h)} fill="none" stroke={GOLD_LO} strokeWidth="1.4" strokeLinejoin="round" />
-          <path d={archLine(inset(outer, 0.7), h)} fill="none" stroke={GOLD_HI} strokeOpacity="0.85" strokeWidth="0.7" strokeLinejoin="round" />
+          <path style={{ stroke: SURROUND_DEEP }} d={archLine(tier, h)} fill="none" strokeWidth="1.5" strokeLinejoin="round" />
+          <path style={{ stroke: GOLD_HI }} d={archLine(inset(tier, 0.9), h)} fill="none" strokeOpacity="0.7" strokeWidth="0.45" strokeLinejoin="round" />
+          <path style={{ fill: GOLD_MID }} d={`${cusped} Z ${archLine(inner, h)} Z`} fillRule="evenodd" data-mihrab-cusps="" />
+          <path style={{ stroke: GOLD_LO }} d={cusped} fill="none" strokeWidth="0.8" strokeLinejoin="round" />
+          <path style={{ stroke: GOLD_HI }} d={cusped} fill="none" strokeOpacity="0.7" strokeWidth="0.5" strokeLinejoin="round" transform="translate(0 -0.6)" />
+          <path style={{ stroke: GOLD_LO }} d={archLine(outer, h)} fill="none" strokeWidth="1.4" strokeLinejoin="round" />
+          <path style={{ stroke: GOLD_HI }} d={archLine(inset(outer, 0.7), h)} fill="none" strokeOpacity="0.85" strokeWidth="0.7" strokeLinejoin="round" />
           {beads.map(([x, y], i) => (
-            <circle key={i} cx={x.toFixed(2)} cy={y.toFixed(2)} r="1" fill={GOLD_HI} stroke={GOLD_LO} strokeWidth="0.3" />
+            <circle style={{ fill: GOLD_HI, stroke: GOLD_LO }} key={i} cx={x.toFixed(2)} cy={y.toFixed(2)} r="1" strokeWidth="0.3" />
           ))}
-          <path d={archLine(inner, h)} fill="none" stroke={GOLD_LO} strokeWidth="0.7" strokeLinejoin="round" />
+          <path style={{ stroke: GOLD_LO }} d={archLine(inner, h)} fill="none" strokeWidth="0.7" strokeLinejoin="round" />
 
           {/* Engaged columns: round, shaded shafts with fine flutes, muqarnas capitals and moulded bases. */}
           {[outer.x0, inner.x1].map((x, side) => {
@@ -489,11 +496,11 @@ function MihrabFrameView() {
               <g key={x} data-mihrab-column="">
                 <rect x={x + 1.5} y={shaftTop} width={band - 3} height={Math.max(0, shaftBottom - shaftTop)} rx="1.5" fill={url("shaft")} />
                 {[0.3, 0.55, 0.8].map((f) => (
-                  <line key={f} x1={x + 1.5 + (band - 3) * f} y1={shaftTop} x2={x + 1.5 + (band - 3) * f} y2={shaftBottom} stroke={GOLD_LO} strokeOpacity="0.5" strokeWidth="0.45" />
+                  <line style={{ stroke: GOLD_LO }} key={f} x1={x + 1.5 + (band - 3) * f} y1={shaftTop} x2={x + 1.5 + (band - 3) * f} y2={shaftBottom} strokeOpacity="0.5" strokeWidth="0.45" />
                 ))}
                 {/* Capital: an abacus over three tiers of small niches. */}
                 <g filter={url("lift")}>
-                  <rect x={out(1.5)} y={spring - 2.5} width={band + 1.5} height="2.6" rx="0.6" fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.4" />
+                  <rect style={{ stroke: GOLD_LO }} x={out(1.5)} y={spring - 2.5} width={band + 1.5} height="2.6" rx="0.6" fill={url("gold")} strokeWidth="0.4" />
                   {[0, 1, 2].map((tier) => {
                     const y = spring + 0.2 + tier * 2.6;
                     const ins = tier * 0.9;
@@ -501,14 +508,14 @@ function MihrabFrameView() {
                     const cw = (band - 2 * ins) / cells;
                     return Array.from({ length: cells }, (_, c) => {
                       const cx0 = x + ins + c * cw;
-                      return <path key={`${tier}-${c}`} d={`M ${cx0} ${y + 2.6} V ${y + 1.1} Q ${cx0 + cw / 2} ${y - 0.7} ${cx0 + cw} ${y + 1.1} V ${y + 2.6} Z`} fill={tier % 2 ? GOLD_MID : GOLD} stroke={GOLD_LO} strokeWidth="0.4" />;
+                      return <path style={{ stroke: GOLD_LO }} key={`${tier}-${c}`} d={`M ${cx0} ${y + 2.6} V ${y + 1.1} Q ${cx0 + cw / 2} ${y - 0.7} ${cx0 + cw} ${y + 1.1} V ${y + 2.6} Z`} fill={tier % 2 ? GOLD_MID : GOLD} strokeWidth="0.4" />;
                     });
                   })}
                 </g>
                 {/* Base: a torus over a plinth. */}
                 <g filter={url("lift")}>
-                  <rect x={out(0.8)} y={h - 13} width={band + 0.8} height="2.4" rx="1.2" fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.4" />
-                  <rect x={out(2)} y={h - 10.6} width={band + 2} height="3.6" rx="0.8" fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.5" />
+                  <rect style={{ stroke: GOLD_LO }} x={out(0.8)} y={h - 13} width={band + 0.8} height="2.4" rx="1.2" fill={url("gold")} strokeWidth="0.4" />
+                  <rect style={{ stroke: GOLD_LO }} x={out(2)} y={h - 10.6} width={band + 2} height="3.6" rx="0.8" fill={url("gold")} strokeWidth="0.5" />
                 </g>
               </g>
             );
@@ -516,8 +523,8 @@ function MihrabFrameView() {
 
           {/* The finial on the crown: a gold bud on a small orb. */}
           <g transform={`translate(${w / 2} ${outer.top})`} filter={url("lift")}>
-            <circle cy="3.2" r="1.9" fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.4" />
-            <path d="M0 -4.6 C 3.2 -1.6, 4.8 1.2, 0 6.6 C -4.8 1.2, -3.2 -1.6, 0 -4.6 Z" fill={url("gold")} stroke={GOLD_LO} strokeWidth="0.6" />
+            <circle style={{ stroke: GOLD_LO }} cy="3.2" r="1.9" fill={url("gold")} strokeWidth="0.4" />
+            <path style={{ stroke: GOLD_LO }} d="M0 -4.6 C 3.2 -1.6, 4.8 1.2, 0 6.6 C -4.8 1.2, -3.2 -1.6, 0 -4.6 Z" fill={url("gold")} strokeWidth="0.6" />
             <path d="M0 -2.4 C 1.4 -0.6, 2 1, 0 3.8 C -2 1, -1.4 -0.6, 0 -2.4 Z" style={fill(SURROUND)} fillOpacity="0.7" />
           </g>
         </svg>

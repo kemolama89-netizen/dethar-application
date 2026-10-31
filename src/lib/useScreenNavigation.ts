@@ -118,5 +118,10 @@ export function useScreenNavigation<S extends string>(root: S) {
     };
   }, [native, goBack, syncGuard]);
 
-  return { screen, navigate };
+  // An on-screen back arrow: the same step as system Back (one entry down the stack), the history guard kept in step.
+  const back = useCallback(() => {
+    if (goBack()) syncGuard();
+  }, [goBack, syncGuard]);
+
+  return { screen, navigate, back };
 }

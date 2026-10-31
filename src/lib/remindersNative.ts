@@ -36,6 +36,8 @@ export interface NativeReminderItem {
   widget?: boolean;
   /** A dhikr's virtue in the interface language, shown labelled under it on the widget; "" when none (widgetFeed.widgetDetail). */
   detail?: string;
+  /** The text as the widget draws it, when that differs: a Qur'anic verse in its brackets ﴿ … ﴾ (widgetFeed.widgetQuranText); "" = `text`. */
+  widgetText?: string;
 }
 
 /** A heart tapped on the widget, queued natively until the app merges it (FavoritesStore.kt). */

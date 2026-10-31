@@ -4,9 +4,30 @@ import { useLanguage } from "../theme/LanguageContext";
 import { contentReviewLabels, contentTypeLabels, reviewStatusLabels, usageLabels, warningLabels } from "../data/contentReviewLabels";
 import { CONTENT_TYPES, REVIEW_CATEGORIES, commentsFor, contentCatalog, duplicateGroups, exportCsv, exportJson, filterCatalog, statusOf } from "../lib/contentCatalog";
 import type { CatalogFilter, CatalogItem, ReviewCategory } from "../lib/contentCatalog";
-import { REVIEW_STATUSES, getReviewRecord, isPublished, loadReviewerName, saveReviewerName, setReview, setReviewMany, subscribeContentReview } from "../lib/contentReview";
-import type { ReviewStatus } from "../lib/contentReview";
+import {
+  EDIT_FIELDS,
+  REFLECTION_EDIT_FIELDS,
+  REVIEW_STATUSES,
+  approveAllPendingEdits,
+  discardEditDraft,
+  getContentEdits,
+  getReviewRecord,
+  isPublished,
+  loadReviewerName,
+  pendingEdits,
+  saveEditDraft,
+  saveReviewerName,
+  setReview,
+  setReviewMany,
+  subscribeContentEdits,
+  subscribeContentReview,
+} from "../lib/contentReview";
+import type { EditField, ReviewStatus } from "../lib/contentReview";
 import { exportTextFile } from "../lib/contentExport";
+import { FIELD_DIR, STATUS_COLORS, currentValue, isWamdaId, loadChecked, saveChecked } from "./contentReviewShared";
+import { WamdaReviewCard, WamdatReviewPanel } from "./WamdatReview";
+
+export { REVIEW_CHECKED_KEY } from "./contentReviewShared";
 
 // Settings → «مراجعة المحتوى الديني» / Religious Content Review — a
 // TEMPORARY screen (kept until the owner asks for its removal; it is one
@@ -14,21 +35,12 @@ import { exportTextFile } from "../lib/contentExport";
 // data/contentReviewLabels.ts, so removing it later touches nothing else).
 //
 // It reads the live content (lib/contentCatalog.ts) and writes only review
-// decisions (lib/contentReview.ts) — never the religious texts. Only items
-// marked "Approved for Publication" reach widgets, reminders and the startup
-// screen.
+// decisions and reviewer edits (lib/contentReview.ts) — never the shipped
+// data files. Only items marked "Approved for Publication" reach widgets,
+// reminders and the startup screen; an edit is a draft, seen only here, until
+// "Approve All Pending Changes" approves it.
 
 const PAGE = 30;
-
-const STATUS_COLORS: Record<ReviewStatus, string> = {
-  pending: "#8a6d1f",
-  verified: "#1f6b4a",
-  "needs-verification": "#9a5a12",
-  "needs-editing": "#8a3b3b",
-  approved: "#1f5e2e",
-  rejected: "#6b6b6b",
-};
-
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -78,6 +90,185 @@ function QuickActions({ id, current, notes, reviewer, onSaved }: { id: string; c
   );
 }
 
+function editableFields(item: CatalogItem): EditField[] {
+  // The grading applies to Hadiths only; DITHAR's own reflections aren't edited here,
+  // and the Wamdat reflection fields belong to the Lataif cards (WamdatReview).
+  return EDIT_FIELDS.filter((f) => (f !== "grade" || item.type === "hadith") && !REFLECTION_EDIT_FIELDS.includes(f));
+}
+
+/** One field: its current value, any draft, and its own Edit button. */
+function EditRow({ item, field, reviewer }: { item: CatalogItem; field: EditField; reviewer: string }) {
+  const { language } = useLanguage();
+  const t = contentReviewLabels[language].edits;
+  const record = getContentEdits(item.id);
+  const draft = record?.drafts[field];
+  const approved = record?.approved[field] !== undefined;
+  const current = currentValue(item, field);
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const inputStyle = { borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" };
+
+  return (
+    <div data-review-edit-row={field} className="flex flex-col gap-1 border-t pt-1.5 first:border-t-0 first:pt-0" style={{ borderColor: "var(--color-gold-soft)" }}>
+      <div className="flex items-center gap-1.5">
+        <span className="text-[11.5px] font-semibold" style={{ color: "var(--color-text-muted)" }}>
+          {t.fields[field]}
+        </span>
+        {approved && (
+          <span className="rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold text-white" style={{ background: STATUS_COLORS.approved }} data-review-edit-approved="">
+            {t.approved}
+          </span>
+        )}
+        <span className="flex-1" />
+        {!editing && (
+          <button
+            type="button"
+            data-review-edit={field}
+            onClick={() => {
+              setValue(draft ?? current);
+              setEditing(true);
+            }}
+            className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+            style={{ boxShadow: "inset 0 0 0 1.5px var(--color-primary)", color: "var(--color-primary)" }}
+          >
+            {t.edit}
+          </button>
+        )}
+      </div>
+      <span dir={FIELD_DIR[field]} className="block break-words text-[12px] leading-relaxed [overflow-wrap:anywhere]" style={{ color: "var(--color-text-primary)" }} data-review-edit-current="">
+        {current || t.empty}
+      </span>
+      {draft !== undefined && !editing && (
+        <div className="flex flex-col gap-1 rounded-lg px-2 py-1" style={{ background: "rgba(138, 109, 31, 0.12)" }} data-review-edit-draft="">
+          <span className="text-[10.5px] font-semibold" style={{ color: STATUS_COLORS.pending }}>
+            {t.draft}
+          </span>
+          <span dir={FIELD_DIR[field]} className="block break-words text-[12px] [overflow-wrap:anywhere]" style={{ color: "var(--color-text-primary)" }}>
+            {draft || t.empty}
+          </span>
+          <button type="button" data-review-edit-discard={field} onClick={() => discardEditDraft(item.id, field, reviewer)} className="self-start text-[11px] font-semibold underline underline-offset-2" style={{ color: "var(--color-primary)" }}>
+            {t.discard}
+          </button>
+        </div>
+      )}
+      {editing && (
+        <div className="flex flex-col gap-1">
+          <textarea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            dir={FIELD_DIR[field]}
+            aria-label={t.fields[field]}
+            data-review-edit-input={field}
+            rows={field === "textAr" || field === "textEn" ? 4 : 2}
+            className="rounded-lg border px-2 py-1 text-[12.5px]"
+            style={inputStyle}
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              data-review-edit-save={field}
+              onClick={() => {
+                // Back to the current value: nothing to approve, so any draft goes.
+                if (value === current) discardEditDraft(item.id, field, reviewer);
+                else saveEditDraft(item.id, field, value, reviewer);
+                setEditing(false);
+              }}
+              className="rounded-full px-3 py-1 text-[11.5px] font-semibold"
+              style={{ background: "var(--color-primary)", color: "var(--color-primary-contrast)" }}
+            >
+              {t.saveDraft}
+            </button>
+            <button type="button" data-review-edit-cancel={field} onClick={() => setEditing(false)} className="rounded-full border px-3 py-1 text-[11.5px]" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}>
+              {t.cancel}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EditPanel({ item, reviewer }: { item: CatalogItem; reviewer: string }) {
+  const { language } = useLanguage();
+  const t = contentReviewLabels[language].edits;
+  return (
+    <div className="mt-1 flex flex-col gap-1.5 rounded-xl border px-2.5 py-2" style={{ borderColor: "var(--color-gold-soft)" }} data-review-edits={item.id}>
+      <p className="text-[11.5px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+        {t.title}
+      </p>
+      <p className="text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
+        {t.hint}
+      </p>
+      {editableFields(item).map((field) => (
+        <EditRow key={field} item={item} field={field} reviewer={reviewer} />
+      ))}
+    </div>
+  );
+}
+
+/** Every draft across all items, and the one button that approves them all. */
+function PendingChanges({ catalog, reviewer }: { catalog: CatalogItem[]; reviewer: string }) {
+  const { language } = useLanguage();
+  const t = contentReviewLabels[language].edits;
+  const [done, setDone] = useState<string | null>(null);
+  const byId = useMemo(() => new Map(catalog.map((i) => [i.id, i])), [catalog]);
+  const pending = pendingEdits();
+  return (
+    <details className="mt-2 rounded-xl border px-3 py-2" style={{ borderColor: "var(--color-gold-soft)" }} data-review-pending={pending.length} open={pending.length > 0}>
+      <summary className="cursor-pointer text-[12px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+        {t.pendingTitle(pending.length)}
+      </summary>
+      {pending.length === 0 ? (
+        <p className="mt-1 text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+          {done ?? t.pendingEmpty}
+        </p>
+      ) : (
+        <>
+          <ul className="mt-2 flex flex-col gap-1.5">
+            {pending.map(({ id, field, value }) => {
+              const item = byId.get(id);
+              return (
+                <li key={`${id}:${field}`} data-review-pending-change={`${id}:${field}`} className="rounded-lg px-2 py-1 text-[11.5px]" style={{ background: "var(--color-bg)" }}>
+                  <div className="flex items-center gap-1.5">
+                    <code className="min-w-0 truncate text-[10.5px]">{id}</code>
+                    <span className="font-semibold" style={{ color: "var(--color-text-muted)" }}>
+                      · {t.fields[field]}
+                    </span>
+                    <span className="flex-1" />
+                    <button type="button" data-review-pending-discard={`${id}:${field}`} onClick={() => discardEditDraft(id, field, reviewer)} className="text-[11px] font-semibold underline underline-offset-2" style={{ color: "var(--color-primary)" }}>
+                      {t.discard}
+                    </button>
+                  </div>
+                  {item && (
+                    <span dir={FIELD_DIR[field]} className="block break-words line-through [overflow-wrap:anywhere]" style={{ color: "var(--color-text-muted)" }}>
+                      {currentValue(item, field) || t.empty}
+                    </span>
+                  )}
+                  <span dir={FIELD_DIR[field]} className="block break-words [overflow-wrap:anywhere]" style={{ color: "var(--color-text-primary)" }}>
+                    {value || t.empty}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          <button
+            type="button"
+            data-review-approve-all=""
+            onClick={() => {
+              if (!window.confirm(t.approveAllConfirm(pending.length))) return;
+              setDone(t.approvedDone(approveAllPendingEdits(reviewer)));
+            }}
+            className="mt-2 rounded-full px-4 py-1.5 text-[12px] font-semibold"
+            style={{ background: STATUS_COLORS.approved, color: "#fff" }}
+          >
+            {t.approveAll}
+          </button>
+        </>
+      )}
+    </details>
+  );
+}
+
 function ItemCard({ item, duplicates, reviewer, comments, defaultOpen }: { item: CatalogItem; duplicates: string[]; reviewer: string; comments: CatalogItem[]; defaultOpen: boolean }) {
   const { language } = useLanguage();
   const t = contentReviewLabels[language];
@@ -88,6 +279,7 @@ function ItemCard({ item, duplicates, reviewer, comments, defaultOpen }: { item:
   const [draftStatus, setDraftStatus] = useState<ReviewStatus>(status);
   const [notes, setNotes] = useState(record?.notes ?? "");
   const [saved, setSaved] = useState(false);
+  const [checked, setChecked] = useState(() => loadChecked().has(item.id));
   const isLink = (v?: string) => v && /^https?:\/\//.test(v);
 
   return (
@@ -97,6 +289,19 @@ function ItemCard({ item, duplicates, reviewer, comments, defaultOpen }: { item:
       style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)" }}
     >
       <div className="flex flex-wrap items-center gap-1.5">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => {
+            setChecked(e.target.checked);
+            saveChecked(item.id, e.target.checked);
+          }}
+          aria-label={t.reviewedCheck}
+          title={t.reviewedCheck}
+          data-review-checked={item.id}
+          className="h-4 w-4 shrink-0"
+          style={{ accentColor: "var(--color-primary)" }}
+        />
         <span className="rounded-full px-2 py-0.5 text-[10.5px] font-semibold" style={{ background: "var(--color-gold-soft)", color: "var(--color-primary)" }}>
           {contentTypeLabels[language][item.type]}
         </span>
@@ -120,7 +325,7 @@ function ItemCard({ item, duplicates, reviewer, comments, defaultOpen }: { item:
       </div>
 
       <p dir="rtl" className={`mt-1.5 whitespace-pre-line text-[14px] leading-[1.9] ${open ? "" : "line-clamp-2"}`} style={{ fontFamily: item.type === "reflection" ? undefined : "var(--font-display)", color: "var(--color-text-primary)" }}>
-        {item.textAr}
+        {currentValue(item, "textAr")}
       </p>
       {!open && item.sourceName && (
         <p className="mt-0.5 truncate text-[11px]" style={{ color: "var(--color-text-muted)" }}>
@@ -235,6 +440,7 @@ function ItemCard({ item, duplicates, reviewer, comments, defaultOpen }: { item:
               )}
             </div>
           )}
+          {item.type !== "reflection" && <EditPanel item={item} reviewer={reviewer} />}
           {record && record.history.length > 0 && (
             <Field label={t.fields.history}>
               {record.history
@@ -321,6 +527,8 @@ export function ContentReviewView({ onBack }: { onBack: () => void }) {
   const [filter, setFilter] = useState<CatalogFilter>({ query: "", category: "all", type: "all", language: "all", status: "all", verification: "all" });
   // Choosing a category shows its items in full (every field) by default.
   const [expandAll, setExpandAll] = useState(false);
+  // The Wamdat Lataif tab: their own one-card-per-item review (WamdatReview) in place of the generic list.
+  const [wamdatMode, setWamdatMode] = useState(false);
   const [limit, setLimit] = useState(PAGE);
   const [reviewer, setReviewer] = useState(() => loadReviewerName());
   const [bulkStatus, setBulkStatus] = useState<ReviewStatus>("approved");
@@ -328,6 +536,8 @@ export function ContentReviewView({ onBack }: { onBack: () => void }) {
   const [version, setVersion] = useState(0);
 
   useEffect(() => subscribeContentReview(() => setVersion((v) => v + 1)), []);
+  // Drafts change nothing published, so they have their own notice — the screen still shows them at once.
+  useEffect(() => subscribeContentEdits(() => setVersion((v) => v + 1)), []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- `version`: statuses changed
   const results = useMemo(() => filterCatalog(catalog, filter), [catalog, filter, version]);
@@ -396,19 +606,32 @@ export function ContentReviewView({ onBack }: { onBack: () => void }) {
         />
       </label>
 
-      <input
-        type="search"
-        value={filter.query}
-        onChange={(e) => update({ query: e.target.value })}
-        placeholder={t.search}
-        aria-label={t.search}
-        data-review-search=""
-        className="mt-2 rounded-xl border px-3 py-2 text-[13px]"
-        style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
-      />
+      {!wamdatMode && (
+        <input
+          type="search"
+          value={filter.query}
+          onChange={(e) => update({ query: e.target.value })}
+          placeholder={t.search}
+          aria-label={t.search}
+          data-review-search=""
+          className="mt-2 rounded-xl border px-3 py-2 text-[13px]"
+          style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
+        />
+      )}
       <div className="-mx-1 mt-2 flex gap-1.5 overflow-x-auto px-1 pb-1" role="tablist" aria-label={t.category} data-review-categories="">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={wamdatMode}
+          data-review-category="wamdat"
+          onClick={() => setWamdatMode(true)}
+          className="shrink-0 rounded-full border px-3 py-1 text-[12px] font-semibold"
+          style={wamdatMode ? { background: "var(--color-primary)", color: "var(--color-primary-contrast)", borderColor: "var(--color-primary)" } : { borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)", background: "var(--color-surface)" }}
+        >
+          {t.wamdat.tab}
+        </button>
         {(["all", ...REVIEW_CATEGORIES] as (ReviewCategory | "all")[]).map((c) => {
-          const active = (filter.category ?? "all") === c;
+          const active = !wamdatMode && (filter.category ?? "all") === c;
           return (
             <button
               key={c}
@@ -417,6 +640,7 @@ export function ContentReviewView({ onBack }: { onBack: () => void }) {
               aria-selected={active}
               data-review-category={c}
               onClick={() => {
+                setWamdatMode(false);
                 update({ category: c });
                 setExpandAll(c !== "all");
               }}
@@ -428,119 +652,133 @@ export function ContentReviewView({ onBack }: { onBack: () => void }) {
           );
         })}
       </div>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        {select(filter.type ?? "all", (v) => update({ type: v as CatalogFilter["type"] }), [["all", t.all], ...CONTENT_TYPES.map((c) => [c, contentTypeLabels[language][c]] as [string, string])], t.type, "type")}
-        {select(filter.status ?? "all", (v) => update({ status: v as CatalogFilter["status"] }), [["all", t.all], ...REVIEW_STATUSES.map((s) => [s, statuses[s]] as [string, string])], t.status, "status")}
-        {select(filter.language ?? "all", (v) => update({ language: v as CatalogFilter["language"] }), [["all", t.all], ["en", t.langEn], ["en-missing", t.langEnMissing]], t.language, "language")}
-        {select(
-          filter.verification ?? "all",
-          (v) => update({ verification: v as CatalogFilter["verification"] }),
-          [["all", t.all], ["warnings", t.verWarnings], ["scholar", t.verScholar], ["clean", t.verClean], ["new", t.verNew]],
-          t.verification,
-          "verification",
-        )}
-      </div>
+      {!wamdatMode && (
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {select(filter.type ?? "all", (v) => update({ type: v as CatalogFilter["type"] }), [["all", t.all], ...CONTENT_TYPES.map((c) => [c, contentTypeLabels[language][c]] as [string, string])], t.type, "type")}
+          {select(filter.status ?? "all", (v) => update({ status: v as CatalogFilter["status"] }), [["all", t.all], ...REVIEW_STATUSES.map((s) => [s, statuses[s]] as [string, string])], t.status, "status")}
+          {select(filter.language ?? "all", (v) => update({ language: v as CatalogFilter["language"] }), [["all", t.all], ["en", t.langEn], ["en-missing", t.langEnMissing]], t.language, "language")}
+          {select(
+            filter.verification ?? "all",
+            (v) => update({ verification: v as CatalogFilter["verification"] }),
+            [["all", t.all], ["warnings", t.verWarnings], ["scholar", t.verScholar], ["clean", t.verClean], ["new", t.verNew]],
+            t.verification,
+            "verification",
+          )}
+        </div>
+      )}
 
       <p className="mt-2 rounded-xl border px-3 py-2 text-[11px] leading-snug" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-muted)" }} data-review-storage="local">
         {t.storageNote}
       </p>
 
-      <p className="mt-2 flex justify-between text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-        <span data-review-count={results.length}>{t.results(results.length, catalog.length)}</span>
-        <button type="button" data-review-expand={expandAll ? "open" : "closed"} onClick={() => setExpandAll((v) => !v)} className="font-semibold underline underline-offset-2" style={{ color: "var(--color-primary)" }}>
-          {expandAll ? t.collapseAll : t.expandAll}
-        </button>
-        <span>{t.published(publishedCount)}</span>
-      </p>
+      <PendingChanges catalog={catalog} reviewer={reviewer} />
 
-      <details className="mt-2 rounded-xl border px-3 py-2" style={{ borderColor: "var(--color-gold-soft)" }}>
-        <summary className="cursor-pointer text-[12px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-          {t.bulkTitle}
-        </summary>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <select
-            value={bulkStatus}
-            onChange={(e) => setBulkStatus(e.target.value as ReviewStatus)}
-            data-review-bulk-status=""
-            className="rounded-lg border px-2 py-1 text-[12px]"
-            style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
-          >
-            {REVIEW_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {statuses[s]}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            data-review-bulk-apply=""
-            disabled={results.length === 0}
-            onClick={() => {
-              if (!window.confirm(t.bulkConfirm(results.length, statuses[bulkStatus]))) return;
-              setReviewMany(
-                results.map((i) => i.id),
-                { status: bulkStatus, reviewer },
-              );
-            }}
-            className="rounded-full px-3 py-1 text-[12px] font-semibold"
-            style={{ background: "var(--color-primary)", color: "var(--color-primary-contrast)", opacity: results.length === 0 ? 0.5 : 1 }}
-          >
-            {t.bulkApply(results.length)}
-          </button>
-        </div>
-      </details>
+      {wamdatMode ? (
+        <WamdatReviewPanel catalog={catalog} reviewer={reviewer} />
+      ) : (
+        <>
+          <p className="mt-2 flex justify-between text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+            <span data-review-count={results.length}>{t.results(results.length, catalog.length)}</span>
+            <button type="button" data-review-expand={expandAll ? "open" : "closed"} onClick={() => setExpandAll((v) => !v)} className="font-semibold underline underline-offset-2" style={{ color: "var(--color-primary)" }}>
+              {expandAll ? t.collapseAll : t.expandAll}
+            </button>
+            <span>{t.published(publishedCount)}</span>
+          </p>
 
-      <details className="mt-2 rounded-xl border px-3 py-2" style={{ borderColor: "var(--color-gold-soft)" }}>
-        <summary className="cursor-pointer text-[12px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-          {t.exportTitle}
-        </summary>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <button type="button" data-review-export="json" onClick={() => void exportTextFile("dithar-content-review.json", "application/json", exportJson(results)).then((o) => setCopyState(t.exported[o]))} className="flex items-center gap-1 rounded-full border px-3 py-1 text-[12px]" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}>
-            <Download size={13} /> {t.exportJson}
-          </button>
-          <button type="button" data-review-export="csv" onClick={() => void exportTextFile("dithar-content-review.csv", "text/csv", exportCsv(results)).then((o) => setCopyState(t.exported[o]))} className="flex items-center gap-1 rounded-full border px-3 py-1 text-[12px]" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}>
-            <Download size={13} /> {t.exportCsv}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              void navigator.clipboard
-                ?.writeText(exportJson(results))
-                .then(() => setCopyState(t.copied))
-                .catch(() => setCopyState(t.copyFailed));
-            }}
-            className="rounded-full border px-3 py-1 text-[12px]"
-            style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}
-          >
-            {t.copyJson}
-          </button>
-          {copyState && (
-            <span role="status" className="self-center text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-              {copyState}
-            </span>
+          <details className="mt-2 rounded-xl border px-3 py-2" style={{ borderColor: "var(--color-gold-soft)" }}>
+            <summary className="cursor-pointer text-[12px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              {t.bulkTitle}
+            </summary>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <select
+                value={bulkStatus}
+                onChange={(e) => setBulkStatus(e.target.value as ReviewStatus)}
+                data-review-bulk-status=""
+                className="rounded-lg border px-2 py-1 text-[12px]"
+                style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
+              >
+                {REVIEW_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {statuses[s]}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                data-review-bulk-apply=""
+                disabled={results.length === 0}
+                onClick={() => {
+                  if (!window.confirm(t.bulkConfirm(results.length, statuses[bulkStatus]))) return;
+                  setReviewMany(
+                    results.map((i) => i.id),
+                    { status: bulkStatus, reviewer },
+                  );
+                }}
+                className="rounded-full px-3 py-1 text-[12px] font-semibold"
+                style={{ background: "var(--color-primary)", color: "var(--color-primary-contrast)", opacity: results.length === 0 ? 0.5 : 1 }}
+              >
+                {t.bulkApply(results.length)}
+              </button>
+            </div>
+          </details>
+
+          <details className="mt-2 rounded-xl border px-3 py-2" style={{ borderColor: "var(--color-gold-soft)" }}>
+            <summary className="cursor-pointer text-[12px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              {t.exportTitle}
+            </summary>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button type="button" data-review-export="json" onClick={() => void exportTextFile("dithar-content-review.json", "application/json", exportJson(results)).then((o) => setCopyState(t.exported[o]))} className="flex items-center gap-1 rounded-full border px-3 py-1 text-[12px]" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}>
+                <Download size={13} /> {t.exportJson}
+              </button>
+              <button type="button" data-review-export="csv" onClick={() => void exportTextFile("dithar-content-review.csv", "text/csv", exportCsv(results)).then((o) => setCopyState(t.exported[o]))} className="flex items-center gap-1 rounded-full border px-3 py-1 text-[12px]" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}>
+                <Download size={13} /> {t.exportCsv}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard
+                    ?.writeText(exportJson(results))
+                    .then(() => setCopyState(t.copied))
+                    .catch(() => setCopyState(t.copyFailed));
+                }}
+                className="rounded-full border px-3 py-1 text-[12px]"
+                style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-primary)" }}
+              >
+                {t.copyJson}
+              </button>
+              {copyState && (
+                <span role="status" className="self-center text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
+                  {copyState}
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
+              {t.exportHint}
+            </p>
+          </details>
+
+          <ul className="mt-3 flex flex-col gap-2 pb-2">
+            {results.slice(0, limit).map((item) =>
+              isWamdaId(item.id) ? (
+                <WamdaReviewCard key={item.id} item={item} reviewer={reviewer} />
+              ) : (
+                <ItemCard
+                  key={`${item.id}:${expandAll ? "open" : "closed"}`}
+                  item={item}
+                  duplicates={duplicates.get(item.id) ?? []}
+                  reviewer={reviewer}
+                  comments={commentsFor(catalog, item.id)}
+                  defaultOpen={expandAll}
+                />
+              ),
+            )}
+          </ul>
+          {results.length > limit && (
+            <button type="button" onClick={() => setLimit((l) => l + PAGE)} className="mb-2 self-center rounded-full border px-4 py-1.5 text-[12px] font-semibold" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-primary)" }}>
+              {t.more}
+            </button>
           )}
-        </div>
-        <p className="mt-1 text-[10.5px]" style={{ color: "var(--color-text-muted)" }}>
-          {t.exportHint}
-        </p>
-      </details>
-
-      <ul className="mt-3 flex flex-col gap-2 pb-2">
-        {results.slice(0, limit).map((item) => (
-          <ItemCard
-            key={`${item.id}:${expandAll ? "open" : "closed"}`}
-            item={item}
-            duplicates={duplicates.get(item.id) ?? []}
-            reviewer={reviewer}
-            comments={commentsFor(catalog, item.id)}
-            defaultOpen={expandAll}
-          />
-        ))}
-      </ul>
-      {results.length > limit && (
-        <button type="button" onClick={() => setLimit((l) => l + PAGE)} className="mb-2 self-center rounded-full border px-4 py-1.5 text-[12px] font-semibold" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-primary)" }}>
-          {t.more}
-        </button>
+        </>
       )}
     </div>
   );

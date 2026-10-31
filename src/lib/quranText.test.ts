@@ -7,7 +7,7 @@
 import { describe, expect, it } from "vitest";
 import quranFile from "../data/quran/tanzil-quran-uthmani.txt?raw";
 import metadataFile from "../data/quran/tanzil-quran-metadata.txt?raw";
-import { QURAN_VERSES, TANZIL_NOTICE, parseQuranText, quranTextProblems, splitBasmala } from "./quranText";
+import { QURAN_VERSES, TANZIL_NOTICE, parseQuranText, quranTextProblems, splitBasmala, verseForSharing } from "./quranText";
 import { JUZ_STARTS, PAGE_STARTS, SURAH_META, TANZIL_PAGE_STARTS, TOTAL_PAGES, arabicDigits, isValidVerse, juzOf, mushafViewBox, pageOf, pageVerses } from "./quranMeta";
 import quranCom from "./__fixtures__/quran-com-pages.json";
 import { SURAHS } from "../data/quranSurahs";
@@ -169,5 +169,23 @@ describe("Mushaf pages for the page-by-page reader", () => {
     }
     expect(split).toBe(112);
     expect(splitBasmala(2, 2, QURAN_VERSES[1][1])).toBeNull();
+  });
+
+  it("shares a verse complete and as written — without its surah's heading basmala (al-Fatihah's verse 1 IS the basmala)", () => {
+    // Every verse: the shared text is the verse itself, or exactly the verse after its basmala.
+    for (let surah = 1; surah <= 114; surah++) {
+      QURAN_VERSES[surah - 1].forEach((verse, i) => {
+        const shared = verseForSharing(surah, i + 1)!;
+        expect(verse.endsWith(shared), `${surah}:${i + 1}`).toBe(true);
+        expect(shared.length).toBeGreaterThan(0);
+      });
+    }
+    expect(verseForSharing(1, 1)).toBe(QURAN_VERSES[0][0]);
+    expect(verseForSharing(9, 1)).toBe(QURAN_VERSES[8][0]);
+    expect(verseForSharing(112, 1)).toBe(splitBasmala(112, 1, QURAN_VERSES[111][0])!.rest);
+    expect(verseForSharing(112, 1)!.startsWith("قُلْ")).toBe(true);
+    expect(verseForSharing(2, 255)).toBe(QURAN_VERSES[1][254]);
+    expect(verseForSharing(2, 287)).toBeNull();
+    expect(verseForSharing(115, 1)).toBeNull();
   });
 });

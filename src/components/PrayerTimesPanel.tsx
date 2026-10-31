@@ -11,17 +11,16 @@ import { settingsLabels } from "../data/settings";
 import { useNextPrayerCountdown } from "../lib/useNextPrayerCountdown";
 import { usePrayerReminder } from "../lib/usePrayerReminder";
 import { useAudioAdhkarMaster } from "../lib/useAudioAdhkarMaster";
-import { MIHRAB_STONE, MihrabFrame } from "./MihrabFrame";
+import { SceneArch } from "./SceneArch";
 
-// The hero panel is a burgundy-and-gold mihrab in every palette: it scopes the colours its text,
-// countdown bar and switches use, so they stay legible on the burgundy stone (light ivory ≥ 4.5:1).
-const MIHRAB_PANEL_VARS = {
-  "--color-primary": MIHRAB_STONE,
-  "--color-primary-contrast": "#fbf1e3",
-  "--color-primary-contrast-rgb": "251, 241, 227",
-  "--color-gold": "#dcb565",
-  "--color-gold-rgb": "220, 181, 101",
-  "--color-gold-on-primary": "#efcd80",
+// The hero panel shows the active look's scene in an arch (SceneArch): its text is light over the
+// shaded scene in every look, and its gold accents (icons, the next prayer's outline, the arch) a
+// light gold that reads on it. Set as tokens on the panel, so everything inside follows.
+const HERO_PANEL_VARS = {
+  "--color-primary-contrast": "#fffaf0",
+  "--color-primary-contrast-rgb": "255, 250, 240",
+  "--color-gold-on-primary": "#f3cf86",
+  "--color-gold": "#f3cf86",
 } as Record<string, string>;
 
 const PRAYER_ICONS: Record<PrayerKey, typeof Moon> = {
@@ -208,23 +207,21 @@ export function PrayerTimesPanel({ date, className = "", variant = "compact" }: 
       <div
         className={`relative flex min-w-0 flex-col overflow-hidden border px-[18px] pb-2.5 pt-2 [@media(max-height:820px)]:pb-2 [@media(max-height:820px)]:pt-1.5 ${className}`}
         style={{
-          // The panel's own ground, deepened toward the edges like the reference's dark field.
-          ...MIHRAB_PANEL_VARS,
-          background: "radial-gradient(130% 80% at 50% 30%, transparent 55%, rgba(0,0,0,0.28)), var(--color-primary)",
-          color: "var(--color-primary-contrast)",
-          borderColor: "#8a6631",
-          // Set into the page: a soft burgundy shadow beneath the frame.
-          boxShadow: "0 14px 28px -16px rgba(60, 8, 22, 0.65), 0 2px 6px -2px rgba(18, 3, 10, 0.35)",
-          borderRadius: "var(--card-radius)",
+          ...HERO_PANEL_VARS,
+          background: "#2b2a3a",
+          color: "#fffaf0",
+          borderColor: "var(--look-card-border)",
+          boxShadow: "0 16px 30px -18px rgba(var(--color-shadow-rgb), 0.7), 0 2px 6px -2px rgba(0, 0, 0, 0.25)",
+          borderRadius: "calc(var(--card-radius) + 6px)",
           ["--rs-dir" as string]: dir === "rtl" ? -1 : 1,
         }}
         data-prayer-panel="hero"
       >
-        {/* The whole panel is the mihrab (components/MihrabFrame.tsx) — an architectural motif only:
-            it shows no direction (the app doesn't calculate the Qibla). */}
-        <MihrabFrame />
-        {/* The title and location run across the top, above the arch's crest. */}
-        <div className="relative flex items-center gap-2" data-prayer-panel-title="">
+        {/* The look's scene in an arch (components/SceneArch.tsx) — an architectural motif only: it shows
+            no direction (the app doesn't calculate the Qibla). */}
+        <SceneArch />
+        {/* The title and location run across the top, above the arch's crown, on the card's own colour. */}
+        <div className="relative flex items-center gap-2" style={{ color: "var(--color-text-primary)", ["--color-gold" as string]: "var(--look-accent-on-card)" }} data-prayer-panel-title="">
           <span className="flex min-w-0 items-center gap-1.5">
             <KaabaMark />
             <span className="truncate text-[14px] font-bold">{t.prayerPanelTitle}</span>
@@ -269,7 +266,7 @@ export function PrayerTimesPanel({ date, className = "", variant = "compact" }: 
               <div
                 key={key}
                 className="flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-0.5 py-1 [@media(max-height:820px)]:gap-0 [@media(max-height:820px)]:py-0.5"
-                style={isNext ? { background: "rgba(var(--color-gold-rgb), 0.18)", boxShadow: "inset 0 0 0 1px var(--color-gold)" } : { background: "rgba(var(--color-primary-contrast-rgb), 0.06)" }}
+                style={isNext ? { background: "color-mix(in srgb, var(--color-gold) 18%, transparent)", boxShadow: "inset 0 0 0 1px var(--color-gold)" } : { background: "rgba(var(--color-primary-contrast-rgb), 0.06)" }}
                 data-prayer={key}
                 data-next={isNext ? "" : undefined}
               >
@@ -285,7 +282,7 @@ export function PrayerTimesPanel({ date, className = "", variant = "compact" }: 
           })}
         </div>
 
-        <div className="relative mt-1.5 flex flex-col gap-0.5 border-t pt-1.5 opacity-95" style={{ borderColor: "rgba(216,178,106,0.3)", fontSize: "clamp(9.5px, 2.6vw, 11.5px)" }}>
+        <div className="relative mt-1.5 flex flex-col gap-0.5 border-t pt-1.5 opacity-95" style={{ borderColor: "color-mix(in srgb, var(--color-gold) 30%, transparent)", fontSize: "clamp(9.5px, 2.6vw, 11.5px)" }}>
           {toggles}
         </div>
       </div>

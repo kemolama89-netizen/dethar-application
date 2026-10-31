@@ -4,6 +4,7 @@ import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
+import { BackArrowButton } from "./BackHeader";
 import { WrittenAdhkarCategoryCard } from "./WrittenAdhkarCategoryCard";
 import { useLanguage } from "../theme/LanguageContext";
 import { navLabels } from "../data/content";
@@ -17,6 +18,8 @@ interface WrittenAdhkarScreenProps {
   onNavigateToAudio: () => void;
   onSelectCategory: (key: WrittenAdhkarCategoryKey) => void;
   onOpenSearch: () => void;
+  /** The header's back arrow (to the Adhkar screen); without it, the header is as before. */
+  onBack?: () => void;
 }
 
 // Matches the .dithar-wa-category-card transition duration in index.css —
@@ -25,17 +28,17 @@ interface WrittenAdhkarScreenProps {
 // screen switches, instead of being cut off mid-motion.
 const SELECT_TRANSITION_MS = 320;
 
-const CATEGORY_ORDER: WrittenAdhkarCategoryKey[] = ["morning", "evening", "prayer", "misc"];
+const CATEGORY_ORDER: WrittenAdhkarCategoryKey[] = ["morning", "evening", "prayer"];
 
-// Landing page for "الأذكار المكتوبة" — four illustrated collection
+// Landing page for "الأذكار المكتوبة" — three illustrated collection
 // tiles, each with its own bespoke visual metaphor (dawn horizon,
-// crescent + stars, a mihrab niche, an ascending branch), not four copies
+// crescent + stars, a mihrab niche), not three copies
 // of a generic icon-in-a-circle card. No header back button here — Home
 // is already one tap away via Bottom Navigation, so a second "go back"
 // control would just be redundant chrome (unlike the Reader below it,
 // which keeps its own back action for the one hop BottomNav can't do:
 // returning to this list without leaving Written Adhkar entirely).
-export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToSettings, onNavigateToAudio, onSelectCategory, onOpenSearch }: WrittenAdhkarScreenProps) {
+export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToSettings, onNavigateToAudio, onSelectCategory, onOpenSearch, onBack }: WrittenAdhkarScreenProps) {
   const { language } = useLanguage();
   const t = writtenAdhkarLabels[language];
   const nav = navLabels[language];
@@ -61,7 +64,7 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNav
                 centered title stays visually centered rather than drifting
                 toward the (now one-sided) button — same convention as
                 BackHeader's own trailing spacer. */}
-            <div className="h-9 w-9 shrink-0" aria-hidden="true" />
+            {onBack ? <BackArrowButton onBack={onBack} backLabel={t.back} /> : <div className="h-9 w-9 shrink-0" aria-hidden="true" />}
             <h1
               className="min-w-0 flex-1 text-center text-[20px] font-bold"
               style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
@@ -87,9 +90,11 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNav
 
           {/* grid-rows-2 (not content-start) so the two rows stretch to
               fill this flex-1 container's full height — matches "eliminate
-              the empty space below the four cards": with content-start,
+              the empty space below the cards": with content-start,
               each row only took its natural content height, leaving the
-              rest of the available screen area blank beneath the grid. */}
+              rest of the available screen area blank beneath the grid.
+              The third tile sits centered on the bottom row at exactly one
+              column's width, as on the Audio Adhkar screen. */}
           <div className="mt-3 grid flex-1 grid-cols-2 grid-rows-2 gap-3">
             {CATEGORY_ORDER.map((key) => {
               const label = writtenAdhkarCategoryLabels[key][language];
@@ -101,15 +106,16 @@ export function WrittenAdhkarScreen({ onNavigateHome, onNavigateToTasbeeh, onNav
                   : "dithar-wa-category-card--receding";
 
               return (
-                <WrittenAdhkarCategoryCard
-                  key={key}
-                  category={key}
-                  label={label}
-                  itemsCountLabel={t.itemsCount(count)}
-                  cardStateClass={cardStateClass}
-                  disabled={!!selectingKey}
-                  onSelect={() => handleSelect(key)}
-                />
+                <div key={key} className={key === "prayer" ? "col-span-2 flex justify-center" : "flex"}>
+                  <WrittenAdhkarCategoryCard
+                    category={key}
+                    label={label}
+                    itemsCountLabel={t.itemsCount(count)}
+                    cardStateClass={`${key === "prayer" ? "w-[calc((100%_-_0.75rem)/2)]" : "w-full"} ${cardStateClass}`}
+                    disabled={!!selectingKey}
+                    onSelect={() => handleSelect(key)}
+                  />
+                </div>
               );
             })}
           </div>

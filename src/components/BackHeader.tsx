@@ -8,6 +8,28 @@ import { useLanguage } from "../theme/LanguageContext";
 // Home/Tasbeeh. The title sits directly on the reader's page background
 // (--wa-page-bg, dark for men) so it uses --wa-on-page rather than
 // --wa-ink, which stays dark for text drawn on the light page surface.
+/** The round back arrow of BackHeader, on its own — for a screen's own header row. */
+export function BackArrowButton({ onBack, backLabel }: { onBack: () => void; backLabel: string }) {
+  const { dir } = useLanguage();
+  const Icon = dir === "rtl" ? ChevronRight : ChevronLeft;
+  return (
+    <button
+      type="button"
+      onClick={onBack}
+      aria-label={backLabel}
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+      style={{
+        boxShadow: "inset 0 0 0 1.5px var(--wa-gold)",
+        background: "var(--wa-surface)",
+        color: "var(--wa-ink)",
+      }}
+      data-back-arrow=""
+    >
+      <Icon size={18} strokeWidth={1.8} />
+    </button>
+  );
+}
+
 export function BackHeader({
   title,
   onBack,
@@ -28,28 +50,9 @@ export function BackHeader({
    */
   hideButton?: boolean;
 }) {
-  const { dir } = useLanguage();
-  const Icon = dir === "rtl" ? ChevronRight : ChevronLeft;
-
   return (
     <div className="mt-1 flex items-center gap-2">
-      {hideButton ? (
-        <div className="h-9 w-9 shrink-0" aria-hidden="true" />
-      ) : (
-        <button
-          type="button"
-          onClick={onBack}
-          aria-label={backLabel}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-          style={{
-            boxShadow: "inset 0 0 0 1.5px var(--wa-gold)",
-            background: "var(--wa-surface)",
-            color: "var(--wa-ink)",
-          }}
-        >
-          <Icon size={18} strokeWidth={1.8} />
-        </button>
-      )}
+      {hideButton ? <div className="h-9 w-9 shrink-0" aria-hidden="true" /> : <BackArrowButton onBack={onBack} backLabel={backLabel} />}
       <h1 className="min-w-0 flex-1 truncate text-center text-[17px] font-bold" style={{ color: "var(--wa-on-page)" }}>
         {title}
       </h1>

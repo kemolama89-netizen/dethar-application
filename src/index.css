@@ -266,6 +266,8 @@ button {
 /* ------------------------------------------------------------------ */
 
 .device-backdrop {
+  position: relative;
+  isolation: isolate;
   height: 100vh;
   height: 100dvh;
   width: 100%;
@@ -279,16 +281,43 @@ button {
     max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
 }
 
+/* Around the phone: the look's own wallpaper, deeply blurred under the look's page colour — so the
+   space outside the frame always belongs to the chosen theme (never a flat, unrelated colour). */
+.device-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(var(--look-page-rgb, 231, 224, 205), 0.58), rgba(var(--look-page-rgb, 231, 224, 205), 0.58)),
+    var(--look-wallpaper, none) center / cover no-repeat,
+    var(--color-frame-backdrop);
+  filter: blur(26px) saturate(1.1);
+  pointer-events: none;
+}
+/* The Mushaf keeps its own appearance (theme/looks.ts LOOK_OFF_ATTRIBUTE): no wallpaper around it. */
+html[data-look-off] .device-backdrop::before {
+  content: none;
+}
+
 .device-frame {
   width: 100%;
   max-width: 480px;
   height: 100%;
-  background: var(--color-frame-bezel);
+  /* The look's bezel (Nature's deep green, Sunset's plum, Night's ink); Classic keeps the identity's own. */
+  background: var(--look-bezel, var(--color-frame-bezel));
   padding: var(--frame-bezel-thickness);
   border-radius: var(--frame-radius);
-  box-shadow: 0 30px 60px -30px rgba(15, 15, 15, 0.4);
+  box-shadow:
+    0 40px 80px -36px rgba(var(--color-shadow-rgb), 0.55),
+    0 12px 28px -18px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
   display: flex;
+}
+
+/* The women's identity keeps its light, thin frame (no dark bezel) on the light looks. */
+[data-theme="women"] .device-frame {
+  background: var(--color-frame-bezel);
 }
 
 .device-screen {
@@ -769,4 +798,111 @@ button {
   bottom: 100%;
   height: env(safe-area-inset-top, 0px);
   background: inherit;
+}
+
+/* ------------------------------------------------------------------ */
+/* Appearance themes ("looks" — src/theme/looks.ts): the Home wallpaper, */
+/* the frosted cards over it, and the prayer-times arch scene. Colours   */
+/* come from the look's tokens (generated, html[data-look]); defaults    */
+/* here are Classic's, so nothing breaks before the provider runs.        */
+/* ------------------------------------------------------------------ */
+:root {
+  --look-card-rgb: 255, 251, 243;
+  --look-card-alpha: 0.82;
+  --look-card-border: rgba(198, 161, 91, 0.42);
+  --look-veil-rgb: 246, 239, 226;
+  --look-veil-alpha: 0.12;
+}
+
+/* The Home screen: its wallpaper under a veil of the page colour (stronger when the wallpaper's tone
+   doesn't suit the look's text). The scroll container's own background, so it never scrolls away. */
+.dithar-home-screen {
+  background:
+    var(--look-pattern, none) center top / 64px 64px repeat,
+    linear-gradient(rgba(var(--look-veil-rgb), var(--look-veil-alpha)), rgba(var(--look-veil-rgb), var(--look-veil-alpha))),
+    var(--look-wallpaper, none) center / cover no-repeat,
+    var(--color-bg) !important;
+}
+
+/* Frosted cards on Home (the dashboard, today's pick, the player, the round top buttons, the
+   navigation): the look's card colour at the chosen opacity, a soft blur of the wallpaper behind,
+   a fine champagne edge and a gentle shadow. Elsewhere these components keep their solid surface. */
+.dithar-home-screen .dithar-glass {
+  background: rgba(var(--look-card-rgb), var(--look-card-alpha)) !important;
+  border-color: var(--look-card-border) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  backdrop-filter: blur(14px) saturate(1.15);
+  /* A close contact shadow plus a soft, wide lift: the cards float gently over the photograph. */
+  box-shadow:
+    0 1px 2px rgba(var(--color-shadow-rgb), 0.08),
+    0 14px 30px -20px rgba(var(--color-shadow-rgb), 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+.dithar-home-screen .dithar-glass-tile {
+  background: rgba(var(--look-card-rgb), calc(var(--look-card-alpha) * 0.55)) !important;
+  box-shadow: inset 0 0 0 1px rgba(var(--color-gold-rgb), 0.16);
+}
+
+/* Home header: the date plate (DateTimeStrip) — a lighter frost than the cards, so it reads as part of
+   the header, not as another card — and the glow behind the logo. */
+.dithar-home-screen .dithar-date-plate {
+  background: rgba(var(--look-card-rgb), calc(var(--look-card-alpha) * 0.62));
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
+  box-shadow: 0 6px 18px -14px rgba(var(--color-shadow-rgb), 0.6);
+}
+.dithar-logo-halo {
+  position: relative;
+  isolation: isolate;
+}
+.dithar-home-screen .dithar-logo-halo::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: -6%;
+  width: min(62%, 210px);
+  aspect-ratio: 1.25;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--look-card-rgb), 0.7), rgba(var(--look-card-rgb), 0) 100%);
+  pointer-events: none;
+}
+/* On Night the card colour is navy: the halo is a warm light instead, so the logo's dark wordmark shows. */
+html[data-look="night"]:not([data-look-off]) .dithar-home-screen .dithar-logo-halo::before {
+  background: radial-gradient(closest-side, rgba(255, 236, 200, 0.42), rgba(255, 236, 200, 0) 100%);
+}
+
+/* The prayer-times arch (components/SceneArch.tsx): the look's scene inside a gold pointed arch. */
+.dithar-scene-arch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.dithar-scene-arch__image {
+  position: absolute;
+  inset: 0;
+  /* A photograph cropped around its mosque (scripts/prepare-theme-photos.py): kept centred. */
+  background: var(--look-arch-scene) center 42% / cover no-repeat, #2b2a3a;
+}
+/* Shading for the text: a band behind the title, and a deeper one behind the next prayer, the
+   prayer times and the switches. */
+.dithar-scene-arch__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 12, 28, 0.42) 0%, rgba(10, 12, 28, 0.06) 16%, rgba(10, 12, 28, 0) 28%, rgba(10, 12, 28, 0.26) 44%, rgba(10, 12, 28, 0.66) 60%, rgba(10, 12, 28, 0.84) 100%);
+}
+.dithar-scene-arch__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* The navigation on Night: the active item is the gold disc with dark ink (the look's primary is the gold). */
+html[data-look="night"]:not([data-look-off]) .device-screen {
+  color-scheme: dark;
 }

@@ -1,19 +1,27 @@
 // The volume preview of Settings → إعدادات الصوت: while a slider is being
 // moved, a short sample of that kind of audio plays at the level chosen —
 // the selected adhan's opening takbir for the adhan, a recorded dhikr of
-// the section for each Audio Adhkar category.
+// the section for each Audio Adhkar category. Each slider's «تجربة الصوت»
+// button plays the same sample to its natural end (testVolumePreview) —
+// moving the slider meanwhile only changes its volume; tapping the button
+// again stops it.
 //
 //  - One sample at a time. Moving the same slider only changes the
 //    sample's volume (it never restarts); another slider switches sample.
-//  - Ends PREVIEW_TAIL_MS after the adjustment ends (so a single tap is
-//    heard too), at once when the user leaves the screen or the app goes
+//  - The slider's preview ends PREVIEW_TAIL_MS after the adjustment ends
+//    (so a single tap is heard too); every preview ends with its sample
+//    (the adhan's: at the end of its takbir segment), at once when the user leaves the screen or the app goes
 //    to the background, and whenever real playback starts: any in-app
 //    audio (it claims the shared audio engine), a native session
 //    (adhkar, «استماع», the adhan — the "sessionStarted" event), or the
 //    playback state becoming active.
 //  - Never interrupts real playback: while something plays — in the app,
-//    or natively (the adhan included) — no sample starts; the level then
-//    applies to what is playing (on Android at once, via setVolumes).
+//    or natively (the adhan included) — or the phone is ringing or in a
+//    call, no sample starts (blockedCategory); the level then applies to
+//    what is playing (on Android at once, via setVolumes).
+//  - Only plays a bundled sample: no counter, statistic, schedule,
+//    notification, reciter or adhan-rotation state is read for writing or
+//    changed.
 //  - The level is the app's own gain on this one element; the phone's
 //    media volume is never touched.
 import type { PluginListenerHandle } from "@capacitor/core";
@@ -40,6 +48,8 @@ export interface PreviewSample {
   url: string;
   /** Seconds into the file. */
   startAt: number;
+  /** Where the sample ends, seconds into the file; none = the file's end. */
+  endAt?: number;
 }
 
 export interface PreviewElement {
@@ -53,6 +63,7 @@ export interface PreviewElement {
   onloadedmetadata: (() => void) | null;
   onended: (() => void) | null;
   onerror: (() => void) | null;
+  ontimeupdate: (() => void) | null;
 }
 
 const url = (path: string) => `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(path))}`;
@@ -62,7 +73,7 @@ export function previewSampleFor(category: VolumeCategory): PreviewSample | null
   if (category === "adhan") {
     const recording = getAdhanRecordingById(loadAdhanAudioSettings().regular.recordingId);
     const segment = recording?.segments.takbeer ?? recording?.segments.full;
-    return recording && segment ? { url: adhanAudioUrl(recording), startAt: segment.start } : null;
+    return recording && segment ? { url: adhanAudioUrl(recording), startAt: segment.start, endAt: segment.end } : null;
   }
   if (category === "misc") {
     const item = AUDIO_VARIOUS_ITEMS.find((i) => i.audio);
@@ -86,9 +97,24 @@ interface Preview {
   /** Null while it is still checking that nothing plays natively. */
   element: PreviewElement | null;
   key: string;
+  /** «تجربة الصوت»: plays to the sample's end — no slider timer stops it. */
+  test: boolean;
 }
 
 let current: Preview | null = null;
+/** The category whose sample was just refused (something playing, or a call) — until the next try. */
+let blocked: VolumeCategory | null = null;
+const changeListeners = new Set<() => void>();
+
+/** Told whenever a sample starts, stops or is refused (the Settings buttons follow it). */
+export function subscribeVolumePreview(listener: () => void): () => void {
+  changeListeners.add(listener);
+  return () => changeListeners.delete(listener);
+}
+
+function changed() {
+  for (const listener of [...changeListeners]) listener();
+}
 let tailTimer: ReturnType<typeof setTimeout> | null = null;
 let generation = 0;
 let watching = false;
@@ -113,12 +139,12 @@ function watch() {
   }
 }
 
-/** Whether anything plays natively now (an adhkar session or the adhan). */
+/** Whether anything plays natively now (an adhkar session or the adhan), or the phone is in a call. */
 async function nativeBusy(): Promise<boolean> {
   if (!isAudioAdhkarNativeAvailable()) return false;
   try {
-    const { state, busy } = await AudioAdhkarNative.getPlaybackState();
-    return busy === true || state?.active === true;
+    const { state, busy, inCall } = await AudioAdhkarNative.getPlaybackState();
+    return busy === true || inCall === true || state?.active === true;
   } catch {
     return true; // unknown: never risk cutting into real playback
   }
@@ -139,27 +165,58 @@ export function previewVolume(category: VolumeCategory, percent: number): boolea
   if (current?.category === category) {
     current.gain = gain;
     if (current.element) current.element.volume = gain;
-    stopAfter(PREVIEW_IDLE_MS);
+    if (!current.test) stopAfter(PREVIEW_IDLE_MS);
     return true;
   }
   stopVolumePreview();
-  if (getActiveAudio() || getNowPlaying()) return false;
+  blocked = null;
+  if (getActiveAudio() || getNowPlaying()) return refuse(category);
   const sample = previewSampleFor(category);
   if (!sample) return false;
   watch();
   const mine = ++generation;
-  const preview: Preview = { category, gain, element: null, key: `preview:${category}` };
+  const preview: Preview = { category, gain, element: null, key: `preview:${category}`, test: false };
   current = preview;
   stopAfter(PREVIEW_IDLE_MS);
+  changed();
   void nativeBusy().then((busy) => {
     if (mine !== generation || current !== preview) return;
     if (busy || getActiveAudio() || getNowPlaying()) {
+      clearTail();
       current = null;
+      refuse(category);
       return;
     }
     start(preview, sample);
   });
   return true;
+}
+
+function refuse(category: VolumeCategory): false {
+  blocked = category;
+  changed();
+  return false;
+}
+
+/**
+ * «تجربة الصوت»: plays `category`'s sample from its start at `percent` to
+ * its natural end — restarting it if it was playing. Only Stop, leaving the
+ * screen, the app hiding or real playback end it sooner. Same rules as the
+ * slider's preview otherwise; false when refused.
+ */
+export function testVolumePreview(category: VolumeCategory, percent: number): boolean {
+  stopVolumePreview();
+  const started = previewVolume(category, percent);
+  if (started && current) {
+    current.test = true;
+    clearTail();
+  }
+  return started;
+}
+
+/** Which category was just refused (real playback or a call), for the Settings notice. */
+export function blockedPreviewCategory(): VolumeCategory | null {
+  return blocked;
 }
 
 function start(preview: Preview, sample: PreviewSample) {
@@ -168,6 +225,11 @@ function start(preview: Preview, sample: PreviewSample) {
   el.volume = preview.gain;
   el.onended = () => stopVolumePreview();
   el.onerror = () => stopVolumePreview();
+  const endAt = sample.endAt;
+  // A sample inside a longer file (the adhan's takbir) ends at its own end.
+  el.ontimeupdate = endAt === undefined ? null : () => {
+    if (el.currentTime >= endAt) stopVolumePreview();
+  };
   el.onloadedmetadata = () => {
     el.onloadedmetadata = null;
     if (sample.startAt > 0) el.currentTime = sample.startAt;
@@ -187,11 +249,16 @@ function start(preview: Preview, sample: PreviewSample) {
 function teardown(preview: Preview) {
   const el = preview.element;
   preview.element = null;
-  if (current === preview) current = null;
+  if (current === preview) {
+    // Real in-app playback claimed the audio: the sample is over.
+    current = null;
+    changed();
+  }
   if (!el) return;
   el.onended = null;
   el.onerror = null;
   el.onloadedmetadata = null;
+  el.ontimeupdate = null;
   el.pause();
   el.removeAttribute("src");
   el.load();
@@ -207,7 +274,7 @@ function stopAfter(ms: number) {
 
 /** The adjustment ended: the sample stops a moment later (so a tap is heard). */
 export function endVolumePreview(): void {
-  if (current) stopAfter(PREVIEW_TAIL_MS);
+  if (current && !current.test) stopAfter(PREVIEW_TAIL_MS);
 }
 
 /** Stops the sample now (leaving the screen, real playback starting). */
@@ -219,6 +286,7 @@ export function stopVolumePreview(): void {
   if (!preview) return;
   teardown(preview);
   releaseAudio(preview.key);
+  changed();
 }
 
 /** Which slider's sample is playing (or about to), for tests and diagnostics. */

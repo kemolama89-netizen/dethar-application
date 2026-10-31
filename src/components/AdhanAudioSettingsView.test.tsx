@@ -4,6 +4,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { AdhanAudioSettingsView } from "./AdhanAudioSettingsView";
 import { LanguageProvider } from "../theme/LanguageContext";
+import { loadAdhanDayTimes } from "../lib/weeklySchedule";
 import { loadAdhanAudioSettings, resetAdhanAudioSettingsMemoryForTesting } from "../lib/adhanAudioSettings";
 import type { AdhanAudioElement } from "../lib/adhanAudio";
 import { setAdhanAudioElementFactory } from "../lib/adhanAudio";
@@ -258,3 +259,22 @@ describe("Settings → صوت الأذان", () => {
   });
 });
 
+
+describe("Adhan time by day", () => {
+  const setValue = async (el: HTMLInputElement | HTMLSelectElement, value: string) =>
+    act(async () => {
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value")!.set!.call(el, value);
+      el.dispatchEvent(new Event(el instanceof HTMLSelectElement ? "change" : "input", { bubbles: true }));
+    });
+
+  it("saves a later time for the chosen prayer on that weekday only", async () => {
+    expect(container.querySelector("[data-adhan-day-times]")).not.toBeNull();
+    await setValue(container.querySelector<HTMLSelectElement>("[data-adhan-day-prayer]")!, "dhuhr");
+    await setValue(container.querySelector<HTMLInputElement>("#adhan-dhuhr-day-5-0")!, "12:30");
+    expect(loadAdhanDayTimes().dhuhr).toEqual(["", "", "", "", "", "12:30", ""]);
+    expect(loadAdhanDayTimes().asr).toEqual(["", "", "", "", "", "", ""]);
+    // Another prayer shows its own (empty) days.
+    await setValue(container.querySelector<HTMLSelectElement>("[data-adhan-day-prayer]")!, "asr");
+    expect(container.querySelector<HTMLInputElement>("#adhan-asr-day-5-0")!.value).toBe("");
+  });
+});

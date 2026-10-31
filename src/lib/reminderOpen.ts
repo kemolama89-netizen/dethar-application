@@ -12,6 +12,7 @@
 // published — the snapshot itself is shown, as it was, under the same id.
 // With no snapshot (an older build) the id alone decides, as before.
 import { findReminderCandidate, findReminderItem } from "./reminderContent";
+import { reminderAuditApproved } from "./religiousAudit";
 import type { ReminderCategory, ReminderItem, ReminderKind } from "./reminderContent";
 import { REMINDER_CATEGORIES } from "./reminderContent";
 import { findComment } from "./contentRotation";
@@ -80,6 +81,8 @@ function shownComment(commentId: string | null | undefined, shown: ShownReminder
  * show: no snapshot, and the id is unknown to this version of the app.
  */
 export function resolveOpenedReminder(id: string, commentId: string | null | undefined, shown: ShownReminder | undefined, language: Language): OpenedReminder | null {
+  // A Hadith or Latifa opens only if it passed the religious-content audit (lib/religiousAudit.ts); other items are unaffected.
+  if (!reminderAuditApproved(id, "ar")) return null;
   const library = findReminderItem(id) ?? findReminderCandidate(id);
   if (library && (!shown || !shown.text || (sameWording(library.textAr, shown.text) && sameSource(library, shown.source)))) {
     return { item: library, comment: findComment(library, commentId) ?? shownComment(commentId, shown), from: "library" };

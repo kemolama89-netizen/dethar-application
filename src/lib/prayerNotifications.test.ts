@@ -51,6 +51,7 @@ import { buildAdhanConfig } from "./prayerNotifications";
 import { resetAdhanAudioSettingsMemoryForTesting, saveAdhanAutoPlay, saveRegularAdhanChoice } from "./adhanAudioSettings";
 import { peekNextAdhanVoice, resetAdhanRotationMemoryForTesting, rotationVoices, setAdhanRotationEnabled } from "./adhanVoiceRotation";
 import { getAdhanRecordingById } from "../data/adhanRecordings";
+import { saveAdhanDayTimes } from "./weeklySchedule";
 
 const NOW = new Date("2026-10-10T00:30:00Z");
 const ON: PrayerReminderSettings = { enabled: true, prayers: { fajr: true, dhuhr: true, asr: true, maghrib: true, isha: true } };
@@ -338,5 +339,33 @@ describe("the prayer notifications master switch (card toggle and Settings)", ()
     expect(loadPrayerReminderSettings().enabled).toBe(true);
     expect(native.setSchedule).not.toHaveBeenCalled();
     expect(native.stopAdhan).not.toHaveBeenCalled();
+  });
+});
+
+describe("a later Adhan time on chosen weekdays", () => {
+  const dhuhrOf = (d: Date) => calculatePrayerDay(knownPrayerLocation()!, localDateIn(d, "Asia/Kuwait")).times.dhuhr;
+  const hhmm = (d: Date) => new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Asia/Kuwait" }).format(d);
+
+  it("delivers that prayer's alert at the later time, titled with the prayer time and identified by it", () => {
+    const dhuhr = dhuhrOf(NOW);
+    const weekday = new Date(dhuhr.getTime() + 3 * 3_600_000).getUTCDay(); // its weekday in Kuwait
+    const later = new Date(dhuhr.getTime() + 20 * 60_000);
+    saveAdhanDayTimes("dhuhr", [0, 1, 2, 3, 4, 5, 6].map((d) => (d === weekday ? hhmm(later) : "")));
+    const entry = buildPrayerNotifications(NOW, ON, "en").find((e) => e.prayer === "dhuhr")!;
+    expect(entry.prayerAt).toBe(dhuhr.getTime());
+    expect(Math.abs(entry.at - later.getTime())).toBeLessThan(60_000);
+    expect(entry.title).toContain(formatPrayerTime(dhuhr, "Asia/Kuwait"));
+    // The next day's Dhuhr is not delayed.
+    const next = buildPrayerNotifications(NOW, ON, "en").filter((e) => e.prayer === "dhuhr")[1];
+    expect(next.at).toBe(next.prayerAt);
+  });
+
+  it("saving one re-sends the prayer alerts to native by itself", async () => {
+    startPrayerNotificationSync();
+    await settle();
+    const before = native.setSchedule.mock.calls.length;
+    saveAdhanDayTimes("asr", ["", "", "", "", "", "16:00", ""]);
+    await settle();
+    expect(native.setSchedule.mock.calls.length).toBeGreaterThan(before);
   });
 });

@@ -60,7 +60,7 @@ import { nativeVariousItem, nativeWrittenItem } from "./audioAdhkarNativeItems";
 import { getSpokenText } from "./morningEveningAudio";
 import type { AudioAdhkarCollection } from "./audioAdhkarPlayback";
 import { getUserRepeatCount } from "./audioUserRepeat";
-import { commitInAppCompletion, commitInAppListening } from "./audioAdhkarCounts";
+import { commitCompletedSessions, commitInAppCompletion, commitInAppListening } from "./audioAdhkarCounts";
 import { peekSectionReciter, takeSectionReciter } from "./audioAdhkarScheduleSettings";
 import { buildAdhanWindows, nextAdhanPauseStart } from "./adhanSuppression";
 import { loadLanguagePreference } from "./appearancePreferences";
@@ -354,6 +354,57 @@ function setPlayAll(next: AudioAdhkarPlayAll | null) {
   if (same) return;
   playAll = next;
   for (const listener of [...playAllListeners]) listener();
+  notifySkip();
+}
+
+// ---- «الذكر التالي» (Next Dhikr) --------------------------------------------
+//
+// Offered while a dhikr follows the one playing: in a scheduled
+// Morning/Evening session or a «تشغيل الكل» run (native or in-app) — never
+// for a single «استماع» or the adhan. Skipping leaves the repetition playing
+// now as LISTENING only (what really played), never a repetition, and the
+// dhikr's remaining repetitions are not counted; the next dhikr starts.
+
+/** Android: whether the native session has a dhikr after the one it plays. */
+let nativeHasNext = false;
+const skipListeners = new Set<() => void>();
+
+function notifySkip() {
+  for (const listener of [...skipListeners]) listener();
+}
+
+function setNativeHasNext(value: boolean) {
+  if (nativeHasNext === value) return;
+  nativeHasNext = value;
+  notifySkip();
+}
+
+export function canSkipAudioAdhkar(): boolean {
+  return nativeActive ? nativeHasNext : webPlayAllHasNext();
+}
+
+export function subscribeAudioAdhkarSkip(listener: () => void): () => void {
+  skipListeners.add(listener);
+  return () => skipListeners.delete(listener);
+}
+
+/** Skips to the next dhikr of the session or run. False when there is none (nothing changes). */
+export function skipAudioAdhkar(): boolean {
+  if (!canSkipAudioAdhkar()) return false;
+  if (nativeActive) {
+    trace("next dhikr: requested from the app");
+    AudioAdhkarNative.next().catch(ignore);
+    return true;
+  }
+  const from = (playAll?.index ?? 0) + 1;
+  if (current) {
+    settleStoppedEarly(); // the part heard: listening, never a repetition
+    const { channel } = current.source;
+    current = null; // its pending "ended" / silence can no longer advance anything
+    stopAudio(channel);
+  }
+  playWebStepFrom(from);
+  return true;
 }
 
 export function getAudioAdhkarPlayAll(): AudioAdhkarPlayAll | null {
@@ -380,10 +431,26 @@ function playWebStepFrom(from: number): boolean {
   for (let i = from; run && webPlayAll === run && i < run.entries.length; i++) {
     setPlayAll({ collection: run.collection, index: i, count: run.entries.length });
     const entry = run.entries[i];
-    if (entry.kind === "written" ? beginWritten(run.collection, entry.item) : beginVarious(entry.item)) return true;
+    if (entry.kind === "written" ? beginWritten(run.collection, entry.item) : beginVarious(entry.item)) {
+      recordWebPractice(run.collection);
+      return true;
+    }
   }
   endPlayAll();
   return false;
+}
+
+/**
+ * In-app «تشغيل الكل» of Morning/Evening: practiced today as soon as its
+ * audio starts — as the Android player records it (SessionPractice) — once
+ * per section and day (the id), however the run continues.
+ */
+function recordWebPractice(collection: AudioAdhkarCollection) {
+  if (collection !== "morning" && collection !== "evening") return;
+  const at = Date.now();
+  const d = new Date(at);
+  const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  commitCompletedSessions([{ id: `app-session-complete:${collection}:day:${day}`, collection, at, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }]);
 }
 
 /** True while the Android background player owns the playback state. */
@@ -413,6 +480,7 @@ export function applyNativePlaybackState(state: NativeAudioAdhkarState | null): 
     }
     nativeActive = true;
     nativeManual = state.manual === true;
+    setNativeHasNext(state.index + 1 < state.count);
     // A manual session of several adhkar is a Play All run (also one started before the app was reopened).
     webPlayAll = null;
     setPlayAll(nativeManual && state.count > 1 ? { collection: state.collection, index: state.index, count: state.count } : null);
@@ -431,6 +499,7 @@ export function applyNativePlaybackState(state: NativeAudioAdhkarState | null): 
   if (!nativeActive) return;
   nativeActive = false;
   nativeManual = false;
+  setNativeHasNext(false);
   endPlayAll();
   if (state?.status === "finished") {
     audioAdhkarPlayback.mirror({ collection: state.collection, itemId: state.dhikrId, repetition: state.repetition, total: state.total, status: "finished" });
@@ -456,12 +525,14 @@ function startNative(collection: AudioAdhkarCollection, itemId: string, total: n
   setFailure(null);
   nativeActive = true;
   nativeManual = true;
+  setNativeHasNext((items?.length ?? 0) > 1);
   const request = ++nativeRequest;
   audioAdhkarPlayback.startDhikr({ collection, itemId }, total, item.reciterName || undefined);
   const refused = () => {
     if (request !== nativeRequest || !nativeManual) return;
     nativeActive = false;
     nativeManual = false;
+    setNativeHasNext(false);
     endPlayAll();
     audioAdhkarPlayback.stop();
     setFailure({ collection, itemId });
@@ -664,6 +735,7 @@ export function stopAudioAdhkarPlayback(): void {
     (nativeManual ? AudioAdhkarNative.stopManual() : AudioAdhkarNative.stop()).catch(ignore);
     nativeActive = false;
     nativeManual = false;
+    setNativeHasNext(false);
     endPlayAll();
     audioAdhkarPlayback.stop();
     return;

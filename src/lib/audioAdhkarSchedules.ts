@@ -48,7 +48,7 @@ import { trackNativeSync } from "./appExit";
 import { commitAudioCompletions, commitAudioListening, commitCompletedSessions } from "./audioAdhkarCounts";
 import { loadLanguagePreference } from "./appearancePreferences";
 import { nativeRecitation, nativeVariousItem, nativeWrittenAudio } from "./audioAdhkarNativeItems";
-import { loadDailyDayTimes, subscribeWeeklySchedule, weeklyDayStarts } from "./weeklySchedule";
+import { holidayDayStarts, loadDailyDayTimes, miscDayTimesPush, subscribeWeeklySchedule } from "./weeklySchedule";
 import { loadReminderSound } from "./adhkarReminderSounds";
 import { buildOccasionPush } from "./islamicOccasions";
 
@@ -134,8 +134,9 @@ async function syncNow(now: Date): Promise<AudioAdhkarScheduleResult> {
     const playlist = enabled ? buildDailyAudioPlaylist(section) : [];
     // Per-day start times ("customize by day"), when the user set any.
     const dayStartMinutes = loadDailyDayTimes(section).map(startTimeToMinutes);
-    const slots = buildDailySlots({ section, startMinutes, dayStartMinutes, playlist, location, adhanWindows, now });
-    return { enabled, startMinutes, playlist, slots: slots.map((s) => [s.start, s.at, s.end] as const), reminderSound: loadReminderSound(section) };
+    // On a weekly holiday no session starts before the holiday start (and its heads-up isn't shown before it either).
+    const slots = buildDailySlots({ section, startMinutes, dayStartMinutes, holidayStartMinutes: holidayDayStarts(), playlist, location, adhanWindows, now });
+    return { enabled, startMinutes, playlist, slots: slots.map((s) => [s.start, s.at, s.end, s.notBefore ?? 0] as const), reminderSound: loadReminderSound(section) };
   };
   const misc = loadMiscSchedule();
   const miscEnabled = loadSectionStatus("misc").ready;
@@ -150,8 +151,10 @@ async function syncNow(now: Date): Promise<AudioAdhkarScheduleResult> {
       playlist: miscEnabled ? buildMiscAudioPlaylist() : [],
       // The language of the "paused for prayer / resumed" notifications.
       language: loadLanguagePreference(),
-      // Nothing recurring starts before each weekday's start time (the weekly schedule).
-      dayStartMinutes: weeklyDayStarts(),
+      // Nothing recurring starts before the weekly holiday start on holidays; other days keep Misc's own window.
+      dayStartMinutes: holidayDayStarts(),
+      // Misc's own start/end on chosen weekdays (-1 = the usual time that day).
+      dayTimes: miscDayTimesPush(),
       // Fridays and Islamic occasions play their own dhikr; the normal rotation resumes after.
       ...buildOccasionPush(now),
     },

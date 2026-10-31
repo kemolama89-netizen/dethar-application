@@ -30,6 +30,11 @@ import {
 import type { AdhanRotationSettings } from "../lib/adhanVoiceRotation";
 import { requestPrayerNotificationPermission, syncPrayerNotifications } from "../lib/prayerNotifications";
 import { OptionRow } from "./OptionRow";
+import { WeekdayTimesEditor } from "./WeekdayTimesEditor";
+import { adhanDayTimesLabels } from "../data/scheduleLabels";
+import { prayerNames } from "../data/content";
+import { ADHAN_DAY_PRAYERS, loadAdhanDayTimes, saveAdhanDayTimes } from "../lib/weeklySchedule";
+import type { AdhanDayPrayer } from "../lib/weeklySchedule";
 import { loadPrayerReminderSettings } from "../lib/prayerReminderSettings";
 
 // Settings > Adhan audio — pick the regular adhan (Dhuhr/Asr/Maghrib/Isha)
@@ -237,7 +242,61 @@ export function AdhanAudioSettingsView({ onBack }: { onBack: () => void }) {
         </p>
         {section("regular", t.regularTitle, t.regularHint, regularAdhanRecordings(), REGULAR_ADHAN_MODES)}
         {section("fajr", t.fajrTitle, t.fajrHint, fajrAdhanRecordings(), FAJR_ADHAN_MODES)}
+        <AdhanDayTimes />
       </div>
     </div>
+  );
+}
+
+/**
+ * A later Adhan time for one prayer on chosen weekdays (lib/weeklySchedule.ts
+ * loadAdhanDayTimes) — a delay only, applied in lib/prayerSchedule.ts
+ * upcomingAdhanTimes. Saving notifies the weekly-schedule listeners, so the
+ * prayer alerts and the Audio Adhkar adhan pause re-sync by themselves.
+ */
+function AdhanDayTimes() {
+  const { language } = useLanguage();
+  const t = adhanDayTimesLabels[language];
+  const [times, setTimes] = useState(loadAdhanDayTimes);
+  const [prayer, setPrayer] = useState<AdhanDayPrayer>("dhuhr");
+  const name = prayerNames[language][prayer];
+  return (
+    <section className="flex flex-col gap-2" data-adhan-day-times="">
+      <div className="flex items-center justify-between gap-3 px-1">
+        <h2 className="text-[15px] font-bold" style={{ color: "var(--color-text-primary)" }}>
+          {t.title}
+        </h2>
+        <label className="flex items-center gap-2 text-[12.5px]" style={{ color: "var(--color-text-muted)" }}>
+          {t.prayer}
+          <select
+            value={prayer}
+            onChange={(e) => setPrayer(e.target.value as AdhanDayPrayer)}
+            className="rounded-lg border px-2 py-1 text-[13px]"
+            style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", color: "var(--color-text-primary)" }}
+            data-adhan-day-prayer=""
+          >
+            {ADHAN_DAY_PRAYERS.map((p) => (
+              <option key={p} value={p}>
+                {prayerNames[language][p]}
+                {times[p].some(Boolean) ? " •" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <WeekdayTimesEditor
+        key={prayer}
+        id={`adhan-${prayer}`}
+        summary={t.summary(name)}
+        hint={t.hint}
+        usual={t.usual}
+        clear={t.clear}
+        columns={[{ values: times[prayer] }]}
+        onChange={([values]) => {
+          saveAdhanDayTimes(prayer, values);
+          setTimes({ ...times, [prayer]: values });
+        }}
+      />
+    </section>
   );
 }

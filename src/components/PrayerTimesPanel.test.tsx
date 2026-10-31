@@ -395,8 +395,9 @@ describe("Home's prominent panel (variant=\"hero\")", () => {
     expect(panel.querySelector("[data-next-prayer-countdown]")).not.toBeNull();
     expect(panel.querySelector("[data-switch='prayer-notifications']")).not.toBeNull();
     expect(panel.querySelector("[data-switch='audio-adhkar']")).not.toBeNull();
-    const mihrab = panel.querySelector("[data-mihrab]")!;
-    expect(mihrab.getAttribute("aria-hidden")).toBe("true");
+    // The appearance theme's scene in an arch (SceneArch) — decoration only.
+    const arch = panel.querySelector("[data-scene-arch]")!;
+    expect(arch.getAttribute("aria-hidden")).toBe("true");
     expect(panel.textContent).not.toMatch(/القبلة|Qibla|°/);
     await unmount();
   });

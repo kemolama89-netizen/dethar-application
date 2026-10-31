@@ -7,6 +7,7 @@
 // (content or preparation changed). Regenerate it deliberately with:
 //   WRITE_WIDGET_FIXTURE=1 npx vitest run src/lib/widgetNativeContract.test.ts
 import { describe, expect, it } from "vitest";
+
 import fixture from "../../android/app/src/test/resources/widget-native-items.json";
 import { reminderPool } from "./reminderContent";
 import { nativeReminderItem } from "./remindersSync";

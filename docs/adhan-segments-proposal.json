@@ -1,0 +1,550 @@
+{
+ "Abdul Basit Abdul Samad - Abdulbasit_Abdusamad_1_-_Egypt_(عبد_الباسط_عبد_الصمد_-_مصر) [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   1.67,
+   242.12
+  ],
+  "takbeer": [
+   1.67,
+   31.38
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Abdul Basit Abdul Samad - Fajr - Abdulbasit_Abdusamad_6_-_Fajr_Egypt_(عبد_الباسط_عبد_الصمد_-_فجر_مصر) [gh].mp3": {
+  "kind": "Fajr",
+  "full": [
+   1.07,
+   292.28
+  ],
+  "takbeer": [
+   1.07,
+   38.62
+  ],
+  "fajr_phrase": [
+   242.71,
+   266.7
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Abu Al-Enein Shuaisha - Abul_Ainain_Shuaisha_-_Cairo_(أبو_العينين_شعيشع_-_القاهرة) [ia].wma": {
+  "kind": "Regular",
+  "full": [
+   0.47,
+   233.78
+  ],
+  "takbeer": [
+   0.47,
+   20.96
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "WMA: not playable in Android WebView/Chrome — needs an MP3/M4A copy"
+ },
+ "Ahmed Al-Nafees - Ahmad_Al_Nafees_(أحمد_النفيس) [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.27,
+   204.76
+  ],
+  "takbeer": [
+   0.27,
+   35.68
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Ahmed Nuaina - Ahmed_Nuinaa_2_-_Cairo_(أحمد_نعينع_-_القاهرة) [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.43,
+   209.12
+  ],
+  "takbeer": [
+   0.43,
+   24.36
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Ali Mahmoud - adhan [ia].mp3": {
+  "kind": "Regular?",
+  "full": [
+   0.31,
+   148.92
+  ],
+  "takbeer": [
+   0.31,
+   20.37
+  ],
+  "fajr_phrase": null,
+  "conf": "low",
+  "note": "very degraded 1930s-era recording; speech-to-text unusable except «أشهدوا» at 0:21.8; Fajr phrase not detectable — treated as regular; check by ear"
+ },
+ "Ali bin Ahmed Mulla - AzanAlHaram [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   0,
+   216.6
+  ],
+  "takbeer": [
+   0,
+   33.44
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Ali bin Ahmed Mulla - yt5s_io_أذان_العشاء_للمؤذن_علي_ملا_الأحد_8_شعبان_1445هـ_1080p [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   4.01,
+   220.84
+  ],
+  "takbeer": [
+   4.01,
+   22.52
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "first 2.4 s is noise, excluded"
+ },
+ "Mahmoud Ali Al-Banna - Mahmoud_Ali_Al_Banna_-_Cairo_(محمود_علي_البنا_-_القاهرة) [ia].wma": {
+  "kind": "Regular",
+  "full": [
+   0.47,
+   152.78
+  ],
+  "takbeer": [
+   0.47,
+   11.1
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "WMA: not playable in Android WebView/Chrome — needs an MP3/M4A copy"
+ },
+ "Mahmoud Khalil Al-Husary - Mahmoud_Khalil_Al_Hussary_-_Cairo_(محمود_خليل_الحصري_-_القاهرة) [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   1.07,
+   127.88
+  ],
+  "takbeer": [
+   1.07,
+   13.36
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "clip-level transcription confirms 4 hayya phrases"
+ },
+ "Mahmoud Mohamed Ramadan - adhan 1397 AH [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.23,
+   232.44
+  ],
+  "takbeer": [
+   0.23,
+   36.02
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy -  azan-saba-2-2014-al-fajr [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.31,
+   245.84
+  ],
+  "takbeer": [
+   0.31,
+   33.9
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "source name says \"al-fajr\" but the audio has no «الصلاة خير من النوم» (10-phrase regular structure)"
+ },
+ "Mishary Rashid Alafasy - 009-mshare-rashed__up_by_muslem [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.07,
+   230.84
+  ],
+  "takbeer": [
+   0.07,
+   35.32
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy - Fajr - alafasy_fajr_alsalato khair min alnawm.mp3": {
+  "kind": "Fajr excerpt",
+  "full": null,
+  "takbeer": null,
+  "fajr_phrase": [
+   6.71,
+   22.66
+  ],
+  "conf": "high",
+  "note": "29-s excerpt, not a full adhan: one complete «الصلاة خير من النوم» (0:06.7–0:22.7); a clipped one before it and the start of the takbir after it are excluded. Usable only for the Fajr-phrase option"
+ },
+ "Mishary Rashid Alafasy - Fajr - azan-hejaz-2014-al-fajer [ia].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0.11,
+   214.5
+  ],
+  "takbeer": [
+   0.11,
+   24.44
+  ],
+  "fajr_phrase": [
+   156.27,
+   182.62
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy - Fajr - azan-kurd-low-2010-alfajr [gh].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0.43,
+   161.58
+  ],
+  "takbeer": [
+   0.43,
+   19.32
+  ],
+  "fajr_phrase": [
+   116.35,
+   141.42
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy - Fajr - azan-nahawand-2014-alfajr [ia].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0.19,
+   291.44
+  ],
+  "takbeer": [
+   0.19,
+   36.16
+  ],
+  "fajr_phrase": [
+   224.01,
+   255.1
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy - Fajr - azan-nawa-athar-2014-al-fajr [ia].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0.19,
+   239.06
+  ],
+  "takbeer": [
+   0.19,
+   34.94
+  ],
+  "fajr_phrase": [
+   182.17,
+   210.08
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy - Fajr - azan-rast-2014-al-fajr [ia].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0.29,
+   208.76
+  ],
+  "takbeer": [
+   0.29,
+   24.76
+  ],
+  "fajr_phrase": [
+   150.97,
+   180.84
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy - Fajr - azan-saba-2014-al-fajr [ia].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0.13,
+   206.26
+  ],
+  "takbeer": [
+   0.13,
+   26.76
+  ],
+  "fajr_phrase": [
+   154.35,
+   178.08
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Mishary Rashid Alafasy - Mishary_Rashid_Alafasy_2_-_Kuwait_(مشاري_راشد_العفاسي_-_الكويت) [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.15,
+   229.56
+  ],
+  "takbeer": [
+   0.15,
+   37.72
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Mohamed Mahmoud Al-Tablawi - muhammed_altablawy [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.73,
+   188.79
+  ],
+  "takbeer": [
+   0.73,
+   18.88
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Mohamed Omran - Azan Mohamed Imran 256kbps [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   1.21,
+   182.82
+  ],
+  "takbeer": [
+   1.21,
+   24.36
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Mohamed Omran - Fajr - mohamed_omran_fajr [gh].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0.0,
+   177.74
+  ],
+  "takbeer": [
+   0.0,
+   27.52
+  ],
+  "fajr_phrase": [
+   134.49,
+   155.71
+  ],
+  "conf": "medium",
+  "note": "«خير من» heard in both phrases; recording ends at the file end immediately after the tahlil (may be clipped)"
+ },
+ "Mohamed Refaat - اذان المغرب لفضيلة الشيخ محمد رفعت رحمة الله [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   1.11,
+   233.38
+  ],
+  "takbeer": [
+   1.11,
+   28.08
+  ],
+  "fajr_phrase": null,
+  "conf": "medium",
+  "note": "old recording; transcription weak, structure (12 phrases) fits a regular adhan; titled Maghrib"
+ },
+ "Mohamed Siddiq El-Minshawi - menshawi_rast [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.59,
+   188.66
+  ],
+  "takbeer": [
+   0.59,
+   29.52
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Mustafa Ismail - Mustafa_Ismail_-_Egypt_(مصطفى_إسماعيل_-_مصر) [ia].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.0,
+   183.14
+  ],
+  "takbeer": [
+   0.0,
+   27.2
+  ],
+  "fajr_phrase": null,
+  "conf": "medium",
+  "note": "noise fragments ignored; ends at file end"
+ },
+ "Nasr El-Din Tobar - Fajr - Fajr_Adhan_by_Nasreddine_Toubar_(اذان_الفجر_بصوت_نصر_الدين_طوبار) [gh].mp3": {
+  "kind": "Fajr",
+  "full": [
+   0,
+   288.37
+  ],
+  "takbeer": [
+   0,
+   26.5
+  ],
+  "fajr_phrase": [
+   232.39,
+   258.88
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "Nasr El-Din Tobar - nasr_eldeen_toubar [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0,
+   220.85
+  ],
+  "takbeer": [
+   0,
+   26.08
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "Nasser Al-Qatami - Nasser_Al_Qatami_-_HQ_(ناصر_القطامي) [aladha].mp3": {
+  "kind": "Regular",
+  "full": [
+   0.0,
+   128.64
+  ],
+  "takbeer": [
+   0.0,
+   26.0
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "fast delivery; boundaries from word timestamps"
+ },
+ "Saad Al-Ghamdi - SaadAlGhamidiAthan [ia].m4a": {
+  "kind": "Regular",
+  "full": [
+   1.13,
+   117.28
+  ],
+  "takbeer": [
+   1.13,
+   19.2
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "dua «اللهم رب هذه الدعوة التامة» after the adhan (2:00–2:17) excluded from Full"
+ },
+ "Sayed Al-Naqshbandi - Sheikh_Al_Naqshbandi_(الشيخ_النقشبندى) [gh].mp3": {
+  "kind": "Regular",
+  "full": [
+   0,
+   136.0
+  ],
+  "takbeer": [
+   0,
+   16.98
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "taha alfashni.mp3": {
+  "kind": "Regular",
+  "full": [
+   0.09,
+   222.37
+  ],
+  "takbeer": [
+   0.09,
+   31.28
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "same recording as IA \"Ezan-Rast\" (maqam Rast); 32 kbps"
+ },
+ "المسجد الحرام 1.m4a": {
+  "kind": "Fajr",
+  "full": [
+   3.53,
+   212.54
+  ],
+  "takbeer": [
+   3.53,
+   29.22
+  ],
+  "fajr_phrase": [
+   160.09,
+   186.6
+  ],
+  "conf": "high",
+  "note": ""
+ },
+ "المسجد النبوي 2.m4a": {
+  "kind": "Regular",
+  "full": [
+   0.03,
+   235.17
+  ],
+  "takbeer": [
+   0.03,
+   30.96
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": "closing takbir and tahlil run together"
+ },
+ "المسجد النبوي 3.mp3": {
+  "kind": "Regular",
+  "full": [
+   1.11,
+   220.52
+  ],
+  "takbeer": [
+   1.11,
+   32.18
+  ],
+  "fajr_phrase": null,
+  "conf": "high",
+  "note": ""
+ },
+ "المسجد النبوي.m4a": {
+  "kind": "Fajr",
+  "full": [
+   1.17,
+   307.39
+  ],
+  "takbeer": [
+   1.17,
+   36.18
+  ],
+  "fajr_phrase": [
+   236.65,
+   270.56
+  ],
+  "conf": "high",
+  "note": "Fajr phrase set from clip-level transcription (2 breath fragments at 3:26–3:28 ignored)"
+ }
+}

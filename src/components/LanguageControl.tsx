@@ -13,7 +13,7 @@ export function LanguageControl() {
       type="button"
       onClick={toggleLanguage}
       aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"}
-      className="flex h-11 w-11 items-center justify-center rounded-full border-2"
+      className="dithar-glass flex h-11 w-11 items-center justify-center rounded-full border-2"
       style={{
         borderColor: "var(--color-gold-soft)",
         background: "var(--color-surface)",

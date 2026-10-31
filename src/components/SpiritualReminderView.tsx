@@ -14,6 +14,7 @@ import type { EditorialComment } from "../data/widgetContent";
 import { isFavorite, subscribeFavorites, toggleFavorite } from "../lib/favorites";
 import { reminderShareContent } from "../lib/reminderShare";
 import { ShareMenu } from "./ShareMenu";
+import { quotedQuranInBrackets, withQuranBrackets } from "../lib/quranBrackets";
 
 // The full-screen spiritual reminder: a natural or meaningful background
 // fills the whole screen and the Arabic text sits directly on it (one
@@ -145,7 +146,15 @@ export function SpiritualReminderView({
   const isEn = language === "en";
   const source = isEn ? item.sourceEn : item.sourceAr;
   const evidence = item.evidence;
-  const evidenceText = evidence ? (isEn && evidence.en ? evidence.en : evidence.ar) : null;
+  // Arabic evidence shows the Qur'an in its brackets ﴿ … ﴾: a verse whole, a quotation inside a tafsir
+  // or explanation where it quotes it; an English translation or explanation as it is (lib/quranBrackets.ts).
+  const evidenceText = !evidence
+    ? null
+    : isEn && evidence.en
+      ? evidence.en
+      : evidence.kind === "quran"
+        ? withQuranBrackets({ id: item.id, kind: "quran" }, evidence.ar)
+        : quotedQuranInBrackets(evidence.ar);
   const evidenceSource = evidence ? (isEn ? (evidence.sourceEn ?? evidence.sourceAr) : evidence.sourceAr) : null;
   const reflection = item.reflection?.[language];
   const commentText = comment ? comment[language] : undefined;
@@ -236,7 +245,8 @@ export function SpiritualReminderView({
           style={{ fontFamily: "var(--font-display)", textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}
           data-reminder-text=""
         >
-          {item.textAr}
+          {/* A Qur'anic verse (or a dua's Qur'anic portion) in the Qur'anic brackets ﴿ … ﴾ — as on the widget. */}
+          {withQuranBrackets(item, item.textAr)}
         </p>
         {isEn && item.meaningEn && (
           <p className="mt-3 max-w-[30rem] text-[14px] italic leading-[1.6]" style={{ color: "rgba(255,255,255,0.88)" }}>
