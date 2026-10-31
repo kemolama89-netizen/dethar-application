@@ -195,7 +195,18 @@ export const LOOKS: Readonly<Record<LookId, LookColors>> = {
   },
 };
 
-const base = () => (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) || "/";
+/**
+ * The app's base URL, always absolute. Production builds use a relative base ("./" — GitHub Pages' subpath,
+ * the Android app's WebView), and these URLs end up inside CSS custom properties (--look-wallpaper,
+ * --look-arch-scene), where a relative url() resolves against the stylesheet that uses the variable
+ * (assets/*.css → assets/themes/…, a 404) instead of the page. Resolved against the page itself, they
+ * work from any stylesheet.
+ */
+export function absoluteBase(baseUrl: string, pageUrl: string | undefined): string {
+  if (!pageUrl || /^([a-z][a-z0-9+.-]*:|\/)/i.test(baseUrl)) return baseUrl;
+  return new URL(baseUrl, pageUrl).href;
+}
+const base = () => absoluteBase((typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) || "/", typeof document !== "undefined" ? document.baseURI : undefined);
 export const wallpaperUrl = (id: WallpaperId) => `${base()}themes/wall-${id}.jpg`;
 export const wallpaperThumbUrl = (id: WallpaperId) => `${base()}themes/thumb-${id}.jpg`;
 export const archSceneUrl = (look: LookId) => `${base()}themes/arch-${look}.jpg`;

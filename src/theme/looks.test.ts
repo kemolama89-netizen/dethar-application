@@ -8,6 +8,7 @@ import {
   LOOK_STORAGE_KEY,
   WALLPAPER_IDS,
   archSceneUrl,
+  absoluteBase,
   archThumbUrl,
   effectiveLook,
   loadLookSettings,
@@ -159,5 +160,19 @@ describe("appearance themes (looks)", () => {
     expect(LOOKS.classic.reader).toBeUndefined();
     for (const look of ["night", "nature", "sunset"] as const) expect(LOOKS[look].pattern).toBeUndefined();
     expect(css).not.toContain('html[data-look="classic"]:not([data-look-off]) [data-theme="men"]');
+  });
+
+  it("hand out absolute image URLs (a relative url() in a CSS variable would resolve against assets/*.css)", () => {
+    for (const url of [wallpaperUrl("night"), wallpaperThumbUrl("sea"), archSceneUrl("classic"), archThumbUrl("nature")]) {
+      expect(url, url).toMatch(/^(https?:\/\/|\/)/);
+      expect(url).not.toMatch(/^\.\//);
+    }
+    // Production builds' relative base, on GitHub Pages and in the Android WebView:
+    expect(absoluteBase("./", "https://kemolama89-netizen.github.io/dethar-application/")).toBe("https://kemolama89-netizen.github.io/dethar-application/");
+    expect(absoluteBase("./", "https://kemolama89-netizen.github.io/dethar-application/index.html")).toBe("https://kemolama89-netizen.github.io/dethar-application/");
+    expect(absoluteBase("./", "https://localhost/")).toBe("https://localhost/");
+    // Already absolute (development): unchanged.
+    expect(absoluteBase("/", "http://localhost:5173/")).toBe("/");
+    expect(absoluteBase("/dethar-application/", undefined)).toBe("/dethar-application/");
   });
 });
