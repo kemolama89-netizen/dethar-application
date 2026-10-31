@@ -74,7 +74,7 @@ export function ContentModal({
         <div className="flex items-start gap-3 border-b p-4" style={{ borderColor: "var(--color-gold-soft)" }}>
           <div
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-            style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
+            style={{ background: "var(--color-primary)", color: "var(--color-gold-on-primary)" }}
           >
             {icon}
           </div>

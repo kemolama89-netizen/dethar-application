@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Power } from "lucide-react";
-import { App as CapacitorApp } from "@capacitor/app";
-import { Capacitor } from "@capacitor/core";
+import { exitAppSafely } from "../lib/appExit";
 import { useLanguage } from "../theme/LanguageContext";
 import { exitAppLabels } from "../data/exitApp";
 import { useBackDismiss } from "../lib/backOverlays";
@@ -32,9 +31,10 @@ export function ExitAppButton() {
 
   function handleConfirm() {
     setConfirmOpen(false);
-    if (Capacitor.isNativePlatform()) {
-      void CapacitorApp.exitApp();
-    }
+    // Closes the UI only; prayer notifications, the adhan and Audio Adhkar
+    // stay scheduled natively. Waits for any schedule change still on its
+    // way to native first (see lib/appExit.ts).
+    void exitAppSafely();
   }
 
   return (
@@ -43,7 +43,7 @@ export function ExitAppButton() {
         type="button"
         onClick={() => setConfirmOpen(true)}
         aria-label={t.buttonAria}
-        className="flex h-12 w-12 items-center justify-center rounded-full border-2 transition-transform active:scale-95"
+        className="dithar-glass flex h-12 w-12 items-center justify-center rounded-full border-2 transition-transform active:scale-95"
         style={{
           borderColor: "var(--color-gold)",
           background: "var(--color-surface)",
@@ -85,7 +85,7 @@ export function ExitAppButton() {
             <div className="flex items-start gap-3 p-4">
               <div
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-                style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
+                style={{ background: "var(--color-primary)", color: "var(--color-gold-on-primary)" }}
               >
                 <Power size={19} strokeWidth={1.7} />
               </div>
@@ -109,7 +109,7 @@ export function ExitAppButton() {
                 type="button"
                 onClick={handleConfirm}
                 className="flex-1 rounded-xl px-3 py-2 text-[13px] font-semibold"
-                style={{ background: "var(--color-primary)", color: "var(--color-gold)" }}
+                style={{ background: "var(--color-primary)", color: "var(--color-gold-on-primary)" }}
               >
                 {t.confirm}
               </button>

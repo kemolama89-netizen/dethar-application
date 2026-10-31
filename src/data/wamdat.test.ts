@@ -5,25 +5,27 @@ import { WAMDAT, getWamdaVerseReference, getWamdaVerseText, getWamdaSourceCitati
 // DITHAR_Wamdat_524_Bilingual_Source_Aligned.ts, with a content-cleanup
 // pass on top — see the header comment in ./wamdat.ts for exactly what
 // changed). Entries 46 and 405 were removed entirely (both had no usable
-// reflection), so the dataset holds 522 entries with two intentional
-// gaps in the original 1..524 id range — ids are NOT renumbered.
+// reflection), and on 2026-10-30 the 190 entries that did not pass the
+// religious-content audit were removed too, so the dataset holds 332
+// entries with gaps in the original 1..524 id range — ids are NOT renumbered.
 const ARABIC_RE = /[؀-ۿ]/;
 const REMOVED_IDS = [46, 405];
-const RESTORED_IDS = [5, 9, 34, 117, 190, 215, 271, 284, 298];
+// The restored entries that passed the audit (5, 9, 190, 215, 271 and 284 were removed by it).
+const RESTORED_IDS = [34, 117, 298];
 
 describe("WAMDAT", () => {
-  it("has exactly 522 entries", () => {
-    expect(WAMDAT).toHaveLength(522);
+  it("has exactly 332 entries", () => {
+    expect(WAMDAT).toHaveLength(332);
   });
 
-  it("has unique, ascending ids spanning 1..524 with only the two removed ids missing", () => {
+  it("has unique, ascending ids spanning 1..523, without the two removed ids", () => {
     const ids = WAMDAT.map((e) => e.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (let i = 1; i < ids.length; i++) {
       expect(ids[i]).toBeGreaterThan(ids[i - 1]);
     }
     expect(ids[0]).toBe(1);
-    expect(ids[ids.length - 1]).toBe(524);
+    expect(ids[ids.length - 1]).toBe(523);
     for (const removed of REMOVED_IDS) {
       expect(ids).not.toContain(removed);
     }

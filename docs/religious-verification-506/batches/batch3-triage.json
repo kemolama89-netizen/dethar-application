@@ -1,0 +1,1159 @@
+{
+ "hadith:5": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:6": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:8": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:9": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:10": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:11": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:12": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:13": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:14": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:15": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:16": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:17": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:18": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:19": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:20": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:28": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:29": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:31": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:32": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:34": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:35": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:37": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:38": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:42": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:45": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:46": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:52": {
+  "clean": {
+   "abudawud": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:54": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:61": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:64": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:65": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:67": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:68": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:70": {
+  "clean": {},
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:71": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:72": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:73": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:74": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:76": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:77": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:80": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:84": {
+  "clean": {
+   "tirmidhi": false,
+   "abudawud": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:86": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:87": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:88": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:89": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:90": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:91": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:94": {
+  "clean": {
+   "tirmidhi": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:97": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:99": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:102": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:103": {
+  "clean": {
+   "tirmidhi": true,
+   "abudawud": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:105": {
+  "clean": {
+   "abudawud": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:107": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:108": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:109": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:110": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:111": {
+  "clean": {},
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:112": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:114": {
+  "clean": {
+   "tirmidhi": false,
+   "abudawud": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:116": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:117": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:118": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:120": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:123": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:127": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:128": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:134": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:137": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:138": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:139": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:140": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:141": {
+  "clean": {
+   "ibnmajah": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:142": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:143": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:145": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:147": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:148": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:150": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:151": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:152": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:153": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:154": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:156": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:157": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:160": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:162": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:163": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:166": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:168": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:169": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:173": {
+  "clean": {
+   "tirmidhi": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:174": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:176": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:181": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:186": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:191": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:194": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:195": {
+  "clean": {
+   "tirmidhi": false,
+   "abudawud": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:196": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:197": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:198": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:199": {
+  "clean": {
+   "bukhari": false,
+   "muslim": true
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:muslim-38": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:muslim-373": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-482": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-798": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-804": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:muslim-817": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:muslim-2553": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2564": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2566": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2695": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2700": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:muslim-2733": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:muslim-2734": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2749": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2759": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2822": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2963": {
+  "clean": {
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:muslim-2965": {
+  "clean": {
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:bukhari-39": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-69": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:bukhari-1145": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:bukhari-1283": {
+  "clean": {
+   "bukhari": false,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:bukhari-1469": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:bukhari-2320": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-2996": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:bukhari-5269": {
+  "clean": {
+   "bukhari": true,
+   "muslim": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:bukhari-5986": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-5991": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:bukhari-6116": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6309": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6340": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6407": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6412": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6416": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6446": {
+  "clean": {
+   "bukhari": true,
+   "muslim": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:tirmidhi-1987": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:tirmidhi-2346": {
+  "clean": {
+   "tirmidhi": false,
+   "ibnmajah": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:tirmidhi-2399": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:tirmidhi-2518": {
+  "clean": {
+   "tirmidhi": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:tirmidhi-3372": {
+  "clean": {
+   "tirmidhi": true,
+   "ibnmajah": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:tirmidhi-3375": {
+  "clean": {
+   "tirmidhi": true,
+   "ibnmajah": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:tirmidhi-3377": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:tirmidhi-3556": {
+  "clean": {
+   "tirmidhi": true,
+   "ibnmajah": false
+  },
+  "allClean": false,
+  "anyClean": true
+ },
+ "hadith:ibnmajah-3818": {
+  "clean": {
+   "ibnmajah": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:ibnmajah-4032": {
+  "clean": {
+   "ibnmajah": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6018": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6464": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6011": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:bukhari-6035": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "hadith:bukhari-2989": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6012": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6064": {
+  "clean": {
+   "bukhari": true
+  },
+  "allClean": true,
+  "anyClean": true
+ },
+ "hadith:bukhari-6477": {
+  "clean": {
+   "bukhari": false
+  },
+  "allClean": false,
+  "anyClean": false
+ },
+ "startup:tirmidhi-3377": {
+  "clean": {
+   "tirmidhi": true
+  },
+  "allClean": true,
+  "anyClean": true
+ }
+}

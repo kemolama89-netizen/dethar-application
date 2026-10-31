@@ -319,8 +319,8 @@ export const MISC_CATEGORIES: Record<MiscCategoryKey, MiscCategoryMeta> = {
 // Deferred to idle time (same requestIdleCallback-with-timeout-fallback
 // pattern App.tsx already uses for its own screen-chunk prefetching)
 // rather than running synchronously at module-evaluation time: this module
-// is bundled together with useMiscSpeech (their only two importers,
-// MiscLibraryScreen/MiscCategoryScreen, are both lazy-loaded together), so
+// is bundled with MiscLibraryScreen/MiscCategoryScreen (its only two
+// importers, both lazy-loaded together), so
 // evaluating it happens either during App.tsx's post-mount idle-prefetch of
 // every screen, or right when the user first navigates into a Misc screen
 // on a cold cache — 20 synchronous DOM head mutations at exactly that
@@ -337,6 +337,8 @@ function schedulePreload(run: () => void) {
 
 if (typeof document !== "undefined") {
   schedulePreload(() => {
+    // The page may be gone by the time this runs (e.g. a test environment torn down).
+    if (typeof document === "undefined") return;
     Object.values(MISC_CATEGORIES)
       .map((meta) => meta.image)
       .filter((src): src is string => Boolean(src))
@@ -414,6 +416,24 @@ export interface MiscDuaItem {
   source_en?: string;
   occasion_en?: string;
   note_en?: string;
+  /**
+   * Direct link to the cited ayah/narration — set only where it was verified
+   * (see MISC_SOURCE_VERIFICATION). Never derived or guessed for the rest.
+   */
+  url?: string;
+  /** Where `englishMeaning` comes from — present only for items whose translation was traced (MISC_SOURCE_VERIFICATION). */
+  translation?: MiscTranslationSource;
+  /** An open verification issue for the review screen, in plain words. */
+  reviewNote?: string;
+}
+
+export interface MiscTranslationSource {
+  /** "published": a published translation quoted (any adjustment is named in `source`); "editorial": DITHAR's own rendering. */
+  kind: "published" | "editorial";
+  source: string;
+  url?: string;
+  /** Reviewed by a person — false until confirmed in the review screen. */
+  reviewed: boolean;
 }
 
 const MISC_DUAS_BASE: MiscDuaItem[] = [
@@ -447,14 +467,14 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     id: "allahumma-ighfir-li-warhamni",
     text_ar: "اللهم اغفر لي وارحمني واهدني وعافني وارزقني.",
     count_ar: "بدون عدد محدد",
-    source_ar: "صحيح مسلم",
+    source_ar: "صحيح مسلم (2697)",
     categories: ["comprehensive"],
   },
   {
     id: "allahumma-ihdini-wasaddidni",
     text_ar: "اللهم اهدني وسددني.",
     count_ar: "بدون عدد محدد",
-    source_ar: "صحيح مسلم",
+    source_ar: "صحيح مسلم (2725)",
     // Also listed at Master file 19.4 under "الهداية والثبات" — linked by
     // category, not duplicated (19.4: "النص موجود أصلًا في 1.4").
     // 2026-08 classification audit: single-theme guidance dua (no other
@@ -467,7 +487,7 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     text_ar:
       "اللهم أصلح لي ديني الذي هو عصمة أمري، وأصلح لي دنياي التي فيها معاشي، وأصلح لي آخرتي التي فيها معادي، واجعل الحياة زيادة لي في كل خير، واجعل الموت راحة لي من كل شر.",
     count_ar: "بدون عدد محدد",
-    source_ar: "صحيح مسلم",
+    source_ar: "صحيح مسلم (2720)",
     categories: ["comprehensive"],
   },
   {
@@ -486,9 +506,9 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     count_ar: "بدون عدد محدد",
     narrator_ar: "عبد الله بن عمر رضي الله عنهما",
     source_ar:
-      "سنن أبي داود (5074)، وسنن ابن ماجه (3871)، ومسند أحمد (4785) — عن عبد الله بن عمر رضي الله عنهما، إسناده صحيح",
+      "سنن أبي داود (5074) واللفظ له، وسنن ابن ماجه (3871) بنحوه، ومسند أحمد (4785) — عن عبد الله بن عمر رضي الله عنهما، صححه الألباني",
     note_ar:
-      "الصيغة الشائعة «اللهم إني أسألك العفو والعافية في الدنيا والآخرة» دمج تقريبي غير حرفي لجملتين من هذا الحديث؛ اعتُمد هنا اللفظ الكامل كما ثبت.",
+      "اللفظ هنا لفظ أبي داود (5074) برواية عثمان بن أبي شيبة («عوراتي»). وفي رواية ابن ماجه (3871): «اللهم إني أسألك العفو والعافية في الدنيا والآخرة»، و«أعوذ بك أن أُغتال من تحتي»؛ فلم يُدمج اللفظان.",
     // 2026-08 classification audit: the dua's second half is a full
     // directional refuge/protection formula ("احفظني من بين يدي... وأعوذ
     // بعظمتك أن أُغتال من تحتي"), matching the shape of other
@@ -500,7 +520,8 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     text_ar:
       "اللهم اقسم لنا من خشيتك ما يحول بيننا وبين معاصيك، ومن طاعتك ما تبلغنا به جنتك، ومن اليقين ما تهون به علينا مصيبات الدنيا، ومتعنا بأسماعنا، وأبصارنا، وقوتنا ما أحييتنا، واجعله الوارث منا، واجعل ثأرنا على من ظلمنا، وانصرنا على من عادانا، ولا تجعل مصيبتنا في ديننا، ولا تجعل الدنيا أكبر همنا، ولا مبلغ علمنا، ولا تسلط علينا من لا يرحمنا.",
     count_ar: "بدون عدد محدد",
-    source_ar: "جامع الترمذي (3502)، حسن عند الترمذي",
+    source_ar:
+      "جامع الترمذي (3502) — عن عبد الله بن عمر رضي الله عنهما؛ قال الترمذي: حسن غريب، وحسّنه الألباني، وضعّفه زبير علي زئي",
     // 2026-08 classification audit: "مصيبات الدنيا" is one clause among
     // many (خشية/طاعة/يقين/رزق/نصر...) in a genuinely multi-theme
     // comprehensive dua — not a distress-specific supplication.
@@ -510,10 +531,11 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
   {
     id: "allahumma-bi-ilmika-al-ghayb",
     text_ar:
-      "اللهم بعلمك الغيب، وقدرتك على الخلق، أحيني ما علمت الحياة خيرًا لي، وتوفني إذا علمت الوفاة خيرًا لي، اللهم إني أسألك خشيتك في الغيب والشهادة، وأسألك كلمة الحق في الرضا والغضب، وأسألك القصد في الفقر والغنى، وأسألك نعيمًا لا ينفد، وأسألك قرة عين لا تنقطع، وأسألك الرضا بعد القضاء، وأسألك برد العيش بعد الموت، وأسألك لذة النظر إلى وجهك، والشوق إلى لقائك، في غير ضراء مضرة ولا فتنة مضلة، اللهم زينا بزينة الإيمان واجعلنا هداة مهتدين.",
+      "اللهم بعلمك الغيب، وقدرتك على الخلق، أحيني ما علمت الحياة خيرًا لي، وتوفني إذا علمت الوفاة خيرًا لي، اللهم وأسألك خشيتك في الغيب والشهادة، وأسألك كلمة الحق في الرضا والغضب، وأسألك القصد في الفقر والغنى، وأسألك نعيمًا لا ينفد، وأسألك قرة عين لا تنقطع، وأسألك الرضاء بعد القضاء، وأسألك برد العيش بعد الموت، وأسألك لذة النظر إلى وجهك، والشوق إلى لقائك، في غير ضراء مضرة ولا فتنة مضلة، اللهم زينا بزينة الإيمان واجعلنا هداة مهتدين.",
     count_ar: "بدون عدد محدد",
     narrator_ar: "عمار بن ياسر رضي الله عنه",
-    source_ar: "سنن النسائي (1305)، ومسند أحمد (18351) — عن عمار بن ياسر رضي الله عنه، صححه الألباني",
+    source_ar:
+      "سنن النسائي (1305) واللفظ له، ومسند أحمد (18351) — عن عمار بن ياسر رضي الله عنه، صححه الألباني، وحسّن إسناده زبير علي زئي",
     categories: ["comprehensive", "guidance"],
   },
   {
@@ -523,7 +545,7 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
     count_ar: "بدون عدد محدد",
     narrator_ar: "شداد بن أوس رضي الله عنه",
     source_ar:
-      "المعجم الكبير للطبراني، ومسند أحمد، وصحيح ابن حبان — عن شداد بن أوس رضي الله عنه، صححه الألباني في السلسلة الصحيحة (3228)",
+      "المعجم الكبير للطبراني (7135) واللفظ له — عن شداد بن أوس رضي الله عنه، قال الألباني في السلسلة الصحيحة (3228): إسناده صحيح؛ وله ألفاظ أخرى عند أحمد وابن حبان",
     categories: ["comprehensive", "guidance"],
   },
   {
@@ -1271,52 +1293,55 @@ const MISC_DUAS_BASE: MiscDuaItem[] = [
 // pre-existing, already-verified text_en from written-adhkar.ts's "misc-5"/
 // "misc-6"/"misc-4" entries (never invented), with a plain transliteration
 // of that same short, extremely well-known text added alongside it.
+// Exception: the englishMeaning of every id in MISC_SOURCE_VERIFICATION
+// (below) whose translation is "published" is now that published
+// translation instead — its credit is recorded there.
 const MISC_ENGLISH_CONTENT: Record<string, { englishMeaning: string; englishTransliteration: string }> = {
   "rabbana-atina": {
-    englishMeaning: "Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.",
+    englishMeaning: "Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.",
     englishTransliteration: "Rabbana aatina fid-dunya hasanatan wa fil-aakhirati hasanatan wa qina ‘adhaaban-naar.",
   },
   "allahumma-inni-asaluka-alhuda": {
-    englishMeaning: "O Allah, I ask You for guidance, piety, chastity, and self-sufficiency (contentment of the heart).",
+    englishMeaning: "O Allah, I beg of Thee the right guidance, safeguard against evils, chastity and freedom from want.",
     englishTransliteration: "Allahumma inni as'aluka al-huda wat-tuqa wal-‘afaafa wal-ghina.",
   },
   "allahumma-ighfir-li-warhamni": {
-    englishMeaning: "O Allah, forgive me, have mercy on me, guide me, grant me well-being, and provide for me.",
+    englishMeaning: "O Allah, grant me pardon, have mercy upon me, direct me to the path of righteousness, grant me protection and provide me sustenance.",
     englishTransliteration: "Allahummaghfir li, warhamni, wahdini, wa ‘aafini, warzuqni.",
   },
   "allahumma-ihdini-wasaddidni": {
-    englishMeaning: "O Allah, guide me and make me steadfast/upright.",
+    englishMeaning: "O Allah, direct me to the right path and make me adhere to the straight path.",
     englishTransliteration: "Allahummahdini wa saddidni.",
   },
   "allahumma-aslih-li-dini": {
     englishMeaning:
-      "O Allah, set right for me my religion, which is the safeguard of my affairs; set right for me my worldly life, in which is my livelihood; and set right for me my Hereafter, to which is my return. Make life a means of increase for me in every good, and make death a relief for me from every evil.",
+      "O Allah, set right for me my religion which is the safeguard of my affairs. And set right for me the affairs of my world wherein is my living. And set right for me my Hereafter on which depends my after-life. And make the life for me (a source) of abundance for every good and make my death a source of comfort for me protecting me against every evil.",
     englishTransliteration:
       "Allahumma aslih li deeni alladhi huwa ‘ismatu amri, wa aslih li dunyaaya allati feeha ma‘aashi, wa aslih li aakhirati allati feeha ma‘aadi, waj‘alil-hayaata ziyaadatan li fi kulli khayr, waj‘alil-mawta raahatan li min kulli sharr.",
   },
   "allahumma-inni-asaluka-min-al-khayr-kullih": {
     englishMeaning:
-      "O Allah, I ask You for all good, its immediate and its delayed, what I know of it and what I do not know; and I seek refuge in You from all evil, its immediate and its delayed, what I know of it and what I do not know. O Allah, I ask You for the good that Your servant and Prophet asked You for, and I seek refuge in You from the evil that Your servant and Prophet sought refuge from. O Allah, I ask You for Paradise and whatever word or deed brings [one] closer to it, and I seek refuge in You from the Fire and whatever word or deed brings [one] closer to it, and I ask You to make every decree You ordain for me good.",
+      "O Allah, I ask You for all that is good, in this world and in the Hereafter, what I know and what I do not know. O Allah, I seek refuge with You from all evil, in this world and in the Hereafter, what I know and what I do not know. O Allah, I ask You for the good that Your slave and Prophet has asked You for, and I seek refuge with You from the evil from which Your slave and Prophet sought refuge. O Allah, I ask You for Paradise and for that which brings one closer to it, in word and deed, and I seek refuge in You from Hell and from that which brings one closer to it, in word and deed. And I ask You to make every decree that You decree concerning me good.",
     englishTransliteration:
       "Allahumma inni as'aluka minal-khayri kullihi, ‘aajilihi wa aajilihi, ma ‘alimtu minhu wa ma lam a‘lam, wa a‘oothu bika minash-sharri kullihi, ‘aajilihi wa aajilihi, ma ‘alimtu minhu wa ma lam a‘lam. Allahumma inni as'aluka min khayri ma sa'alaka ‘abduka wa nabiyyuk, wa a‘oothu bika min sharri ma ‘aadha bihi ‘abduka wa nabiyyuk. Allahumma inni as'alukal-jannata wa ma qarraba ilayha min qawlin aw ‘amal, wa a‘oothu bika minan-naari wa ma qarraba ilayha min qawlin aw ‘amal, wa as'aluka an taj‘ala kulla qadaa'in qadaytahu li khayra.",
   },
   "allahumma-inni-asaluka-al-afiyah-fi-al-dunya-wal-akhirah": {
     englishMeaning:
-      "O Allah, I ask You for well-being in this world and the Hereafter. O Allah, I ask You for pardon and well-being in my religion, my worldly life, my family, and my wealth. O Allah, conceal my faults and calm my fears. O Allah, guard me from before me, from behind me, from my right, from my left, and from above me, and I seek refuge in Your greatness from being taken unaware from beneath me.",
+      "O Allah, I ask Thee for security in this world and in the Hereafter: O Allah! I ask Thee for forgiveness and security in my religion and my worldly affairs, in my family and my property; O Allah! conceal my faults, and keep me safe from the things which I fear; O Allah! guard me in front of me and behind me, on my right hand and on my left, and from above me: and I seek [refuge] in Thy greatness from receiving unexpected harm from below me.",
     englishTransliteration:
       "Allahumma inni as'alukal-‘aafiyata fid-dunya wal-aakhirah, Allahumma inni as'alukal-‘afwa wal-‘aafiyata fi deeni wa dunyaaya wa ahli wa maali, Allahummastur ‘awraati wa aamin raw‘aati, Allahummahfadhni min bayni yadayya wa min khalfi wa ‘an yameeni wa ‘an shimaali wa min fawqi, wa a‘oothu bi‘adhamatika an ughtaala min tahti.",
   },
   "allahumma-iqsim-lana-min-khashyatik": {
     englishMeaning:
-      "O Allah, apportion for us such fear of You as will come between us and disobedience to You, and such obedience to You as will bring us to Your Paradise, and such certainty as will make the calamities of this world easy for us to bear. Let us enjoy our hearing, our sight, and our strength for as long as You keep us alive, and make that a lasting legacy for us. Make our vengeance fall upon those who wrong us, and grant us victory over those who show enmity to us. Do not let our affliction be in our religion, do not make this world our greatest concern or the sum of our knowledge, and do not let anyone who has no mercy for us be given power over us.",
+      "O Allah, apportion for us, fear of You, that shall come between us and disobedience of You, and of obedience to You, which shall cause us to obtain Your Paradise, and of certainty, which shall make the afflictions of the world easy for us, and enjoyment of our hearing, and our seeing, and our strength as long as You keep us alive, and make it the inheritor of us. And let our vengeance be upon those who have wronged us, and aid us against those who show enmity towards us, and do not make our affliction in our religion, and do not make this world our greatest concern, nor the limit of our knowledge, and do not give power over us to those who will not have mercy on us.",
     englishTransliteration:
       "Allahummaqsim lana min khashyatika ma yahoolu baynana wa bayna ma‘aasik, wa min taa‘atika ma tuballighuna bihi jannatak, wa minal-yaqeeni ma tuhawwinu bihi ‘alayna musibaatid-dunya, wa matti‘na bi-asma‘ina wa absaarina wa quwwatina ma ahyaytana, waj‘alhul-waaritha minna, waj‘al tha'rana ‘ala man dhalamana, wansurna ‘ala man ‘aadaana, wa la taj‘al musibatana fi deenina, wa la taj‘alid-dunya akbara hammina wa la mablagha ‘ilmina, wa la tusallit ‘alayna man la yarhamuna.",
   },
   "allahumma-bi-ilmika-al-ghayb": {
     englishMeaning:
-      "O Allah, by Your knowledge of the unseen and Your power over creation, keep me alive as long as You know life is good for me, and take me in death when You know death is good for me. O Allah, I ask You for the fear of You in secret and in public, and I ask You for the word of truth in contentment and in anger, and I ask You for moderation in poverty and in wealth. I ask You for a bliss that never ends, and for a joy of the eye that never ceases. I ask You for contentment after the decree, and for a pleasant life after death, and I ask You for the sweetness of looking upon Your Face, and the longing to meet You, without harmful adversity or misguiding trial. O Allah, adorn us with the adornment of faith and make us guides who are rightly guided.",
+      "O Allah, by Your knowledge of the unseen and Your power over creation, keep me alive so long as You know that living is good for me and cause me to die when You know that death is better for me. O Allah, cause me to fear You in secret and in public. I ask You to make me true in speech in times of pleasure and of anger. I ask You to make me moderate in times of wealth and poverty. And I ask You for everlasting delight and joy that will never cease. I ask You to make me pleased with that which You have decreed and for an easy life after death. I ask You for the sweetness of looking upon Your face and a longing to meet You in a manner that does not entail a calamity that will bring about harm or a trial that will cause deviation. O Allah, beautify us with the adornment of faith and make us among those who guide and are rightly guided.",
     englishTransliteration:
-      "Allahumma bi‘ilmikal-ghayba wa qudratika ‘alal-khalq, ahyini ma ‘alimtal-hayaata khayran li, wa tawaffani idha ‘alimtal-wafaata khayran li. Allahumma inni as'aluka khashyataka fil-ghaybi wash-shahaadah, wa as'aluka kalimatal-haqqi fir-rida wal-ghadab, wa as'alukal-qasda fil-faqri wal-ghina, wa as'aluka na‘eeman la yanfad, wa as'aluka qurrata ‘aynin la tanqati‘, wa as'alukar-rida ba‘dal-qadaa', wa as'aluka barda-l‘aysh ba‘dal-mawt, wa as'aluka ladhdhatan-nadhari ila wajhika wash-shawqa ila liqaa'ika, fi ghayri darraa'a mudirratin wa la fitnatin mudillah. Allahumma zayyinna bizeenatil-eemaan waj‘alna hudaatan muhtadeen.",
+      "Allahumma bi‘ilmikal-ghayba wa qudratika ‘alal-khalq, ahyini ma ‘alimtal-hayaata khayran li, wa tawaffani idha ‘alimtal-wafaata khayran li. Allahumma wa as'aluka khashyataka fil-ghaybi wash-shahaadah, wa as'aluka kalimatal-haqqi fir-rida wal-ghadab, wa as'alukal-qasda fil-faqri wal-ghina, wa as'aluka na‘eeman la yanfad, wa as'aluka qurrata ‘aynin la tanqati‘, wa as'alukar-ridaa'a ba‘dal-qadaa', wa as'aluka barda-l‘aysh ba‘dal-mawt, wa as'aluka ladhdhatan-nadhari ila wajhika wash-shawqa ila liqaa'ika, fi ghayri darraa'a mudirratin wa la fitnatin mudillah. Allahumma zayyinna bizeenatil-eemaan waj‘alna hudaatan muhtadeen.",
   },
   "allahumma-inni-asaluka-al-thabat-fi-al-amr": {
     englishMeaning:
@@ -1702,9 +1727,9 @@ const MISC_ENGLISH_METADATA: Record<
 > = {
   "rabbana-atina": { count_en: "No specific count", source_en: "The Noble Qur'an — Surah al-Baqarah, 2:201" },
   "allahumma-inni-asaluka-alhuda": { count_en: "No specific count", source_en: "Sahih Muslim (2721)" },
-  "allahumma-ighfir-li-warhamni": { count_en: "No specific count", source_en: "Sahih Muslim" },
-  "allahumma-ihdini-wasaddidni": { count_en: "No specific count", source_en: "Sahih Muslim" },
-  "allahumma-aslih-li-dini": { count_en: "No specific count", source_en: "Sahih Muslim" },
+  "allahumma-ighfir-li-warhamni": { count_en: "No specific count", source_en: "Sahih Muslim (2697)" },
+  "allahumma-ihdini-wasaddidni": { count_en: "No specific count", source_en: "Sahih Muslim (2725)" },
+  "allahumma-aslih-li-dini": { count_en: "No specific count", source_en: "Sahih Muslim (2720)" },
   "allahumma-inni-asaluka-min-al-khayr-kullih": {
     count_en: "No specific count",
     source_en: "Sunan Ibn Majah (3846) — narrated by 'A'ishah (may Allah be pleased with her), graded sahih by al-Albani in Sahih Ibn Majah",
@@ -1712,20 +1737,24 @@ const MISC_ENGLISH_METADATA: Record<
   "allahumma-inni-asaluka-al-afiyah-fi-al-dunya-wal-akhirah": {
     count_en: "No specific count",
     source_en:
-      "Sunan Abi Dawud (5074), Sunan Ibn Majah (3871), and Musnad Ahmad (4785) — narrated by Abdullah ibn Umar (may Allah be pleased with both of them), chain graded sahih",
+      "Sunan Abi Dawud (5074), whose wording this is; Sunan Ibn Majah (3871) with similar wording; and Musnad Ahmad (4785) — narrated by Abdullah ibn Umar (may Allah be pleased with both of them), graded sahih by al-Albani",
     note_en:
-      "The commonly heard phrase 'O Allah, I ask You for pardon and well-being in this world and the Hereafter' is an approximate, non-literal merging of two sentences from this hadith; the full wording, as authentically established, is used here.",
+      "The wording here is Abu Dawud's (5074), in Uthman ibn Abi Shaybah's version ('my faults'). Ibn Majah's narration (3871) reads 'O Allah, I ask You for pardon and well-being in this world and the Hereafter' and 'I seek refuge in You from being taken unaware from beneath me'; the two wordings are not merged.",
   },
-  "allahumma-iqsim-lana-min-khashyatik": { count_en: "No specific count", source_en: "Jami` at-Tirmidhi (3502), graded hasan by al-Tirmidhi" },
+  "allahumma-iqsim-lana-min-khashyatik": {
+    count_en: "No specific count",
+    source_en:
+      "Jami` at-Tirmidhi (3502) — narrated by Abdullah ibn Umar (may Allah be pleased with both of them); al-Tirmidhi said: hasan gharib; graded hasan by al-Albani and da'if by Zubair Ali Za'i",
+  },
   "allahumma-bi-ilmika-al-ghayb": {
     count_en: "No specific count",
     source_en:
-      "Sunan an-Nasa'i (1305) and Musnad Ahmad (18351) — narrated by Ammar ibn Yasir (may Allah be pleased with him), graded sahih by al-Albani",
+      "Sunan an-Nasa'i (1305), whose wording this is, and Musnad Ahmad (18351) — narrated by Ammar ibn Yasir (may Allah be pleased with him), graded sahih by al-Albani; Zubair Ali Za'i graded its chain hasan",
   },
   "allahumma-inni-asaluka-al-thabat-fi-al-amr": {
     count_en: "No specific count",
     source_en:
-      "Al-Mu'jam al-Kabir (al-Tabarani), Musnad Ahmad, and Sahih Ibn Hibban — narrated by Shaddad ibn Aws (may Allah be pleased with him), graded sahih by al-Albani in Silsilat al-Ahadith as-Sahihah (3228)",
+      "Al-Mu'jam al-Kabir (al-Tabarani) (7135), whose wording this is — narrated by Shaddad ibn Aws (may Allah be pleased with him); al-Albani said in Silsilat al-Ahadith as-Sahihah (3228): its chain is sahih. Other wordings are in Musnad Ahmad and Sahih Ibn Hibban",
   },
   "rabbi-aini-wala-tuin-alayya": { count_en: "No specific count", source_en: "Jami` at-Tirmidhi (3551), graded hasan sahih by al-Tirmidhi" },
 
@@ -1947,11 +1976,125 @@ const MISC_QURAN_REFS: Record<string, QuranRef> = {
   "rabbana-atmim-lana-nurana": { surah: 66, fromAyah: 8, toAyah: 8, excerpt: true },
 };
 
+// Source verification, batch 1 (2026-10-23) — the direct source link and the
+// credit for `englishMeaning`, keyed by id like the layers above. Each item's
+// Arabic was compared with its cited narration in the Arabic editions of
+// fawazahmed0/hadith-api@1 (jsDelivr; the copy used is in
+// src/lib/__fixtures__/hadith-api-misc-duas-batch1.json, which
+// misc-library.test.ts checks against), and its `englishMeaning` was
+// replaced by the published translation of that same narration in the
+// dataset's English edition. sunnah.com and dorar.net refuse automated
+// requests, so their pages could not be opened directly: their links below
+// are the ones the content reviewer supplied, cross-checked against the
+// dataset's book/in-book numbering (or, for 2725a and Dorar, a search index
+// of the page). The English editions other than Sahih Muslim name no
+// translator, so none is named here — confirm the credit on sunnah.com.
+const SUNNAH_DATASET_EN = (book: string) =>
+  `the published English translation of ${book} in the English edition of fawazahmed0/hadith-api (the dataset names no translator; confirm the credit on sunnah.com)`;
+
+const MISC_SOURCE_VERIFICATION: Record<string, Pick<MiscDuaItem, "url" | "translation" | "reviewNote">> = {
+  "rabbana-atina": {
+    url: "https://quran.com/2/201",
+    translation: {
+      kind: "published",
+      source: "Saheeh International (quran.com translation 20), trimmed to the dua's words",
+      url: "https://quran.com/2/201",
+      reviewed: false,
+    },
+  },
+  "allahumma-inni-asaluka-alhuda": {
+    url: "https://sunnah.com/muslim:2721a",
+    translation: {
+      kind: "published",
+      source: "Abdul Hamid Siddiqui's published translation of Sahih Muslim (2721a), verbatim except a comma for the full stop after \"O Allah\"",
+      url: "https://sunnah.com/muslim:2721a",
+      reviewed: false,
+    },
+  },
+  "allahumma-ighfir-li-warhamni": {
+    url: "https://sunnah.com/muslim:2697b",
+    translation: {
+      kind: "published",
+      source: "Abdul Hamid Siddiqui's published translation of Sahih Muslim (2697b), verbatim",
+      url: "https://sunnah.com/muslim:2697b",
+      reviewed: false,
+    },
+  },
+  "allahumma-ihdini-wasaddidni": {
+    url: "https://sunnah.com/muslim:2725a",
+    translation: {
+      kind: "published",
+      source: "Abdul Hamid Siddiqui's published translation of Sahih Muslim (2725a), verbatim — the dua's words only, without the Prophet's ﷺ explanation that follows",
+      url: "https://sunnah.com/muslim:2725a",
+      reviewed: false,
+    },
+  },
+  "allahumma-aslih-li-dini": {
+    url: "https://sunnah.com/muslim:2720",
+    translation: {
+      kind: "published",
+      source: "Abdul Hamid Siddiqui's published translation of Sahih Muslim (2720), verbatim",
+      url: "https://sunnah.com/muslim:2720",
+      reviewed: false,
+    },
+  },
+  "allahumma-inni-asaluka-min-al-khayr-kullih": {
+    url: "https://sunnah.com/ibnmajah:3846",
+    translation: {
+      kind: "published",
+      source: `${SUNNAH_DATASET_EN("Sunan Ibn Majah (3846)")}, verbatim`,
+      url: "https://sunnah.com/ibnmajah:3846",
+      reviewed: false,
+    },
+  },
+  "allahumma-inni-asaluka-al-afiyah-fi-al-dunya-wal-akhirah": {
+    url: "https://sunnah.com/abudawud/43/302",
+    translation: {
+      kind: "published",
+      source: `${SUNNAH_DATASET_EN("Sunan Abi Dawud (5074)")}, with two marked adjustments: "my faults" for its "my fault or faults (according to Uthman's version)", since the Arabic here is Uthman's version, and "[refuge]", missing from the published text`,
+      url: "https://sunnah.com/abudawud/43/302",
+      reviewed: false,
+    },
+    reviewNote: "The Musnad Ahmad (4785) reference in the source line was not checked in this pass.",
+  },
+  "allahumma-iqsim-lana-min-khashyatik": {
+    url: "https://sunnah.com/tirmidhi:3502",
+    translation: {
+      kind: "published",
+      source: `${SUNNAH_DATASET_EN("Jami` at-Tirmidhi (3502)")}, verbatim, without its transliteration`,
+      url: "https://sunnah.com/tirmidhi:3502",
+      reviewed: false,
+    },
+  },
+  "allahumma-bi-ilmika-al-ghayb": {
+    url: "https://sunnah.com/nasai:1305",
+    translation: {
+      kind: "published",
+      source: `${SUNNAH_DATASET_EN("Sunan an-Nasa'i (1305)")}, verbatim except a missing space ("askYou"), without its transliteration`,
+      url: "https://sunnah.com/nasai:1305",
+      reviewed: false,
+    },
+    reviewNote:
+      "Arabic corrected to an-Nasa'i 1305 on 2026-10-23: «اللهم وأسألك خشيتك» (was «اللهم إني أسألك خشيتك», which is not in 1305 or 1306) and «الرضاء بعد القضاء» as the edition spells it. The Musnad Ahmad (18351) wording was not checked.",
+  },
+  "allahumma-inni-asaluka-al-thabat-fi-al-amr": {
+    url: "https://dorar.net/h/tD2SBsyX",
+    translation: {
+      kind: "editorial",
+      source: "DITHAR's own editorial translation of the al-Silsilah as-Sahihah (3228) wording — no published English translation of this narration was found",
+      reviewed: false,
+    },
+    reviewNote:
+      "Dorar's listing for this dua also shows al-Albani grading other chains/wordings da'if (Da'if al-Tirmidhi 3407, Da'if an-Nasa'i 1303, al-Kalim at-Tayyib 105) — read through a mirror of the listing, since dorar.net refuses automated requests; Tabarani's number 7135 comes from the same listing. Needs scholarly confirmation.",
+  },
+};
+
 export const MISC_DUAS: MiscDuaItem[] = MISC_DUAS_BASE.map((item) => {
   const en = MISC_ENGLISH_CONTENT[item.id];
   const meta = MISC_ENGLISH_METADATA[item.id];
+  const verified = MISC_SOURCE_VERIFICATION[item.id];
   const quranRef = item.isQuranic ? MISC_QURAN_REFS[item.id] : undefined;
-  return quranRef ? { ...item, ...en, ...meta, quranRef } : { ...item, ...en, ...meta };
+  return quranRef ? { ...item, ...en, ...meta, ...verified, quranRef } : { ...item, ...en, ...meta, ...verified };
 });
 
 // Per-category item counts, computed ONCE here (module load) rather than by
@@ -1966,15 +2109,6 @@ export const MISC_CATEGORY_COUNTS: Record<MiscCategoryKey, number> = MISC_CATEGO
   },
   {} as Record<MiscCategoryKey, number>,
 );
-
-// A small, FIXED editorial selection for the landing screen's "مختارات
-// اليوم" strip — never randomly generated, always a hand-picked subset of
-// the verified items above (per spec: "must select from verified Master
-// Content items... No invented explanation"). Deliberately a short,
-// unchanging list rather than a rotating/randomized one, since there is no
-// existing mechanism in this app for a genuine "daily" rotation and
-// inventing one was out of scope for this task.
-export const MISC_FEATURED_IDS: string[] = ["sayyid-al-istighfar", "rabbana-atina", "dua-al-karb"];
 
 // Interface strings for the new library screens — Arabic-only, rendered
 // regardless of the app's global language toggle (see MiscLibraryScreen's
@@ -2015,7 +2149,7 @@ export const miscLibraryLabels = {
     searchPlaceholder: "Search the library...",
     searchAria: "Search Adhkar & Duas",
     noResults: "No matching results",
-    featuredTitle: "Today's Selections",
+    featuredTitle: "Daily Picks",
     itemsCount: (n: number) => `${n} ${n === 1 ? "dua" : "duas"}`,
     countLabel: "Count",
     sourceLabelHadith: "Reference / Takhrij",
@@ -2031,8 +2165,8 @@ export const miscLibraryLabels = {
   },
 };
 
-// Bilingual interface strings for the "Listen" card action and the inline
-// Transliteration/Meaning section headings — kept separate from
+// Bilingual interface strings for the inline Transliteration/Meaning
+// section headings — kept separate from
 // `miscLibraryLabels` above (which stays Arabic-only, unchanged) so this
 // addition carries zero risk to that existing, already-shipped object.
 // Ordinary UI chrome only (aria text, section headings) — never religious
@@ -2044,12 +2178,8 @@ export const miscLibraryLabels = {
 export const miscMeaningLabels = {
   ar: {
     ...dhikrLanguageLabels.ar,
-    listenAria: "استماع",
-    stopListenAria: "إيقاف الاستماع",
   },
   en: {
     ...dhikrLanguageLabels.en,
-    listenAria: "Listen",
-    stopListenAria: "Stop",
   },
 };

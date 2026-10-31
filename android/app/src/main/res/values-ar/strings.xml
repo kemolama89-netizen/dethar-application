@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="widget_label">دِثار — ذكر</string>
+    <string name="widget_description">دعاء أو حديث أو ذكر موثّق على خلفية هادئة</string>
+    <string name="widget_placeholder">﴿أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ﴾ الرعد 28</string>
+    <string name="widget_favorite_add">إضافة إلى المفضلة</string>
+    <string name="widget_favorite_remove">إزالة من المفضلة</string>
+</resources>

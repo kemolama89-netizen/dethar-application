@@ -16,7 +16,7 @@
 // resume). Without Web Audio (no AudioContext — old browsers, tests), it
 // falls back to playUrlQueue.
 import type { AudioChannel, PlayUrlQueueOptions } from "./audioEngine";
-import { claimAudio, playUrlQueue, releaseAudio } from "./audioEngine";
+import { claimAudio, setPlaybackProgressReader, playUrlQueue, releaseAudio } from "./audioEngine";
 
 /** The parts of the Web Audio API used here (a test seam — jsdom has none). */
 export interface AudioBufferLike {
@@ -30,11 +30,18 @@ export interface BufferSourceLike {
   start(when: number, offset?: number): void;
   stop(): void;
 }
+export interface GainNodeLike {
+  gain: { value: number };
+  connect(destination: unknown): unknown;
+  disconnect(): void;
+}
 export interface AudioContextLike {
   readonly currentTime: number;
   readonly state: string;
   readonly destination: unknown;
   createBufferSource(): BufferSourceLike;
+  /** Absent on minimal test fakes: then the sequence plays at full gain. */
+  createGain?(): GainNodeLike;
   decodeAudioData(data: ArrayBuffer): Promise<AudioBufferLike>;
   resume(): Promise<void>;
   suspend(): Promise<void>;
@@ -61,6 +68,7 @@ export function setWebAudioForTesting(options: { createContext?: () => AudioCont
   sharedContext = undefined;
   decoded = new Map();
   previousUrls = [];
+  liveSequences = 0;
 }
 
 /** One AudioContext for the whole app (browsers limit how many may exist). */
@@ -102,6 +110,12 @@ function decodeAll(context: AudioContextLike, urls: readonly string[]): Promise<
   return Promise.all(urls.map((url) => keep.get(url)!));
 }
 
+// Sequences currently holding the context. When the last one ends the
+// context is suspended: a running AudioContext keeps the audio output
+// (and its rendering thread) alive, playing silence — a battery drain for
+// nothing. The next sequence resumes it.
+let liveSequences = 0;
+
 /** How far ahead of "now" the first ayah is scheduled, so it never starts late. */
 const START_LEAD_SECONDS = 0.05;
 
@@ -117,10 +131,26 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
   if (!context) return playUrlQueue(channel, key, urls, options);
 
   let active = true;
+  let live = true;
+  liveSequences += 1;
   const sources: BufferSourceLike[] = [];
+  // The app's own volume (audioVolumeSettings.ts), through one gain node when the context has them —
+  // also at 100 %, so a slider moved mid-playback can still change it.
+  const gain = options.volume !== undefined && context.createGain ? context.createGain() : null;
+  if (gain) {
+    gain.gain.value = Math.min(1, Math.max(0, options.volume!));
+    gain.connect(context.destination);
+  }
+  const output = gain ?? context.destination;
 
   const halt = () => {
     active = false;
+    if (live) {
+      live = false;
+      liveSequences -= 1;
+      if (liveSequences === 0) void context.suspend().catch(() => {});
+    }
+    gain?.disconnect();
     for (const source of sources) {
       source.onended = null;
       try {
@@ -155,8 +185,21 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
       resume: () => {
         if (active) void context.resume().catch(fail);
       },
+      setVolume: (value) => {
+        if (active && gain) gain.gain.value = value;
+      },
     },
   );
+
+  // Position from the Web Audio clock (it freezes while the context is
+  // suspended, i.e. paused) against the scheduled start; the total is the
+  // decoded buffers' real length. Unknown until decoding is done.
+  let scheduled: { startTime: number; totalSeconds: number } | null = null;
+  setPlaybackProgressReader(key, () => {
+    if (!scheduled) return { positionMs: 0, durationMs: null, loading: true };
+    const position = Math.min(scheduled.totalSeconds, Math.max(0, context.currentTime - scheduled.startTime));
+    return { positionMs: Math.round(position * 1000), durationMs: Math.round(scheduled.totalSeconds * 1000), loading: false };
+  });
 
   // Resume now — still inside the user's tap — so the browser allows the
   // audio that starts once decoding is done.
@@ -166,17 +209,20 @@ export function playAudioSequence(channel: AudioChannel, key: string, urls: read
     (buffers) => {
       if (!active) return;
       let at = context.currentTime + START_LEAD_SECONDS;
+      const startTime = at;
+      const totalSeconds = buffers.reduce((sum, buffer, i) => sum + buffer.duration - (i === 0 ? Math.min(options.startAt ?? 0, buffer.duration) : 0), 0);
+      scheduled = { startTime, totalSeconds };
       buffers.forEach((buffer, i) => {
         const offset = i === 0 ? Math.min(options.startAt ?? 0, buffer.duration) : 0;
         const source = context.createBufferSource();
         source.buffer = buffer;
-        source.connect(context.destination);
+        source.connect(output);
         if (i === buffers.length - 1) {
           source.onended = () => {
             if (!active) return;
             halt();
             releaseAudio(key);
-            options.onEnded?.();
+            options.onEnded?.({ durationMs: Math.round(totalSeconds * 1000) });
           };
         }
         if (offset > 0) source.start(at, offset);

@@ -4,4 +4,9 @@
     <string name="title_activity_main">DITHAR</string>
     <string name="package_name">com.dithar.app</string>
     <string name="custom_url_scheme">com.dithar.app</string>
+    <string name="widget_label">DITHAR — Dhikr</string>
+    <string name="widget_description">A verified dua, hadith or dhikr on a calm background</string>
+    <string name="widget_placeholder">“Unquestionably, by the remembrance of Allah hearts are assured.” (Qur\'an 13:28)</string>
+    <string name="widget_favorite_add">Save to Favorites</string>
+    <string name="widget_favorite_remove">Remove from Favorites</string>
 </resources>

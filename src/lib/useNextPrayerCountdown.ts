@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import type { PrayerTimesResult } from "./prayerTimes";
-import { getNextPrayer, getRemainingTime } from "./nextPrayer";
+import { getCountdownFraction, getNextPrayer, getPreviousPrayerTime, getRemainingTime } from "./nextPrayer";
 import type { NextPrayer, RemainingTime } from "./nextPrayer";
+import { isPageVisible, subscribePageVisibility, usePageVisible } from "./pageVisibility";
 
 export interface NextPrayerCountdown extends NextPrayer {
   remaining: RemainingTime;
+  /** How much of the wait since the previous prayer has passed, 0…1 (only when yesterday's Isha is known). */
+  fraction: number | null;
 }
 
 // A deliberately SEPARATE, finer-grained clock from src/lib/useDateTime.ts
@@ -21,14 +24,23 @@ export interface NextPrayerCountdown extends NextPrayer {
 // foundation and useCoordinates, exactly as before. One `setInterval`,
 // cleared on unmount — no leaks, no duplicate timers across re-renders
 // (the effect's own cleanup always runs before any re-subscribe).
-export function useNextPrayerCountdown(todayTimes: PrayerTimesResult, tomorrowFajr: Date): NextPrayerCountdown {
+//
+// While the app is in the background (pageVisibility.ts) it doesn't tick
+// at all — nothing is shown — and it catches up at once when shown again.
+export function useNextPrayerCountdown(todayTimes: PrayerTimesResult, tomorrowFajr: Date, yesterdayIsha?: Date): NextPrayerCountdown {
   const [now, setNow] = useState(() => new Date());
+  const visible = usePageVisible();
+
+  // Shown again: catch up at once.
+  useEffect(() => subscribePageVisibility(() => isPageVisible() && setNow(new Date())), []);
 
   useEffect(() => {
+    if (!visible) return;
     const intervalId = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(intervalId);
-  }, []);
+  }, [visible]);
 
   const next = getNextPrayer(todayTimes, tomorrowFajr, now);
-  return { ...next, remaining: getRemainingTime(next.time, now) };
+  const fraction = yesterdayIsha ? getCountdownFraction(getPreviousPrayerTime(todayTimes, yesterdayIsha, now), next.time, now) : null;
+  return { ...next, remaining: getRemainingTime(next.time, now), fraction };
 }

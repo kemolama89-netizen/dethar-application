@@ -7,8 +7,9 @@
 // localStorage never throws into the UI, every read validated against the
 // recordings registry, and an in-memory mirror for when storage is missing.
 //
-// This only stores the user's choice. Playing the adhan at prayer time is
-// NOT implemented here (no notification/scheduling work in this feature).
+// This only stores the user's choices. Playing the adhan at prayer time
+// (when turned on below) is done by the Android prayer-time alarm — see
+// prayerNotifications.ts.
 import { adhanRecordings, getAdhanRecordingById } from "../data/adhanRecordings";
 import type { AdhanRecording } from "../data/adhanRecordings";
 
@@ -121,7 +122,44 @@ export function saveFajrAdhanChoice(choice: Partial<FajrAdhanChoice>): AdhanAudi
   return next;
 }
 
-/** Test seam: forget the in-memory mirror. */
+/** Test seam: forget the in-memory mirrors. */
 export function resetAdhanAudioSettingsMemoryForTesting(): void {
   memory = null;
+  autoPlayMemory = null;
+}
+
+// ---- playing the adhan at prayer time ----------------------------------------
+// Off by default and set separately for the regular adhan (Dhuhr, Asr,
+// Maghrib, Isha) and for Fajr. When on, the Android prayer-time alarm plays
+// that section's adhan (voice, rotation and mode as chosen above) — see
+// prayerNotifications.ts. Own storage key, like everything in this file.
+export const ADHAN_AUTOPLAY_STORAGE_KEY = "dithar:adhan-audio:autoplay:v1";
+
+export type AdhanAutoPlay = { regular: boolean; fajr: boolean };
+
+let autoPlayMemory: AdhanAutoPlay | null = null;
+
+export function loadAdhanAutoPlay(): AdhanAutoPlay {
+  let parsed: unknown = autoPlayMemory;
+  try {
+    if (typeof localStorage === "undefined") throw new Error("no storage");
+    const raw = localStorage.getItem(ADHAN_AUTOPLAY_STORAGE_KEY);
+    parsed = raw ? JSON.parse(raw) : null;
+  } catch {
+    parsed = autoPlayMemory;
+  }
+  const obj = (parsed && typeof parsed === "object" ? parsed : {}) as Partial<AdhanAutoPlay>;
+  return { regular: obj.regular === true, fajr: obj.fajr === true };
+}
+
+/** Turns auto-adhan on/off for ONE section; the other is kept as is. */
+export function saveAdhanAutoPlay(which: "regular" | "fajr", on: boolean): AdhanAutoPlay {
+  const next = { ...loadAdhanAutoPlay(), [which]: on };
+  autoPlayMemory = next;
+  try {
+    localStorage.setItem(ADHAN_AUTOPLAY_STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    // Best-effort only — the in-memory copy already took effect.
+  }
+  return next;
 }

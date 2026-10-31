@@ -1,0 +1,634 @@
+{
+ "hadith:9": {
+  "result": "fail",
+  "note": "The Prophet's words are verbatim in Bukhari 481, but the narrator's description adds a word: app «وشبّك بين أصابعه», Bukhari 481 «وشبّك أصابعه». Muslim 2585 has no such sentence."
+ },
+ "hadith:13": {
+  "result": "pass-excerpt",
+  "note": "Verbatim in Muslim 2593; the quote starts after the Prophet's address «يا عائشة»."
+ },
+ "hadith:15": {
+  "result": "pass-excerpt",
+  "note": "Verbatim in a Muslim 2607 narration; the final clause about lying («وما يزال الرجل يكذب…») is left out. Bukhari 6094 is the same Companion with other wording."
+ },
+ "hadith:18": {
+  "result": "pass-excerpt",
+  "note": "Verbatim within Muslim 2865 (the closing part of Iyad b. Himar's long sermon hadith)."
+ },
+ "hadith:34": {
+  "result": "pass-excerpt",
+  "note": "One self-contained clause of Muslim 2699, verbatim."
+ },
+ "hadith:35": {
+  "result": "pass-excerpt",
+  "note": "One self-contained clause of Muslim 2564, verbatim."
+ },
+ "hadith:38": {
+  "result": "pass-excerpt",
+  "note": "Clause «والكلمة الطيبة صدقة» of Bukhari 2989 / Muslim 1009, verbatim."
+ },
+ "hadith:42": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 6056 and one Muslim 105 narration («قتّات»); Companion Hudhayfa in both chains."
+ },
+ "hadith:61": {
+  "result": "pass-excerpt",
+  "note": "Closing statement of the Khaybar/Hunayn report, verbatim in Bukhari 3062 («وإن الله ليؤيد…») and Muslim 111."
+ },
+ "hadith:71": {
+  "result": "fail",
+  "note": "The Prophet's words are verbatim in Muslim 1893, but the man's words are paraphrased as speech: app «يا رسول الله، انقطعت بي الحمولة فاحملني», Muslim 1893 «إني أُبدِع بي فاحملني»."
+ },
+ "hadith:72": {
+  "result": "pass",
+  "note": "Verbatim in a Muslim 1153 narration («باعد الله وجهه عن النار سبعين خريفاً»); Bukhari 2840 same Companion, reads «بعّد»."
+ },
+ "hadith:74": {
+  "result": "pass-excerpt",
+  "note": "Verbatim in Muslim 2676 without the opening travel context (Jumdan)."
+ },
+ "hadith:77": {
+  "result": "fail",
+  "note": "The wording is verbatim in Bukhari 110 (Abu Hurayra), but the app gives it to four Companions with only Bukhari 110 cited; Anas' narration (Bukhari 108) reads «من تعمد علي كذباً» and Salama's (Bukhari 109) «من يقل علي ما لم أقل». Attribution/reference needs correcting."
+ },
+ "hadith:80": {
+  "result": "pass",
+  "note": "Verbatim in Muslim 2979 (Abd al-Baqi edition, OpenITI JK000109; hadith-api has no record under this number); Companion Abdullah b. Amr in the chain."
+ },
+ "hadith:86": {
+  "result": "pass-excerpt",
+  "note": "The sentence is verbatim in Muslim 384 (the hadith on answering the muadhdhin)."
+ },
+ "hadith:87": {
+  "result": "pass",
+  "note": "Verbatim in a Muslim 1016 narration; Bukhari 1417 same Companion (Adi b. Hatim)."
+ },
+ "hadith:94": {
+  "result": "pass",
+  "note": "Verbatim in Tirmidhi 2910; Companion Abdullah b. Masud in the chain."
+ },
+ "hadith:102": {
+  "result": "pass",
+  "note": "Verbatim in Muslim 634, including «يعني الفجر والعصر»; Companion Umara b. Ruwayba (via his son)."
+ },
+ "hadith:107": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 5997; Muslim 2318 same Companion, shorter wording."
+ },
+ "hadith:114": {
+  "result": "pass",
+  "note": "Verbatim in Tirmidhi 1924; Abu Dawud 4941 same Companion, slightly different wording."
+ },
+ "hadith:118": {
+  "result": "pass-excerpt",
+  "note": "Verbatim in Muslim 1563 (the Prophet's words, without Abu Qatada's story)."
+ },
+ "hadith:127": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 48 and Muslim 64."
+ },
+ "hadith:139": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 61 (only «قال عبد الله» left out)."
+ },
+ "hadith:145": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 1240; Muslim 2162 same Companion, other order."
+ },
+ "hadith:150": {
+  "result": "pass",
+  "note": "Verbatim in a Muslim 523 narration; Bukhari 7013 same Companion."
+ },
+ "hadith:154": {
+  "result": "pass-excerpt",
+  "note": "Verbatim in Muslim 49 (without the Marwan context)."
+ },
+ "hadith:156": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 5641 (Abu Said and Abu Hurayra together); Muslim 2573 same two Companions."
+ },
+ "hadith:137": {
+  "result": "fail",
+  "note": "The Prophet's words are verbatim in Muslim 2618, but the Companion's address is changed: app «يا رسول الله، علّمني شيئاً أنتفع به», Muslim 2618 «يا نبي الله، علّمني شيئاً أنتفع به»."
+ },
+ "hadith:157": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 5645."
+ },
+ "hadith:166": {
+  "result": "pass-excerpt",
+  "note": "Both answers verbatim in Muslim 1162 (part of Abu Qatada's longer hadith on fasting)."
+ },
+ "hadith:169": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 1521; Muslim 1350 same Companion («من أتى هذا البيت…»)."
+ },
+ "hadith:173": {
+  "result": "pass",
+  "note": "The supplication is verbatim in Tirmidhi 3443; the framing («كان إذا ودّع رجلاً») summarises Ibn Umar's report that the Prophet bade people farewell with it — not presented as a quotation."
+ },
+ "hadith:174": {
+  "result": "pass",
+  "note": "Verbatim in Muslim 2160; Bukhari 6231 same Companion («يسلّم الصغير على الكبير…»)."
+ },
+ "hadith:181": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 7158; Muslim 1717 same Companion («لا يحكم أحد…»)."
+ },
+ "hadith:186": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 7070 and Muslim 98."
+ },
+ "hadith:191": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 3461."
+ },
+ "hadith:195": {
+  "result": "pass",
+  "note": "Verbatim in Tirmidhi 500; Abu Dawud 1052 same Companion («تهاوناً بها» with slightly different wording)."
+ },
+ "hadith:196": {
+  "result": "pass-excerpt",
+  "note": "The Prophet's words are verbatim in Bukhari 553 (reported by Burayda during a campaign)."
+ },
+ "hadith:197": {
+  "result": "pass",
+  "note": "Verbatim in Muslim 82."
+ },
+ "hadith:muslim-38": {
+  "result": "pass",
+  "note": "Verbatim in Muslim 38."
+ },
+ "hadith:muslim-804": {
+  "result": "pass-excerpt",
+  "note": "Verbatim opening of Muslim 804; the item marks it «طرفٌ من الحديث»."
+ },
+ "hadith:muslim-817": {
+  "result": "pass-excerpt",
+  "note": "Umar's quotation of the Prophet is verbatim in Muslim 817 (Abd al-Baqi edition)."
+ },
+ "hadith:muslim-2700": {
+  "result": "pass",
+  "note": "Verbatim in Muslim 2700 (Abd al-Baqi edition; hadith-api lacks the number)."
+ },
+ "hadith:muslim-2733": {
+  "result": "pass",
+  "note": "Verbatim in Muslim 2733 (Abd al-Baqi edition)."
+ },
+ "hadith:muslim-2965": {
+  "result": "pass-excerpt",
+  "note": "The Prophet's words are verbatim in Muslim 2965 (Sad's reply to his son)."
+ },
+ "hadith:bukhari-1283": {
+  "result": "pass-excerpt",
+  "note": "Verbatim closing words of Bukhari 1283, marked «طرفٌ من الحديث»; Muslim 926 same Companion."
+ },
+ "hadith:bukhari-1469": {
+  "result": "pass-excerpt",
+  "note": "Verbatim in Bukhari 1469, marked «طرفٌ من الحديث»."
+ },
+ "hadith:bukhari-2996": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 2996."
+ },
+ "hadith:bukhari-5991": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 5991."
+ },
+ "hadith:tirmidhi-2346": {
+  "result": "pass",
+  "note": "Verbatim in Tirmidhi 2346; Ibn Majah 4141 same Companion."
+ },
+ "hadith:tirmidhi-2518": {
+  "result": "pass",
+  "note": "Verbatim in Tirmidhi 2518."
+ },
+ "hadith:bukhari-6011": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 6011."
+ },
+ "hadith:bukhari-6035": {
+  "result": "pass-excerpt",
+  "note": "Verbatim in Bukhari 6035, marked «طرفٌ من الحديث»."
+ },
+ "hadith:bukhari-6477": {
+  "result": "pass",
+  "note": "Verbatim in Bukhari 6477 (it ends «أبعد مما بين المشرق» in the source too)."
+ },
+ "hadith:5": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 47; Companion named in the chain. Bukhari 6018: same Companion, other wording."
+ },
+ "hadith:6": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6474; Companion named in the chain."
+ },
+ "hadith:8": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 13; Companion named in the chain. Muslim 45: same Companion, other wording."
+ },
+ "hadith:10": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2586; Companion named in the chain. Bukhari 6011: same Companion, other wording."
+ },
+ "hadith:11": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 7376; Companion named in the chain. Muslim 2319: same Companion, other wording."
+ },
+ "hadith:12": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2594; Companion named in the chain."
+ },
+ "hadith:14": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6114 and Muslim 2609; Companion named in the chain."
+ },
+ "hadith:16": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 33; Companion named in the chain. Muslim 59: same Companion, other wording."
+ },
+ "hadith:17": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2588; Companion named in the chain."
+ },
+ "hadith:19": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 91; Companion named in the chain."
+ },
+ "hadith:20": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2699; Companion named in the chain."
+ },
+ "hadith:28": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 3895; Companion named in the chain."
+ },
+ "hadith:29": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1469; Companion named in the chain."
+ },
+ "hadith:31": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2999; Companion named in the chain."
+ },
+ "hadith:32": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2578; Companion named in the chain."
+ },
+ "hadith:37": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 1956; Companion named in the chain."
+ },
+ "hadith:45": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1914; Companion named in the chain."
+ },
+ "hadith:46": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2589; Companion named in the chain."
+ },
+ "hadith:52": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Abu Dawud 4800; Companion named in the chain."
+ },
+ "hadith:54": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2766; Companion named in the chain. Bukhari 3470: same Companion, other wording."
+ },
+ "hadith:64": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2785; Companion named in the chain. Bukhari 4729: same Companion, other wording."
+ },
+ "hadith:65": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 2887; Companion named in the chain."
+ },
+ "hadith:67": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 2493; Companion named in the chain."
+ },
+ "hadith:68": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 4686; Companion named in the chain. Muslim 2583: same Companion, other wording."
+ },
+ "hadith:73": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 223; Companion named in the chain."
+ },
+ "hadith:76": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 118; Companion named in the chain."
+ },
+ "hadith:84": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Abu Dawud 4811; Companion named in the chain. Tirmidhi 1954: same Companion, other wording."
+ },
+ "hadith:88": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 16; Companion named in the chain. Muslim 43: same Companion, other wording."
+ },
+ "hadith:89": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 1903; Companion named in the chain."
+ },
+ "hadith:90": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2560; Companion named in the chain. Bukhari 6077: same Companion, other wording."
+ },
+ "hadith:91": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2631; Companion named in the chain."
+ },
+ "hadith:97": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 2736 and Muslim 2677; Companion named in the chain."
+ },
+ "hadith:99": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2266; Companion named in the chain. Bukhari 6993: same Companion, other wording."
+ },
+ "hadith:103": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 223 and Abu Dawud 561; Companion named in the chain."
+ },
+ "hadith:105": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Abu Dawud 3116; Companion named in the chain."
+ },
+ "hadith:108": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 2072; Companion named in the chain."
+ },
+ "hadith:109": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 1427; Companion named in the chain. Muslim 1034: same Companion, other wording."
+ },
+ "hadith:110": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2982; Companion named in the chain. Bukhari 5353: same Companion, other wording."
+ },
+ "hadith:112": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 2390; Companion named in the chain."
+ },
+ "hadith:116": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 55; Companion named in the chain."
+ },
+ "hadith:117": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 15; Companion named in the chain. Muslim 44: same Companion, other wording."
+ },
+ "hadith:120": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1054; Companion named in the chain."
+ },
+ "hadith:123": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2674; Companion named in the chain."
+ },
+ "hadith:128": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 67; Companion named in the chain."
+ },
+ "hadith:134": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1855; Companion named in the chain."
+ },
+ "hadith:138": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 5027; Companion named in the chain."
+ },
+ "hadith:140": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 37; Companion named in the chain. Bukhari 6117: same Companion, other wording."
+ },
+ "hadith:141": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Ibn Majah 2144; Companion named in the chain."
+ },
+ "hadith:142": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 2139; Companion named in the chain."
+ },
+ "hadith:143": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1164; Companion named in the chain."
+ },
+ "hadith:147": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1006; Companion named in the chain."
+ },
+ "hadith:148": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 3479; Companion named in the chain."
+ },
+ "hadith:151": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1718; Companion named in the chain. Bukhari 2697: same Companion, other wording."
+ },
+ "hadith:152": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 867; Companion named in the chain."
+ },
+ "hadith:153": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 1393; Companion named in the chain."
+ },
+ "hadith:160": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 5757 and Muslim 2220; Companion named in the chain."
+ },
+ "hadith:162": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 1467; Companion named in the chain."
+ },
+ "hadith:163": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 5090; Companion named in the chain. Muslim 1466: same Companion, other wording."
+ },
+ "hadith:168": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 1773 and Muslim 1349; Companion named in the chain."
+ },
+ "hadith:176": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6696; Companion named in the chain."
+ },
+ "hadith:194": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2956; Companion named in the chain."
+ },
+ "hadith:198": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 671; Companion named in the chain."
+ },
+ "hadith:199": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 35; Companion named in the chain. Bukhari 9: same Companion, other wording."
+ },
+ "hadith:muslim-373": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 373; Companion named in the chain."
+ },
+ "hadith:muslim-482": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 482; Companion named in the chain."
+ },
+ "hadith:muslim-798": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 798; Companion named in the chain."
+ },
+ "hadith:muslim-2553": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2553; Companion named in the chain."
+ },
+ "hadith:muslim-2564": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2564; Companion named in the chain."
+ },
+ "hadith:muslim-2566": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2566; Companion named in the chain."
+ },
+ "hadith:muslim-2695": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2695; Companion named in the chain."
+ },
+ "hadith:muslim-2734": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2734; Companion named in the chain."
+ },
+ "hadith:muslim-2749": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2749; Companion named in the chain."
+ },
+ "hadith:muslim-2759": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2759; Companion named in the chain."
+ },
+ "hadith:muslim-2822": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2822; Companion named in the chain."
+ },
+ "hadith:muslim-2963": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Muslim 2963; Companion named in the chain."
+ },
+ "hadith:bukhari-39": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 39; Companion named in the chain."
+ },
+ "hadith:bukhari-69": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 69; Companion named in the chain. Muslim 1734: same Companion, other wording."
+ },
+ "hadith:bukhari-1145": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 1145; Companion named in the chain. Muslim 758: same Companion, other wording."
+ },
+ "hadith:bukhari-2320": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 2320 and Muslim 1553; Companion named in the chain."
+ },
+ "hadith:bukhari-5269": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 5269; Companion named in the chain. Muslim 127: same Companion, other wording."
+ },
+ "hadith:bukhari-5986": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 5986 and Muslim 2557; Companion named in the chain."
+ },
+ "hadith:bukhari-6116": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6116; Companion named in the chain."
+ },
+ "hadith:bukhari-6309": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6309; Companion named in the chain."
+ },
+ "hadith:bukhari-6340": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6340 and Muslim 2735; Companion named in the chain."
+ },
+ "hadith:bukhari-6407": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6407; Companion named in the chain."
+ },
+ "hadith:bukhari-6412": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6412; Companion named in the chain."
+ },
+ "hadith:bukhari-6416": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6416; Companion named in the chain."
+ },
+ "hadith:bukhari-6446": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6446 and Muslim 1051; Companion named in the chain."
+ },
+ "hadith:tirmidhi-1987": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 1987; Companion named in the chain."
+ },
+ "hadith:tirmidhi-2399": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 2399; Companion named in the chain."
+ },
+ "hadith:tirmidhi-3372": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 3372 and Ibn Majah 3828; Companion named in the chain."
+ },
+ "hadith:tirmidhi-3375": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 3375; Companion named in the chain. Ibn Majah 3793: same Companion, other wording."
+ },
+ "hadith:tirmidhi-3377": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 3377; Companion named in the chain."
+ },
+ "hadith:tirmidhi-3556": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 3556; Companion named in the chain. Ibn Majah 3865: same Companion, other wording."
+ },
+ "hadith:ibnmajah-3818": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Ibn Majah 3818; Companion named in the chain."
+ },
+ "hadith:ibnmajah-4032": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Ibn Majah 4032; Companion named in the chain."
+ },
+ "hadith:bukhari-6018": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6018; Companion named in the chain."
+ },
+ "hadith:bukhari-6464": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6464; Companion named in the chain."
+ },
+ "hadith:bukhari-2989": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 2989; Companion named in the chain."
+ },
+ "hadith:bukhari-6012": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6012; Companion named in the chain."
+ },
+ "hadith:bukhari-6064": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Bukhari 6064; Companion named in the chain."
+ },
+ "startup:tirmidhi-3377": {
+  "result": "pass",
+  "note": "Verbatim (apart from the framing «عن…/قال») in Tirmidhi 3377; Companion named in the chain."
+ },
+ "hadith:70": {
+  "result": "pass",
+  "note": "Verbatim in al-Mustadrak no. 58 (ed. Mustafa Ata, Dar al-Kutub al-Ilmiyya; OpenITI Shamela0002266), Ibn Umar in the chain."
+ },
+ "hadith:111": {
+  "result": "pass",
+  "note": "Verbatim in al-Adab al-Mufrad no. 594 (ed. Abd al-Baqi, Dar al-Bashair; OpenITI JK000011), Abu Hurayra in the chain."
+ }
+}

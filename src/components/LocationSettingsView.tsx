@@ -97,7 +97,7 @@ export function LocationSettingsView({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="mt-1 flex items-center gap-2">
+      <div className="dithar-sticky-header mt-1 flex items-center gap-2">
         <button
           type="button"
           onClick={onBack}
@@ -142,7 +142,7 @@ export function LocationSettingsView({ onBack }: { onBack: () => void }) {
           onClick={() => void handleDetect()}
           disabled={detect === "detecting"}
           className="flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-[14px] font-semibold"
-          style={{ borderColor: "var(--color-gold)", background: "var(--color-primary)", color: "var(--color-gold)" }}
+          style={{ borderColor: "var(--color-gold)", background: "var(--color-primary)", color: "var(--color-gold-on-primary)" }}
         >
           <LocateFixed size={17} strokeWidth={1.8} />
           {t.locationDetectAuto}

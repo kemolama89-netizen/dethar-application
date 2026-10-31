@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Language } from "../theme/LanguageContext";
 import { getDateTimeInfo } from "./dateTime";
 import type { DateTimeInfo } from "./dateTime";
+import { isPageVisible, subscribePageVisibility, usePageVisible } from "./pageVisibility";
 
 // Ticks `now` once a minute — aligned to the next real minute boundary
 // (not a plain setInterval(60_000), which would drift against the wall
@@ -13,10 +14,17 @@ import type { DateTimeInfo } from "./dateTime";
 // handled by this same minute tick — within a minute of real local
 // midnight, `now` (and everything derived from it below, incl. dateKey)
 // simply reflects the new day on its own; no separate midnight watcher.
+// Paused while the app is in the background (pageVisibility.ts); shown
+// again, it catches up at once.
 export function useDateTime(language: Language): DateTimeInfo {
   const [now, setNow] = useState(() => new Date());
+  const visible = usePageVisible();
+
+  // Shown again: catch up at once.
+  useEffect(() => subscribePageVisibility(() => isPageVisible() && setNow(new Date())), []);
 
   useEffect(() => {
+    if (!visible) return;
     let intervalId: number | undefined;
     const current = new Date();
     const msToNextMinute = 60_000 - (current.getSeconds() * 1000 + current.getMilliseconds());
@@ -30,7 +38,7 @@ export function useDateTime(language: Language): DateTimeInfo {
       window.clearTimeout(timeoutId);
       if (intervalId !== undefined) window.clearInterval(intervalId);
     };
-  }, []);
+  }, [visible]);
 
   return useMemo(() => getDateTimeInfo(now, language), [now, language]);
 }

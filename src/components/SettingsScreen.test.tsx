@@ -16,6 +16,7 @@ import { LanguageProvider } from "../theme/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
 import { QuranReciterProvider } from "../theme/QuranReciterContext";
+import { AdhkarNavContext } from "../lib/adhkarNav";
 import { settingsLabels } from "../data/settings";
 import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
@@ -23,7 +24,7 @@ import { dismissTopBackOverlay, backOverlayCount } from "../lib/backOverlays";
 
 const t = settingsLabels.ar; // LanguageProvider's own initial language
 
-async function mountSettingsScreen(onNavigateToAudio: () => void = () => {}) {
+async function mountSettingsScreen(onNavigateToAudio: () => void = () => {}, openAdhkar: (() => void) | null = null) {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
@@ -33,12 +34,14 @@ async function mountSettingsScreen(onNavigateToAudio: () => void = () => {}) {
         <ThemeProvider>
           <PaletteProvider>
             <QuranReciterProvider>
-              <SettingsScreen
-                onNavigateHome={() => {}}
-                onNavigateToTasbeeh={() => {}}
-                onNavigateToWritten={() => {}}
-                onNavigateToAudio={onNavigateToAudio}
-              />
+              <AdhkarNavContext.Provider value={openAdhkar}>
+                <SettingsScreen
+                  onNavigateHome={() => {}}
+                  onNavigateToTasbeeh={() => {}}
+                  onNavigateToWritten={() => {}}
+                  onNavigateToAudio={onNavigateToAudio}
+                />
+              </AdhkarNavContext.Provider>
             </QuranReciterProvider>
           </PaletteProvider>
         </ThemeProvider>
@@ -73,12 +76,12 @@ beforeEach(() => {
 });
 
 describe("SettingsScreen — bottom navigation", () => {
-  it("the Audio Adhkar tab opens Audio Adhkar directly", async () => {
-    const onNavigateToAudio = vi.fn();
-    const { container, unmount } = await mountSettingsScreen(onNavigateToAudio);
-    const tab = Array.from(container.querySelectorAll("nav button")).find((b) => b.textContent?.includes("الأذكار المسموعة"))!;
+  it("the Adhkar tab opens the Adhkar screen (its cards lead to Audio and Written Adhkar)", async () => {
+    const openAdhkar = vi.fn();
+    const { container, unmount } = await mountSettingsScreen(() => {}, openAdhkar);
+    const tab = Array.from(container.querySelectorAll("nav button")).find((b) => b.textContent === "الأذكار")!;
     await act(async () => (tab as HTMLButtonElement).click());
-    expect(onNavigateToAudio).toHaveBeenCalledTimes(1);
+    expect(openAdhkar).toHaveBeenCalledTimes(1);
     await unmount();
   });
 });
@@ -116,58 +119,51 @@ describe("SettingsScreen — Floating Tasbeeh entry", () => {
   });
 });
 
-describe("SettingsScreen — Reminders (notifications) entry", () => {
-  it("renders a Reminders row on the main menu", async () => {
+// The unused Reminders section (it never notified — no notification plugin
+// exists) became Settings → إعدادات الصوت: a volume per kind of audio.
+describe("SettingsScreen — Audio Settings entry (replaces the unused Reminders section)", () => {
+  it("the main menu has an Audio Settings row and no Reminders row", async () => {
     const { container, unmount } = await mountSettingsScreen();
-    expect(() => findButtonByText(container, t.notificationsRow)).not.toThrow();
+    expect(() => findButtonByText(container, t.audioSettingsRow)).not.toThrow();
+    expect([...container.querySelectorAll("button span span")].some((s) => s.textContent === "التذكيرات")).toBe(false);
     await unmount();
   });
 
-  it("the toggle is real (not gated behind platform availability) — a preference can be set even before a native plugin exists", async () => {
+  it("shows one volume slider per kind of audio — the adhan and every Audio Adhkar category — at 100% by default", async () => {
     const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.notificationsRow));
-
-    expect(container.textContent).toContain(t.notificationsDisabledStatus);
-    expect(container.textContent).toContain(t.notificationsUnavailableNote);
-
-    await click(findButtonByText(container, t.notificationsEnableLabel));
-    expect(container.textContent).toContain(t.notificationsEnabledStatus);
-
+    await click(findButtonByText(container, t.audioSettingsRow));
+    expect(container.textContent).toContain(t.audioSettingsPageTitle);
+    for (const label of [t.audioVolumeAdhan, t.audioVolumeMorning, t.audioVolumeEvening, t.audioVolumeMisc]) expect(container.textContent).toContain(label);
+    const sliders = container.querySelectorAll<HTMLInputElement>('input[type="range"]');
+    expect([...sliders].map((s) => s.id)).toEqual(["audio-volume-adhan", "audio-volume-morning", "audio-volume-evening", "audio-volume-misc"]);
+    expect([...sliders].every((s) => s.value === "100")).toBe(true);
     await unmount();
   });
 
-  it("the enabled preference persists across remounts", async () => {
+  it("a level persists across remounts, independently per category", async () => {
     const first = await mountSettingsScreen();
-    await click(findButtonByText(first.container, t.notificationsRow));
-    await click(findButtonByText(first.container, t.notificationsEnableLabel));
+    await click(findButtonByText(first.container, t.audioSettingsRow));
+    const slider = first.container.querySelector<HTMLInputElement>("#audio-volume-evening")!;
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!;
+      setter.call(slider, "40");
+      slider.dispatchEvent(new Event("input", { bubbles: true }));
+    });
     await first.unmount();
 
     const second = await mountSettingsScreen();
-    await click(findButtonByText(second.container, t.notificationsRow));
-    expect(second.container.textContent).toContain(t.notificationsEnabledStatus);
+    await click(findButtonByText(second.container, t.audioSettingsRow));
+    expect(second.container.querySelector<HTMLInputElement>("#audio-volume-evening")!.value).toBe("40");
+    expect(second.container.querySelector<HTMLInputElement>("#audio-volume-adhan")!.value).toBe("100");
     await second.unmount();
-  });
-
-  it("shows a reminder-time picker only once enabled", async () => {
-    const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.notificationsRow));
-
-    expect(container.querySelector("#notification-reminder-time")).toBeNull();
-    await click(findButtonByText(container, t.notificationsEnableLabel));
-    expect(container.querySelector("#notification-reminder-time")).not.toBeNull();
-
-    await unmount();
   });
 
   it("back button returns to the main Settings menu", async () => {
     const { container, unmount } = await mountSettingsScreen();
-    await click(findButtonByText(container, t.notificationsRow));
-    expect(container.textContent).toContain(t.notificationsPageTitle);
-
+    await click(findButtonByText(container, t.audioSettingsRow));
     const backButton = container.querySelector(`button[aria-label="${t.back}"]`) as HTMLButtonElement;
     await click(backButton);
-    expect(() => findButtonByText(container, t.notificationsRow)).not.toThrow();
-
+    expect(() => findButtonByText(container, t.audioSettingsRow)).not.toThrow();
     await unmount();
   });
 });
@@ -205,3 +201,50 @@ describe("SettingsScreen — system Back with the Statistics-reset confirmation 
     await unmount();
   });
 });
+
+describe("SettingsScreen — reciter", () => {
+  it("has no app-wide reciter row: each Audio Adhkar section chooses its own; the other rows stay", async () => {
+    const { container, unmount } = await mountSettingsScreen();
+    const rows = Array.from(container.querySelectorAll("button")).map((b) => b.textContent ?? "");
+    expect(rows.some((text) => text.startsWith("القارئ"))).toBe(false);
+    expect(rows.some((text) => text.includes("إعدادات الأذكار الصوتية"))).toBe(true);
+    expect(rows.some((text) => text.includes("صوت الأذان"))).toBe(true);
+    await unmount();
+  });
+});
+
+describe("SettingsScreen — prayer notifications", () => {
+  it("has a Prayer Notifications row that opens its page", async () => {
+    const { container, unmount } = await mountSettingsScreen();
+    const row = container.querySelector('[data-settings-row="prayer-notifications"]') as HTMLButtonElement;
+    expect(row.textContent).toContain("تنبيهات الصلاة");
+    await act(async () => {
+      row.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(container.querySelector("[data-prayer-notifications]")).not.toBeNull();
+    await unmount();
+  });
+});
+
+describe("SettingsScreen — Statistics include Audio Adhkar", () => {
+  it("shows an Audio Adhkar card with its total, and Tasbeeh counts Various listening too", async () => {
+    const { commitAudioCompletions, resetAudioAdhkarCountsMemoryForTesting } = await import("../lib/audioAdhkarCounts");
+    const { clearAllStats } = await import("../lib/stats");
+    clearAllStats();
+    resetAudioAdhkarCountsMemoryForTesting();
+    commitAudioCompletions([
+      { id: "s1", collection: "misc", dhikrId: "tasbeeh-1" },
+      { id: "s2", collection: "evening", dhikrId: "morning_005" },
+    ]);
+    const { container, unmount } = await mountSettingsScreen();
+    await act(async () => {
+      findButtonByText(container, "الإحصائيات").dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    const cardTitled = (title: string) =>
+      Array.from(container.querySelectorAll("button")).find((b) => b.querySelector("p")?.textContent === title)!;
+    expect(cardTitled("الأذكار المسموعة").textContent).toContain("2");
+    expect(cardTitled("السبحة").textContent).toContain("1");
+    await unmount();
+  });
+});
+

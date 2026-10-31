@@ -49,3 +49,24 @@ export function getRemainingTime(target: Date, now: Date): RemainingTime {
   const totalMinutes = Math.floor(totalSeconds / 60);
   return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60, seconds: totalSeconds % 60 };
 }
+
+/**
+ * When the current interval began: the last prayer (in
+ * REMINDER_PRAYER_ORDER) at or before `now` today, or — before today's
+ * Fajr — yesterday's Isha (calculated for yesterday, not estimated).
+ */
+export function getPreviousPrayerTime(todayTimes: PrayerTimesResult, yesterdayIsha: Date, now: Date): Date {
+  let previous: Date | null = null;
+  for (const key of REMINDER_PRAYER_ORDER) {
+    const time = todayTimes[key];
+    if (time.getTime() <= now.getTime()) previous = time;
+  }
+  return previous ?? yesterdayIsha;
+}
+
+/** How much of the interval from the previous prayer to the next one has passed, 0…1. */
+export function getCountdownFraction(previous: Date, next: Date, now: Date): number {
+  const span = next.getTime() - previous.getTime();
+  if (!(span > 0)) return 0;
+  return Math.min(1, Math.max(0, (now.getTime() - previous.getTime()) / span));
+}

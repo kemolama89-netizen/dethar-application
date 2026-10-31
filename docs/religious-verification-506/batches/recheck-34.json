@@ -1,0 +1,138 @@
+{
+ "hadith:9": {
+  "ok": true,
+  "evidence": "Bukhari 481 reads «وشبّك أصابعه»; the quote is verbatim there."
+ },
+ "hadith:71": {
+  "ok": true,
+  "evidence": "Muslim 1893: «إني أُبدِع بي فاحملني»; both quoted sayings verbatim."
+ },
+ "hadith:137": {
+  "ok": true,
+  "evidence": "Muslim 2618: «يا نبي الله، علّمني شيئاً أنتفع به… اعزل الأذى عن طريق المسلمين»."
+ },
+ "hadith:77": {
+  "ok": true,
+  "evidence": "Abu Hurayra in both chains; «من كذب علي متعمداً فليتبوأ مقعده من النار» verbatim in Bukhari 110 and in Muslim's introduction (hadith-api ara-muslim no. 4)."
+ },
+ "hadith:70": {
+  "ok": true,
+  "evidence": "al-Mustadrak (Ata ed.) no. 58 holds the hadith; reference now «المستدرك للحاكم 58»."
+ },
+ "hadith:52": {
+  "ok": true,
+  "evidence": "al-Albani: Hasan (Abu Dawud 4800)."
+ },
+ "hadith:103": {
+  "ok": true,
+  "evidence": "al-Albani: Sahih (Abu Dawud 561); the unsupported «حسّنه الترمذي» removed."
+ },
+ "hadith:105": {
+  "ok": true,
+  "evidence": "al-Albani: Sahih (Abu Dawud 3116); al-Hakim «صحيح الإسناد» (al-Mustadrak 1299); unconfirmed «ووافقه الذهبي» removed."
+ },
+ "hadith:111": {
+  "ok": true,
+  "evidence": "Ibn Hajar, al-Talkhis al-Habir 1315 «وإسناده حسن»; al-Iraqi, al-Mughni 1453 «بسند جيد»; unopened al-Albani/al-Arnaut credits removed."
+ },
+ "hadith:112": {
+  "ok": true,
+  "evidence": "al-Tirmidhi 2390 «حسن صحيح»; al-Albani: Sahih; unopened «صحيح الجامع» removed."
+ },
+ "hadith:114": {
+  "ok": true,
+  "evidence": "al-Tirmidhi 1924 «حسن صحيح»; al-Albani: Sahih; the contradicted «حسّنه الألباني» and unconfirmed al-Hakim/al-Silsila credits removed."
+ },
+ "hadith:142": {
+  "ok": true,
+  "evidence": "al-Tirmidhi 2139 «حسن غريب»; al-Albani: Hasan; the contradicted «صححه الألباني» and «صحيح الجامع» removed."
+ },
+ "hadith:148": {
+  "ok": true,
+  "evidence": "al-Albani: Hasan (Tirmidhi 3479); unopened «صحيح الجامع (245)» removed."
+ },
+ "hadith:bukhari-6116": {
+  "ok": true,
+  "evidence": "Verbatim Muhsin Khan (hadith-api eng-bukhari 6116), labelled as such."
+ },
+ "lataif:q94-5": {
+  "ok": true,
+  "evidence": "Now verbatim Saheeh International (quran.com resource 20), bracketed note included."
+ },
+ "lataif:q39-10": {
+  "ok": true,
+  "evidence": "Now verbatim Saheeh International (quran.com resource 20), bracketed note included."
+ },
+ "lataif:w116": {
+  "ok": true,
+  "evidence": "Verse now letter-and-vowel identical to Tanzil 17:30."
+ },
+ "lataif:w130": {
+  "ok": true,
+  "evidence": "Verse now letter-and-vowel identical to Tanzil 18:79."
+ },
+ "lataif:w462": {
+  "ok": true,
+  "evidence": "Verse now letter-and-vowel identical to Tanzil 56:19."
+ },
+ "lataif:w30": {
+  "ok": true,
+  "evidence": "Cited work now «الكشاف - الزمخشري»; quoted wording verbatim in it at 4:147: «مثيباً موفياً أجوركم»; the unsupported claim (تودد) removed."
+ },
+ "lataif:w49": {
+  "ok": true,
+  "evidence": "Cited work now «طريق الهجرتين - ابن القيم»; quoted wording verbatim in it at 8:24: «لا ومقلب القلوب»; the unsupported claim (تمادى, ثبت قلبي) removed."
+ },
+ "lataif:w76": {
+  "ok": true,
+  "evidence": "Cited work now «الكشاف - الزمخشري»; no quotation; the unsupported claim (يضمره) removed."
+ },
+ "lataif:w155": {
+  "ok": true,
+  "evidence": "Cited work now «تفسير ابن كثير»; quoted wording verbatim in it at 5:23: «متى توكلتم على الله واتبعتم أمره، ووافقتم رسوله، نصركم الله على أعدائكم»; the unsupported claim (المفاجأة, الخطة) removed."
+ },
+ "lataif:w165": {
+  "ok": true,
+  "evidence": "Cited work now «جامع البيان - الطبري»; no quotation; the unsupported claim (طبيقية) removed."
+ },
+ "lataif:w212": {
+  "ok": true,
+  "evidence": "Cited work now «التحرير والتنوير - ابن عاشور»; no quotation; the unsupported claim (البشر, السعادة) removed."
+ },
+ "lataif:w239": {
+  "ok": true,
+  "evidence": "Cited work now «التحرير والتنوير - ابن عاشور»; no quotation; the unsupported claim (الغني فتنة) removed."
+ },
+ "lataif:w260": {
+  "ok": true,
+  "evidence": "Cited work now «جامع البيان - الطبري»; quoted wording verbatim in it at 44:3: «يُقضى ويُفصل كل أمر أحكمه الله تعالى في تلك السنة»; the unsupported claim (اللوح المحفوظ) removed."
+ },
+ "lataif:w278": {
+  "ok": true,
+  "evidence": "Cited work now «التحرير والتنوير - ابن عاشور»; quoted wording verbatim in it at 53:17: «رؤية لا خطأ فيها ولا زيادة على ما وصف» / «أي: ما مال بصره إلى مرئي آخر غير ما ذكر» / «الطغيان: تجاوز الحد»; the unsupported claim (الأدب) removed."
+ },
+ "lataif:w286": {
+  "ok": true,
+  "evidence": "Cited work now «التحرير والتنوير - ابن عاشور»; no quotation; the unsupported claim (عائشة) removed."
+ },
+ "lataif:w296": {
+  "ok": true,
+  "evidence": "Cited work now «جامع البيان - الطبري»; quoted wording verbatim in it at 66:6: «واعملوا بطاعة الله» / «علموا أهليكم من العمل بطاعة الله ما يقون به أنفسهم من النار»; the unsupported claim (فاقد الشيء) removed."
+ },
+ "lataif:w347": {
+  "ok": true,
+  "evidence": "Cited work now «تفسير ابن كثير»; no quotation; the unsupported claim (المكاسب) removed."
+ },
+ "lataif:w432": {
+  "ok": true,
+  "evidence": "Cited work now «الكشاف - الزمخشري»; quoted wording verbatim in it at 27:28: «يرجع بعضهم إلى بعض»; the unsupported claim (سياسي) removed."
+ },
+ "lataif:w469": {
+  "ok": true,
+  "evidence": "Cited work now «جامع البيان - الطبري»; no quotation; the unsupported claim (الفسيولوجي) removed."
+ },
+ "lataif:w501": {
+  "ok": true,
+  "evidence": "Cited work now «التحرير والتنوير - ابن عاشور»; no quotation; the unsupported claim (التضييق) removed."
+ }
+}

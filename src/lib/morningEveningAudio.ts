@@ -32,6 +32,7 @@ import { playQuranRef, quranAudioKey, resolveQuranAudio } from "./quranAudio";
 import type { QuranRepeatPlayback } from "./quranAudio";
 import { playUrlQueue } from "./audioEngine";
 import type { PlayUrlQueueOptions } from "./audioEngine";
+import { playableAudioPath } from "./audioAssets";
 
 export type { MorningEveningCategory };
 
@@ -201,7 +202,7 @@ export function resolveMorningEveningAudio(
     status: "ready",
     kind: "generated",
     key: `adhkar:${source.audioId}`,
-    urls: [`${import.meta.env.BASE_URL}${encodeURI(source.path)}`],
+    urls: [`${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(source.path))}`],
   };
 }
 

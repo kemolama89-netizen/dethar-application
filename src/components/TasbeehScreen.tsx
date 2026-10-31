@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
@@ -22,6 +22,7 @@ import { commitManualTasbeehRepetition, applyVoiceTasbeehCountIncrement } from "
 import { computeTasbeehReadyDurationMs } from "../lib/tasbeehTiming";
 import { usePrefersReducedMotion } from "../lib/motion";
 import { useVoiceTasbeeh } from "../lib/useVoiceTasbeeh";
+import { loadRecognitionSoundsEnabled, saveRecognitionSoundsEnabled } from "../lib/voiceTasbeehSounds";
 import { useBackDismiss } from "../lib/backOverlays";
 import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "../lib/floatingTasbeehBridge";
 import {
@@ -281,6 +282,12 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
   // prior "on" state avoids ever silently re-requesting the microphone on
   // page load without a fresh, explicit user action.
   const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [recognitionSounds, setRecognitionSoundsState] = useState(loadRecognitionSoundsEnabled);
+  const setRecognitionSounds = (update: (on: boolean) => boolean) => {
+    const next = update(recognitionSounds);
+    setRecognitionSoundsState(next);
+    saveRecognitionSoundsEnabled(next);
+  };
 
   const selected = dhikrItems.find((d) => d.id === selectedId) ?? dhikrItems[0];
   const count = counts[selectedId] ?? 0;
@@ -642,6 +649,37 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
               />
             )}
           </button>
+
+          {/* Voice Tasbeeh's feedback tones only (lib/voiceTasbeehSounds.ts) —
+              listening, recognition and counting are unaffected. */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={recognitionSounds}
+            onClick={() => setRecognitionSounds((on) => !on)}
+            data-recognition-sounds={recognitionSounds ? "on" : "off"}
+            className="flex items-center gap-1.5 text-[11px]"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            {recognitionSounds ? <Volume2 size={12} aria-hidden="true" /> : <VolumeX size={12} aria-hidden="true" />}
+            {t.recognitionSounds}
+            <span
+              className="relative inline-flex h-3.5 w-6 shrink-0 items-center rounded-full transition-colors"
+              style={{ background: recognitionSounds ? "var(--color-primary)" : "var(--color-gold-soft)" }}
+              aria-hidden="true"
+            >
+              <span
+                className="absolute h-2.5 w-2.5 rounded-full transition-[inset-inline-start]"
+                style={{ insetInlineStart: recognitionSounds ? "calc(100% - 0.75rem)" : "0.125rem", background: recognitionSounds ? "var(--color-gold-on-primary)" : "var(--color-surface)" }}
+              />
+            </span>
+          </button>
+
+          {!recognitionSounds && voiceEnabled && (
+            <p className="max-w-[280px] text-center text-[10px] leading-snug" style={{ color: "var(--color-text-muted)" }} data-recognition-sounds-hint="">
+              {t.recognitionSoundsOffHint}
+            </p>
+          )}
 
           {/* Status line — only ever one short sentence, no separate
               alert/modal, so it stays as calm as the rest of this screen. */}

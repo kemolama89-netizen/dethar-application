@@ -231,10 +231,12 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     id: "banna",
     name: { en: "Mahmoud Ali Al-Banna", ar: "محمود علي البنا" },
     kind: "regular",
-  // original: Mahmoud Ali Al-Banna - Mahmoud_Ali_Al_Banna_-_Cairo_(محمود_علي_البنا_-_القاهرة) [ia].wma
-    path: "audio/adhan/converted/Mahmoud Ali Al-Banna - Mahmoud_Ali_Al_Banna_-_Cairo_(محمود_علي_البنا_-_القاهرة) [ia].mp3",
-    duration: 154.69,
-    segments: { full: { start: 0.67, end: 152.78 }, takbeer: { start: 0.67, end: 11.10 }, fajrPhrase: null },
+  // Same "Cairo" performance as the former Internet Archive copy, which was
+  // missing the first «الله أكبر الله أكبر» pair. Source: GitHub
+  // bilalelsayed97/adhan_sounds (tags: islamweb.net, 2006).
+    path: "audio/adhan/Mahmoud Ali Al-Banna - mahmoud_ali_albanna [gh].mp3",
+    duration: 164.63,
+    segments: { full: { start: 0.2, end: 164.6 }, takbeer: { start: 0.2, end: 23.4 }, fajrPhrase: null },
   },
   {
     id: "husary",
@@ -376,4 +378,55 @@ export const adhanRecordings: readonly AdhanRecording[] = [
 
 export function getAdhanRecordingById(id: string): AdhanRecording | undefined {
   return adhanRecordings.find((r) => r.id === id);
+}
+
+/**
+ * The muezzin heard in each recording, as attributed by the recording's
+ * own source (see its name) — null when the source names a mosque but not
+ * who calls the adhan: then no muezzin is shown, never a guess. Shown on
+ * the adhan's playback notification / system media controls.
+ */
+export const ADHAN_MUEZZINS: Readonly<Record<string, { en: string; ar: string } | null>> = {
+  "abdulbasit-fajr": { en: "Abdul Basit Abdul Samad", ar: "عبد الباسط عبد الصمد" },
+  "alafasy-fajr-hijaz": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-fajr-kurd": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-fajr-nahawand": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-fajr-nawa-athar": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-fajr-rast": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-fajr-saba": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-fajr-phrase-excerpt": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "omran-fajr": { en: "Mohamed Omran", ar: "محمد عمران" },
+  "tobar-fajr": { en: "Nasr El-Din Tobar", ar: "نصر الدين طوبار" },
+  "masjid-al-haram-fajr": null,
+  "masjid-an-nabawi-fajr": null,
+  "abdulbasit": { en: "Abdul Basit Abdul Samad", ar: "عبد الباسط عبد الصمد" },
+  "shuaisha": { en: "Abu Al-Enein Shuaisha", ar: "أبو العينين شعيشع" },
+  "nafees": { en: "Ahmed Al-Nafees", ar: "أحمد النفيس" },
+  "nuaina": { en: "Ahmed Nuaina", ar: "أحمد نعينع" },
+  "ali-mahmoud": { en: "Ali Mahmoud", ar: "علي محمود" },
+  "mulla-haram": { en: "Ali bin Ahmed Mulla", ar: "علي بن أحمد ملا" },
+  "mulla-isha-1445": { en: "Ali bin Ahmed Mulla", ar: "علي بن أحمد ملا" },
+  "banna": { en: "Mahmoud Ali Al-Banna", ar: "محمود علي البنا" },
+  "husary": { en: "Mahmoud Khalil Al-Husary", ar: "محمود خليل الحصري" },
+  "mahmoud-ramadan": { en: "Mahmoud Mohamed Ramadan", ar: "محمود محمد رمضان" },
+  "alafasy-saba-2": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-classic": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "alafasy-kuwait": { en: "Mishary Rashid Alafasy", ar: "مشاري راشد العفاسي" },
+  "tablawi": { en: "Mohamed Mahmoud Al-Tablawi", ar: "محمد محمود الطبلاوي" },
+  "omran": { en: "Mohamed Omran", ar: "محمد عمران" },
+  "refaat": { en: "Mohamed Refaat", ar: "محمد رفعت" },
+  "minshawi": { en: "Mohamed Siddiq El-Minshawi", ar: "محمد صديق المنشاوي" },
+  "mustafa-ismail": { en: "Mustafa Ismail", ar: "مصطفى إسماعيل" },
+  "tobar": { en: "Nasr El-Din Tobar", ar: "نصر الدين طوبار" },
+  "qatami": { en: "Nasser Al-Qatami", ar: "ناصر القطامي" },
+  "saad-ghamdi": { en: "Saad Al-Ghamdi", ar: "سعد الغامدي" },
+  "naqshbandi": { en: "Sayed Al-Naqshbandi", ar: "سيد النقشبندي" },
+  "taha-fashni": { en: "Taha Al-Fashni", ar: "طه الفشني" },
+  "masjid-an-nabawi-2": null,
+  "masjid-an-nabawi-3": null,
+};
+
+/** The recording's muezzin in `language`, or null when it isn't reliably known. */
+export function adhanMuezzinName(recording: AdhanRecording, language: "ar" | "en"): string | null {
+  return ADHAN_MUEZZINS[recording.id]?.[language] ?? null;
 }

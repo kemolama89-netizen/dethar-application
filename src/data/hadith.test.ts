@@ -16,14 +16,15 @@ import {
   translateHadithNarratorToEnglish,
 } from "./hadith";
 
-// Verified against the full 200-entry library (see hadith.ts's own header
-// comment) — entries whose Arabic Source/Reference contains something
+// Verified against the library (see hadith.ts's own header comment; 104
+// entries since the 2026-10-30 audit cleanup removed the other 96) — entries whose Arabic Source/Reference contains something
 // beyond this module's book-name dictionary (an explanatory clause, or a
 // grading remark embedded in the reference field itself). These MUST NOT
 // silently regress to guessing/inventing a translation; they must keep
 // resolving to `undefined`.
-const IDS_WITHOUT_ENGLISH_SOURCE = [36, 58, 77, 100, 180, 185];
-const IDS_WITHOUT_ENGLISH_REFERENCE = [36, 44, 49, 51, 58, 70, 77, 185];
+const IDS_WITHOUT_ENGLISH_SOURCE = [77];
+// (70 resolves since its reference became «المستدرك للحاكم 58» in the 2026-10-31 corrections.)
+const IDS_WITHOUT_ENGLISH_REFERENCE = [77];
 
 const ARABIC_CHAR_RE = /[؀-ۿ]/;
 
@@ -39,15 +40,15 @@ describe("getHadithDetailFields — Arabic", () => {
     }
   });
 
-  it("Arabic details are available even for a very short Hadith text (id 171) — not gated by text length", () => {
-    const shortHadith = HADITHS.find((h) => h.id === 171)!;
+  it("Arabic details are available even for a very short Hadith text (id 38) — not gated by text length", () => {
+    const shortHadith = HADITHS.find((h) => h.id === 38)!;
     expect(shortHadith.textAr.length).toBeLessThan(100);
     expect(getHadithDetailFields(shortHadith, "ar")).toHaveLength(5);
   });
 });
 
 describe("getHadithDetailFields — English", () => {
-  it("resolves GradingSource and Narrator for all 200/200 entries (exact-match dictionaries built from the closed set actually present in the data)", () => {
+  it("resolves GradingSource and Narrator for every entry (exact-match dictionaries built from the closed set actually present in the data)", () => {
     const missingGradingSource = HADITHS.filter((h) => translateHadithGradingSourceToEnglish(h.gradingSourceAr) === undefined);
     const missingNarrator = HADITHS.filter((h) => translateHadithNarratorToEnglish(h.narratorAr) === undefined);
     expect(missingGradingSource).toEqual([]);
@@ -70,7 +71,7 @@ describe("getHadithDetailFields — English", () => {
     }
   });
 
-  it("resolves Grade for all 200/200 entries (a small, closed, standardized vocabulary)", () => {
+  it("resolves Grade for every entry (a small, closed, standardized vocabulary)", () => {
     const missing = HADITHS.filter((h) => translateHadithGradeToEnglish(h.gradeAr) === undefined);
     expect(missing).toEqual([]);
   });
@@ -87,19 +88,19 @@ describe("getHadithDetailFields — English", () => {
     expect(missing).toEqual(IDS_WITHOUT_ENGLISH_REFERENCE);
   });
 
-  it("a normal entry (id 1) resolves clean English Source/Reference/Grade", () => {
-    const entry = HADITHS.find((h) => h.id === 1)!;
+  it("a normal entry (id 8) resolves clean English Source/Reference/Grade", () => {
+    const entry = HADITHS.find((h) => h.id === 8)!;
     const fields = getHadithDetailFields(entry, "en");
     const byKey = Object.fromEntries(fields.map((f) => [f.key, f.value]));
-    expect(byKey.source).toBe("Sahih al-Bukhari");
-    expect(byKey.reference).toBe("1 (and Muslim 1907)");
+    expect(byKey.source).toBe("Sahih al-Bukhari / Sahih Muslim");
+    expect(byKey.reference).toBe("Bukhari 13, Muslim 45");
     expect(byKey.grade).toBe("Sahih, agreed upon");
     expect(byKey.gradingSource).toBe("Al-Bukhari and Muslim");
-    expect(byKey.narrator).toBe("Umar ibn al-Khattab (may Allah be pleased with him)");
+    expect(byKey.narrator).toBe("Anas ibn Malik (may Allah be pleased with him)");
   });
 
-  it("id 171 (short Hadith) still resolves full English details — not gated by text length", () => {
-    const entry = HADITHS.find((h) => h.id === 171)!;
+  it("id 38 (short Hadith) still resolves full English details — not gated by text length", () => {
+    const entry = HADITHS.find((h) => h.id === 38)!;
     expect(entry.textEn.length).toBeLessThan(150);
     const fields = getHadithDetailFields(entry, "en");
     expect(fields.length).toBeGreaterThan(0);

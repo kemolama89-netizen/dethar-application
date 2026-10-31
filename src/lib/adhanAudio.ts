@@ -15,14 +15,17 @@
 // already sit inside a pause in the recitation (see adhanRecordings.ts), so
 // a few tens of milliseconds of timer jitter can never reach the next
 // phrase.
-import { claimAudio, releaseAudio } from "./audioEngine";
+import { claimAudio, releaseAudio, setAudioVolume } from "./audioEngine";
 import type { AdhanRecording, AdhanSegment } from "../data/adhanRecordings";
 import type { AdhanMode } from "./adhanAudioSettings";
+import { subscribeAudioVolumes, volumeGain } from "./audioVolumeSettings";
+import { playableAudioPath } from "./audioAssets";
 
 export interface AdhanAudioElement {
   src: string;
   preload?: string;
   currentTime: number;
+  volume?: number;
   play(): Promise<void> | void;
   pause(): void;
   removeAttribute(name: string): void;
@@ -71,7 +74,7 @@ export function adhanSegment(recording: AdhanRecording, mode: AdhanMode): AdhanS
 }
 
 export function adhanAudioUrl(recording: AdhanRecording): string {
-  return `${import.meta.env.BASE_URL}${encodeURI(recording.path)}`;
+  return `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(recording.path))}`;
 }
 
 export function adhanAudioKey(recording: AdhanRecording, mode: AdhanMode): string {
@@ -83,6 +86,8 @@ export interface PlayAdhanOptions {
   onError?: () => void;
   /** Another source took over, or stopAudio() was called. */
   onInterrupted?: () => void;
+  /** Gain 0–1; by default the adhan's own volume (Settings → إعدادات الصوت). */
+  volume?: number;
 }
 
 /**
@@ -97,6 +102,8 @@ export function playAdhanSegment(recording: AdhanRecording, mode: AdhanMode, opt
   const el = getElement();
   let active = true;
   let timer: ReturnType<typeof setTimeout> | null = null;
+  // Without a level of its own, it follows the adhan slider — also while it plays.
+  let unsubscribeVolume: (() => void) | null = null;
 
   const clearTimer = () => {
     if (timer !== null) clearTimeout(timer);
@@ -106,6 +113,8 @@ export function playAdhanSegment(recording: AdhanRecording, mode: AdhanMode, opt
   const teardown = () => {
     active = false;
     clearTimer();
+    unsubscribeVolume?.();
+    unsubscribeVolume = null;
     el.onloadedmetadata = null;
     el.ontimeupdate = null;
     el.onplaying = null;
@@ -175,8 +184,14 @@ export function playAdhanSegment(recording: AdhanRecording, mode: AdhanMode, opt
       resume: () => {
         if (active) start();
       },
+      setVolume: (gain) => {
+        if (active) el.volume = gain;
+      },
     },
   );
+  if (options.volume === undefined) {
+    unsubscribeVolume = subscribeAudioVolumes((volumes) => setAudioVolume(key, volumeGain("adhan", volumes)));
+  }
 
   const seekAndPlay = () => {
     if (!active) return;
@@ -184,6 +199,7 @@ export function playAdhanSegment(recording: AdhanRecording, mode: AdhanMode, opt
     start();
   };
 
+  el.volume = Math.min(1, Math.max(0, options.volume ?? volumeGain("adhan")));
   el.onplaying = armTimer;
   el.onpause = clearTimer;
   el.ontimeupdate = () => {

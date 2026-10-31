@@ -1,0 +1,46 @@
+# Resume notes: the 202 unverified items (started 2026-10-30, after the Codespace restart)
+
+- Source of truth for already-confirmed work: `docs/religious-content-audit-scoped-2026-10-30.csv` (597 decided items, NOT re-checked).
+- The previous session's /tmp scratchpad (scripts, cached sources) was wiped by the Codespace restart at ~17:00. There were no mid-run notes: that session had finished its report, with 202 items left as `requires-verification`.
+- The per-item state for this pass is in `remaining-202.json`. status: pending | verified | partly | unsupported | wrong | still-unverified (inaccessible).
+- Rules: no project or protected file is edited until all 202 are processed. Inaccessible items stay unverified. No browser spoofing (sunnah.com, dorar, shamela block bots). Approval needs an opened source, not model knowledge.
+
+## Log
+- 2026-10-30 ~17:10 New open source found: the OpenITI corpus (GitHub, raw.githubusercontent.com). These are digital transcriptions of named PRINTED editions (the edition metadata is in each file's #META# header). Re-fetch with: `gh api repos/OpenITI/<century-repo>/contents/data/<Author>/<Author>.<Work>`, then take the file from raw.githubusercontent.com/OpenITI/<repo>/master/data/... Downloaded: Madarij (al-Fiqi, Dar al-Kitab al-Arabi 1973), Bada'i al-Fawa'id (Nizar al-Baz 1996), Tariq al-Hijratayn (Dar Ibn al-Qayyim 1994), Zad al-Ma'ad (al-Risala, 14th ed. 1986), Ighathat al-Lahfan (al-Fiqi, Dar al-Ma'rifa 1975), al-Fawa'id (DKI 1973), al-Raghib's Mufradat (Kilani, Dar al-Ma'rifa), Ibn Kathir (Salama, Dar Taybah 1999), al-Tabari (al-Turki, Hajr 2001), al-Kashshaf (al-Mahdi, Ihya al-Turath), al-Tahrir wa al-Tanwir (Sahnun 1997), al-Sa'di (altafsir.com only, no print edition), al-Adab al-Mufrad (Abd al-Baqi, al-Basha'ir 1989), Sahih Muslim (Ihya al-Turath), Musnad Ahmad (al-Arna'ut, al-Risala 2001), al-Mustadrak (Ata, DKI 1990), al-Tabarani's al-Kabir (al-Salafi, al-Zahra 1983), Majma al-Zawa'id (al-Rayyan 1407).
+- 17:25 Muslim items done (6): 1469, 1467, 2700, 2733, 2759 verified; hadith:39 (2162) wording differs from print by one letter (فسمّته / فشمّته).
+- 17:45 All 15 hadiths done. Verified: 29, 162, muslim-2700, muslim-2733, muslim-2759, 70, 111 (7). Wrong: 39 (فشمّته), 36 (#224 not 225), 48 (wording is #358 Ibn Amr), 51 (composite), 58 (Tabarani #751 not 754), 131 (composite), 170 (not in Musnad; Jabir b. Sulaym) (7). Still unverified: 44 (al-Albani grade).
+- Grade standard (same as the previous audit): the displayed grade must be given by at least one grader in an opened source. Attributions in the grading note to works that weren't opened (al-Albani, al-Dhahabi's Talkhis) are not separately confirmed.
+- 17:55 Saadi 3 done: verbatim and contiguous in a third witness (altafsir.com via OpenITI). Kept unverified (no printed edition); flagged for a user decision.
+- 18:00 Wamadat (184) method: the full texts of the cited works are from OpenITI (above). For each item, candidate passages are ranked by idf-weighted overlap with the reflection's content words plus verse 3-grams; the top passages are then read and judged by hand. Verdicts use the same scale as the previous audit: verified (supported by the cited work), partly (takes a point but adds claims the work doesn't make), unsupported (not supported / contradicts), still-unverified (the passage can't be located, or depends on an unopened co-cited work).
+- Items co-citing modern «الإعجاز» works stay unverified unless the reflection makes no claim beyond the classical work.
+- 18:25 Wamadat batch 1 (w1-w20, 8 items) recorded. Rule: 'partly' = adds an interpretive or factual claim not in the source (an application or exhortation alone is not 'partly'); 'unsupported' = the full cited work was searched and has no such discussion.
+- 18:55 Batch 2 (w24-w51, 10 items) recorded. New status 'verified-citefix' = supported by the classical work, but the credit also names an unopened modern work; approvable only if the credit is reduced.
+- 19:20 Batch 3 (w53-w80, 10 items) recorded.
+- 19:50 Batch 4 (w83-w104, 12 items) recorded. 50/184 Wamadat judged.
+- 20:15 Batch 5 (w106-w135, 12 items) recorded. 62/184 Wamadat judged.
+- 20:45 Batch 6 (w136-w157, 12 items) recorded. 74/184 Wamadat judged.
+- 21:20 Batch 7 (w158-w199, 12 items) recorded. 86/184 Wamadat judged.
+- 21:50 Batch 8 (w201-w227, 12 items) recorded. 98/184 Wamadat judged.
+- 22:20 Batch 9 (w228-w262, 12 items) recorded. 110/184 Wamadat judged.
+- 22:55 Batch 10 (w265-w293, 12 items) recorded. 122/184 Wamadat judged.
+- 23:30 Batch 11 (w296-w322, 12 items) recorded. 134/184 Wamadat judged.
+- 00:05 Batch 12 (w324-w351, 12 items) recorded. 146/184 Wamadat judged.
+- 00:40 Batch 13 (w355-w391, 14 items) recorded. 160/184 Wamadat judged.
+- 01:20 Batch 14 (w393-w524, 34 items) recorded. ALL 184 Wamadat judged; all 202 items processed.
+- 18:02 Full re-review: all 257 hadiths decided (six books re-checked against OpenITI printed transcriptions; Bukhari numbering via hadith-api Fath text; Muslim via the Abd al-Baqi JK transcription; graders via hadith-api; al-Tirmidhi's verdict from his printed text). Rules: verbatim in at least one cited source with the same Companion; secondary refs must be the same Companion; named grader must give the displayed grade; ambiguous bare names (جابر / عبد الله / عن أبيه عن جده) = narrator not established, i.e. Unverified.
+- 18:03 Saadi 20 decided: approved only when all 3 digital witnesses agree verbatim (16); 4 Unverified (q2-153, q29-45, q65-3, q25-63; q25-63 was approved before but is verbatim in only 1 of 3).
+- 18:15 Wamadat re-review R1 (20 of 338) recorded.
+- Full re-review method for the 338 Wamadat decided in the first pass: verse vs Tanzil (521/522 verbatim; w16 misquoted). For each reflection, the per-ayah commentary (tafsir_api) is used only to LOCATE the best-matching passage, and that passage is then confirmed and read in the OpenITI printed transcription. The same scale as for the 184: Approved / Partially Supported (adds an interpretive or factual claim) / Excluded (not supported or contradicts) / Unverified.
+- 18:16 Wamadat re-review R2 (40 of 338) recorded.
+- 18:18 Wamadat re-review R3 (60 of 338) recorded.
+- 18:19 Wamadat re-review R4 (80 of 338) recorded.
+- 18:19 Wamadat re-review R5 (100 of 338) recorded.
+- 18:20 Wamadat re-review R6 (122 of 338) recorded.
+- 18:21 Wamadat re-review R7 (144 of 338) recorded.
+- 18:22 Wamadat re-review R8 (166 of 338) recorded.
+- 18:22 Wamadat re-review R9 (190 of 338) recorded.
+- 18:24 Wamadat re-review R10 (216 of 338) recorded.
+- 18:26 Wamadat re-review R11 (246 of 338) recorded.
+- 18:26 Wamadat re-review R12 (276 of 338) recorded.
+- 18:28 Wamadat re-review R13 (310 of 338) recorded.
+- 18:29 Wamadat re-review R14: all 338 earlier-decided Wamadat re-read.

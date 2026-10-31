@@ -10,6 +10,9 @@ const config: CapacitorConfig = {
   appId: "com.dithar.app",
   appName: "DITHAR",
   webDir: "dist",
+  // The WebView's own background before the page paints: DITHAR's page
+  // colour, the same as the launch screen and the launch intro (no white flash).
+  backgroundColor: "#f2e9da",
 };
 
 export default config;

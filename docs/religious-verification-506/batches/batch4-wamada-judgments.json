@@ -1,0 +1,1330 @@
+{
+ "lataif:w1": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 1:5 explains the turn from third person to address (التفات): «فإن الحامد لما حمد الله تعالى ووصفه بعظيم الصفات بلغت به الفكرة منتهاها فتخيّل نفسه في حضرة الربوبية فخاطب ربه بالإقبال»."
+ },
+ "lataif:w3": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 2:186: «والمراد من هذا: أنه تعالى لا يخيب دعاء داع، ولا يشغله عنه شيء، بل هو سميع الدعاء. وفيه ترغيب في الدعاء»; the rest restates the verse («فليستجيبوا لي وليؤمنوا بي لعلهم يرشدون»)."
+ },
+ "lataif:w4": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:268: «الشيطان يعدكم… بالصدقة… أن تفتقروا»; «وفضلاً يعني: ويعدكم أن يخلف عليكم من صدقتكم، فيتفضل عليكم من عطاياه ويسبغ عليكم في أرزاقكم»."
+ },
+ "lataif:w6": {
+  "result": "verified",
+  "evidence": "Abu Hayyan at 2:274 (quoting al-Zamakhshari): «يعمّون الأوقات والأحوال بالصدقة»; the reward clause restates the verse."
+ },
+ "lataif:w8": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:155: «وهذا إخبار من الله تعالى ذكره أتباعَ رسوله ﷺ أنه مبتليهم وممتحنهم بشدائد من الأمور»; the glad tidings are for «أهل الصبر»."
+ },
+ "lataif:w10": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 2:255: «والسنة: ما يتقدم النوم من الفتور الذي يسمى النعاس»; the sentences are «بيان لقيامه بتدبير الخلق»."
+ },
+ "lataif:w11": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 2:207: «و(يشري) معناه يبيع»; selling the dearest thing «لأجل تحصيل ما يرضي الله»; «رءوف بالعباد… فالرأفة كناية عن لازمها وهو إيتاء الخيرات»."
+ },
+ "lataif:w12": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 2:276: «يمحق الربا، أي: يذهبه، إما بأن يذهبه بالكلية من يد صاحبه، أو يحرمه بركة ماله»; and the hadith «الربا وإن كثر فإن عاقبته تصير إلى قُلّ»."
+ },
+ "lataif:w14": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:278: «وذروا… اتركوا طلب ما بقي لكم من فضل على رءوس أموالكم… إن كنتم محققين إيمانكم»."
+ },
+ "lataif:w15": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 2:281: «يعظ عباده ويذكرهم… الرجوع إليه تعالى ومحاسبته تعالى خلقه على ما عملوا، ومجازاته إياهم بما كسبوا»."
+ },
+ "lataif:w19": {
+  "result": "verified",
+  "evidence": "al-Tabari at 3:35: «محرراً… جعلته عتيقاً لعبادة الله، لا ينتفع به بشيء من أمور الدنيا»; the lesson for parents is an application."
+ },
+ "lataif:w20": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) quoting 3:159: «جعل الله انبساطهم مع الخلق رحمة لهم… جذبت قلوب الصادقين إليهم», with «لين الجانب»; the warning restates the verse."
+ },
+ "lataif:w21": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 3:18: «ثم قرن شهادة ملائكته وأولي العلم بشهادته… وهذه خصوصية عظيمة للعلماء في هذا المقام»."
+ },
+ "lataif:w23": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 3:144: the rumour at Uhud «ألا إن محمداً قد قتل», and Abu Bakr: «من كان يعبد محمداً فإن محمداً قد مات، ومن كان يعبد الله فإن الله حي لا يموت» — the reflection's principle."
+ },
+ "lataif:w25": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.), منزلة الصبر: «انتقال من الأدنى إلى الأعلى… فالصبر مع نفسك، والمصابرة بينك وبين عدوك، والمرابطة الثبات وإعداد العدة… لزوم ثغر القلب»."
+ },
+ "lataif:w30": {
+  "result": "adds-claim",
+  "evidence": "al-Kashshaf at 4:147 supports most of it: «أيتشفى به من الغيظ… وهو الغني… وإنما هو أمر أوجبته الحكمة… فإن قمتم بشكر نعمته وآمنتم به فقد أبعدتم عن أنفسكم استحقاق العذاب»; but it glosses «شاكراً» as «مثيباً موفياً أجوركم», not «تودّداً» as the reflection says."
+ },
+ "lataif:w32": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 5:100: «الاعتزاز بالكثرة والإعجاب بها… كثرة من أشياء فاسدة خيف أن تستهوي من كانوا بقلة من الأشياء الصالحة»."
+ },
+ "lataif:w33": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 5:8: «لا يحملنكم بغض قوم على ترك العدل فيهم، بل استعملوا العدل في كل أحد، صديقاً كان أو عدواً… عدلكم أقرب إلى التقوى»."
+ },
+ "lataif:w34": {
+  "result": "verified",
+  "evidence": "al-Tabari at 5:28: the slain son of Adam refused to raise his hand against his brother, «إني أخاف الله رب العالمين», though threatened with murder."
+ },
+ "lataif:w35": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 5:101: «لا تكثروا مسألة رسول الله… حتى تسألوه عن تكاليف شاقة عليكم، إن أفتاكم بها وكلفكم إياها تغمكم وتشق عليكم»."
+ },
+ "lataif:w37": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat (Kilani ed.), «جرح»: «وسميت الأعضاء الكاسبة جوارح… والاجتراح اكتساب الإثم وأصله من الجراحة»."
+ },
+ "lataif:w38": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 6:17: «مخبراً أنه مالك الضر والنفع… لا معقب لحكمه ولا راد لقضائه»."
+ },
+ "lataif:w39": {
+  "result": "verified",
+  "evidence": "Ighathat al-Lahfan (al-Fiqi ed.) on 6:122: «أي أومن كان كافراً ميت القلب مغموراً في ظلمة الجهل فهديناه… وجعلنا قلبه حياً بعد موته مشرقاً مستنيراً بعد ظلمته»."
+ },
+ "lataif:w43": {
+  "result": "verified",
+  "evidence": "al-Tabari at 7:2: «الحرج هو الضيق»; do not let your breast be straitened in warning with it and conveying it, «واصبر للمضي لأمر الله… فإن الله معك»."
+ },
+ "lataif:w47": {
+  "result": "verified",
+  "evidence": "al-Tabari at 8:11: the drowsiness as security, and «مطر أنزله الله من السماء يوم بدر ليطهر به المؤمنين… ويثبت به الأقدام»."
+ },
+ "lataif:w48": {
+  "result": "verified",
+  "evidence": "al-Fawaid (Dar al-Kutub al-Ilmiyya ed.) on 8:24: «إن الحياة النافعة إنما تحصل بالاستجابة لله ورسوله، فمن لم تحصل له هذه الاستجابة فلا حياة له، وإن كانت له حياة بهيمية مشتركة بينه وبين أرذل الحيوانات»."
+ },
+ "lataif:w49": {
+  "result": "adds-claim",
+  "evidence": "Tariq al-Hijratayn (Dar Ibn al-Qayyim ed.) supports the heart's turning: «يكفي في هذا قوله تعالى: واعلموا أن الله يحول بين المرء وقلبه… المحرك للقلب المصرف له المقلب له كيف يشاء», with the oath «لا ومقلب القلوب»; but the condition «إذا تمادى في الغي» and the supplication «يا مقلب القلوب ثبت قلبي على دينك» (authentic elsewhere, Tirmidhi 2140) are not in the cited work."
+ },
+ "lataif:w51": {
+  "result": "verified",
+  "evidence": "Zad al-Maad (al-Arnaut ed.), Kab b. Malik's account: «قد ضاقت عليّ نفسي وضاقت عليّ الأرض بما رحبت», and on 9:118: «تاب عليهم أولاً بتوفيقهم للتوبة، فلما تابوا تاب عليهم ثانياً بقبولها»."
+ },
+ "lataif:w58": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 9:109: «أفمن أسس بنيان دينه على قاعدة قوية محكمة وهي الحق الذي هو تقوى الله ورضوانه، خير أم من أسسه على… الباطل والنفاق الذي مثله مثل شفا جرف هار في قلة الثبات»."
+ },
+ "lataif:w59": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 9:128: «عزيز عليه ما عنتم، أي: يعز عليه الشيء الذي يعنت أمته ويشق عليها»; «حريص عليكم» restates the verse."
+ },
+ "lataif:w62": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 10:5: «ولما جعل النور في مقابلة الضياء… (ضياءً) و(نوراً) حالان مشيران إلى الحكمة والنعمة في خلقهما»; «وقدّره منازل… وقدّر سيره»."
+ },
+ "lataif:w64": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 10:11: «يخبر تعالى عن حلمه ولطفه بعباده: أنه لا يستجيب لهم إذا دعوا على أنفسهم أو أموالهم أو أولادهم في حال ضجرهم وغضبهم»."
+ },
+ "lataif:w68": {
+  "result": "verified",
+  "evidence": "al-Tabari at 10:91–92: Pharaoh sought refuge «حين فزع إليه في حال حلول سخطه به ونزول عقابه»; and Ibn Abbas: «أنجى الله فرعون لبني إسرائيل من البحر، فنظروا إليه بعد ما غرق»."
+ },
+ "lataif:w76": {
+  "result": "adds-claim",
+  "evidence": "al-Kashshaf at 12:86 defines only «البث: أصعب الهم الذي لا يصبر عليه صاحبه فيبثه إلى الناس» and «لا أشكو إلى أحد منكم… إنما أشكو إلى ربي»; the reflection's contrasting definition of «الحزن» (what one hides in the heart) is not in it."
+ },
+ "lataif:w77": {
+  "result": "verified",
+  "evidence": "Ighathat al-Lahfan cites 12:53 for the soul that commands evil: «فالنفس تدعو إلى الطغيان وإيثار الحياة الدنيا»; salvation by God's mercy restates «إلا ما رحم ربي»."
+ },
+ "lataif:w79": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 12:18: they stained the shirt «ولكنهم نسوا أن يخرقوه، فلهذا لم يرج هذا الصنيع على نبي الله يعقوب»; and on «فصبر جميل»: «صبر لا شكوى فيه» (a mursal report he cites)."
+ },
+ "lataif:w80": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.), منزلة الصبر, on Yusuf: «فإنه كان شاباً… وعزباً… وغريباً… ومملوكاً… والمرأة جميلة وذات منصب وهي سيدته، وقد غاب الرقيب… ومع هذه الدواعي كلها صبر اختياراً وإيثاراً لما عند الله»; «معاذ الله» and the closed doors are the verse."
+ },
+ "lataif:w83": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 12:55: «أمين أحفظ ما تستحفظنيه، عالم بوجوه التصرف، وصفاً لنفسه بالأمانة والكفاية… فطلب التولية ابتغاء وجه الله لا لحب الملك والدنيا»."
+ },
+ "lataif:w87": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 12:92: «لا تثريب عليكم اليوم، يقول: لا تأنيب عليكم ولا عتب عليكم اليوم، ولا أعيد ذنبكم في حقي بعد اليوم»; he was then in power and they admitted their wrong."
+ },
+ "lataif:w90": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 13:11: «ملائكة يحفظونه من بين يديه ومن خلفه، فإذا جاء قدر الله خلّوا عنه»; Ali: «إن مع كل رجل ملكين يحفظانه مما لم يقدّر، فإذا جاء القدر خلّيا بينه وبينه»."
+ },
+ "lataif:w96": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 14:26: «كشجرة الحنظل»; «ومعنى اجتثت استؤصلت. وحقيقة الاجتثاث أخذ الجثة كلها»; «شبه بها القول الذي لم يعضد بحجة، فهو داحض غير ثابت»."
+ },
+ "lataif:w98": {
+  "result": "verified",
+  "evidence": "al-Tabari at 14:37 on Ibrahim settling his family at the barren valley by the House «ليقيموا الصلاة»; the lesson for parents is an application of the verse."
+ },
+ "lataif:w102": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 15:87: «فهذا نص في أن الفاتحة السبع المثاني والقرآن العظيم»; and «فلا تنظرن إلى الدنيا وزينتها… فلا تغبطهم بما هم فيه»."
+ },
+ "lataif:w103": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 16:1: «فجيء بالماضي المراد به المستقبل المحقق الوقوع بقرينة تفريع (فلا تستعجلوه)»."
+ },
+ "lataif:w104": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 16:8: horses, mules and donkeys made «للركوب والزينة بها، وذلك أكبر المقاصد منها»; the conclusion restates «ويخلق ما لا تعلمون»."
+ },
+ "lataif:w105": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 16:112: «وأما اللباس فقد شُبّه به لاشتماله على اللابس: ما غشي الإنسان والتبس به من بعض الحوادث… فكأنه قيل: فأذاقه ما غشيهم من الجوع والخوف»."
+ },
+ "lataif:w106": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) on 16:97: «وقد فسرت الحياة الطيبة بالقناعة والرضى والرزق الحسن وغير ذلك، والصواب أنها حياة القلب ونعيمه وبهجته وسروره بالإيمان»."
+ },
+ "lataif:w108": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 17:11: «يخبر تعالى عن عجلة الإنسان ودعائه في بعض الأحيان على نفسه أو ولده أو ماله بالشر… فلو استجاب له ربه لهلك بدعائه»."
+ },
+ "lataif:w109": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 17:18: «العاجلة صفة موصوف محذوف… أي الحياة العاجلة»; «يعطاه بعضهم بالمقادير التي شاء الله إعطاءها… لمن نريد بدل بعض من كل»."
+ },
+ "lataif:w110": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) quoting 17:19: «فأخبر أن السعي المشكور: سعي من أراد الآخرة»; the three conditions restate the verse."
+ },
+ "lataif:w111": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 17:20: «كل واحد من الفريقين الذين أرادوا الدنيا والذين أرادوا الآخرة نمدهم فيما هم فيه… وما كان عطاء ربك محظوراً، أي: ممنوعاً»."
+ },
+ "lataif:w113": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 17:24: «بتصويره في هيئة تذلل الطائر عندما يعتريه خوف… إذ يخفض جناحه متذللاً، ففي التركيب استعارة مكنية»."
+ },
+ "lataif:w114": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 17:26–27: «التبذير: الإنفاق في غير حق» (Ibn Masud, Ibn Abbas); «إخوان الشياطين، أي: أشباههم في ذلك»."
+ },
+ "lataif:w115": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 17:29: «هذا تمثيل لمنع الشحيح وإعطاء المسرف، وأمر بالاقتصاد الذي هو بين الإسراف والتقتير… ملوماً… محسوراً منقطعاً بك لا شيء عندك»."
+ },
+ "lataif:w116": {
+  "result": "verified",
+  "evidence": "al-Tabari at 17:30: «ويقدر… ويقتّر… فيضيّق عليه… إن ربك ذو خبرة بعباده، ومن الذي تصلحه السعة في الرزق وتفسده، ومن الذي يصلحه الإقتار والضيق ويهلكه»."
+ },
+ "lataif:w117": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 17:36: «ومضمون ما ذكروه: أن الله تعالى نهى عن القول بلا علم، بل بالظن الذي هو التوهم والخيال»; Qatada: «لا تقل رأيت ولم تر… فإن الله سائلك عن ذلك كله»."
+ },
+ "lataif:w118": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 17:53: «يقولوا… الكلمة التي هي أحسن وألين ولا يخاشنوهم»; the warning about the devil sowing discord is the verse; the family application is an application."
+ },
+ "lataif:w119": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 17:78, with the Prophet's explanation of «إن قرآن الفجر كان مشهوداً»: «تشهده ملائكة الليل وملائكة النهار» (al-Bukhari, al-Tirmidhi and others)."
+ },
+ "lataif:w121": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.), باب الإرادة, on 17:84: «فإن معنى الآية: كل يعمل على ما يشاكله ويناسبه ويليق به، فالفاجر يعمل على ما يليق به»."
+ },
+ "lataif:w122": {
+  "result": "verified",
+  "evidence": "al-Tabari at 18:6: «قاتل نفسك ومهلكها على آثار قومك… حزناً وتلهفاً ووجداً بإدبارهم عنك… يقال منه: بخع فلان نفسه»; «وهذه معاتبة من الله… على وجده»."
+ },
+ "lataif:w123": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 18:10: «يخبر تعالى عن أولئك الفتية الذين فروا بدينهم من قومهم لئلا يفتنوهم عنه، فهربوا منه فلجؤوا إلى غار»; the request for «رشداً» is the verse."
+ },
+ "lataif:w127": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 18:46: «الباقيات الصالحات أعمال الخير التي تبقى ثمرتها للإنسان، وتفنى عنه كل ما تطمح إليه نفسه من حظوظ الدنيا»."
+ },
+ "lataif:w130": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 18:79: «إنما خرقتها لأعيبها… ملك من الظلمة يأخذ كل سفينة صالحة… لأرده عنها لعيبها، فينتفع بها أصحابها المساكين الذين لم يكن لهم شيء ينتفعون به غيرها»."
+ },
+ "lataif:w131": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 18:82: the two orphans «حفظا بصلاح أبيهما»; the treasure under the wall and their reaching maturity are the verse."
+ },
+ "lataif:w133": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 19:30: «أنطقه الله أولاً بأنه عبد الله رداً لقول النصارى»."
+ },
+ "lataif:w135": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 19:59: «أضاعوا الصلاة… وإذا أضاعوها فهم لما سواها من الواجبات أضيع؛ لأنها عماد الدين وقوامه… وأقبلوا على شهوات الدنيا وملاذها»."
+ },
+ "lataif:w136": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 4:135: «وإن كانت الشهادة على والديك وقرابتك فلا تراعهم فيها، بل اشهد بالحق وإن عاد ضررها عليهم، فإن الحق حاكم على كل أحد»."
+ },
+ "lataif:w137": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 4:141 on the hypocrites and the «فتح» of the Muslims versus the disbelievers' «نصيب»; the description of their claims restates the verse («ألم نكن معكم… ألم نستحوذ عليكم ونمنعكم»)."
+ },
+ "lataif:w138": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) on the hypocrites, quoting 4:142: «قام بهم والله الرياء… وقعد بهم الكسل عما أمروا به… فأصبح الإخلاص عليهم لذلك ثقيلاً»."
+ },
+ "lataif:w139": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 4:143: «ذبذبهم الشيطان والهوى بين الإيمان والكفر، فهم مترددون بينهما متحيرون. وحقيقة المذبذب الذي يُذَبّ عن كلا الجانبين… فلا يقر في جانب واحد»."
+ },
+ "lataif:w140": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 4:148 (Ibn Abbas): «لا يحب الله أن يدعو أحد على أحد، إلا أن يكون مظلوماً، فإنه قد أرخص له أن يدعو على من ظلمه»."
+ },
+ "lataif:w143": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat, «رسخ»: «رسوخ الشيء ثباته ثباتاً متمكناً… والراسخ في العلم المتحقق به الذي لا يعرضه شبهة»."
+ },
+ "lataif:w151": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 5:7: the reminder of the covenant (Ubada: «بايعنا رسول الله على السمع والطاعة في منشطنا ومكرهنا»)."
+ },
+ "lataif:w152": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) quoting 5:13: «وأخبر أن نقض الميثاق الذي أخذه على عباده سبب لتقسية القلب… فجعل ذنب النقض موجباً لهذه الآثار: من تقسية القلب واللعنة»."
+ },
+ "lataif:w153": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 5:15: «يبين لهم كثيراً مما كانوا يخفون من الكتاب، ثم أعقبه بأنه يعفو عن كثير. ومعنى يعفو: يعرض ولا…»."
+ },
+ "lataif:w154": {
+  "result": "verified",
+  "evidence": "al-Tabari at 5:22: their reply out of fear «وجزعاً من قتالهم… إن يخرج منها هؤلاء الجبارون دخلناها، وإلا فإنا لا نطيق دخولها… لا طاقة لنا بهم»; the spies: «وكنا في أعينهم مثل الجراد»."
+ },
+ "lataif:w155": {
+  "result": "adds-claim",
+  "evidence": "Ibn Kathir at 5:23 names the two men (Yusha b. Nun and Kalib b. Yufanna) and explains their advice as «متى توكلتم على الله واتبعتم أمره… نصركم الله على أعدائكم»; the reflection's «military plan based on surprise… breaking enemy lines… smart means» is not in it."
+ },
+ "lataif:w157": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 5:27: «مبيناً وخيم عاقبة البغي والحسد والظلم في خبر ابني آدم… فقتله بغياً عليه وحسداً له فيما وهبه الله من النعمة وتقبّل القربان»."
+ },
+ "lataif:w159": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 5:32: «كتبنا عليهم شأناً مهماً هو مماثلة قتل نفس واحدة بغير حق لقتل القاتل الناس أجمعين»; saving a life restates the verse."
+ },
+ "lataif:w162": {
+  "result": "verified",
+  "evidence": "al-Tabari at 5:41: «وهذا تسلية من الله تعالى ذكره نبيه محمداً ﷺ من حزنه على مسارعة الذين قصّ قصتهم من اليهود والمنافقين»; «آمنا بأفواههم ولم تؤمن قلوبهم» is the verse."
+ },
+ "lataif:w164": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 5:44: «فلا تخشوا الناس واخشون، أي: لا تخافوا منهم وخافوني», in the context of those who sought «فتيا دون الرجم»."
+ },
+ "lataif:w165": {
+  "result": "adds-claim",
+  "evidence": "al-Tabari at 5:45 supports retaliation organ for organ («ويقطع الأنف بالأنف… وتقتص الجراح بالجراح»), but frames it «يستوي فيه أحرار المسلمين فيما بينهم… ويستوي فيه العبيد… فيما بينهم» — by legal status — whereas the reflection says «دون تفرقة طبقية»."
+ },
+ "lataif:w167": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 5:48: «وفرّع على ليبلوكم قوله: فاستبقوا الخيرات… والاستباق: التسابق، وهو هنا مجاز في المنافسة»."
+ },
+ "lataif:w168": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 5:50: «ولا تتبع أهواءهم، أي: آراءهم التي اصطلحوا عليها»; rules «أخذها من مجرد نظره وهواه… يقدمونها على الحكم بكتاب الله»."
+ },
+ "lataif:w169": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 5:52: «يسارعون فيهم: ينكمشون في موالاتهم ويرغبون فيها، ويعتذرون بأنهم لا يأمنون أن تصيبهم دائرة من دوائر الزمان… فيحتاجون إليهم»."
+ },
+ "lataif:w170": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) on 5:54: four signs of those God loves; «لما كان الذل منهم ذل رحمة وعطف وشفقة وإخبات عدّاه بأداة على… وإنما هو ذل اللين والانقياد»."
+ },
+ "lataif:w171": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) on 5:54: «العلامة الرابعة: أنهم لا تأخذهم في الله لومة لائم، وهذا علامة صحة المحبة»; and of the one who «قد زهد في مدحهم وثنائهم»."
+ },
+ "lataif:w173": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 7:116–117: «سحروا أعين الناس: أروها بالحيل والشعوذة، وخيّلوا إليها ما الحقيقة بخلافه»; the staff swallowing what they faked is the verse."
+ },
+ "lataif:w176": {
+  "result": "verified",
+  "evidence": "al-Fawaid on 7:176: «وأصل الإخلاد اللزوم على الدوام… وعبّر عن ميله إلى الدنيا بإخلاده إلى الأرض… شبه لهثه على الدنيا وعدم صبره عنها وجزعه لفقدها وحرصه على تحصيلها بلهث الكلب»."
+ },
+ "lataif:w178": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 7:187: «مرساها: إرساؤها أو وقت إرسائها، أي إثباتها وإقرارها. وكل شيء ثقيل رسوّه ثباته واستقراره. ومنه: رسى الجبل وأرسى السفينة»."
+ },
+ "lataif:w179": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 8:5: they wanted the caravan «التي لا حد لها ولا منعة»; «وهو أعلم بعواقب الأمور، وهو الذي دبّركم بحسن تدبيره، وإن كان العباد يحبون خلاف ذلك فيما يظهر لهم»."
+ },
+ "lataif:w181": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 8:33 (Ibn Abbas): «كان فيهم أمانان: النبي ﷺ والاستغفار، فذهب النبي ﷺ وبقي الاستغفار»."
+ },
+ "lataif:w182": {
+  "result": "verified",
+  "evidence": "al-Tabari at 8:30: «ليثبتوك: ليوثقوك… ليشدّوك وثاقاً», with the Dar al-Nadwa council of Quraysh."
+ },
+ "lataif:w184": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 8:61: «والجنوح: الميل، وهو مشتق من جناح الطائر»; «وإن مالوا لأجل السلم ورغبة فيه لا لغرض آخر»."
+ },
+ "lataif:w185": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 9:109: «أفمن أسس بنيان دينه على قاعدة قوية محكمة وهي الحق الذي هو تقوى الله… أم من أسسه على… الباطل والنفاق الذي مثله مثل شفا جرف هار في قلة الثبات»."
+ },
+ "lataif:w189": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 13:12: «ومعنى الخوف والطمع: أن وقوع الصواعق يخاف عند لمع البرق، ويطمع في الغيث»; balancing fear and hope is an application."
+ },
+ "lataif:w191": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 15:21: «والخزائن تمثيل لصلوحية القدرة الإلهية لتكوين الأشياء النافعة»; «وما ننزله إلا بقدر معلوم: أطلق الإنزال على تمكين الناس من…»."
+ },
+ "lataif:w194": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 16:78: hearing, sight «والأفئدة -وهي العقول-… وهذه القوى والحواس تحصل للإنسان على التدريج قليلاً قليلاً»; born knowing nothing is the verse."
+ },
+ "lataif:w195": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 16:58–59: «والكظيم: الغضبان المملوء حنقاً… وهذا من جاهليتهم الجهلاء وظلمهم، إذ يعاملون المرأة معاملة من لو كانت ولادة الذكور باختيارها»."
+ },
+ "lataif:w196": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 16:90: «يأمر عباده بالعدل… ويندب إلى الإحسان»; Ibn Masud: «إن أجمع آية في القرآن في سورة النحل: إن الله يأمر بالعدل والإحسان»."
+ },
+ "lataif:w199": {
+  "result": "verified",
+  "evidence": "Tariq al-Hijratayn: grief is not commanded but forbidden, citing «ولا تحزن عليهم ولا تك في ضيق مما يمكرون» — «فالحزن بلية من البلايا»; patience «واصبر وما صبرك إلا بالله»."
+ },
+ "lataif:w200": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 17:13: «وطائره: هو ما طار عنه من عمله… إنما ذكر العنق لأنه عضو لا نظير له في الجسد، ومن ألزم بشيء فيه فلا محيد له عنه»; the open book on the Day of Resurrection."
+ },
+ "lataif:w202": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 17:37: «والمرح… شدة ازدهاء المرء وفرحه بحاله في عظمة الرزق… مشية المارح… الدالة على كبرياء الماشي بتمايل وتبختر»."
+ },
+ "lataif:w203": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 17:53: «يقولوا… الكلمة التي هي أحسن وألين ولا يخاشنوهم»; the devil sowing discord is the verse; family application."
+ },
+ "lataif:w208": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 18:46: «الباقيات الصالحات أعمال الخير التي تبقى ثمرتها للإنسان، وتفنى عنه كل ما تطمح إليه نفسه من حظوظ الدنيا»."
+ },
+ "lataif:w210": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 19:30: «أنطقه الله أولاً بأنه عبد الله رداً لقول النصارى»."
+ },
+ "lataif:w212": {
+  "result": "adds-claim",
+  "evidence": "Ibn Ashur at 20:1–3 reads it as kindness to the Prophet: «افتتحت السورة بملاطفة النبي ﷺ بأن الله لم يرد من إرساله وإنزال القرآن عليه أن يشقى بذلك… ولكن أراد أن يذكّر بالقرآن من يخاف وعيده»; the reflection widens it to all people and adds «بوابة للسكينة والسعادة», which he does not say."
+ },
+ "lataif:w217": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 20:85–86: Musa's appointment «ثلاثين ليلة ثم أتبعها له عشراً، فتمت أربعين ليلة», during which al-Samiri led the people to the calf; the lesson for educators is an application."
+ },
+ "lataif:w219": {
+  "result": "verified",
+  "evidence": "Tariq al-Hijratayn: «ولا صلاح لهم ولا فلاح ولا نعيم ولا لذة ولا سرور بدون ذلك بحال، فمن أعرض عن ذكر ربه فإن له معيشة ضنكاً»."
+ },
+ "lataif:w220": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 21:1–2: «هذا تنبيه من الله عز وجل على اقتراب الساعة ودنوها، وأن الناس في غفلة عنها، أي: لا يعملون لها»; «إلا استمعوه وهم يلعبون»."
+ },
+ "lataif:w221": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 21:18: «واستعار لذلك القذف والدمغ تصويراً لإبطاله وإهداره ومحقه، فجعله كأنه جرم صلب كالصخرة مثلاً قذف به على جرم رخو أجوف فدمغه»."
+ },
+ "lataif:w222": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 21:37: «فلا جرم كان الإنسان عجولاً بالطبع فكأنه مخلوق من العجلة»; the curb on haste is «فلا تستعجلون»."
+ },
+ "lataif:w225": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 21:87: «فظن أن لن نقدر عليه، أي: نضيّق عليه»; Ibn Masud: «ظلمة بطن الحوت، وظلمة البحر، وظلمة الليل»."
+ },
+ "lataif:w226": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 22:2: «لم قيل مرضعة دون مرضع؟ قلت: المرضعة التي هي في حال الإرضاع ملقمة ثديها الصبي… إذا فوجئت به هذه وقد ألقمت الرضيع ثديها نزعته عن فيه لما يلحقها من الدهشة»."
+ },
+ "lataif:w228": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 22:18: «سجود الموجودات غير الإنسانية ليس إلا دلالة تلك الموجودات على أنها مسخرة بخلق الله، فاستعير السجود لحالة التسخير والانطباع»; man's choice is «وكثير من الناس»."
+ },
+ "lataif:w231": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 23:99–100: «يخبر تعالى عن حال المحتضر عند الموت… وسؤالهم الرجعة إلى الدنيا ليصلح ما كان أفسده في مدة حياته»; «كلا» is the verse."
+ },
+ "lataif:w233": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 23:115: «والعبث: العمل الذي لا فائدة فيه… فلو لم يكن خلق البشر في هذه الحياة مرتباً عليه مجازاة الفاعلين على أفعالهم لكان خالقه قد أتى في فعله بشيء عديم…»."
+ },
+ "lataif:w234": {
+  "result": "verified",
+  "evidence": "Ighathat al-Lahfan: «والعين رائد القلب، فيبعث رائده لنظر ما هناك، فإذا أخبره بحسن المنظور إليه وجماله تحرك اشتياقاً إليه»; and on 24:30 «فجعل الزكاة بعد غض البصر وحفظ الفرج»."
+ },
+ "lataif:w237": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 24:39: «شبّه ما يعمله من لا يعتقد الإيمان… من الأعمال الصالحة التي يحسبها تنفعه عند الله… ثم تخيب في العاقبة أمله ويلقى خلاف ما قدّر، بسراب يراه الكافر… وقد غلبه عطش يوم القيامة»."
+ },
+ "lataif:w238": {
+  "result": "verified",
+  "evidence": "al-Fawaid: «هجر القرآن أنواع: أحدها هجر سماعه… والثاني هجر العمل به… والثالث هجر تحكيمه… والرابع هجر تدبره وتفهمه… والخامس هجر الاستشفاء والتداوي به»."
+ },
+ "lataif:w239": {
+  "result": "adds-claim",
+  "evidence": "Ibn Ashur at 25:20 illustrates the mutual trial with the Quraysh elite who refused Islam because Ammar, Suhayb and Bilal preceded them, and reads «أتصبرون» as consolation and an urging to patience for the Prophet; the reflection's general list (rich/poor, oppressor/oppressed, sick/healthy) is not in his text."
+ },
+ "lataif:w241": {
+  "result": "verified",
+  "evidence": "al-Tabari at 26:3: «لعلك يا محمد قاتل نفسك ومهلكها إن لم يؤمن قومك بك… والبخع: هو القتل والإهلاك في كلام العرب»."
+ },
+ "lataif:w242": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 26:80: «أسند المرض إلى نفسه، وإن كان عن قدر الله وقضائه وخلقه، ولكن أضافه إلى نفسه أدباً»."
+ },
+ "lataif:w245": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 27:40: «فليس إحسان الله إليه إلا فضلاً محضاً، ولم يشتغل سليمان حين أحضر له العرش بأن يبتهج بسلطانه ولا بمقدرة رجاله»; the test of gratitude is the verse."
+ },
+ "lataif:w248": {
+  "result": "verified",
+  "evidence": "al-Tabari at 28:11: «فقصت أخت موسى أثره، فبصرت به عن جنب: يقول فبصرت بموسى عن بعد لم تدن منه ولم تقرب، لئلا يعلم أنها منه بسبيل… وقوم فرعون لا يشعرون بأخت موسى أنها أخته»."
+ },
+ "lataif:w249": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 28:44: «منبهاً على برهان نبوة محمد… حيث أخبر بالغيوب الماضية خبراً كأن سامعه شاهد وراءٍ لما تقدم، وهو رجل أمي… ما كنت بجانب الجبل الغربي… ولكن الله… أوحى إليك ذلك ليجعله حجة وبرهاناً»."
+ },
+ "lataif:w252": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 28:79 describes Qarun's display «في زينته» and those who wished for the same «على سبيل الرغبة في اليسار والاستغناء كما هو عادة البشر»."
+ },
+ "lataif:w255": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 42:30: «فإن ما ترى بذنب، وما يعفو الله عنه أكثر», and the hadith «إذا كثرت ذنوب العبد… ابتلاه الله بالحزن ليكفرها»."
+ },
+ "lataif:w256": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 42:5: «تكاد السموات يتفطرن من فوقهن… أي فَرَقاً من العظمة»; the angels' glorification and seeking forgiveness are the verse."
+ },
+ "lataif:w258": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 43:33: «ولولا كراهة أن يجتمعوا على الكفر ويطبقوا عليه، لجعلنا لحقارة زهرة الحياة الدنيا عندنا للكفار سقوفاً ومصاعد وأبواباً وسرراً كلها من فضة وزخرف»."
+ },
+ "lataif:w259": {
+  "result": "verified",
+  "evidence": "al-Tabari at 44:29 (Ibn Abbas): «إنه ليس أحد من الخلق إلا له باب في السماء يصعد فيه عمله وينزل منه رزقه، فإذا مات بكى عليه مكانه من الأرض الذي كان يذكر الله فيه ويصلي فيه… وأما قوم فرعون فلم يكن لهم آثار صالحة»."
+ },
+ "lataif:w260": {
+  "result": "adds-claim",
+  "evidence": "al-Tabari at 44:3–4 prefers Laylat al-Qadr and explains «يقضى ويفصل كل أمر أحكمه الله تعالى في تلك السنة»: «يقضى فيها أمر السنة كلها من يموت ومن يولد»; he reports «ينسخ لملك الموت من يموت ليلة القدر إلى مثلها», but not the reflection's «من اللوح المحفوظ إلى صحف الملائكة الحفظة»."
+ },
+ "lataif:w262": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 46:15: «وبلغ أربعين سنة، أي: تناهى عقله وكمل فهمه وحلمه»; gratitude and righteous offspring are the verse's prayer."
+ },
+ "lataif:w263": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 46:35: «فاصبر كما صبر أولو العزم من الرسل، أي: على تكذيب قومهم لهم… وأشهرها أنهم: نوح وإبراهيم وموسى وعيسى وخاتم الأنبياء محمد ﷺ»."
+ },
+ "lataif:w266": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.), منزلة السكينة: «وأصل السكينة هي الطمأنينة والوقار والسكون الذي ينزله الله في قلب عبده عند اضطرابه من شدة المخاوف… ويوجب له زيادة الإيمان وقوة اليقين والثبات»."
+ },
+ "lataif:w268": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 49:6 on the duty to verify (تبيّن/تثبّت) news before acting, for both the receiver and the transmitter; harm to innocents and regret are the verse."
+ },
+ "lataif:w269": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 49:12: «أيحب أحدكم: تمثيل وتصوير لما يناله المغتاب من عرض المغتاب على أفظع وجه وأفحشه، وفيه مبالغات شتى»."
+ },
+ "lataif:w270": {
+  "result": "verified",
+  "evidence": "Madarij (al-Fiqi ed.) on 49:7: «يقول سبحانه: لم تكن محبتكم للإيمان وإرادتكم له وتزيينه في قلوبكم منكم، ولكن الله هو الذي جعله في قلوبكم كذلك»; and «أن كل خير فيها ففضل من الله»."
+ },
+ "lataif:w272": {
+  "result": "verified",
+  "evidence": "al-Tabari at 50:15: «ما يشك هؤلاء المشركون المكذبون بالبعث أنا لم نعي بالخلق الأول، ولكنهم في شك من قدرتنا على أن نخلقهم خلقاً جديداً بعد فنائهم»."
+ },
+ "lataif:w276": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 52:17–18: «ووقاهم ربهم عذاب الجحيم، أي: وقد نجّاهم من عذاب النار، وتلك نعمة مستقلة بذاتها على حدتها مع ما أضيف إليها من دخول الجنة»."
+ },
+ "lataif:w278": {
+  "result": "adds-claim",
+  "evidence": "Ibn Ashur at 53:17 reads «ما زاغ البصر وما طغى» as the accuracy of the sight: «رأى جبريل رؤية لا خطأ فيها ولا زيادة على ما وصف… والزيغ: الميل عن القصد، أي ما مال بصره إلى مرئي آخر… والطغيان: تجاوز الحد»; the reflection's «مدح… الأدب السامي في حضرة جلال السماوات» is not his reading."
+ },
+ "lataif:w281": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 55:60: «ما لمن أحسن في الدنيا العمل إلا الإحسان إليه في الدار الآخرة»; returning kindness among people is an application."
+ },
+ "lataif:w283": {
+  "result": "verified",
+  "evidence": "al-Tabari at 56:4–6: «وبست الجبال بساً… فتتت فتاً»; «هباءً منبثاً… شعاع الشمس الذي يدخل من الكوة كهيئة الغبار»."
+ },
+ "lataif:w285": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 57:16: «أما آن للمؤمنين أن تخشع قلوبهم لذكر الله، أي: تلين عند الذكر والموعظة وسماع القرآن… نهى الله المؤمنين أن يتشبهوا بالذين حملوا الكتاب قبلهم… فطال عليهم الأمد فقست قلوبهم»."
+ },
+ "lataif:w286": {
+  "result": "adds-claim",
+  "evidence": "Ibn Ashur at 58:1 names the woman (Khawla/Khuwayla bint Malik b. Thalaba) and explains her complaint and argument; Aisha's report that she could not hear part of Khawla's words while God heard it is not in his commentary at this verse (it is a separate hadith)."
+ },
+ "lataif:w289": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 61:2–3: «والمقت: البغض الشديد»; «كبر… أمراً كبيراً في جنس المقت»."
+ },
+ "lataif:w290": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 62:5: «بالحمار حمل أسفاراً، أي كتباً كباراً من كتب العلم، فهو يمشي بها ولا يدري منها إلا ما يمر بجنبيه وظهره من الكد والتعب. وكل من علم ولم يعمل بعلمه فهذا مثله»."
+ },
+ "lataif:w292": {
+  "result": "verified",
+  "evidence": "al-Tabari at 63:4: «تعجبك أجسامهم لاستواء خلقها وحسن صورها… كأن هؤلاء المنافقين خشب مسندة لا خير عندهم ولا فقه لهم ولا علم، وإنما هم صور بلا أحلام وأشباح بلا عقول»."
+ },
+ "lataif:w294": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 65:2–3, in the context of divorce and the waiting period: «ومن يتق الله فيما أمره به وترك ما نهاه عنه، يجعل له من أمره مخرجاً، ويرزقه من حيث لا يحتسب، أي: من جهة لا تخطر بباله»."
+ },
+ "lataif:w296": {
+  "result": "adds-claim",
+  "evidence": "al-Tabari at 66:6 glosses «وأهليكم» as «وعلّموا أهليكم من العمل بطاعة الله ما يقون به أنفسهم من النار»; the reflection's point — that the self is mentioned first because «فاقد الشيء لا يعطيه» — is not in his text."
+ },
+ "lataif:w298": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 67:13: «إنه عليم بذات الصدور، أي بضمائرها قبل أن تترجم الألسنة عنها، فكيف لا يعلم ما تكلم به»."
+ },
+ "lataif:w299": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 68:4: «وبهذا يزداد وضوحاً معنى التمكن الذي أفاده حرف الاستعلاء في قوله وإنك لعلى خلق عظيم، فهو متمكن منه الخلق العظيم في نفسه»."
+ },
+ "lataif:w300": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 69:19: «يخبر تعالى عن سعادة من أوتي كتابه يوم القيامة بيمينه وفرحه بذلك، وأنه من شدة فرحه يقول لكل من لقيه: هاؤم اقرءوا كتابيه… لأنه يعلم أن الذي فيه خير وحسنات محضة»."
+ },
+ "lataif:w302": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 71:10–12: «يرسل السماء عليكم مدراراً، أي: متواصلة الأمطار»; Umar sought rain «فلم يزد على الاستغفار»; wealth, children and gardens are the verse."
+ },
+ "lataif:w305": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 74:38–39: «أي كل إنسان رهن بما كسب من التقدم أو التأخر… فهو على نفسه بصيرة ليكسب ما يفضي به إلى النعيم أو إلى الجحيم»; the exception of «أصحاب اليمين» is the verse."
+ },
+ "lataif:w307": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 76:8–9: «على حبه… أي: في حال محبتك للمال وحرصك عليه وحاجتك إليه»; «لا نريد منكم جزاء ولا شكوراً، أي: لا نطلب منكم مجازاة تكافئونا بها ولا أن تشكرونا عند الناس»."
+ },
+ "lataif:w308": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 77:30–31: «إلى ظل، يعني دخان جهنم… ذي ثلاث شعب: يتشعب لعظمه ثلاث شعب»; «لا ظليل ولا يغني من اللهب» is the verse."
+ },
+ "lataif:w314": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 83:14, the hadith: «إن العبد إذا أذنب ذنباً كانت نكتة سوداء في قلبه، فإن تاب منها صقل قلبه، وإن زاد زادت… وذاك الران»; al-Hasan: «هو الذنب على الذنب حتى يعمى القلب فيموت»."
+ },
+ "lataif:w315": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:46: «إن العرب قد تسمي اليقين ظناً والشك ظناً… فكان ظنهم يقيناً، وليس ظناً في شك»."
+ },
+ "lataif:w316": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 2:49: «يسومونكم، أي: يوردونكم ويذيقونكم ويولونكم سوء العذاب… وقيل: معناه: يديمونكم»."
+ },
+ "lataif:w319": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 2:59: «فأنزل عليهم رجز من السماء وهو الطاعون»."
+ },
+ "lataif:w321": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:68: «إنما بقرة لا مسنة هرمة، ولا صغيرة لم تلد»."
+ },
+ "lataif:w322": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 2:69: «فكأنه قيل: شديدة الصفرة صفرتها»; Wahb: «إذا نظرت إليها خيل إليك أن شعاع الشمس يخرج من جلدها»."
+ },
+ "lataif:w323": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 2:74: «و(أو) بمعنى بل الانتقالية لتوفر شرطها وهو كون معطوفها جملة»."
+ },
+ "lataif:w324": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («أم» and «منى»): «ومنهم أميون لا يعلمون الكتاب إلا أماني، أي إلا أن يتلى عليهم»; «لكن لما كان أكثره عن تخمين صار الكذب له أملك»."
+ },
+ "lataif:w325": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:81: «وأحاطت به خطيئته» — Ibn Abbas: «يحيط كفره بما له من حسنة»; al-Rabi b. Khuthaym: «هو الذي يموت على خطيئته قبل أن يتوب»; al-Amash: «مات بذنوبه»."
+ },
+ "lataif:w326": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 2:87: «وقفّينا من بعده بالرسل… أتبعنا. وقال غيره: أردفنا. والكل قريب، كما قال تعالى: ثم أرسلنا رسلنا تترى»."
+ },
+ "lataif:w327": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («شرب»): «وأشربوا في قلوبهم العجل… فكأنما شُدّ في قلوبهم العجل لشغفهم، وقال بعضهم معناه أُشرب في قلوبهم حب العجل… إذا أرادوا العبارة عن مخامرة حب أو بغض استعاروا له اسم الشراب»."
+ },
+ "lataif:w328": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 2:96: «وما أحدهم بمن يزحزحه من النار تعميره… والزحزحة: التبعيد والإنحاء»."
+ },
+ "lataif:w329": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 2:106 on naskh: «رفع الحكم الشرعي المعلوم دوامه بخطاب يرفعه»; and «نأت بخير منها أو مثلها: إظهار منتهى الحكمة»."
+ },
+ "lataif:w330": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («بدع»): «الإبداع إنشاء صنعة بلا احتذاء واقتداء… وإذا استعمل في الله تعالى فهو إيجاد الشيء بغير آلة ولا مادة ولا زمان ولا مكان… والبديع يقال للمبدع نحو بديع السماوات والأرض»."
+ },
+ "lataif:w331": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 2:124: «ابتلاء الله إبراهيم، أي: اختباره له بما كلفه به من الأوامر والنواهي، فأتمهن، أي: قام بهن كلهن»; «بكلمات، أي: بشرائع وأوامر ونواه»."
+ },
+ "lataif:w332": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:125: «وإذ جعلنا البيت مرجعاً للناس ومعاذاً، يأتونه كل عام ويرجعون إليه، فلا يقضون منه وطراً»."
+ },
+ "lataif:w334": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 2:142: the qibla meant is Jerusalem «وأن التولي عنها هو نسخها باستقبال الكعبة»."
+ },
+ "lataif:w337": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 2:20: «ومعنى القيام عدم المشي، أي الوقوف في الموضع»."
+ },
+ "lataif:w338": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («شبه»): «وأتوا به متشابهاً، أي يشبه بعضه بعضاً لوناً لا طعماً وحقيقة، وقيل متماثلاً في الكمال والجودة»."
+ },
+ "lataif:w339": {
+  "result": "verified",
+  "evidence": "al-Tabari at 2:27: «من بعد ميثاقه، فإنه يعني: من بعد توثّق الله فيه بأخذ عهوده بالوفاء له بما عهد إليهم في ذلك… والميثاق اسم منه»."
+ },
+ "lataif:w341": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 2:42: «ناهياً لليهود عما كانوا يتعمدونه من تلبيس الحق بالباطل وتمويهه به»; Ibn Abbas: «لا تخلطوا الحق بالباطل»."
+ },
+ "lataif:w342": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («بر»): «وتصوّر منه التوسع، فاشتق منه البر، أي التوسع في فعل الخير… بر العبد ربه، أي توسع في طاعته… وذلك ضربان: ضرب في الاعتقاد وضرب في الأعمال»."
+ },
+ "lataif:w343": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 3:7: «آيات محكمات هن أم الكتاب، أي: بينات واضحات الدلالة لا التباس فيها على أحد من الناس»; Said b. Jubayr: «أصل الكتاب»."
+ },
+ "lataif:w344": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 3:7: «الذين في قلوبهم زيغ هم أهل البدع، فيتبعون ما تشابه منه… ابتغاء الفتنة… وطلب أن يؤوّلوه التأويل الذي يشتهونه»."
+ },
+ "lataif:w345": {
+  "result": "verified",
+  "evidence": "al-Tabari at 3:11: «كدأب آل فرعون… معناه: كسنتهم… وأصل الدأب من دأبت في الأمر دأباً إذا أدمنت العمل والتعب فيه، ثم إن العرب نقلت معناه إلى الشأن والأمر والعادة»."
+ },
+ "lataif:w346": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («قنطر»): «والقناطير المقنطرة، أي المجموعة قنطاراً قنطاراً، كقولك دراهم مدرهمة ودنانير مدنرة»."
+ },
+ "lataif:w347": {
+  "result": "adds-claim",
+  "evidence": "Ibn Kathir at 3:19 glosses «بغياً بينهم» as «بغي بعضهم على بعض، فاختلفوا في الحق لتحاسدهم وتباغضهم وتدابرهم»; the reflection's added motive «طلباً للمكاسب والريادة المادية» is not in his text."
+ },
+ "lataif:w349": {
+  "result": "verified",
+  "evidence": "al-Tabari at 3:35: «محرراً لعبادتك… حبسته على خدمتك وخدمة قدسك في الكنيسة، عتيقة من خدمة كل شيء سواك، مفرغة لك خاصة»."
+ },
+ "lataif:w351": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («مكر»): «المكر صرف الغير عما يقصده بحيلة، وذلك ضربان: مكر محمود… والله خير الماكرين، ومذموم وهو أن يتحرى به فعل قبيح»; the plot against Isa is the verse's context."
+ },
+ "lataif:w352": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 3:67: «ولكن كان حنيفاً مسلماً، أي: متحنّفاً عن الشرك قصداً إلى الإيمان»."
+ },
+ "lataif:w353": {
+  "result": "verified",
+  "evidence": "al-Tabari at 3:59: «فإن قالوا: خلق عيسى من غير ذكر، فقد خلقت آدم من تراب بتلك القدرة من غير أنثى ولا ذكر»."
+ },
+ "lataif:w354": {
+  "result": "verified",
+  "evidence": "al-Tabari at 4:2: «كان أوصياء اليتامى يأخذون الجيد من ماله والرفيع منه، ويجعلون مكانه لليتيم الرديء والخسيس، فذلك تبديلهم الذي نهاهم الله عنه»."
+ },
+ "lataif:w355": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («قسط»): «والقسط هو أن يأخذ قسط غيره وذلك جور، والإقساط أن يعطي قسط غيره وذلك إنصاف، ولذلك قيل: قسط الرجل إذا جار، وأقسط إذا عدل»."
+ },
+ "lataif:w356": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 4:3: «ذلك أدنى ألا تعولوا: قال بعضهم: أدنى ألا تكثر عائلتكم… [والأكثرون]: لا تميلوا»."
+ },
+ "lataif:w358": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 4:6 on «آنستم» (perceiving the first sign of knowledge) and «والرشد… أريد به هنا حفظ المال وحسن التدبير فيه»."
+ },
+ "lataif:w359": {
+  "result": "verified",
+  "evidence": "al-Tabari at 4:6: «لا تأكلوا أموالهم إسرافاً… ولا مبادرة منكم بلوغهم وإيناس الرشد منهم، حذراً أن يبلغوا فيلزمكم تسليمه إليهم»."
+ },
+ "lataif:w360": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («صلا»): «قال الخليل: صلي الكافر النار: قاسى حرها… وقيل: صلي النار: دخل فيها»."
+ },
+ "lataif:w362": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 4:12: «والكلالة في الأصل مصدر بمعنى الكلال… فاستعيرت للقرابة من غير جهة الولد والوالد»."
+ },
+ "lataif:w363": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 5:1 on «وأنتم حرم»: the sacred precinct «فهذا الحرم يحرم صيده، كما يحرم الصيد على المحرم بحج أو عمرة»."
+ },
+ "lataif:w364": {
+  "result": "verified",
+  "evidence": "al-Tabari at 5:2 reports that «القلائد» are «قلائد الهدي… الهدايا المقلدات», and that garlands of the Haram's tree bark made the wearer safe «فيأمن بذلك من سائر قبائل العرب أن يعرضوا له بسوء»."
+ },
+ "lataif:w365": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («وقذ»): «والموقوذة، أي المقتولة بالضرب»."
+ },
+ "lataif:w366": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 5:3: «المتردية: التي تسقط من جبل» (Ibn Abbas); «التي تتردى في بئر» (Qatada)."
+ },
+ "lataif:w367": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 5:3: «الاستقسام بالأزلام، أي بالقداح؛ كان أحدهم إذا أراد سفراً أو غزواً أو تجارة أو نكاحاً…»; «لأنه دخول في علم الغيب الذي استأثر به علام الغيوب»."
+ },
+ "lataif:w368": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 5:3: «والمخمصة: المجاعة، اشتقت من الخمص وهو ضمور البطن، لأن الجوع يضمر البطون»."
+ },
+ "lataif:w369": {
+  "result": "verified",
+  "evidence": "al-Tabari at 5:4: «التكليب للقانص، بالكلاب كان صيده أو بغيرها»; al-Hasan: «كل ما عُلّم فصاد، من كلب أو صقر أو فهد أو غيره»."
+ },
+ "lataif:w370": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 6:1: «ثم الذين كفروا بربهم يعدلون، أي: ومع هذا كله كفر به بعض عباده، وجعلوا معه شريكاً وعدلاً»."
+ },
+ "lataif:w371": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 6:9: «وللبسنا عليهم: ولخلطنا عليهم ما يخلطون على أنفسهم حينئذ»."
+ },
+ "lataif:w372": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («قرن»): «والقرن: القوم المقترنون في زمن واحد، وجمعه قرون»."
+ },
+ "lataif:w373": {
+  "result": "verified",
+  "evidence": "al-Tabari at 6:6: «وأرسلنا السماء عليهم مدراراً: المطر. ويعني بقوله مدراراً: غزيرة دائمة»."
+ },
+ "lataif:w374": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 7:189: «فلما تغشاها، أي: وطئها، حملت حملاً خفيفاً»."
+ },
+ "lataif:w375": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («حبط»): «وحبط العمل على أضرب: أحدها أن تكون الأعمال دنيوية فلا تغني في القيامة غناءً… والثاني أن تكون أعمالاً أخروية لكن لم يقصد بها صاحبها وجه الله»."
+ },
+ "lataif:w376": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 7:166 refers back to 7:77, where he says: «والعتو تجاوز الحد في الكبر، وتعديته لتضمينه معنى الإعراض»."
+ },
+ "lataif:w377": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 7:176: «فتشبيهه بالكلب في لهثه في كلتا حالتيه، إن زُجر وإن تُرك»."
+ },
+ "lataif:w378": {
+  "result": "verified",
+  "evidence": "al-Tabari at 7:179 (Ibn Abbas): «ولقد ذرأنا لجهنم: خلقنا… لنفاذ علمه فيهم بأنهم يصيرون إليها بكفرهم»."
+ },
+ "lataif:w379": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 8:1: «قال البخاري: قال ابن عباس: الأنفال: الغنائم»."
+ },
+ "lataif:w380": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 8:9 on «مردفين»: «ردفه إذا تبعه… بمعنى متبعين بعضهم بعضاً»."
+ },
+ "lataif:w381": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («بن»): «البنان الأصابع… وقوله تعالى: واضربوا منهم كل بنان، خصّه لأجل أنهم بها…»."
+ },
+ "lataif:w382": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 8:16: «إلا متحرفاً لقتال، هو الكرّ بعد الفرّ، يخيّل عدوه أنه منهزم ثم يعطف عليه، وهو باب من خدع الحرب ومكايدها»."
+ },
+ "lataif:w383": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 8:30: «ليثبتوك: ليقيدوك» (Ibn Abbas, Mujahid, Qatada); «ليحبسوك» (Ata, Ibn Zayd); al-Suddi: «الإثبات: هو الحبس والوثاق»."
+ },
+ "lataif:w384": {
+  "result": "verified",
+  "evidence": "al-Tabari at 8:67: «حتى يثخن في الأرض، يقول: حتى يبالغ في قتل المشركين فيها، ويقهرهم»."
+ },
+ "lataif:w385": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 9:2 explains «فسيحوا في الأرض أربعة أشهر» as a respite for those with treaties, after which «لا عهد لهم، وآذن الناس كلهم بالقتال»."
+ },
+ "lataif:w387": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («نكث»): «النكث: نكث الأكسية والغزل، قريب من النقض، واستعير لنقض العهد، قال تعالى: وإن نكثوا أيمانهم»."
+ },
+ "lataif:w388": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 9:16: «ولم يتخذوا وليجة، أي بطانة… والوليجة: فعيلة من ولج، كالدخيلة من دخل»."
+ },
+ "lataif:w389": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 9:37: «فكانوا قد أحدثوا قبل الإسلام بمدة تحليل المحرم وتأخيره إلى صفر، فيحلون الشهر الحرام»; «إنا قد حرمنا صفر وأخّرنا المحرم»."
+ },
+ "lataif:w390": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 9:38: «والتثاقل تكلّف الثقل، أي إظهار أنه ثقيل لا يستطيع النهوض… قد آثروا الراحة في الدنيا على الثواب»."
+ },
+ "lataif:w391": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («رهق»): «رهقه الأمر: غشيه بقهر… قال: وترهقهم ذلة»."
+ },
+ "lataif:w392": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 10:35: «أم الذي لا يهدّي، أي لا يهتدي بنفسه، أو لا يهدي غيره إلا أن يهديه الله… أم من لا يهتدي من الأوثان إلى مكان فينتقل»."
+ },
+ "lataif:w393": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 10:39: «ويطلق التأويل على… هل ينظرون إلا تأويله، أي ظهور ما أنذرهم به من العذاب. والتأويل الذي في هذه الآية يحتمل المعنيين ولعل كليهما مراد»."
+ },
+ "lataif:w394": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 11:5 (al-Bukhari from Ibn Abbas): «يستغشون: يغطون رؤوسهم»; «كانوا يثنون صدورهم إذا قالوا شيئاً أو عملوه، يظنون أنهم يستخفون من الله بذلك»."
+ },
+ "lataif:w395": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 11:15: «والتوفية: إعطاء الشيء وافياً، أي كاملاً غير منقوص… فالمراد أنهم لا ينقصون من لذاتهم التي هيؤوها لأنفسهم»."
+ },
+ "lataif:w396": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («خبت»): «الخبت المطمئن من الأرض… ثم استعمل الإخبات استعمال اللين والتواضع، قال الله تعالى: وأخبتوا إلى ربهم… فتخبت له قلوبهم، أي تلين وتخشع»."
+ },
+ "lataif:w397": {
+  "result": "verified",
+  "evidence": "al-Tabari at 11:38: «وكلما مرّ عليه جماعة من كبراء قومه سخروا منه»."
+ },
+ "lataif:w399": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 12:30: «قد شغفها حباً، أي: قد وصل حبه إلى شغاف قلبها، وهو غلافه»; Ibn Abbas: «والشغاف: حجاب القلب»."
+ },
+ "lataif:w400": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 12:31: «وأعتدت لهن متكأً: ما يتكئن عليه من نمارق»."
+ },
+ "lataif:w402": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («دأب»): «الدأب إدامة السير… والدأب العادة المستمرة دائماً على حاله»."
+ },
+ "lataif:w403": {
+  "result": "verified",
+  "evidence": "al-Tabari at 12:49: «يغاث الناس… بالمطر»; «وفيه يعصرون: … السمسم دهناً، والعنب خمراً، والزيتون زيتاً» (Ibn Abbas)."
+ },
+ "lataif:w404": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 12:80: «ومعنى خلصوا: اعتزلوا وانفردوا عن الناس خالصين لا يخالطهم سواهم، نجياً: ذوي نجوى… لمناجاة بعضهم بعضاً»."
+ },
+ "lataif:w406": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 14:18: «فإذا اشتدت الرياح بالرماد انتثر وتفرق تفرقاً لا يرجى معه اجتماعه… ووصف اليوم بالعاصف مجاز عقلي، أي: عاصف ريحه»."
+ },
+ "lataif:w407": {
+  "result": "verified",
+  "evidence": "al-Tabari at 14:49: Qatada «مقرنين في القيود والأغلال»; al-Dahhak «الأصفاد: السلاسل»; Ibn Zayd «صفدت فيها أيديهم وأرجلهم ورقابهم، والأصفاد: الأغلال»."
+ },
+ "lataif:w408": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («عمه»): «العمه التردد في الأمر من التحير… فهم يعمهون»."
+ },
+ "lataif:w409": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 15:94: «والصدع: الجهر والإعلان، وأصله الانشقاق… فالمراد هنا الجهر والإعلان»."
+ },
+ "lataif:w410": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («خر»): «فمعنى خرّ: سقط سقوطاً يسمع منه خرير، والخرير يقال لصوت الماء والريح وغير ذلك مما يسقط من علو»."
+ },
+ "lataif:w411": {
+  "result": "verified",
+  "evidence": "al-Tabari at 16:46: «أو يهلكهم في تصرّفهم في البلاد وتردّدهم في أسفارهم»; Qatada: «في أسفارهم»."
+ },
+ "lataif:w412": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 17:5: «فجاسوا خلال الديار، أي: تملكوا بلادكم وسلكوا خلال بيوتكم، أي: بينها ووسطها، وانصرفوا ذاهبين وجائين لا يخافون أحداً»."
+ },
+ "lataif:w413": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («غض»): «الغض النقصان من الطرف والصوت… واغضض من صوتك»."
+ },
+ "lataif:w414": {
+  "result": "verified",
+  "evidence": "al-Tabari at 18:6: «فلعلك يا محمد قاتل نفسك ومهلكها… حزناً وتلهفاً ووجداً»; Qatada: «قاتل نفسك»."
+ },
+ "lataif:w415": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («وهن»): «الوهن ضعف من حيث الخَلق أو الخُلق، قال: رب إني وهن العظم مني»."
+ },
+ "lataif:w416": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 19:83: Qatada «تزعجهم إزعاجاً إلى معاصي الله»; al-Thawri «تغريهم إغراءً وتستعجلهم استعجالاً»; al-Suddi «تطغيهم طغياناً»."
+ },
+ "lataif:w418": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 20:72: «والإيثار: التفضيل… أي لن نؤثر طاعتك أو دينك على ما جاءنا من البينات»."
+ },
+ "lataif:w419": {
+  "result": "verified",
+  "evidence": "al-Tabari at 21:3: «وأسروا النجوى… النجوى بينهم، يقول: …المناجاة بينهم، فقالوا: هل هذا… إلا بشر مثلكم»."
+ },
+ "lataif:w420": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 21:96: «ينسلون، أي: يسرعون في المشي إلى الفساد. والحدب: هو المرتفع من الأرض» (Ibn Abbas, Ikrima and others)."
+ },
+ "lataif:w421": {
+  "result": "verified",
+  "evidence": "al-Raghib, Mufradat («ربو»): «فإذا أنزلنا عليها الماء اهتزت وربت، أي زادت زيادة المتربّي»."
+ },
+ "lataif:w422": {
+  "result": "verified",
+  "evidence": "al-Tabari at 22:29 (Ibn Abbas): «التفث: حلق الرأس، وأخذ من الشاربين، ونتف الإبط، وحلق العانة، وقص الأظفار»; «وضع إحرامهم من حلق الرأس ولبس الثياب وقص الأظفار»."
+ },
+ "lataif:w423": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 23:64: «الجؤار: الصراخ باستغاثة»."
+ },
+ "lataif:w424": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 23:108: «اخسؤوا فيها: ذلّوا فيها وانزجروا كما تنزجر الكلاب إذا زجرت. يقال: خسأ الكلب»."
+ },
+ "lataif:w425": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 24:40: «أو كظلمات في بحر لجي: قال قتادة: وهو العميق»."
+ },
+ "lataif:w426": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 24:43: «ويزجي: يسوق. يقال: أزجى الإبل إزجاءً. وأطلق الإزجاء على دنو بعض السحاب من بعض»."
+ },
+ "lataif:w428": {
+  "result": "verified",
+  "evidence": "al-Tabari at 25:68: «يلق أثاماً، يقول: يلق من عقاب الله عقوبة ونكالاً»; Mujahid: «وادياً في جهنم»."
+ },
+ "lataif:w429": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 26:45: «ما يأفكون: ما يقلبونه عن وجهه وحقيقته بسحرهم… فيخيلون في حبالهم وعصيهم أنها حيات تسعى، بالتمويه على الناظرين»; and (7:117, 20:69) «تلقّفت ملء الوادي من الخشب والحبال… يتلقفها بإذن الله ويمحقها»."
+ },
+ "lataif:w430": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 26:128: «اختلف المفسرون في الريع بما حاصله: أنه المكان المرتفع عند جوادّ الطرق المشهورة»."
+ },
+ "lataif:w432": {
+  "result": "adds-claim",
+  "evidence": "al-Tabari at 27:28 (and the following verses) discusses only the order of «ثم تول عنهم… فانظر ماذا يرجعون»; he gives no gloss of «يرجعون». The meaning given (they reply) is correct but is not from the cited work, and «جواب فكري أو سياسي» is the reflection's own."
+ },
+ "lataif:w434": {
+  "result": "verified",
+  "evidence": "al-Tabari at 28:35: «سنشد عضدك، أي نقوّيك ونعينك بأخيك. تقول العرب إذا أعز رجل رجلاً وأعانه… قد شد فلان على عضد فلان»."
+ },
+ "lataif:w436": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 30:18: «والإظهار: حلول وقت الظهر وهو نصف النهار»."
+ },
+ "lataif:w437": {
+  "result": "verified",
+  "evidence": "al-Tabari at 31:18: «ولا تعرض بوجهك عمن كلمته تكبراً واستحقاراً لمن تكلمه، وأصل الصعر داء يأخذ الإبل في أعناقها»."
+ },
+ "lataif:w439": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 33:10: «زاغت الأبصار: مالت عن سننها ومستوى نظرها حيرة وشخوصاً… لشدة الروع»."
+ },
+ "lataif:w440": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 33:59: «بأن يدنين عليهن من جلابيبهن… والجلباب هو الرداء فوق الخمار»; Ibn Abbas: «أن يغطين وجوههن من فوق رؤوسهن بالجلابيب»."
+ },
+ "lataif:w441": {
+  "result": "verified",
+  "evidence": "al-Tabari at 34:13 (Ibn Abbas): «وجفان كالجواب… يعني بالجواب: الحياض»; «كالجوبة من الأرض»."
+ },
+ "lataif:w442": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 35:12: «وهذا ملح أجاج، وهو البحر الساكن… وإنما تكون مالحة زعاقاً مرّة… أي: مرّ»."
+ },
+ "lataif:w443": {
+  "result": "verified",
+  "evidence": "al-Tabari at 36:39: «والعرجون من العذق من الموضع النابت في النخلة إلى موضع الشماريخ… والقديم هو اليابس»; Ibn Abbas: «العذق اليابس»; al-Hasan: «كعذق النخلة إذا قدُم فانحنى»."
+ },
+ "lataif:w444": {
+  "result": "verified",
+  "evidence": "al-Tabari at 37:53: «أإنا لمحاسبون ومجزيّون بعد مصيرنا عظاماً ولحومنا تراباً»; Ibn Abbas: «لمجازون بالعمل، كما تدين تدان»."
+ },
+ "lataif:w445": {
+  "result": "verified",
+  "evidence": "al-Tabari at 38:31: Mujahid «صفن الفرس: رفع إحدى يديه حتى يكون على طرف الحافر»; Ibn Zayd «والصفن أن تقوم على ثلاث وترفع رجلاً واحدة حتى يكون طرف الحافر على الأرض»."
+ },
+ "lataif:w446": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 39:75: «أخبر عن ملائكته أنهم محدقون من حول عرشه المجيد يسبحون بحمد ربهم ويمجدونه ويعظمونه»."
+ },
+ "lataif:w447": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 40:19 (Ibn Abbas): «وهو الرجل يدخل على أهل البيت بيتهم وفيهم المرأة الحسناء… فإذا غفلوا لحظ إليها، فإذا فطنوا غضّ»."
+ },
+ "lataif:w448": {
+  "result": "verified",
+  "evidence": "al-Tabari at 41:21 on the skins testifying: their reply «أنطقنا الله الذي أنطق كل شيء» is the verse; the reflection restates it."
+ },
+ "lataif:w449": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 42:34: «أو يوبقهن بما كسبوا، أي: ولو شاء لأهلك السفن وغرّقها بذنوب أهلها الذين هم راكبون عليها»."
+ },
+ "lataif:w450": {
+  "result": "verified",
+  "evidence": "al-Tabari at 43:13: al-Suddi «مقرنين: مطيقين»; Ibn Zayd «لسنا له مطيقين… لا نطيقها إلا بك»."
+ },
+ "lataif:w451": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 44:47: «فاعتلوه: فقودوه بعنف وغلظة، وهو أن يؤخذ بتلبيب الرجل فيجرّ إلى حبس أو قتل»."
+ },
+ "lataif:w452": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 45:28: «جاثية: باركة مستوفزة على الركب»."
+ },
+ "lataif:w453": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 46:24: «والعارض: السحاب الذي يعرض في أفق السماء»."
+ },
+ "lataif:w454": {
+  "result": "verified",
+  "evidence": "al-Tabari at 47:4: «حتى إذا أثخنتموهم… يقول: حتى إذا غلبتموهم وقهرتم من لم تضربوا رقبته منهم، فصاروا في أيديكم أسرى»."
+ },
+ "lataif:w456": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 49:11: «ولا تنابزوا بالألقاب، أي: لا تتداعوا بالألقاب، وهي التي يسوء الشخص سماعها»."
+ },
+ "lataif:w457": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 51:1–2: «فالحاملات وقراً: السحاب، لأنها تحمل المطر»."
+ },
+ "lataif:w458": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 52:6 gives both readings: «المراد أنه يوقد يوم القيامة ناراً»; Qatada: «المسجور: المملوء»."
+ },
+ "lataif:w460": {
+  "result": "verified",
+  "evidence": "al-Tabari at 54:13: «والدسار: المسمار الذي تشد به السفينة؛ يقال منه: دسرت السفينة إذا شددتها بمسامير أو غيرها»."
+ },
+ "lataif:w461": {
+  "result": "verified",
+  "evidence": "al-Tabari at 55:14: «من صلصال: وهو الطين اليابس الذي لم يطبخ، فإنه من يبسه له صلصلة إذا حُرّك ونُقر كالفخار»."
+ },
+ "lataif:w462": {
+  "result": "verified",
+  "evidence": "al-Kashshaf: at 56:19 «لا يصدعون عنها، أي بسببها… لا يصدر صداعهم عنها»; and at 37:47 «ينزفون… من نزف الشارب إذا ذهب عقله. ويقال للسكران: نزيف ومنزوف»."
+ },
+ "lataif:w463": {
+  "result": "verified",
+  "evidence": "al-Tabari at 57:13: «فضرب الله بين المؤمنين والمنافقين بسور، وهو حاجز بين أهل الجنة وأهل النار»; Ibn Zayd: «باطنه فيه الرحمة: الجنة وما فيها»; Qatada: «وظاهره من قبله العذاب: أي النار»."
+ },
+ "lataif:w464": {
+  "result": "verified",
+  "evidence": "al-Tabari at 58:2: «الذين يحرّمون نساءهم على أنفسهم… فيقولون لهن: أنتن علينا كظهور أمهاتنا، وذلك كان طلاق الرجل امرأته في الجاهلية»."
+ },
+ "lataif:w465": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 59:5: «اللين: نوع من التمر، وهو جيد… وقال كثيرون من المفسرين: اللينة: ألوان التمر سوى العجوة»."
+ },
+ "lataif:w466": {
+  "result": "verified",
+  "evidence": "al-Tabari at 60:8: «وتقسطوا إليهم، يقول: وتعدلوا فيهم بإحسانكم إليهم وبركم بهم»; «المقسطين: المنصفين الذين ينصفون الناس ويعطونهم الحق والعدل من أنفسهم»."
+ },
+ "lataif:w467": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 61:4: «كأنهم في تراصّهم من غير فرجة ولا خلل بنيان رُصّ بعضه إلى بعض ورُصف»."
+ },
+ "lataif:w469": {
+  "result": "adds-claim",
+  "evidence": "al-Tabari at 65:4 chooses «إن ارتبتم بالحكم فيهن وفي عددهن فلم تدروا ما هن» and argues against reading the doubt as about their blood or menopause («ومحال أن يقال… ارتبتم بيأسهن»); the reflection gives exactly that reason («لعدم معرفة قواعد انقطاع الدم أو السن»)."
+ },
+ "lataif:w471": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 67:3: «هل ترى من فطور: من صدوع وشقوق، جمع فطر وهو الشق»."
+ },
+ "lataif:w472": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 68:42: Ibn Abbas «هو يوم كرب وشدة»; Mujahid «شدة الأمر»; and he cites the hadith in the two Sahihs on the Lord uncovering His shin."
+ },
+ "lataif:w475": {
+  "result": "verified",
+  "evidence": "al-Tabari at 71:22: «ومكروا مكراً كبّاراً، يقول: ومكروا مكراً عظيماً»; «والكبار: وهو الكبير»."
+ },
+ "lataif:w476": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 72:8: «اللمس: المس، فاستعير للطلب»; the guards are «الملائكة الذين يرجمونهم بالشهب ويمنعونهم من الاستماع»."
+ },
+ "lataif:w477": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 73:12: «من أنكال: وهي القيود الثقال»."
+ },
+ "lataif:w478": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 74:31: «وما جعلنا أصحاب النار، أي: خزانها، إلا ملائكة، أي: [زبانية] غلاظاً شداداً»."
+ },
+ "lataif:w479": {
+  "result": "verified",
+  "evidence": "al-Tabari at 75:7: «برَق… بمعنى شخص وفُتح عند الموت… برِق بكسر الراء بمعنى: فزع وشق»; Mujahid: «عند الموت»; Qatada: «شخص البصر»."
+ },
+ "lataif:w480": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 76:17: «كان مزاجها زنجبيلاً… فتارة يمزج لهم الشراب بالكافور وهو بارد، وتارة بالزنجبيل وهو حار، ليعتدل الأمر»."
+ },
+ "lataif:w481": {
+  "result": "verified",
+  "evidence": "al-Tabari at 77:11: «وإذا الرسل أجّلت للاجتماع لوقتها يوم القيامة»; Ibn Abbas: «أقتت: جمعت»; «ليوم الفصل: ليوم يفصل الله فيه بين خلقه القضاء»."
+ },
+ "lataif:w484": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 80:33: Ibn Abbas «الصاخة اسم من أسماء يوم القيامة»; Ibn Jarir «لعله اسم للنفخة في الصور»; al-Baghawi «صيحة القيامة، سميت بذلك لأنها تصخ الأسماع»."
+ },
+ "lataif:w485": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 81:15–16: «والكنس: الغيّب، من كنس الوحشي إذا دخل كناسه… فخنوسها رجوعها، وكنوسها اختفاؤها تحت ضوء الشمس»."
+ },
+ "lataif:w486": {
+  "result": "verified",
+  "evidence": "al-Tabari at 82:4: «وإذا القبور أثيرت فاستخرج من فيها من الموتى أحياء؛ يقال: بعثر فلان حوض فلان إذا جعل أسفله أعلاه»."
+ },
+ "lataif:w487": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 83:7: «سجين، فعيل من السجن وهو الضيق… هو أمر عظيم وسجن مقيم»; «ثم قد قال قائلون: هي تحت الأرض السابعة»."
+ },
+ "lataif:w488": {
+  "result": "verified",
+  "evidence": "al-Tabari at 84:2: Qatada and al-Dahhak «سمعت وأطاعت»; «وحقّت: وحقق الله عليها الاستماع بالانشقاق والانتهاء إلى طاعته»."
+ },
+ "lataif:w489": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 85:1: opinions on «البروج» including «النجوم», and «واختار ابن جرير أنها منازل الشمس والقمر، وهي اثنا عشر برجاً»."
+ },
+ "lataif:w491": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 87:5: «فجعله بعد خضرته ورفيفه غثاءً أحوى: درِيناً أسود»."
+ },
+ "lataif:w492": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 88:4–5: «تصلى ناراً حامية، أي: حارة شديدة الحر، تسقى من عين آنية، أي: قد انتهى حرها وغليانها» (Ibn Abbas, Mujahid, al-Hasan, al-Suddi)."
+ },
+ "lataif:w493": {
+  "result": "verified",
+  "evidence": "al-Tabari at 89:3 reports «الشفع: الخلق كله، والوتر: الله» (Ibn Abbas: «الله وتر، وأنتم شفع») and Qatada «إن من الصلاة شفعاً وإن منها وتراً»."
+ },
+ "lataif:w494": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 90:4: «في كبد… في شدة وطلب معيشة» (Said b. Jubayr); «في مشقة» (Qatada); «واختار ابن جرير أن المراد بذلك مكابدة الأمور ومشاقها»."
+ },
+ "lataif:w495": {
+  "result": "verified",
+  "evidence": "al-Tabari at 91:11 reports Qatada «أي الطغيان», Mujahid «معصيتها» and Ibn Zayd «بغيانهم وبمعصيتهم» (his own preference is the punishment that overwhelmed them)."
+ },
+ "lataif:w496": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 92:11: «إذا تردّى: قال مجاهد: أي إذا مات. وقال أبو صالح ومالك عن زيد بن أسلم: إذا تردّى في النار»."
+ },
+ "lataif:w497": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 93:2: «يقال: سجا الليل سجواً… إذا امتد وطال مدة ظلامه، مثل سجو المرء بالغطاء إذا غطي به جميع جسده»."
+ },
+ "lataif:w499": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 95:5 gives both readings: «مصيره إلى النار إن لم يطع الله» and «إلى أرذل العمر» (Ibn Abbas, Ikrima; Ibn Jarir's choice)."
+ },
+ "lataif:w500": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 96:15: «لنسفعاً بالناصية: لنأخذن بناصيته ولنسحبنه بها إلى النار. والسفع: القبض على الشيء وجذبه بشدة»."
+ },
+ "lataif:w501": {
+  "result": "adds-claim",
+  "evidence": "Ibn Ashur at 97:1 gives only «والقدر… هو بمعنى الشرف والفضل… أي ليلة القدر والشرف عند الله»; the reflection's further senses («التضييق» and the annual «تقدير… الأقدار») are not in his commentary there."
+ },
+ "lataif:w502": {
+  "result": "verified",
+  "evidence": "al-Tabari at 98:1: «منفكين، يقول: منتهين حتى يأتيهم… البينة»; Ibn Zayd «لم يكونوا منتهين حتى يأتيهم»."
+ },
+ "lataif:w504": {
+  "result": "verified",
+  "evidence": "Ibn Ashur at 100:1: «والضبح: اضطراب النفس المتردد في الحنجرة دون أن يخرج من الفم، وهو من أصوات الخيل والسباع»."
+ },
+ "lataif:w505": {
+  "result": "verified",
+  "evidence": "Tariq al-Hijratayn on 100:6: «الكنود هو الكفور، وهو الذي يذكر المصائب وينسى النعم»."
+ },
+ "lataif:w506": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 100:10: «وحُصّل ما في الصدور: قال ابن عباس وغيره: يعني أبرز وأظهر ما كانوا يسرّون في نفوسهم»."
+ },
+ "lataif:w507": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 101:5: «وشبّه الجبال بالعهن، وهو الصوف المصبّغ ألواناً… وبالمنفوش منه لتفرق أجزائها»."
+ },
+ "lataif:w508": {
+  "result": "verified",
+  "evidence": "al-Tabari at 102:1–2: Qatada «نحن أكثر من بني فلان… ألهاهم ذلك حتى ماتوا ضلالاً», and the hadith indicating «التكاثر بالمال»."
+ },
+ "lataif:w510": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 104:1 reports Mujahid «الهمزة: باليد والعين، واللمزة: باللسان» — the reflection's reading (his own opening line gives the reverse: «الهماز بالقول، واللماز بالفعل»); Ibn Abbas «طعّان معياب»."
+ },
+ "lataif:w511": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 104:4: «الحطمة… التي من شأنها أن تحطم كل ما يلقى فيها»."
+ },
+ "lataif:w512": {
+  "result": "verified",
+  "evidence": "al-Tabari at 105:5: «فجعل الله أصحاب الفيل كزرع أكلته الدواب فراثته، فيبس وتفرقت أجزاؤه»; Ibn Zayd: «ورق الزرع وورق البقل إذا أكلته البهائم فراثته»."
+ },
+ "lataif:w513": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 106:1–2 on Quraysh being safe in their winter and summer journeys «لعظمتهم عند الناس، لكونهم سكان حرم الله»."
+ },
+ "lataif:w514": {
+  "result": "verified",
+  "evidence": "Badai al-Fawaid (citing Ahmad): «الماعون: الفأس والقدر وأشباه ذلك»."
+ },
+ "lataif:w516": {
+  "result": "verified",
+  "evidence": "al-Kashshaf at 109:6: «لكم دينكم ولي دين: لكم شرككم، ولي توحيدي»."
+ },
+ "lataif:w517": {
+  "result": "verified",
+  "evidence": "al-Tabari at 110:2: «أفواجاً، يعني: زمراً، فوجاً فوجاً»; Mujahid: «زمراً زمراً»; «من صنوف العرب وقبائلها»."
+ },
+ "lataif:w518": {
+  "result": "verified",
+  "evidence": "al-Tabari at 111:1: «خسرت يدا أبي لهب، وخسر هو… تبّ عمله»; Qatada «خسرت وتبّ»."
+ },
+ "lataif:w519": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 111:5: al-Shabi «المسد: الليف»; al-Jawhari «حبل من ليف أو خوص… إذا أجدت فتله»; «فأعقبها الله بها حبلاً في جيدها من مسد النار»."
+ },
+ "lataif:w521": {
+  "result": "verified",
+  "evidence": "al-Tabari at 113:1: «والفلق في كلام العرب: فلق الصبح… وجب أن يكون معنياً به كل ما اسمه الفلق»; al-Qurazi «فالق الحب والنوى»."
+ },
+ "lataif:w522": {
+  "result": "verified",
+  "evidence": "Ibn Kathir at 113:3: «إنه الليل إذا أقبل بظلامه» (Ibn Abbas, Muhammad b. Kab, al-Dahhak, al-Hasan, Qatada)."
+ },
+ "lataif:w523": {
+  "result": "verified",
+  "evidence": "Badai al-Fawaid: «فإن النفاثات في العقد هن السواحر اللاتي يعقدن الخيوط وينفثن على كل عقدة… والنفث هو النفخ مع ريق»."
+ }
+}

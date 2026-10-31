@@ -15,11 +15,11 @@
 //     ayah) on one shared <audio> element, claiming ownership first.
 //
 // The Audio Adhkar Evening player (audioAdhkarPlayer.ts) is the first UI
-// caller. The existing Misc "Listen"
-// (useMiscSpeech.ts, speechSynthesis) is intentionally not wired in yet —
-// it should claim the "tts" channel when real audio playback ships.
+// caller. (The written Misc library's speech-synthesis "Listen" button
+// was removed; nothing claims the "tts" channel today.)
 
-export type AudioChannel = "quran" | "adhkar" | "tts" | "adhan";
+/** "preview": the short volume sample of Settings → إعدادات الصوت (lib/volumePreview.ts). */
+export type AudioChannel = "quran" | "adhkar" | "tts" | "adhan" | "preview";
 
 export interface ActiveAudio {
   channel: AudioChannel;
@@ -32,10 +32,43 @@ interface Owner extends ActiveAudio {
   controls?: PauseControls;
 }
 
+/**
+ * Where the current playback is: read from the media itself (the element's
+ * currentTime/duration, or the Web Audio clock and decoded buffers), never
+ * estimated. `durationMs` is null until the total length is really known.
+ */
+export interface PlaybackProgress {
+  key: string;
+  positionMs: number;
+  durationMs: number | null;
+  /** Still loading/decoding — nothing heard yet. */
+  loading: boolean;
+}
+
+type ProgressReader = () => Omit<PlaybackProgress, "key">;
+let progressReader: { key: string; read: ProgressReader } | null = null;
+
+/** A playback registers how to read its position (only the current owner's reader is ever used). */
+export function setPlaybackProgressReader(key: string, read: ProgressReader): void {
+  progressReader = { key, read };
+}
+
+/** The current owner's position, or null when nothing (or nothing measurable) plays. */
+export function getPlaybackProgress(): PlaybackProgress | null {
+  if (!progressReader || !owner || owner.key !== progressReader.key) return null;
+  try {
+    return { key: progressReader.key, ...progressReader.read() };
+  } catch {
+    return null;
+  }
+}
+
 /** Optional pause/resume a source can offer (file playback does; speech may not). */
 export interface PauseControls {
   pause: () => void;
   resume: () => void;
+  /** Changes the gain (0–1) of what is playing, mid-playback — a volume slider moved while it plays. */
+  setVolume?: (gain: number) => void;
 }
 
 let owner: Owner | null = null;
@@ -57,9 +90,32 @@ export function subscribeAudio(listener: (active: ActiveAudio | null) => void): 
   };
 }
 
+// Where a playback was when something stopped it (another source taking
+// over, or stopAudio) — read just before it stopped, since its own reader
+// is gone afterwards. One slot: the player that owned it takes it once.
+let stoppedProgress: PlaybackProgress | null = null;
+
+function rememberProgressOf(previous: { key: string }) {
+  if (progressReader?.key !== previous.key) return;
+  try {
+    stoppedProgress = { key: previous.key, ...progressReader.read() };
+  } catch {
+    stoppedProgress = null;
+  }
+}
+
+/** The position `key` had when it was stopped (once; null if unknown or already taken). */
+export function takeStoppedProgress(key: string): PlaybackProgress | null {
+  if (stoppedProgress?.key !== key) return null;
+  const p = stoppedProgress;
+  stoppedProgress = null;
+  return p;
+}
+
 /** Stops the current owner (if any) and makes the caller the owner. */
 export function claimAudio(channel: AudioChannel, key: string, stop: () => void, controls?: PauseControls): void {
   const previous = owner;
+  if (previous) rememberProgressOf(previous);
   owner = { channel, key, stop, controls };
   if (previous) safeStop(previous);
   emit();
@@ -76,6 +132,7 @@ export function releaseAudio(key: string): void {
 export function stopAudio(channel?: AudioChannel): void {
   if (!owner || (channel && owner.channel !== channel)) return;
   const previous = owner;
+  rememberProgressOf(previous);
   owner = null;
   safeStop(previous);
   emit();
@@ -92,6 +149,13 @@ export function pauseAudio(key: string): boolean {
 export function resumeAudio(key: string): boolean {
   if (owner?.key !== key || !owner.controls) return false;
   owner.controls.resume();
+  return true;
+}
+
+/** Sets the gain of the source playing `key`. False if `key` isn't playing or has no volume of its own. */
+export function setAudioVolume(key: string, gain: number): boolean {
+  if (owner?.key !== key || !owner.controls?.setVolume) return false;
+  owner.controls.setVolume(Math.min(1, Math.max(0, gain)));
   return true;
 }
 
@@ -176,6 +240,9 @@ export interface AudioElementLike {
   onerror: (() => void) | null;
   preload?: string;
   currentTime?: number;
+  /** Seconds; NaN/undefined until the file's metadata has loaded. */
+  duration?: number;
+  volume?: number;
 }
 
 let createElement: () => AudioElementLike = () => new Audio() as unknown as AudioElementLike;
@@ -203,7 +270,10 @@ function getStandbyElement(): AudioElementLike | null {
 export interface PlayUrlQueueOptions {
   /** Start the FIRST file this many seconds in (e.g. past a basmala heard on an earlier repetition). */
   startAt?: number;
-  onEnded?: () => void;
+  /** The app's own gain for this audio, 0–1 (audioVolumeSettings.ts); default 1. */
+  volume?: number;
+  /** The whole playback ended; `durationMs`: how long it played (the files' real length), null when not all lengths were known. */
+  onEnded?: (info?: { durationMs: number | null }) => void;
   onError?: () => void;
   /** Another source took over, or stopAudio() was called — not called when the queue ends or fails by itself. */
   onInterrupted?: () => void;
@@ -227,6 +297,19 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
   let standbyIndex = -1;
   let index = 0;
   let active = true;
+  /** Each finished file's real length (seconds), null when the element never reported one. */
+  const lengths: (number | null)[] = urls.map(() => null);
+  const startAt = options.startAt ?? 0;
+  const lengthOf = (el: AudioElementLike) => (typeof el.duration === "number" && Number.isFinite(el.duration) && el.duration > 0 ? el.duration : null);
+  const playedSeconds = (upTo: number): number | null => {
+    let sum = 0;
+    for (let i = 0; i < upTo; i++) {
+      const length = lengths[i];
+      if (length === null) return null;
+      sum += length;
+    }
+    return sum;
+  };
 
   const clear = (el: AudioElementLike) => {
     el.onended = null;
@@ -245,6 +328,7 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
 
   const fail = () => {
     if (!active) return;
+    rememberProgressOf({ key }); // what played before the error, for its listening time
     halt();
     releaseAudio(key);
     options.onError?.();
@@ -274,9 +358,11 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
     standbyIndex = index + 1;
   };
 
+  let volume = Math.min(1, Math.max(0, options.volume ?? 1));
   const playCurrent = () => {
     element.onended = onEnded;
     element.onerror = fail;
+    element.volume = volume;
     element.src = urls[index];
     if (index === 0 && options.startAt) element.currentTime = options.startAt;
     start(element, fail);
@@ -285,11 +371,13 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
 
   const onEnded = () => {
     if (!active) return;
+    lengths[index] = lengthOf(element);
     index += 1;
     if (index >= urls.length) {
       halt();
       releaseAudio(key);
-      options.onEnded?.();
+      const total = playedSeconds(urls.length);
+      options.onEnded?.({ durationMs: total === null ? null : Math.round(Math.max(0, total - startAt) * 1000) });
       return;
     }
     if (standby && standbyIndex === index) {
@@ -299,6 +387,7 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
       finished.onerror = null;
       element = standby;
       standby = finished;
+      element.volume = volume;
       element.onended = onEnded;
       element.onerror = fail;
       start(element, () => {
@@ -337,9 +426,23 @@ export function playUrlQueue(channel: AudioChannel, key: string, urls: readonly 
           fail();
         }
       },
+      setVolume: (gain) => {
+        volume = gain;
+        if (!active) return;
+        element.volume = gain;
+        if (standby) standby.volume = gain;
+      },
     },
   );
 
+  setPlaybackProgressReader(key, () => {
+    const done = playedSeconds(index);
+    const current = lengthOf(element);
+    const position = (done ?? 0) + (element.currentTime ?? 0) - startAt;
+    // The total is known once every file's length is: the finished ones and the last one playing now.
+    const total = done !== null && current !== null && index === urls.length - 1 ? done + current - startAt : null;
+    return { positionMs: Math.max(0, Math.round(position * 1000)), durationMs: total === null ? null : Math.round(total * 1000), loading: current === null && (element.currentTime ?? 0) === 0 };
+  });
   playCurrent();
   return true;
 }

@@ -30,3 +30,14 @@ dist-ssr
 
 # Local debugging output (voice logs, screen recordings, transcripts) — never commit
 debug-logs/
+
+# Local-only material — kept on disk, never committed:
+# timestamped safety copies of src/ made before larger edits
+backups/
+# a downloaded Python wheel and a scratch screenshot script
+*.whl
+.shot-tmp.mjs
+# research downloads: cached source texts and audio/video recordings under docs/
+docs/**/cache/
+docs/**/*.mp3
+docs/**/*.webm

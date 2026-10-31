@@ -1,0 +1,3878 @@
+{
+ "lataif:w1": {
+  "verse": "letters-only-excerpt",
+  "ref": "1:1-7",
+  "refShown": "سورة الفاتحة",
+  "url": "https://tanzil.net/#1:1",
+  "refCheck": {
+   "surahName": "الفاتحة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w3": {
+  "verse": "exact",
+  "ref": "2:186",
+  "refShown": "سورة البقرة – الآية 186",
+  "url": "https://tanzil.net/#2:186",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w4": {
+  "verse": "exact",
+  "ref": "2:268",
+  "refShown": "سورة البقرة – الآية 268",
+  "url": "https://tanzil.net/#2:268",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w6": {
+  "verse": "exact",
+  "ref": "2:274",
+  "refShown": "سورة البقرة – الآية 274",
+  "url": "https://tanzil.net/#2:274",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w8": {
+  "verse": "exact",
+  "ref": "2:155",
+  "refShown": "سورة البقرة – الآية 155",
+  "url": "https://tanzil.net/#2:155",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w10": {
+  "verse": "exact",
+  "ref": "2:255",
+  "refShown": "سورة البقرة – الآية 255",
+  "url": "https://tanzil.net/#2:255",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w11": {
+  "verse": "exact",
+  "ref": "2:207",
+  "refShown": "سورة البقرة – الآية 207",
+  "url": "https://tanzil.net/#2:207",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w12": {
+  "verse": "exact",
+  "ref": "2:276",
+  "refShown": "سورة البقرة – الآية 276",
+  "url": "https://tanzil.net/#2:276",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w14": {
+  "verse": "exact",
+  "ref": "2:278",
+  "refShown": "سورة البقرة – الآية 278",
+  "url": "https://tanzil.net/#2:278",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w15": {
+  "verse": "letters-only",
+  "ref": "2:281",
+  "refShown": "سورة البقرة – الآية 281",
+  "url": "https://tanzil.net/#2:281",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w19": {
+  "verse": "exact",
+  "ref": "3:35",
+  "refShown": "سورة آل عمران – الآية 35",
+  "url": "https://tanzil.net/#3:35",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w20": {
+  "verse": "exact",
+  "ref": "3:159",
+  "refShown": "سورة آل عمران – الآية 159",
+  "url": "https://tanzil.net/#3:159",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w21": {
+  "verse": "exact",
+  "ref": "3:18",
+  "refShown": "سورة آل عمران – الآية 18",
+  "url": "https://tanzil.net/#3:18",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w23": {
+  "verse": "exact",
+  "ref": "3:144",
+  "refShown": "سورة آل عمران – الآية 144",
+  "url": "https://tanzil.net/#3:144",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w25": {
+  "verse": "exact",
+  "ref": "3:200",
+  "refShown": "سورة آل عمران – الآية 200",
+  "url": "https://tanzil.net/#3:200",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w30": {
+  "verse": "exact",
+  "ref": "4:147",
+  "refShown": "سورة النساء – الآية 147",
+  "url": "https://tanzil.net/#4:147",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w32": {
+  "verse": "exact",
+  "ref": "5:100",
+  "refShown": "سورة المائدة – الآية 100",
+  "url": "https://tanzil.net/#5:100",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w33": {
+  "verse": "exact",
+  "ref": "5:8",
+  "refShown": "سورة المائدة – الآية 8",
+  "url": "https://tanzil.net/#5:8",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w34": {
+  "verse": "exact",
+  "ref": "5:28",
+  "refShown": "سورة المائدة – الآية 28",
+  "url": "https://tanzil.net/#5:28",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w35": {
+  "verse": "exact",
+  "ref": "5:101",
+  "refShown": "سورة المائدة – الآية 101",
+  "url": "https://tanzil.net/#5:101",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w37": {
+  "verse": "exact",
+  "ref": "6:60",
+  "refShown": "سورة الأنعام – الآية 60",
+  "url": "https://tanzil.net/#6:60",
+  "refCheck": {
+   "surahName": "الأنعام",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w38": {
+  "verse": "letters-only",
+  "ref": "6:17",
+  "refShown": "سورة الأنعام – الآية 17",
+  "url": "https://tanzil.net/#6:17",
+  "refCheck": {
+   "surahName": "الأنعام",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w39": {
+  "verse": "exact",
+  "ref": "6:122",
+  "refShown": "سورة الأنعام – الآية 122",
+  "url": "https://tanzil.net/#6:122",
+  "refCheck": {
+   "surahName": "الأنعام",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w43": {
+  "verse": "exact",
+  "ref": "7:2",
+  "refShown": "سورة الأعراف – الآية 2",
+  "url": "https://tanzil.net/#7:2",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w47": {
+  "verse": "exact",
+  "ref": "8:11",
+  "refShown": "سورة الأنفال – الآية 11",
+  "url": "https://tanzil.net/#8:11",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w48": {
+  "verse": "exact",
+  "ref": "8:24",
+  "refShown": "سورة الأنفال – الآية 24",
+  "url": "https://tanzil.net/#8:24",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w49": {
+  "verse": "exact",
+  "ref": "8:24",
+  "refShown": "سورة الأنفال – الآية 24",
+  "url": "https://tanzil.net/#8:24",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w51": {
+  "verse": "exact",
+  "ref": "9:118",
+  "refShown": "سورة التوبة – الآية 118",
+  "url": "https://tanzil.net/#9:118",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w58": {
+  "verse": "exact",
+  "ref": "9:109",
+  "refShown": "سورة التوبة – الآية 109",
+  "url": "https://tanzil.net/#9:109",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w59": {
+  "verse": "exact",
+  "ref": "9:128",
+  "refShown": "سورة التوبة – الآية 128",
+  "url": "https://tanzil.net/#9:128",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w62": {
+  "verse": "exact",
+  "ref": "10:5",
+  "refShown": "سورة يونس – الآية 5",
+  "url": "https://tanzil.net/#10:5",
+  "refCheck": {
+   "surahName": "يونس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w64": {
+  "verse": "exact",
+  "ref": "10:11",
+  "refShown": "سورة يونس – الآية 11",
+  "url": "https://tanzil.net/#10:11",
+  "refCheck": {
+   "surahName": "يونس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w68": {
+  "verse": "exact",
+  "ref": "10:91-92",
+  "refShown": "سورة يونس – الآيتان 91–92",
+  "url": "https://tanzil.net/#10:91",
+  "refCheck": {
+   "surahName": "يونس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w76": {
+  "verse": "exact",
+  "ref": "12:86",
+  "refShown": "سورة يوسف – الآية 86",
+  "url": "https://tanzil.net/#12:86",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w77": {
+  "verse": "exact",
+  "ref": "12:53",
+  "refShown": "سورة يوسف – الآية 53",
+  "url": "https://tanzil.net/#12:53",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w79": {
+  "verse": "exact",
+  "ref": "12:18",
+  "refShown": "سورة يوسف – الآية 18",
+  "url": "https://tanzil.net/#12:18",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w80": {
+  "verse": "exact",
+  "ref": "12:23",
+  "refShown": "سورة يوسف – الآية 23",
+  "url": "https://tanzil.net/#12:23",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w83": {
+  "verse": "letters-only",
+  "ref": "12:55",
+  "refShown": "سورة يوسف – الآية 55",
+  "url": "https://tanzil.net/#12:55",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w87": {
+  "verse": "exact",
+  "ref": "12:92",
+  "refShown": "سورة يوسف – الآية 92",
+  "url": "https://tanzil.net/#12:92",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w90": {
+  "verse": "exact",
+  "ref": "13:11",
+  "refShown": "سورة الرعد – الآية 11",
+  "url": "https://tanzil.net/#13:11",
+  "refCheck": {
+   "surahName": "الرعد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w96": {
+  "verse": "exact",
+  "ref": "14:26",
+  "refShown": "سورة إبراهيم – الآية 26",
+  "url": "https://tanzil.net/#14:26",
+  "refCheck": {
+   "surahName": "ابراهيم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w98": {
+  "verse": "exact",
+  "ref": "14:37",
+  "refShown": "سورة إبراهيم – الآية 37",
+  "url": "https://tanzil.net/#14:37",
+  "refCheck": {
+   "surahName": "ابراهيم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w102": {
+  "verse": "exact",
+  "ref": "15:87-88",
+  "refShown": "سورة الحجر – الآيتان 87–88",
+  "url": "https://tanzil.net/#15:87",
+  "refCheck": {
+   "surahName": "الحجر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w103": {
+  "verse": "exact",
+  "ref": "16:1",
+  "refShown": "سورة النحل – الآية 1",
+  "url": "https://tanzil.net/#16:1",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w104": {
+  "verse": "exact",
+  "ref": "16:8",
+  "refShown": "سورة النحل – الآية 8",
+  "url": "https://tanzil.net/#16:8",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w105": {
+  "verse": "exact",
+  "ref": "16:112",
+  "refShown": "سورة النحل – الآية 112",
+  "url": "https://tanzil.net/#16:112",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w106": {
+  "verse": "exact",
+  "ref": "16:97",
+  "refShown": "سورة النحل – الآية 97",
+  "url": "https://tanzil.net/#16:97",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w108": {
+  "verse": "exact",
+  "ref": "17:11",
+  "refShown": "سورة الإسراء – الآية 11",
+  "url": "https://tanzil.net/#17:11",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w109": {
+  "verse": "exact",
+  "ref": "17:18",
+  "refShown": "سورة الإسراء – الآية 18",
+  "url": "https://tanzil.net/#17:18",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w110": {
+  "verse": "exact",
+  "ref": "17:19",
+  "refShown": "سورة الإسراء – الآية 19",
+  "url": "https://tanzil.net/#17:19",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w111": {
+  "verse": "letters-only",
+  "ref": "17:20",
+  "refShown": "سورة الإسراء – الآية 20",
+  "url": "https://tanzil.net/#17:20",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w113": {
+  "verse": "exact",
+  "ref": "17:24",
+  "refShown": "سورة الإسراء – الآية 24",
+  "url": "https://tanzil.net/#17:24",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w114": {
+  "verse": "exact",
+  "ref": "17:27",
+  "refShown": "سورة الإسراء – الآية 27",
+  "url": "https://tanzil.net/#17:27",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w115": {
+  "verse": "letters-only",
+  "ref": "17:29",
+  "refShown": "سورة الإسراء – الآية 29",
+  "url": "https://tanzil.net/#17:29",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w116": {
+  "verse": "letters-only",
+  "ref": "17:30",
+  "refShown": "سورة الإسراء – الآية 30",
+  "url": "https://tanzil.net/#17:30",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w117": {
+  "verse": "exact",
+  "ref": "17:36",
+  "refShown": "سورة الإسراء – الآية 36",
+  "url": "https://tanzil.net/#17:36",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w118": {
+  "verse": "exact",
+  "ref": "17:53",
+  "refShown": "سورة الإسراء – الآية 53",
+  "url": "https://tanzil.net/#17:53",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w119": {
+  "verse": "letters-only",
+  "ref": "17:78",
+  "refShown": "سورة الإسراء – الآية 78",
+  "url": "https://tanzil.net/#17:78",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w121": {
+  "verse": "letters-only",
+  "ref": "17:84",
+  "refShown": "سورة الإسراء – الآية 84",
+  "url": "https://tanzil.net/#17:84",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w122": {
+  "verse": "exact",
+  "ref": "18:6",
+  "refShown": "سورة الكهف – الآية 6",
+  "url": "https://tanzil.net/#18:6",
+  "refCheck": {
+   "surahName": "الكهف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w123": {
+  "verse": "exact",
+  "ref": "18:10",
+  "refShown": "سورة الكهف – الآية 10",
+  "url": "https://tanzil.net/#18:10",
+  "refCheck": {
+   "surahName": "الكهف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w127": {
+  "verse": "exact",
+  "ref": "18:46",
+  "refShown": "سورة الكهف – الآية 46",
+  "url": "https://tanzil.net/#18:46",
+  "refCheck": {
+   "surahName": "الكهف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w130": {
+  "verse": "letters-only",
+  "ref": "18:79",
+  "refShown": "سورة الكهف – الآية 79",
+  "url": "https://tanzil.net/#18:79",
+  "refCheck": {
+   "surahName": "الكهف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w131": {
+  "verse": "exact",
+  "ref": "18:82",
+  "refShown": "سورة الكهف – الآية 82",
+  "url": "https://tanzil.net/#18:82",
+  "refCheck": {
+   "surahName": "الكهف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w133": {
+  "verse": "exact",
+  "ref": "19:29-30",
+  "refShown": "سورة مريم – الآيتان 29–30",
+  "url": "https://tanzil.net/#19:29",
+  "refCheck": {
+   "surahName": "مريم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w135": {
+  "verse": "exact",
+  "ref": "19:59",
+  "refShown": "سورة مريم – الآية 59",
+  "url": "https://tanzil.net/#19:59",
+  "refCheck": {
+   "surahName": "مريم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w136": {
+  "verse": "exact",
+  "ref": "4:135",
+  "refShown": "سورة النساء – الآية 135",
+  "url": "https://tanzil.net/#4:135",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w137": {
+  "verse": "exact",
+  "ref": "4:141",
+  "refShown": "سورة النساء – الآية 141",
+  "url": "https://tanzil.net/#4:141",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w138": {
+  "verse": "exact",
+  "ref": "4:142",
+  "refShown": "سورة النساء – الآية 142",
+  "url": "https://tanzil.net/#4:142",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w139": {
+  "verse": "exact",
+  "ref": "4:143",
+  "refShown": "سورة النساء – الآية 143",
+  "url": "https://tanzil.net/#4:143",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w140": {
+  "verse": "exact",
+  "ref": "4:148",
+  "refShown": "سورة النساء – الآية 148",
+  "url": "https://tanzil.net/#4:148",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w143": {
+  "verse": "exact",
+  "ref": "4:162",
+  "refShown": "سورة النساء – الآية 162",
+  "url": "https://tanzil.net/#4:162",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w151": {
+  "verse": "exact",
+  "ref": "5:7",
+  "refShown": "سورة المائدة – الآية 7",
+  "url": "https://tanzil.net/#5:7",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w152": {
+  "verse": "exact",
+  "ref": "5:13",
+  "refShown": "سورة المائدة – الآية 13",
+  "url": "https://tanzil.net/#5:13",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w153": {
+  "verse": "exact",
+  "ref": "5:15",
+  "refShown": "سورة المائدة – الآية 15",
+  "url": "https://tanzil.net/#5:15",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w154": {
+  "verse": "exact",
+  "ref": "5:22",
+  "refShown": "سورة المائدة – الآية 22",
+  "url": "https://tanzil.net/#5:22",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w155": {
+  "verse": "exact",
+  "ref": "5:23",
+  "refShown": "سورة المائدة – الآية 23",
+  "url": "https://tanzil.net/#5:23",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w157": {
+  "verse": "exact",
+  "ref": "5:27",
+  "refShown": "سورة المائدة – الآية 27",
+  "url": "https://tanzil.net/#5:27",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w159": {
+  "verse": "exact",
+  "ref": "5:32",
+  "refShown": "سورة المائدة – الآية 32",
+  "url": "https://tanzil.net/#5:32",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w162": {
+  "verse": "exact",
+  "ref": "5:41",
+  "refShown": "سورة المائدة – الآية 41",
+  "url": "https://tanzil.net/#5:41",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w164": {
+  "verse": "exact",
+  "ref": "5:44",
+  "refShown": "سورة المائدة – الآية 44",
+  "url": "https://tanzil.net/#5:44",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w165": {
+  "verse": "exact",
+  "ref": "5:45",
+  "refShown": "سورة المائدة – الآية 45",
+  "url": "https://tanzil.net/#5:45",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w167": {
+  "verse": "exact",
+  "ref": "5:48",
+  "refShown": "سورة المائدة – الآية 48",
+  "url": "https://tanzil.net/#5:48",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w168": {
+  "verse": "exact",
+  "ref": "5:50",
+  "refShown": "سورة المائدة – الآية 50",
+  "url": "https://tanzil.net/#5:50",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w169": {
+  "verse": "exact",
+  "ref": "5:52",
+  "refShown": "سورة المائدة – الآية 52",
+  "url": "https://tanzil.net/#5:52",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w170": {
+  "verse": "exact",
+  "ref": "5:54",
+  "refShown": "سورة المائدة – الآية 54",
+  "url": "https://tanzil.net/#5:54",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w171": {
+  "verse": "exact",
+  "ref": "5:54",
+  "refShown": "سورة المائدة – الآية 54",
+  "url": "https://tanzil.net/#5:54",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w173": {
+  "verse": "letters-only",
+  "ref": "7:117",
+  "refShown": "سورة الأعراف – الآية 117",
+  "url": "https://tanzil.net/#7:117",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w176": {
+  "verse": "exact",
+  "ref": "7:176",
+  "refShown": "سورة الأعراف – الآية 176",
+  "url": "https://tanzil.net/#7:176",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w178": {
+  "verse": "exact",
+  "ref": "7:187",
+  "refShown": "سورة الأعراف – الآية 187",
+  "url": "https://tanzil.net/#7:187",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w179": {
+  "verse": "exact",
+  "ref": "8:5",
+  "refShown": "سورة الأنفال – الآية 5",
+  "url": "https://tanzil.net/#8:5",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w181": {
+  "verse": "exact",
+  "ref": "8:33",
+  "refShown": "سورة الأنفال – الآية 33",
+  "url": "https://tanzil.net/#8:33",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w182": {
+  "verse": "exact",
+  "ref": "8:30",
+  "refShown": "سورة الأنفال – الآية 30",
+  "url": "https://tanzil.net/#8:30",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w184": {
+  "verse": "letters-only",
+  "ref": "8:61",
+  "refShown": "سورة الأنفال – الآية 61",
+  "url": "https://tanzil.net/#8:61",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w185": {
+  "verse": "exact",
+  "ref": "9:109",
+  "refShown": "سورة التوبة – الآية 109",
+  "url": "https://tanzil.net/#9:109",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w189": {
+  "verse": "exact",
+  "ref": "13:12",
+  "refShown": "سورة الرعد – الآية 12",
+  "url": "https://tanzil.net/#13:12",
+  "refCheck": {
+   "surahName": "الرعد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w191": {
+  "verse": "exact",
+  "ref": "15:21",
+  "refShown": "سورة الحجر – الآية 21",
+  "url": "https://tanzil.net/#15:21",
+  "refCheck": {
+   "surahName": "الحجر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w194": {
+  "verse": "exact",
+  "ref": "16:78",
+  "refShown": "سورة النحل – الآية 78",
+  "url": "https://tanzil.net/#16:78",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w195": {
+  "verse": "exact",
+  "ref": "16:58-59",
+  "refShown": "سورة النحل – الآيتان 58–59",
+  "url": "https://tanzil.net/#16:58",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w196": {
+  "verse": "exact",
+  "ref": "16:90",
+  "refShown": "سورة النحل – الآية 90",
+  "url": "https://tanzil.net/#16:90",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w199": {
+  "verse": "exact",
+  "ref": "16:127-128",
+  "refShown": "سورة النحل – الآيتان 127–128",
+  "url": "https://tanzil.net/#16:127",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w200": {
+  "verse": "exact",
+  "ref": "17:13",
+  "refShown": "سورة الإسراء – الآية 13",
+  "url": "https://tanzil.net/#17:13",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w202": {
+  "verse": "exact",
+  "ref": "17:37",
+  "refShown": "سورة الإسراء – الآية 37",
+  "url": "https://tanzil.net/#17:37",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w203": {
+  "verse": "exact",
+  "ref": "17:53",
+  "refShown": "سورة الإسراء – الآية 53",
+  "url": "https://tanzil.net/#17:53",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w208": {
+  "verse": "exact",
+  "ref": "18:46",
+  "refShown": "سورة الكهف – الآية 46",
+  "url": "https://tanzil.net/#18:46",
+  "refCheck": {
+   "surahName": "الكهف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w210": {
+  "verse": "exact",
+  "ref": "19:29-30",
+  "refShown": "سورة مريم – الآيتان 29–30",
+  "url": "https://tanzil.net/#19:29",
+  "refCheck": {
+   "surahName": "مريم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w212": {
+  "verse": "exact",
+  "ref": "20:1-3",
+  "refShown": "سورة طه – الآيات 1–3",
+  "url": "https://tanzil.net/#20:1",
+  "refCheck": {
+   "surahName": "طه",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w217": {
+  "verse": "exact",
+  "ref": "20:85-86",
+  "refShown": "سورة طه – الآيتان 85–86",
+  "url": "https://tanzil.net/#20:85",
+  "refCheck": {
+   "surahName": "طه",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w219": {
+  "verse": "letters-only",
+  "ref": "20:124",
+  "refShown": "سورة طه – الآية 124",
+  "url": "https://tanzil.net/#20:124",
+  "refCheck": {
+   "surahName": "طه",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w220": {
+  "verse": "exact",
+  "ref": "21:1",
+  "refShown": "سورة الأنبياء – الآية 1",
+  "url": "https://tanzil.net/#21:1",
+  "refCheck": {
+   "surahName": "الأنبياء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w221": {
+  "verse": "exact",
+  "ref": "21:18",
+  "refShown": "سورة الأنبياء – الآية 18",
+  "url": "https://tanzil.net/#21:18",
+  "refCheck": {
+   "surahName": "الأنبياء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w222": {
+  "verse": "exact",
+  "ref": "21:37",
+  "refShown": "سورة الأنبياء – الآية 37",
+  "url": "https://tanzil.net/#21:37",
+  "refCheck": {
+   "surahName": "الأنبياء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w225": {
+  "verse": "exact",
+  "ref": "21:87",
+  "refShown": "سورة الأنبياء – الآية 87",
+  "url": "https://tanzil.net/#21:87",
+  "refCheck": {
+   "surahName": "الأنبياء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w226": {
+  "verse": "exact",
+  "ref": "22:1-2",
+  "refShown": "سورة الحج – الآيتان 1–2",
+  "url": "https://tanzil.net/#22:1",
+  "refCheck": {
+   "surahName": "الحج",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w228": {
+  "verse": "exact",
+  "ref": "22:18",
+  "refShown": "سورة الحج – الآية 18",
+  "url": "https://tanzil.net/#22:18",
+  "refCheck": {
+   "surahName": "الحج",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w231": {
+  "verse": "exact",
+  "ref": "23:99-100",
+  "refShown": "سورة المؤمنون – الآيتان 99–100",
+  "url": "https://tanzil.net/#23:99",
+  "refCheck": {
+   "surahName": "المؤمنون",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w233": {
+  "verse": "exact",
+  "ref": "23:115-116",
+  "refShown": "سورة المؤمنون – الآيتان 115–116",
+  "url": "https://tanzil.net/#23:115",
+  "refCheck": {
+   "surahName": "المؤمنون",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w234": {
+  "verse": "exact",
+  "ref": "24:30",
+  "refShown": "سورة النور – الآية 30",
+  "url": "https://tanzil.net/#24:30",
+  "refCheck": {
+   "surahName": "النور",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w237": {
+  "verse": "exact",
+  "ref": "24:39",
+  "refShown": "سورة النور – الآية 39",
+  "url": "https://tanzil.net/#24:39",
+  "refCheck": {
+   "surahName": "النور",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w238": {
+  "verse": "letters-only",
+  "ref": "25:30",
+  "refShown": "سورة الفرقان – الآية 30",
+  "url": "https://tanzil.net/#25:30",
+  "refCheck": {
+   "surahName": "الفرقان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w239": {
+  "verse": "exact",
+  "ref": "25:20",
+  "refShown": "سورة الفرقان – الآية 20",
+  "url": "https://tanzil.net/#25:20",
+  "refCheck": {
+   "surahName": "الفرقان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w241": {
+  "verse": "exact",
+  "ref": "26:3",
+  "refShown": "سورة الشعراء – الآية 3",
+  "url": "https://tanzil.net/#26:3",
+  "refCheck": {
+   "surahName": "الشعراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w242": {
+  "verse": "exact",
+  "ref": "26:78-80",
+  "refShown": "سورة الشعراء – الآيات 78–80",
+  "url": "https://tanzil.net/#26:78",
+  "refCheck": {
+   "surahName": "الشعراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w245": {
+  "verse": "exact",
+  "ref": "27:40",
+  "refShown": "سورة النمل – الآية 40",
+  "url": "https://tanzil.net/#27:40",
+  "refCheck": {
+   "surahName": "النمل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w248": {
+  "verse": "exact",
+  "ref": "28:11",
+  "refShown": "سورة القصص – الآية 11",
+  "url": "https://tanzil.net/#28:11",
+  "refCheck": {
+   "surahName": "القصص",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w249": {
+  "verse": "letters-only",
+  "ref": "28:44",
+  "refShown": "سورة القصص – الآية 44",
+  "url": "https://tanzil.net/#28:44",
+  "refCheck": {
+   "surahName": "القصص",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w252": {
+  "verse": "exact",
+  "ref": "28:79",
+  "refShown": "سورة القصص – الآية 79",
+  "url": "https://tanzil.net/#28:79",
+  "refCheck": {
+   "surahName": "القصص",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w255": {
+  "verse": "exact",
+  "ref": "42:30",
+  "refShown": "سورة الشورى – الآية 30",
+  "url": "https://tanzil.net/#42:30",
+  "refCheck": {
+   "surahName": "الشورى",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w256": {
+  "verse": "exact",
+  "ref": "42:5",
+  "refShown": "سورة الشورى – الآية 5",
+  "url": "https://tanzil.net/#42:5",
+  "refCheck": {
+   "surahName": "الشورى",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w258": {
+  "verse": "exact",
+  "ref": "43:33",
+  "refShown": "سورة الزخرف – الآية 33",
+  "url": "https://tanzil.net/#43:33",
+  "refCheck": {
+   "surahName": "الزخرف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w259": {
+  "verse": "exact",
+  "ref": "44:29",
+  "refShown": "سورة الدخان – الآية 29",
+  "url": "https://tanzil.net/#44:29",
+  "refCheck": {
+   "surahName": "الدخان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w260": {
+  "verse": "exact",
+  "ref": "44:3-4",
+  "refShown": "سورة الدخان – الآيتان 3–4",
+  "url": "https://tanzil.net/#44:3",
+  "refCheck": {
+   "surahName": "الدخان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w262": {
+  "verse": "exact",
+  "ref": "46:15",
+  "refShown": "سورة الأحقاف – الآية 15",
+  "url": "https://tanzil.net/#46:15",
+  "refCheck": {
+   "surahName": "الأحقاف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w263": {
+  "verse": "exact",
+  "ref": "46:35",
+  "refShown": "سورة الأحقاف – الآية 35",
+  "url": "https://tanzil.net/#46:35",
+  "refCheck": {
+   "surahName": "الأحقاف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w266": {
+  "verse": "exact",
+  "ref": "48:4",
+  "refShown": "سورة الفتح – الآية 4",
+  "url": "https://tanzil.net/#48:4",
+  "refCheck": {
+   "surahName": "الفتح",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w268": {
+  "verse": "exact",
+  "ref": "49:6",
+  "refShown": "سورة الحجرات – الآية 6",
+  "url": "https://tanzil.net/#49:6",
+  "refCheck": {
+   "surahName": "الحجرات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w269": {
+  "verse": "exact",
+  "ref": "49:12",
+  "refShown": "سورة الحجرات – الآية 12",
+  "url": "https://tanzil.net/#49:12",
+  "refCheck": {
+   "surahName": "الحجرات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w270": {
+  "verse": "exact",
+  "ref": "49:7",
+  "refShown": "سورة الحجرات – الآية 7",
+  "url": "https://tanzil.net/#49:7",
+  "refCheck": {
+   "surahName": "الحجرات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w272": {
+  "verse": "letters-only",
+  "ref": "50:15",
+  "refShown": "سورة ق – الآية 15",
+  "url": "https://tanzil.net/#50:15",
+  "refCheck": {
+   "surahName": "ق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w276": {
+  "verse": "exact",
+  "ref": "52:17-18",
+  "refShown": "سورة الطور – الآيتان 17–18",
+  "url": "https://tanzil.net/#52:17",
+  "refCheck": {
+   "surahName": "الطور",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w278": {
+  "verse": "letters-only",
+  "ref": "53:17-18",
+  "refShown": "سورة النجم – الآيتان 17–18",
+  "url": "https://tanzil.net/#53:17",
+  "refCheck": {
+   "surahName": "النجم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w281": {
+  "verse": "exact",
+  "ref": "55:60",
+  "refShown": "سورة الرحمن – الآية 60",
+  "url": "https://tanzil.net/#55:60",
+  "refCheck": {
+   "surahName": "الرحمن",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w283": {
+  "verse": "exact",
+  "ref": "56:4-6",
+  "refShown": "سورة الواقعة – الآيات 4–6",
+  "url": "https://tanzil.net/#56:4",
+  "refCheck": {
+   "surahName": "الواقعة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w285": {
+  "verse": "exact",
+  "ref": "57:16",
+  "refShown": "سورة الحديد – الآية 16",
+  "url": "https://tanzil.net/#57:16",
+  "refCheck": {
+   "surahName": "الحديد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w286": {
+  "verse": "exact",
+  "ref": "58:1",
+  "refShown": "سورة المجادلة – الآية 1",
+  "url": "https://tanzil.net/#58:1",
+  "refCheck": {
+   "surahName": "المجادلة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w289": {
+  "verse": "exact",
+  "ref": "61:2-3",
+  "refShown": "سورة الصف – الآيتان 2–3",
+  "url": "https://tanzil.net/#61:2",
+  "refCheck": {
+   "surahName": "الصف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w290": {
+  "verse": "exact",
+  "ref": "62:5",
+  "refShown": "سورة الجمعة – الآية 5",
+  "url": "https://tanzil.net/#62:5",
+  "refCheck": {
+   "surahName": "الجمعة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w292": {
+  "verse": "exact",
+  "ref": "63:4",
+  "refShown": "سورة المنافقون – الآية 4",
+  "url": "https://tanzil.net/#63:4",
+  "refCheck": {
+   "surahName": "المنافقون",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w294": {
+  "verse": "exact",
+  "ref": "65:2-3",
+  "refShown": "سورة الطلاق – الآيتان 2–3",
+  "url": "https://tanzil.net/#65:2",
+  "refCheck": {
+   "surahName": "الطلاق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w296": {
+  "verse": "exact",
+  "ref": "66:6",
+  "refShown": "سورة التحريم – الآية 6",
+  "url": "https://tanzil.net/#66:6",
+  "refCheck": {
+   "surahName": "التحريم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w298": {
+  "verse": "exact",
+  "ref": "67:13",
+  "refShown": "سورة الملك – الآية 13",
+  "url": "https://tanzil.net/#67:13",
+  "refCheck": {
+   "surahName": "الملك",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w299": {
+  "verse": "letters-only",
+  "ref": "68:4",
+  "refShown": "سورة القلم – الآية 4",
+  "url": "https://tanzil.net/#68:4",
+  "refCheck": {
+   "surahName": "القلم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w300": {
+  "verse": "exact",
+  "ref": "69:19",
+  "refShown": "سورة الحاقة – الآية 19",
+  "url": "https://tanzil.net/#69:19",
+  "refCheck": {
+   "surahName": "الحاقة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w302": {
+  "verse": "exact",
+  "ref": "71:10-12",
+  "refShown": "سورة نوح – الآيات 10–12",
+  "url": "https://tanzil.net/#71:10",
+  "refCheck": {
+   "surahName": "نوح",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w305": {
+  "verse": "exact",
+  "ref": "74:38-39",
+  "refShown": "سورة المدثر – الآيتان 38–39",
+  "url": "https://tanzil.net/#74:38",
+  "refCheck": {
+   "surahName": "المدثر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w307": {
+  "verse": "letters-only",
+  "ref": "76:8-9",
+  "refShown": "سورة الإنسان – الآيتان 8–9",
+  "url": "https://tanzil.net/#76:8",
+  "refCheck": {
+   "surahName": "الانسان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w308": {
+  "verse": "letters-only",
+  "ref": "77:30-31",
+  "refShown": "سورة المرسلات – الآيتان 30–31",
+  "url": "https://tanzil.net/#77:30",
+  "refCheck": {
+   "surahName": "المرسلات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w314": {
+  "verse": "letters-only",
+  "ref": "83:14",
+  "refShown": "سورة المطففين – الآية 14",
+  "url": "https://tanzil.net/#83:14",
+  "refCheck": {
+   "surahName": "المطففين",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w315": {
+  "verse": "exact",
+  "ref": "2:46",
+  "refShown": "سورة البقرة – الآية 46",
+  "url": "https://tanzil.net/#2:46",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w316": {
+  "verse": "exact",
+  "ref": "2:49",
+  "refShown": "سورة البقرة – الآية 49",
+  "url": "https://tanzil.net/#2:49",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w319": {
+  "verse": "exact",
+  "ref": "2:59",
+  "refShown": "سورة البقرة – الآية 59",
+  "url": "https://tanzil.net/#2:59",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w321": {
+  "verse": "exact",
+  "ref": "2:68",
+  "refShown": "سورة البقرة – الآية 68",
+  "url": "https://tanzil.net/#2:68",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w322": {
+  "verse": "exact",
+  "ref": "2:69",
+  "refShown": "سورة البقرة – الآية 69",
+  "url": "https://tanzil.net/#2:69",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w323": {
+  "verse": "exact",
+  "ref": "2:74",
+  "refShown": "سورة البقرة – الآية 74",
+  "url": "https://tanzil.net/#2:74",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w324": {
+  "verse": "exact",
+  "ref": "2:78",
+  "refShown": "سورة البقرة – الآية 78",
+  "url": "https://tanzil.net/#2:78",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w325": {
+  "verse": "exact",
+  "ref": "2:81",
+  "refShown": "سورة البقرة – الآية 81",
+  "url": "https://tanzil.net/#2:81",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w326": {
+  "verse": "exact",
+  "ref": "2:87",
+  "refShown": "سورة البقرة – الآية 87",
+  "url": "https://tanzil.net/#2:87",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w327": {
+  "verse": "exact",
+  "ref": "2:93",
+  "refShown": "سورة البقرة – الآية 93",
+  "url": "https://tanzil.net/#2:93",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w328": {
+  "verse": "exact",
+  "ref": "2:96",
+  "refShown": "سورة البقرة – الآية 96",
+  "url": "https://tanzil.net/#2:96",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w329": {
+  "verse": "exact",
+  "ref": "2:106",
+  "refShown": "سورة البقرة – الآية 106",
+  "url": "https://tanzil.net/#2:106",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w330": {
+  "verse": "letters-only",
+  "ref": "2:117",
+  "refShown": "سورة البقرة – الآية 117",
+  "url": "https://tanzil.net/#2:117",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w331": {
+  "verse": "exact",
+  "ref": "2:124",
+  "refShown": "سورة البقرة – الآية 124",
+  "url": "https://tanzil.net/#2:124",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w332": {
+  "verse": "exact",
+  "ref": "2:125",
+  "refShown": "سورة البقرة – الآية 125",
+  "url": "https://tanzil.net/#2:125",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w334": {
+  "verse": "exact",
+  "ref": "2:142",
+  "refShown": "سورة البقرة – الآية 142",
+  "url": "https://tanzil.net/#2:142",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w337": {
+  "verse": "exact",
+  "ref": "2:20",
+  "refShown": "سورة البقرة – الآية 20",
+  "url": "https://tanzil.net/#2:20",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w338": {
+  "verse": "exact",
+  "ref": "2:25",
+  "refShown": "سورة البقرة – الآية 25",
+  "url": "https://tanzil.net/#2:25",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w339": {
+  "verse": "exact",
+  "ref": "2:27",
+  "refShown": "سورة البقرة – الآية 27",
+  "url": "https://tanzil.net/#2:27",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w341": {
+  "verse": "exact",
+  "ref": "2:42",
+  "refShown": "سورة البقرة – الآية 42",
+  "url": "https://tanzil.net/#2:42",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w342": {
+  "verse": "exact",
+  "ref": "2:44",
+  "refShown": "سورة البقرة – الآية 44",
+  "url": "https://tanzil.net/#2:44",
+  "refCheck": {
+   "surahName": "البقرة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w343": {
+  "verse": "exact",
+  "ref": "3:7",
+  "refShown": "سورة آل عمران – الآية 7",
+  "url": "https://tanzil.net/#3:7",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w344": {
+  "verse": "exact",
+  "ref": "3:7",
+  "refShown": "سورة آل عمران – الآية 7",
+  "url": "https://tanzil.net/#3:7",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w345": {
+  "verse": "exact",
+  "ref": "3:11",
+  "refShown": "سورة آل عمران – الآية 11",
+  "url": "https://tanzil.net/#3:11",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w346": {
+  "verse": "exact",
+  "ref": "3:14",
+  "refShown": "سورة آل عمران – الآية 14",
+  "url": "https://tanzil.net/#3:14",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w347": {
+  "verse": "exact",
+  "ref": "3:19",
+  "refShown": "سورة آل عمران – الآية 19",
+  "url": "https://tanzil.net/#3:19",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w349": {
+  "verse": "exact",
+  "ref": "3:35",
+  "refShown": "سورة آل عمران – الآية 35",
+  "url": "https://tanzil.net/#3:35",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w351": {
+  "verse": "exact",
+  "ref": "3:54",
+  "refShown": "سورة آل عمران – الآية 54",
+  "url": "https://tanzil.net/#3:54",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w352": {
+  "verse": "exact",
+  "ref": "3:67",
+  "refShown": "سورة آل عمران – الآية 67",
+  "url": "https://tanzil.net/#3:67",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w353": {
+  "verse": "letters-only",
+  "ref": "3:59",
+  "refShown": "سورة آل عمران – الآية 59",
+  "url": "https://tanzil.net/#3:59",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w354": {
+  "verse": "exact",
+  "ref": "4:2",
+  "refShown": "سورة النساء – الآية 2",
+  "url": "https://tanzil.net/#4:2",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w355": {
+  "verse": "exact",
+  "ref": "4:3",
+  "refShown": "سورة النساء – الآية 3",
+  "url": "https://tanzil.net/#4:3",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w356": {
+  "verse": "exact",
+  "ref": "4:3",
+  "refShown": "سورة النساء – الآية 3",
+  "url": "https://tanzil.net/#4:3",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w358": {
+  "verse": "exact",
+  "ref": "4:6",
+  "refShown": "سورة النساء – الآية 6",
+  "url": "https://tanzil.net/#4:6",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w359": {
+  "verse": "exact",
+  "ref": "4:6",
+  "refShown": "سورة النساء – الآية 6",
+  "url": "https://tanzil.net/#4:6",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w360": {
+  "verse": "exact",
+  "ref": "4:10",
+  "refShown": "سورة النساء – الآية 10",
+  "url": "https://tanzil.net/#4:10",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w362": {
+  "verse": "exact",
+  "ref": "4:12",
+  "refShown": "سورة النساء – الآية 12",
+  "url": "https://tanzil.net/#4:12",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w363": {
+  "verse": "exact",
+  "ref": "5:1",
+  "refShown": "سورة المائدة – الآية 1",
+  "url": "https://tanzil.net/#5:1",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w364": {
+  "verse": "exact",
+  "ref": "5:2",
+  "refShown": "سورة المائدة – الآية 2",
+  "url": "https://tanzil.net/#5:2",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w365": {
+  "verse": "exact",
+  "ref": "5:3",
+  "refShown": "سورة المائدة – الآية 3",
+  "url": "https://tanzil.net/#5:3",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w366": {
+  "verse": "exact",
+  "ref": "5:3",
+  "refShown": "سورة المائدة – الآية 3",
+  "url": "https://tanzil.net/#5:3",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w367": {
+  "verse": "exact",
+  "ref": "5:3",
+  "refShown": "سورة المائدة – الآية 3",
+  "url": "https://tanzil.net/#5:3",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w368": {
+  "verse": "exact",
+  "ref": "5:3",
+  "refShown": "سورة المائدة – الآية 3",
+  "url": "https://tanzil.net/#5:3",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w369": {
+  "verse": "exact",
+  "ref": "5:4",
+  "refShown": "سورة المائدة – الآية 4",
+  "url": "https://tanzil.net/#5:4",
+  "refCheck": {
+   "surahName": "المائدة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w370": {
+  "verse": "exact",
+  "ref": "6:1",
+  "refShown": "سورة الأنعام – الآية 1",
+  "url": "https://tanzil.net/#6:1",
+  "refCheck": {
+   "surahName": "الأنعام",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w371": {
+  "verse": "exact",
+  "ref": "6:9",
+  "refShown": "سورة الأنعام – الآية 9",
+  "url": "https://tanzil.net/#6:9",
+  "refCheck": {
+   "surahName": "الأنعام",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w372": {
+  "verse": "exact",
+  "ref": "6:6",
+  "refShown": "سورة الأنعام – الآية 6",
+  "url": "https://tanzil.net/#6:6",
+  "refCheck": {
+   "surahName": "الأنعام",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w373": {
+  "verse": "exact",
+  "ref": "6:6",
+  "refShown": "سورة الأنعام – الآية 6",
+  "url": "https://tanzil.net/#6:6",
+  "refCheck": {
+   "surahName": "الأنعام",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w374": {
+  "verse": "exact",
+  "ref": "7:189",
+  "refShown": "سورة الأعراف – الآية 189",
+  "url": "https://tanzil.net/#7:189",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w375": {
+  "verse": "exact",
+  "ref": "7:147",
+  "refShown": "سورة الأعراف – الآية 147",
+  "url": "https://tanzil.net/#7:147",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w376": {
+  "verse": "exact",
+  "ref": "7:166",
+  "refShown": "سورة الأعراف – الآية 166",
+  "url": "https://tanzil.net/#7:166",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w377": {
+  "verse": "exact",
+  "ref": "7:176",
+  "refShown": "سورة الأعراف – الآية 176",
+  "url": "https://tanzil.net/#7:176",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w378": {
+  "verse": "exact",
+  "ref": "7:179",
+  "refShown": "سورة الأعراف – الآية 179",
+  "url": "https://tanzil.net/#7:179",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w379": {
+  "verse": "exact",
+  "ref": "8:1",
+  "refShown": "سورة الأنفال – الآية 1",
+  "url": "https://tanzil.net/#8:1",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w380": {
+  "verse": "exact",
+  "ref": "8:9",
+  "refShown": "سورة الأنفال – الآية 9",
+  "url": "https://tanzil.net/#8:9",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w381": {
+  "verse": "exact",
+  "ref": "8:12",
+  "refShown": "سورة الأنفال – الآية 12",
+  "url": "https://tanzil.net/#8:12",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w382": {
+  "verse": "exact",
+  "ref": "8:16",
+  "refShown": "سورة الأنفال – الآية 16",
+  "url": "https://tanzil.net/#8:16",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w383": {
+  "verse": "exact",
+  "ref": "8:30",
+  "refShown": "سورة الأنفال – الآية 30",
+  "url": "https://tanzil.net/#8:30",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w384": {
+  "verse": "exact",
+  "ref": "8:67",
+  "refShown": "سورة الأنفال – الآية 67",
+  "url": "https://tanzil.net/#8:67",
+  "refCheck": {
+   "surahName": "الأنفال",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w385": {
+  "verse": "exact",
+  "ref": "9:2",
+  "refShown": "سورة التوبة – الآية 2",
+  "url": "https://tanzil.net/#9:2",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w387": {
+  "verse": "exact",
+  "ref": "9:12",
+  "refShown": "سورة التوبة – الآية 12",
+  "url": "https://tanzil.net/#9:12",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w388": {
+  "verse": "exact",
+  "ref": "9:16",
+  "refShown": "سورة التوبة – الآية 16",
+  "url": "https://tanzil.net/#9:16",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w389": {
+  "verse": "exact",
+  "ref": "9:37",
+  "refShown": "سورة التوبة – الآية 37",
+  "url": "https://tanzil.net/#9:37",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w390": {
+  "verse": "exact",
+  "ref": "9:38",
+  "refShown": "سورة التوبة – الآية 38",
+  "url": "https://tanzil.net/#9:38",
+  "refCheck": {
+   "surahName": "التوبة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w391": {
+  "verse": "exact",
+  "ref": "10:27",
+  "refShown": "سورة يونس – الآية 27",
+  "url": "https://tanzil.net/#10:27",
+  "refCheck": {
+   "surahName": "يونس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w392": {
+  "verse": "exact",
+  "ref": "10:35",
+  "refShown": "سورة يونس – الآية 35",
+  "url": "https://tanzil.net/#10:35",
+  "refCheck": {
+   "surahName": "يونس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w393": {
+  "verse": "exact",
+  "ref": "10:39",
+  "refShown": "سورة يونس – الآية 39",
+  "url": "https://tanzil.net/#10:39",
+  "refCheck": {
+   "surahName": "يونس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w394": {
+  "verse": "exact",
+  "ref": "11:5",
+  "refShown": "سورة هود – الآية 5",
+  "url": "https://tanzil.net/#11:5",
+  "refCheck": {
+   "surahName": "هود",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w395": {
+  "verse": "exact",
+  "ref": "11:15",
+  "refShown": "سورة هود – الآية 15",
+  "url": "https://tanzil.net/#11:15",
+  "refCheck": {
+   "surahName": "هود",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w396": {
+  "verse": "exact",
+  "ref": "11:23",
+  "refShown": "سورة هود – الآية 23",
+  "url": "https://tanzil.net/#11:23",
+  "refCheck": {
+   "surahName": "هود",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w397": {
+  "verse": "exact",
+  "ref": "11:38",
+  "refShown": "سورة هود – الآية 38",
+  "url": "https://tanzil.net/#11:38",
+  "refCheck": {
+   "surahName": "هود",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w399": {
+  "verse": "exact",
+  "ref": "12:30",
+  "refShown": "سورة يوسف – الآية 30",
+  "url": "https://tanzil.net/#12:30",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w400": {
+  "verse": "exact",
+  "ref": "12:31",
+  "refShown": "سورة يوسف – الآية 31",
+  "url": "https://tanzil.net/#12:31",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w402": {
+  "verse": "exact",
+  "ref": "12:47",
+  "refShown": "سورة يوسف – الآية 47",
+  "url": "https://tanzil.net/#12:47",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w403": {
+  "verse": "letters-only",
+  "ref": "12:49",
+  "refShown": "سورة يوسف – الآية 49",
+  "url": "https://tanzil.net/#12:49",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w404": {
+  "verse": "exact",
+  "ref": "12:80",
+  "refShown": "سورة يوسف – الآية 80",
+  "url": "https://tanzil.net/#12:80",
+  "refCheck": {
+   "surahName": "يوسف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w406": {
+  "verse": "exact",
+  "ref": "14:18",
+  "refShown": "سورة إبراهيم – الآية 18",
+  "url": "https://tanzil.net/#14:18",
+  "refCheck": {
+   "surahName": "ابراهيم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w407": {
+  "verse": "exact",
+  "ref": "14:49",
+  "refShown": "سورة إبراهيم – الآية 49",
+  "url": "https://tanzil.net/#14:49",
+  "refCheck": {
+   "surahName": "ابراهيم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w408": {
+  "verse": "exact",
+  "ref": "15:72",
+  "refShown": "سورة الحجر – الآية 72",
+  "url": "https://tanzil.net/#15:72",
+  "refCheck": {
+   "surahName": "الحجر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w409": {
+  "verse": "exact",
+  "ref": "15:94",
+  "refShown": "سورة الحجر – الآية 94",
+  "url": "https://tanzil.net/#15:94",
+  "refCheck": {
+   "surahName": "الحجر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w410": {
+  "verse": "exact",
+  "ref": "16:26",
+  "refShown": "سورة النحل – الآية 26",
+  "url": "https://tanzil.net/#16:26",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w411": {
+  "verse": "exact",
+  "ref": "16:46",
+  "refShown": "سورة النحل – الآية 46",
+  "url": "https://tanzil.net/#16:46",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w412": {
+  "verse": "exact",
+  "ref": "17:5",
+  "refShown": "سورة الإسراء – الآية 5",
+  "url": "https://tanzil.net/#17:5",
+  "refCheck": {
+   "surahName": "الإسراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w413": {
+  "verse": "exact",
+  "ref": "31:19",
+  "refShown": "سورة لقمان – الآية 19",
+  "url": "https://tanzil.net/#31:19",
+  "refCheck": {
+   "surahName": "لقمان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w414": {
+  "verse": "letters-only",
+  "ref": "18:6",
+  "refShown": "سورة الكهف – الآية 6",
+  "url": "https://tanzil.net/#18:6",
+  "refCheck": {
+   "surahName": "الكهف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w415": {
+  "verse": "exact",
+  "ref": "19:4",
+  "refShown": "سورة مريم – الآية 4",
+  "url": "https://tanzil.net/#19:4",
+  "refCheck": {
+   "surahName": "مريم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w416": {
+  "verse": "exact",
+  "ref": "19:83",
+  "refShown": "سورة مريم – الآية 83",
+  "url": "https://tanzil.net/#19:83",
+  "refCheck": {
+   "surahName": "مريم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w418": {
+  "verse": "exact",
+  "ref": "20:72",
+  "refShown": "سورة طه – الآية 72",
+  "url": "https://tanzil.net/#20:72",
+  "refCheck": {
+   "surahName": "طه",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w419": {
+  "verse": "exact",
+  "ref": "21:3",
+  "refShown": "سورة الأنبياء – الآية 3",
+  "url": "https://tanzil.net/#21:3",
+  "refCheck": {
+   "surahName": "الأنبياء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w420": {
+  "verse": "letters-only",
+  "ref": "21:96",
+  "refShown": "سورة الأنبياء – الآية 96",
+  "url": "https://tanzil.net/#21:96",
+  "refCheck": {
+   "surahName": "الأنبياء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w421": {
+  "verse": "exact",
+  "ref": "22:5",
+  "refShown": "سورة الحج – الآية 5",
+  "url": "https://tanzil.net/#22:5",
+  "refCheck": {
+   "surahName": "الحج",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w422": {
+  "verse": "exact",
+  "ref": "22:29",
+  "refShown": "سورة الحج – الآية 29",
+  "url": "https://tanzil.net/#22:29",
+  "refCheck": {
+   "surahName": "الحج",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w423": {
+  "verse": "letters-only",
+  "ref": "23:64",
+  "refShown": "سورة المؤمنون – الآية 64",
+  "url": "https://tanzil.net/#23:64",
+  "refCheck": {
+   "surahName": "المؤمنون",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w424": {
+  "verse": "exact",
+  "ref": "23:108",
+  "refShown": "سورة المؤمنون – الآية 108",
+  "url": "https://tanzil.net/#23:108",
+  "refCheck": {
+   "surahName": "المؤمنون",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w425": {
+  "verse": "exact",
+  "ref": "24:40",
+  "refShown": "سورة النور – الآية 40",
+  "url": "https://tanzil.net/#24:40",
+  "refCheck": {
+   "surahName": "النور",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w426": {
+  "verse": "exact",
+  "ref": "24:43",
+  "refShown": "سورة النور – الآية 43",
+  "url": "https://tanzil.net/#24:43",
+  "refCheck": {
+   "surahName": "النور",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w428": {
+  "verse": "exact",
+  "ref": "25:68",
+  "refShown": "سورة الفرقان – الآية 68",
+  "url": "https://tanzil.net/#25:68",
+  "refCheck": {
+   "surahName": "الفرقان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w429": {
+  "verse": "letters-only",
+  "ref": "26:45",
+  "refShown": "سورة الشعراء – الآية 45",
+  "url": "https://tanzil.net/#26:45",
+  "refCheck": {
+   "surahName": "الشعراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w430": {
+  "verse": "exact",
+  "ref": "26:128",
+  "refShown": "سورة الشعراء – الآية 128",
+  "url": "https://tanzil.net/#26:128",
+  "refCheck": {
+   "surahName": "الشعراء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w432": {
+  "verse": "letters-only",
+  "ref": "27:28",
+  "refShown": "سورة النمل – الآية 28",
+  "url": "https://tanzil.net/#27:28",
+  "refCheck": {
+   "surahName": "النمل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w434": {
+  "verse": "exact",
+  "ref": "28:35",
+  "refShown": "سورة القصص – الآية 35",
+  "url": "https://tanzil.net/#28:35",
+  "refCheck": {
+   "surahName": "القصص",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w436": {
+  "verse": "exact",
+  "ref": "30:18",
+  "refShown": "سورة الروم – الآية 18",
+  "url": "https://tanzil.net/#30:18",
+  "refCheck": {
+   "surahName": "الروم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w437": {
+  "verse": "exact",
+  "ref": "31:18",
+  "refShown": "سورة لقمان – الآية 18",
+  "url": "https://tanzil.net/#31:18",
+  "refCheck": {
+   "surahName": "لقمان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w439": {
+  "verse": "exact",
+  "ref": "33:10",
+  "refShown": "سورة الأحزاب – الآية 10",
+  "url": "https://tanzil.net/#33:10",
+  "refCheck": {
+   "surahName": "الأحزاب",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w440": {
+  "verse": "exact",
+  "ref": "33:59",
+  "refShown": "سورة الأحزاب – الآية 59",
+  "url": "https://tanzil.net/#33:59",
+  "refCheck": {
+   "surahName": "الأحزاب",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w441": {
+  "verse": "exact",
+  "ref": "34:13",
+  "refShown": "سورة سبأ – الآية 13",
+  "url": "https://tanzil.net/#34:13",
+  "refCheck": {
+   "surahName": "سبإ",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w442": {
+  "verse": "exact",
+  "ref": "35:12",
+  "refShown": "سورة فاطر – الآية 12",
+  "url": "https://tanzil.net/#35:12",
+  "refCheck": {
+   "surahName": "فاطر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w443": {
+  "verse": "letters-only",
+  "ref": "36:39",
+  "refShown": "سورة يس – الآية 39",
+  "url": "https://tanzil.net/#36:39",
+  "refCheck": {
+   "surahName": "يس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w444": {
+  "verse": "exact",
+  "ref": "37:53",
+  "refShown": "سورة الصافات – الآية 53",
+  "url": "https://tanzil.net/#37:53",
+  "refCheck": {
+   "surahName": "الصافات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w445": {
+  "verse": "exact",
+  "ref": "38:31",
+  "refShown": "سورة ص – الآية 31",
+  "url": "https://tanzil.net/#38:31",
+  "refCheck": {
+   "surahName": "ص",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w446": {
+  "verse": "exact",
+  "ref": "39:75",
+  "refShown": "سورة الزمر – الآية 75",
+  "url": "https://tanzil.net/#39:75",
+  "refCheck": {
+   "surahName": "الزمر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w447": {
+  "verse": "exact",
+  "ref": "40:19",
+  "refShown": "سورة غافر – الآية 19",
+  "url": "https://tanzil.net/#40:19",
+  "refCheck": {
+   "surahName": "غافر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w448": {
+  "verse": "exact",
+  "ref": "41:21",
+  "refShown": "سورة فصلت – الآية 21",
+  "url": "https://tanzil.net/#41:21",
+  "refCheck": {
+   "surahName": "فصلت",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w449": {
+  "verse": "exact",
+  "ref": "42:34",
+  "refShown": "سورة الشورى – الآية 34",
+  "url": "https://tanzil.net/#42:34",
+  "refCheck": {
+   "surahName": "الشورى",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w450": {
+  "verse": "exact",
+  "ref": "43:13",
+  "refShown": "سورة الزخرف – الآية 13",
+  "url": "https://tanzil.net/#43:13",
+  "refCheck": {
+   "surahName": "الزخرف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w451": {
+  "verse": "letters-only",
+  "ref": "44:47",
+  "refShown": "سورة الدخان – الآية 47",
+  "url": "https://tanzil.net/#44:47",
+  "refCheck": {
+   "surahName": "الدخان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w452": {
+  "verse": "exact",
+  "ref": "45:28",
+  "refShown": "سورة الجاثية – الآية 28",
+  "url": "https://tanzil.net/#45:28",
+  "refCheck": {
+   "surahName": "الجاثية",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w453": {
+  "verse": "exact",
+  "ref": "46:24",
+  "refShown": "سورة الأحقاف – الآية 24",
+  "url": "https://tanzil.net/#46:24",
+  "refCheck": {
+   "surahName": "الأحقاف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w454": {
+  "verse": "exact",
+  "ref": "47:4",
+  "refShown": "سورة محمد – الآية 4",
+  "url": "https://tanzil.net/#47:4",
+  "refCheck": {
+   "surahName": "محمد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w456": {
+  "verse": "exact",
+  "ref": "49:11",
+  "refShown": "سورة الحجرات – الآية 11",
+  "url": "https://tanzil.net/#49:11",
+  "refCheck": {
+   "surahName": "الحجرات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w457": {
+  "verse": "exact",
+  "ref": "51:1-2",
+  "refShown": "سورة الذاريات – الآيتان 1–2",
+  "url": "https://tanzil.net/#51:1",
+  "refCheck": {
+   "surahName": "الذاريات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w458": {
+  "verse": "exact",
+  "ref": "52:5-6",
+  "refShown": "سورة الطور – الآيتان 5–6",
+  "url": "https://tanzil.net/#52:5",
+  "refCheck": {
+   "surahName": "الطور",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w460": {
+  "verse": "exact",
+  "ref": "54:12-13",
+  "refShown": "سورة القمر – الآيتان 12–13",
+  "url": "https://tanzil.net/#54:12",
+  "refCheck": {
+   "surahName": "القمر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w461": {
+  "verse": "exact",
+  "ref": "55:14",
+  "refShown": "سورة الرحمن – الآية 14",
+  "url": "https://tanzil.net/#55:14",
+  "refCheck": {
+   "surahName": "الرحمن",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w462": {
+  "verse": "letters-only",
+  "ref": "56:19",
+  "refShown": "سورة الواقعة – الآية 19",
+  "url": "https://tanzil.net/#56:19",
+  "refCheck": {
+   "surahName": "الواقعة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w463": {
+  "verse": "exact",
+  "ref": "57:13",
+  "refShown": "سورة الحديد – الآية 13",
+  "url": "https://tanzil.net/#57:13",
+  "refCheck": {
+   "surahName": "الحديد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w464": {
+  "verse": "exact",
+  "ref": "58:2",
+  "refShown": "سورة المجادلة – الآية 2",
+  "url": "https://tanzil.net/#58:2",
+  "refCheck": {
+   "surahName": "المجادلة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w465": {
+  "verse": "exact",
+  "ref": "59:5",
+  "refShown": "سورة الحشر – الآية 5",
+  "url": "https://tanzil.net/#59:5",
+  "refCheck": {
+   "surahName": "الحشر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w466": {
+  "verse": "exact",
+  "ref": "60:8",
+  "refShown": "سورة الممتحنة – الآية 8",
+  "url": "https://tanzil.net/#60:8",
+  "refCheck": {
+   "surahName": "الممتحنة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w467": {
+  "verse": "exact",
+  "ref": "61:4",
+  "refShown": "سورة الصف – الآية 4",
+  "url": "https://tanzil.net/#61:4",
+  "refCheck": {
+   "surahName": "الصف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w469": {
+  "verse": "exact",
+  "ref": "65:4",
+  "refShown": "سورة الطلاق – الآية 4",
+  "url": "https://tanzil.net/#65:4",
+  "refCheck": {
+   "surahName": "الطلاق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w471": {
+  "verse": "letters-only",
+  "ref": "67:3",
+  "refShown": "سورة الملك – الآية 3",
+  "url": "https://tanzil.net/#67:3",
+  "refCheck": {
+   "surahName": "الملك",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w472": {
+  "verse": "exact",
+  "ref": "68:42",
+  "refShown": "سورة القلم – الآية 42",
+  "url": "https://tanzil.net/#68:42",
+  "refCheck": {
+   "surahName": "القلم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w475": {
+  "verse": "exact",
+  "ref": "71:22",
+  "refShown": "سورة نوح – الآية 22",
+  "url": "https://tanzil.net/#71:22",
+  "refCheck": {
+   "surahName": "نوح",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w476": {
+  "verse": "exact",
+  "ref": "72:8",
+  "refShown": "سورة الجن – الآية 8",
+  "url": "https://tanzil.net/#72:8",
+  "refCheck": {
+   "surahName": "الجن",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w477": {
+  "verse": "exact",
+  "ref": "73:12",
+  "refShown": "سورة المزمل – الآية 12",
+  "url": "https://tanzil.net/#73:12",
+  "refCheck": {
+   "surahName": "المزمل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w478": {
+  "verse": "exact",
+  "ref": "74:30-31",
+  "refShown": "سورة المدثر – الآيتان 30–31",
+  "url": "https://tanzil.net/#74:30",
+  "refCheck": {
+   "surahName": "المدثر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w479": {
+  "verse": "exact",
+  "ref": "75:7-8",
+  "refShown": "سورة القيامة – الآيتان 7–8",
+  "url": "https://tanzil.net/#75:7",
+  "refCheck": {
+   "surahName": "القيامة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w480": {
+  "verse": "exact",
+  "ref": "76:17",
+  "refShown": "سورة الإنسان – الآية 17",
+  "url": "https://tanzil.net/#76:17",
+  "refCheck": {
+   "surahName": "الانسان",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w481": {
+  "verse": "exact",
+  "ref": "77:11",
+  "refShown": "سورة المرسلات – الآية 11",
+  "url": "https://tanzil.net/#77:11",
+  "refCheck": {
+   "surahName": "المرسلات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w484": {
+  "verse": "exact",
+  "ref": "80:33",
+  "refShown": "سورة عبس – الآية 33",
+  "url": "https://tanzil.net/#80:33",
+  "refCheck": {
+   "surahName": "عبس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w485": {
+  "verse": "exact",
+  "ref": "81:15-16",
+  "refShown": "سورة التكوير – الآيتان 15–16",
+  "url": "https://tanzil.net/#81:15",
+  "refCheck": {
+   "surahName": "التكوير",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w486": {
+  "verse": "exact",
+  "ref": "82:3-4",
+  "refShown": "سورة الانفطار – الآيتان 3–4",
+  "url": "https://tanzil.net/#82:3",
+  "refCheck": {
+   "surahName": "الإنفطار",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w487": {
+  "verse": "letters-only",
+  "ref": "83:7",
+  "refShown": "سورة المطففين – الآية 7",
+  "url": "https://tanzil.net/#83:7",
+  "refCheck": {
+   "surahName": "المطففين",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w488": {
+  "verse": "exact",
+  "ref": "84:2",
+  "refShown": "سورة الانشقاق – الآية 2",
+  "url": "https://tanzil.net/#84:2",
+  "refCheck": {
+   "surahName": "الإنشقاق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w489": {
+  "verse": "exact",
+  "ref": "85:1-2",
+  "refShown": "سورة البروج – الآيتان 1–2",
+  "url": "https://tanzil.net/#85:1",
+  "refCheck": {
+   "surahName": "البروج",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w491": {
+  "verse": "letters-only",
+  "ref": "87:4-5",
+  "refShown": "سورة الأعلى – الآيتان 4–5",
+  "url": "https://tanzil.net/#87:4",
+  "refCheck": {
+   "surahName": "الأعلى",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w492": {
+  "verse": "letters-only",
+  "ref": "88:4-5",
+  "refShown": "سورة الغاشية – الآيتان 4–5",
+  "url": "https://tanzil.net/#88:4",
+  "refCheck": {
+   "surahName": "الغاشية",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w493": {
+  "verse": "exact",
+  "ref": "89:1-3",
+  "refShown": "سورة الفجر – الآيات 1–3",
+  "url": "https://tanzil.net/#89:1",
+  "refCheck": {
+   "surahName": "الفجر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w494": {
+  "verse": "exact",
+  "ref": "90:1-4",
+  "refShown": "سورة البلد – الآيات 1–4",
+  "url": "https://tanzil.net/#90:1",
+  "refCheck": {
+   "surahName": "البلد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w495": {
+  "verse": "exact",
+  "ref": "91:11-12",
+  "refShown": "سورة الشمس – الآيتان 11–12",
+  "url": "https://tanzil.net/#91:11",
+  "refCheck": {
+   "surahName": "الشمس",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w496": {
+  "verse": "letters-only",
+  "ref": "92:11",
+  "refShown": "سورة الليل – الآية 11",
+  "url": "https://tanzil.net/#92:11",
+  "refCheck": {
+   "surahName": "الليل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w497": {
+  "verse": "letters-only",
+  "ref": "93:2-3",
+  "refShown": "سورة الضحى – الآيتان 2–3",
+  "url": "https://tanzil.net/#93:2",
+  "refCheck": {
+   "surahName": "الضحى",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w499": {
+  "verse": "exact",
+  "ref": "95:5",
+  "refShown": "سورة التين – الآية 5",
+  "url": "https://tanzil.net/#95:5",
+  "refCheck": {
+   "surahName": "التين",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w500": {
+  "verse": "exact",
+  "ref": "96:15",
+  "refShown": "سورة العلق – الآية 15",
+  "url": "https://tanzil.net/#96:15",
+  "refCheck": {
+   "surahName": "العلق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w501": {
+  "verse": "exact",
+  "ref": "97:1",
+  "refShown": "سورة القدر – الآية 1",
+  "url": "https://tanzil.net/#97:1",
+  "refCheck": {
+   "surahName": "القدر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w502": {
+  "verse": "exact",
+  "ref": "98:1",
+  "refShown": "سورة البينة – الآية 1",
+  "url": "https://tanzil.net/#98:1",
+  "refCheck": {
+   "surahName": "البينة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w504": {
+  "verse": "exact",
+  "ref": "100:1",
+  "refShown": "سورة العاديات – الآية 1",
+  "url": "https://tanzil.net/#100:1",
+  "refCheck": {
+   "surahName": "العاديات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w505": {
+  "verse": "exact",
+  "ref": "100:6",
+  "refShown": "سورة العاديات – الآية 6",
+  "url": "https://tanzil.net/#100:6",
+  "refCheck": {
+   "surahName": "العاديات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w506": {
+  "verse": "exact",
+  "ref": "100:10",
+  "refShown": "سورة العاديات – الآية 10",
+  "url": "https://tanzil.net/#100:10",
+  "refCheck": {
+   "surahName": "العاديات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w507": {
+  "verse": "exact",
+  "ref": "101:5",
+  "refShown": "سورة القارعة – الآية 5",
+  "url": "https://tanzil.net/#101:5",
+  "refCheck": {
+   "surahName": "القارعة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w508": {
+  "verse": "exact",
+  "ref": "102:1-2",
+  "refShown": "سورة التكاثر – الآيتان 1–2",
+  "url": "https://tanzil.net/#102:1",
+  "refCheck": {
+   "surahName": "التكاثر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w510": {
+  "verse": "exact",
+  "ref": "104:1",
+  "refShown": "سورة الهمزة – الآية 1",
+  "url": "https://tanzil.net/#104:1",
+  "refCheck": {
+   "surahName": "الهمزة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w511": {
+  "verse": "exact",
+  "ref": "104:4",
+  "refShown": "سورة الهمزة – الآية 4",
+  "url": "https://tanzil.net/#104:4",
+  "refCheck": {
+   "surahName": "الهمزة",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w512": {
+  "verse": "exact",
+  "ref": "105:5",
+  "refShown": "سورة الفيل – الآية 5",
+  "url": "https://tanzil.net/#105:5",
+  "refCheck": {
+   "surahName": "الفيل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w513": {
+  "verse": "exact",
+  "ref": "106:1-2",
+  "refShown": "سورة قريش – الآيتان 1–2",
+  "url": "https://tanzil.net/#106:1",
+  "refCheck": {
+   "surahName": "قريش",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w514": {
+  "verse": "exact",
+  "ref": "107:7",
+  "refShown": "سورة الماعون – الآية 7",
+  "url": "https://tanzil.net/#107:7",
+  "refCheck": {
+   "surahName": "الماعون",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w516": {
+  "verse": "exact",
+  "ref": "109:6",
+  "refShown": "سورة الكافرون – الآية 6",
+  "url": "https://tanzil.net/#109:6",
+  "refCheck": {
+   "surahName": "الكافرون",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w517": {
+  "verse": "exact",
+  "ref": "110:2",
+  "refShown": "سورة النصر – الآية 2",
+  "url": "https://tanzil.net/#110:2",
+  "refCheck": {
+   "surahName": "النصر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w518": {
+  "verse": "exact",
+  "ref": "111:1",
+  "refShown": "سورة المسد – الآية 1",
+  "url": "https://tanzil.net/#111:1",
+  "refCheck": {
+   "surahName": "المسد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w519": {
+  "verse": "exact",
+  "ref": "111:5",
+  "refShown": "سورة المسد – الآية 5",
+  "url": "https://tanzil.net/#111:5",
+  "refCheck": {
+   "surahName": "المسد",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w521": {
+  "verse": "exact",
+  "ref": "113:1",
+  "refShown": "سورة الفلق – الآية 1",
+  "url": "https://tanzil.net/#113:1",
+  "refCheck": {
+   "surahName": "الفلق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w522": {
+  "verse": "exact",
+  "ref": "113:3",
+  "refShown": "سورة الفلق – الآية 3",
+  "url": "https://tanzil.net/#113:3",
+  "refCheck": {
+   "surahName": "الفلق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:w523": {
+  "verse": "exact",
+  "ref": "113:4",
+  "refShown": "سورة الفلق – الآية 4",
+  "url": "https://tanzil.net/#113:4",
+  "refCheck": {
+   "surahName": "الفلق",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q33-41": {
+  "verse": "exact",
+  "ref": "33:41-42",
+  "refShown": "سورة الأحزاب، الآية 41–42",
+  "url": "https://tanzil.net/#33:41",
+  "siOfficial": "O you who have believed, remember Allāh with much remembrance And exalt Him morning and afternoon.",
+  "enShown": "O you who have believed, remember Allah with much remembrance And exalt Him morning and afternoon",
+  "enUrl": "https://quran.com/33/41-42",
+  "refCheck": {
+   "surahName": "الأحزاب",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q39-53": {
+  "verse": "letters-only",
+  "ref": "39:53",
+  "refShown": "سورة الزمر، الآية 53",
+  "url": "https://tanzil.net/#39:53",
+  "siOfficial": "Say, \"O My servants who have transgressed against themselves [by sinning], do not despair of the mercy of Allāh. Indeed, Allāh forgives all sins.<sup foot_note=197245>1</sup> Indeed, it is He who is the Forgiving, the Merciful.\"",
+  "enShown": "Say, \"O My servants who have transgressed against themselves [by sinning], do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful",
+  "enUrl": "https://quran.com/39/53",
+  "refCheck": {
+   "surahName": "الزمر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q94-5": {
+  "verse": "exact",
+  "ref": "94:5-6",
+  "refShown": "سورة الشرح، الآية 5–6",
+  "url": "https://tanzil.net/#94:5",
+  "siOfficial": "For indeed, with hardship [will be] ease [i.e., relief]. Indeed, with hardship [will be] ease.",
+  "enShown": "For indeed, with hardship [will be] ease Indeed, with hardship [will be] ease",
+  "enUrl": "https://quran.com/94/5-6",
+  "refCheck": {
+   "surahName": "الشرح",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q3-134": {
+  "verse": "letters-only",
+  "ref": "3:134",
+  "refShown": "سورة آل عمران، الآية 134",
+  "url": "https://tanzil.net/#3:134",
+  "siOfficial": "Who spend [in the cause of Allāh] during ease and hardship and who restrain anger and who pardon the people - and Allāh loves the doers of good;",
+  "enShown": "Who spend [in the cause of Allah] during ease and hardship and who restrain anger and who pardon the people - and Allah loves the doers of good",
+  "enUrl": "https://quran.com/3/134",
+  "refCheck": {
+   "surahName": "آل عمران",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q41-34": {
+  "verse": "exact",
+  "ref": "41:34",
+  "refShown": "سورة فصلت، الآية 34",
+  "url": "https://tanzil.net/#41:34",
+  "siOfficial": "And not equal are the good deed and the bad. Repel [evil] by that [deed] which is better; and thereupon, the one whom between you and him is enmity [will become] as though he was a devoted friend.",
+  "enShown": "And not equal are the good deed and the bad. Repel [evil] by that [deed] which is better; and thereupon the one whom between you and him is enmity [will become] as though he was a devoted friend",
+  "enUrl": "https://quran.com/41/34",
+  "refCheck": {
+   "surahName": "فصلت",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q7-205": {
+  "verse": "letters-only",
+  "ref": "7:205",
+  "refShown": "سورة الأعراف، الآية 205",
+  "url": "https://tanzil.net/#7:205",
+  "siOfficial": "And remember your Lord within yourself in humility and in fear without being apparent in speech - in the mornings and the evenings. And do not be among the heedless.",
+  "enShown": "And remember your Lord within yourself in humility and in fear without being apparent in speech - in the mornings and the evenings. And do not be among the heedless",
+  "enUrl": "https://quran.com/7/205",
+  "refCheck": {
+   "surahName": "الأعراف",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q16-53": {
+  "verse": "letters-only",
+  "ref": "16:53",
+  "refShown": "سورة النحل، الآية 53",
+  "url": "https://tanzil.net/#16:53",
+  "siOfficial": "And whatever you have of favor - it is from Allāh. Then when adversity touches you, to Him you cry for help.",
+  "enShown": "And whatever you have of favor - it is from Allah. Then when adversity touches you, to Him you cry for help",
+  "enUrl": "https://quran.com/16/53",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q39-10": {
+  "verse": "letters-only-excerpt",
+  "ref": "39:10",
+  "refShown": "سورة الزمر، الآية 10",
+  "url": "https://tanzil.net/#39:10",
+  "siOfficial": "Say,<sup foot_note=197236>1</sup> \"O My servants who have believed, fear your Lord. For those who do good in this world is good, and the earth of Allāh is spacious. Indeed, the patient will be given their reward without account [i.e., limit].\"",
+  "enShown": "Indeed, the patient will be given their reward without account",
+  "enUrl": "https://quran.com/39/10",
+  "refCheck": {
+   "surahName": "الزمر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q16-18": {
+  "verse": "letters-only",
+  "ref": "16:18",
+  "refShown": "سورة النحل، الآية 18",
+  "url": "https://tanzil.net/#16:18",
+  "siOfficial": "And if you should count the favors of Allāh, you could not enumerate them. Indeed, Allāh is Forgiving and Merciful.",
+  "enShown": "And if you should count the favors of Allah, you could not enumerate them. Indeed, Allah is Forgiving and Merciful",
+  "enUrl": "https://quran.com/16/18",
+  "refCheck": {
+   "surahName": "النحل",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q70-5": {
+  "verse": "exact",
+  "ref": "70:5",
+  "refShown": "سورة المعارج، الآية 5",
+  "url": "https://tanzil.net/#70:5",
+  "siOfficial": "So be patient with gracious patience.",
+  "enShown": "So be patient with gracious patience",
+  "enUrl": "https://quran.com/70/5",
+  "refCheck": {
+   "surahName": "المعارج",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q14-7": {
+  "verse": "letters-only",
+  "ref": "14:7",
+  "refShown": "سورة إبراهيم، الآية 7",
+  "url": "https://tanzil.net/#14:7",
+  "siOfficial": "And [remember] when your Lord proclaimed, 'If you are grateful, I will surely increase you [in favor]; but if you deny, indeed, My punishment is severe.'\"",
+  "enShown": "And [remember] when your Lord proclaimed, 'If you are grateful, I will surely increase you [in favor]; but if you deny, indeed, My punishment is severe",
+  "enUrl": "https://quran.com/14/7",
+  "refCheck": {
+   "surahName": "ابراهيم",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q49-10": {
+  "verse": "exact",
+  "ref": "49:10",
+  "refShown": "سورة الحجرات، الآية 10",
+  "url": "https://tanzil.net/#49:10",
+  "siOfficial": "The believers are but brothers, so make settlement between your brothers. And fear Allāh that you may receive mercy.",
+  "enShown": "The believers are but brothers, so make settlement between your brothers. And fear Allah that you may receive mercy",
+  "enUrl": "https://quran.com/49/10",
+  "refCheck": {
+   "surahName": "الحجرات",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q11-115": {
+  "verse": "exact",
+  "ref": "11:115",
+  "refShown": "سورة هود، الآية 115",
+  "url": "https://tanzil.net/#11:115",
+  "siOfficial": "And be patient, for indeed, Allāh does not allow to be lost the reward of those who do good.",
+  "enShown": "And be patient, for indeed, Allah does not allow to be lost the reward of those who do good",
+  "enUrl": "https://quran.com/11/115",
+  "refCheck": {
+   "surahName": "هود",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q4-86": {
+  "verse": "letters-only",
+  "ref": "4:86",
+  "refShown": "سورة النساء، الآية 86",
+  "url": "https://tanzil.net/#4:86",
+  "siOfficial": "And when you are greeted with a greeting, greet [in return] with one better than it or [at least] return it [in a like manner]. Indeed Allāh is ever, over all things, an Accountant.",
+  "enShown": "And when you are greeted with a greeting, greet [in return] with one better than it or [at least] return it [in a like manner]. Indeed Allah is ever, over all things, an Accountant",
+  "enUrl": "https://quran.com/4/86",
+  "refCheck": {
+   "surahName": "النساء",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q93-11": {
+  "verse": "exact",
+  "ref": "93:11",
+  "refShown": "سورة الضحى، الآية 11",
+  "url": "https://tanzil.net/#93:11",
+  "siOfficial": "But as for the favor of your Lord, report [it].",
+  "enShown": "But as for the favor of your Lord, report [it]",
+  "enUrl": "https://quran.com/93/11",
+  "refCheck": {
+   "surahName": "الضحى",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ },
+ "lataif:q39-9": {
+  "verse": "exact-excerpt",
+  "ref": "39:9",
+  "refShown": "سورة الزمر، الآية 9",
+  "url": "https://tanzil.net/#39:9",
+  "siOfficial": "Is one who is devoutly obedient during periods of the night, prostrating and standing [in prayer], fearing the Hereafter and hoping for the mercy of his Lord, [like one who does not]? Say, \"Are those who know equal to those who do not know?\" Only they will remember [who are] people of understanding.",
+  "enShown": "Say, \"Are those who know equal to those who do not know?\" Only they will remember [who are] people of understanding",
+  "enUrl": "https://quran.com/39/9",
+  "refCheck": {
+   "surahName": "الزمر",
+   "nameOk": true,
+   "numbersOk": true
+  }
+ }
+}

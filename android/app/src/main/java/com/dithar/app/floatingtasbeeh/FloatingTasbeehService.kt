@@ -112,8 +112,10 @@ class FloatingTasbeehService : Service() {
             PixelFormat.TRANSLUCENT,
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 0
-            y = (200 * density).toInt()
+            // Centred, a little below the middle of the screen (FloatingBubblePlacement).
+            val start = FloatingBubblePlacement.initial(placementArea(), sizePx, closeRoomPx())
+            x = start.x
+            y = start.y
         }
         bubbleParams = params
 
@@ -124,6 +126,7 @@ class FloatingTasbeehService : Service() {
             onTap = ::handleTap,
             onLongPress = ::handleLongPress,
             onPositionChanged = ::onBubbleMoved,
+            keepInBounds = { x, y -> FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(x, y), placementArea(), params.width, closeRoomPx()) },
         )
         view.count = store.getLiveCount(store.selectedDhikrId)
         view.label = label
@@ -172,10 +175,53 @@ class FloatingTasbeehService : Service() {
         if (params.width == newSizePx) return
         params.width = newSizePx
         params.height = newSizePx
+        // A larger bubble still fits where it is: moved in from an edge if it would now cross one.
+        val kept = FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(params.x, params.y), placementArea(), newSizePx, closeRoomPx())
+        params.x = kept.x
+        params.y = kept.y
         runCatching { windowManager.updateViewLayout(view, params) }
         // The bubble's own footprint just changed — the close button's
         // anchor offset (half the bubble's width) must be recomputed too.
         updateCloseButtonPosition(params.x, params.y)
+    }
+
+    /** The room the close button takes above the bubble (its height and gap), px. */
+    private fun closeRoomPx(): Int {
+        val density = resources.displayMetrics.density
+        return ((CLOSE_BUTTON_SIZE_DP + CLOSE_BUTTON_GAP_DP) * density).toInt()
+    }
+
+    /**
+     * The screen as the bubble may use it: its size, and the room the status
+     * bar (and any display cutout) and the navigation bar take — the bubble
+     * never covers them (FloatingBubblePlacement).
+     */
+    private fun placementArea(): FloatingBubblePlacement.Area {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val metrics = windowManager.currentWindowMetrics
+            val insets = metrics.windowInsets.getInsetsIgnoringVisibility(
+                android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout(),
+            )
+            return FloatingBubblePlacement.Area(metrics.bounds.width(), metrics.bounds.height(), insets.top, insets.bottom)
+        }
+        val dm = resources.displayMetrics
+        val statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        val statusBar = if (statusBarId > 0) resources.getDimensionPixelSize(statusBarId) else 0
+        // Before Android 11 the display metrics already leave the navigation bar out.
+        return FloatingBubblePlacement.Area(dm.widthPixels, dm.heightPixels, statusBar, 0)
+    }
+
+    /** The screen turned (or changed size): the bubble stays fully on it. */
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val params = bubbleParams ?: return
+        val view = bubbleView ?: return
+        val kept = FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(params.x, params.y), placementArea(), params.width, closeRoomPx())
+        if (kept.x == params.x && kept.y == params.y) return
+        params.x = kept.x
+        params.y = kept.y
+        runCatching { windowManager.updateViewLayout(view, params) }
+        onBubbleMoved(params.x, params.y)
     }
 
     /**
@@ -401,7 +447,10 @@ class FloatingTasbeehService : Service() {
             Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE,
         )
-        val notification: Notification = Notification.Builder(this, CHANNEL_ID)
+        // The channel-taking constructor is API 26+; minSdk is 24.
+        @Suppress("DEPRECATION")
+        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(this, CHANNEL_ID) else Notification.Builder(this)
+        val notification: Notification = builder
             .setContentTitle(LABEL_NOTIFICATION_TITLE)
             .setContentText(LABEL_NOTIFICATION_BODY)
             .setSmallIcon(android.R.drawable.ic_menu_myplaces) // TODO: replace with a DITHAR-branded icon asset
@@ -417,14 +466,15 @@ class FloatingTasbeehService : Service() {
     }
 
     companion object {
-        // The normal size for the majority of the library's short dhikr.
-        private const val BUBBLE_SIZE_SMALL_DP = 56
+        // The normal size for the majority of the library's short dhikr — a
+        // little larger than the original 56dp, for comfortable repeated thumb taps.
+        private const val BUBBLE_SIZE_SMALL_DP = 64
         // A moderate, capped increase — never grows further/continuously
         // beyond this — for the handful of long dhikr whose text can't
         // show complete at the small size (see labelFitsComplete/
         // bubbleSizeDpFor). Roughly 2x the small bubble's AREA, still a
         // clearly "bubble-sized" overlay, not a card.
-        private const val BUBBLE_SIZE_LARGE_DP = 80
+        private const val BUBBLE_SIZE_LARGE_DP = 88
         private const val CLOSE_BUTTON_SIZE_DP = 20
         private const val CLOSE_BUTTON_GAP_DP = 4
         private const val HAPTIC_TAP_DURATION_MS = 15L

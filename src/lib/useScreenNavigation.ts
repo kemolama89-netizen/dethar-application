@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { App as CapacitorApp } from "@capacitor/app";
+import { exitAppSafely } from "./appExit";
 import { Capacitor } from "@capacitor/core";
 import { backOverlayCount, dismissTopBackOverlay, subscribeBackOverlays } from "./backOverlays";
 
@@ -85,7 +86,7 @@ export function useScreenNavigation<S extends string>(root: S) {
       let handle: { remove: () => Promise<void> } | null = null;
       void CapacitorApp.addListener("backButton", () => {
         if (dismissTopBackOverlay()) return;
-        if (!goBack()) void CapacitorApp.exitApp();
+        if (!goBack()) void exitAppSafely();
       }).then((h) => {
         if (removed) void h.remove();
         else handle = h;
@@ -117,5 +118,10 @@ export function useScreenNavigation<S extends string>(root: S) {
     };
   }, [native, goBack, syncGuard]);
 
-  return { screen, navigate };
+  // An on-screen back arrow: the same step as system Back (one entry down the stack), the history guard kept in step.
+  const back = useCallback(() => {
+    if (goBack()) syncGuard();
+  }, [goBack, syncGuard]);
+
+  return { screen, navigate, back };
 }

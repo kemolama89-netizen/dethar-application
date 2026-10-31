@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DITHAR home-screen widget: the current reminder (a verified dua, Hadith,
+     dhikr virtue or attributed poetry) over a full-bleed background, with a
+     light tint of the app's palette, a readability scrim, a heart that saves
+     the item to Favorites, and one short DITHAR comment.
+     Rendered by reminders/DhikrWidgetProvider.kt (WidgetRenderer). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_shape"
+    android:clipToOutline="true">
+
+    <ImageView
+        android:id="@+id/widget_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:importantForAccessibility="no" />
+
+    <!-- The palette's primary color, at low opacity (set at runtime). -->
+    <ImageView
+        android:id="@+id/widget_tint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/widget_scrim"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+
+    <!-- Sizes here are mirrored in DhikrWidgetProvider (WidgetRenderer, "measuring"):
+         the renderer measures the text at each of the widget's real sizes, with the
+         same line breaking (balanced, never hyphenated) and the same room for the
+         taller Arabic fallback font (fallbackLineSpacing), and picks a text that
+         fits in full (see WidgetTextFit). The layout direction is set from the
+         app's language at runtime. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="8dp">
+
+        <!-- The title (e.g. "Dua from the Qur'an") may wrap to a second line on the
+             narrowest widget rather than be cut; two 11sp lines fit the 36dp row. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/widget_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#E6D5A7"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textDirection="firstStrong"
+                android:textAlignment="viewStart"
+                android:lineSpacingMultiplier="0.95"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <!-- 36dp touch target around a 20dp heart. -->
+            <ImageView
+                android:id="@+id/widget_heart"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_widget_heart_outline"
+                android:contentDescription="@string/widget_favorite_add" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/widget_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textDirection="rtl"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:lineSpacingMultiplier="1.2"
+                android:includeFontPadding="true"
+                android:breakStrategy="balanced"
+                android:hyphenationFrequency="none"
+                android:fallbackLineSpacing="true"
+                android:shadowColor="#99000000"
+                android:shadowRadius="4"
+                tools:targetApi="28" />
+
+            <!-- English mode: the item's English meaning, under the Arabic. -->
+            <TextView
+                android:id="@+id/widget_meaning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textDirection="ltr"
+                android:textColor="#F2FFFFFF"
+                android:textSize="12sp"
+                android:lineSpacingMultiplier="1.15"
+                android:breakStrategy="balanced"
+                android:hyphenationFrequency="none"
+                android:fallbackLineSpacing="true"
+                android:shadowColor="#99000000"
+                android:shadowRadius="3"
+                android:visibility="gone"
+                tools:targetApi="28" />
+
+            <!-- What the text is about when it doesn't say it itself (a dhikr's virtue),
+                 labelled in the text («فضله:»); its source is the line below. -->
+            <TextView
+                android:id="@+id/widget_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textDirection="firstStrong"
+                android:textColor="#F2FFFFFF"
+                android:textSize="13sp"
+                android:lineSpacingMultiplier="1.15"
+                android:breakStrategy="balanced"
+                android:hyphenationFrequency="none"
+                android:fallbackLineSpacing="true"
+                android:shadowColor="#99000000"
+                android:shadowRadius="3"
+                android:visibility="gone"
+                tools:targetApi="28" />
+
+            <TextView
+                android:id="@+id/widget_source"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:textDirection="firstStrong"
+                android:textColor="#D9FFFFFF"
+                android:textSize="11sp"
+                android:lineSpacingMultiplier="1.1"
+                android:breakStrategy="balanced"
+                android:hyphenationFrequency="none"
+                android:fallbackLineSpacing="true"
+                android:shadowColor="#99000000"
+                android:shadowRadius="3"
+                tools:targetApi="28" />
+
+            <!-- One short DITHAR comment, labelled "DITHAR reflection" in the text itself
+                 (never part of the religious text). Not italic here: a slanted
+                 Arabic face breaks its letter joins; English is slanted by a span. -->
+            <TextView
+                android:id="@+id/widget_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:textDirection="firstStrong"
+                android:textColor="#EBFFFFFF"
+                android:textSize="12sp"
+                android:lineSpacingMultiplier="1.1"
+                android:breakStrategy="balanced"
+                android:hyphenationFrequency="none"
+                android:fallbackLineSpacing="true"
+                android:shadowColor="#99000000"
+                android:shadowRadius="3"
+                android:visibility="gone"
+                tools:targetApi="28" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

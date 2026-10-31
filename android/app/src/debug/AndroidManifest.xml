@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DEBUG BUILDS ONLY (src/debug is never part of a release build). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Hosts the real home-screen widget at chosen sizes, for layout checks
+             (adb: see WidgetPreviewActivity). -->
+        <activity
+            android:name="com.dithar.app.debug.WidgetPreviewActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar" />
+    </application>
+</manifest>

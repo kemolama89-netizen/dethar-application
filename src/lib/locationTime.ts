@@ -149,3 +149,28 @@ export function resolveLocationTimezone(record: LocationRecordLike, at: Date = n
   if (zones.length === 1) return zones[0];
   return nearestZoneInCountry(country, record.latitude, record.longitude) ?? record.timezone;
 }
+
+/** The location's wall-clock offset from UTC at `instant`, in millis. */
+function zoneOffsetMs(instant: number, timezone: string): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  }).formatToParts(new Date(instant));
+  const get = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find((p) => p.type === type)?.value);
+  const wall = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second"));
+  return wall - Math.floor(instant / 1000) * 1000;
+}
+
+/** The instant it is `minutes` after midnight of `date` at the location (DST-safe: re-checked at the result). */
+export function zonedInstant(date: LocalDate, minutes: number, timezone: string): number {
+  const wall = Date.UTC(date.year, date.month - 1, date.day, 0, minutes);
+  let at = wall - zoneOffsetMs(wall, timezone);
+  at = wall - zoneOffsetMs(at, timezone);
+  return at;
+}

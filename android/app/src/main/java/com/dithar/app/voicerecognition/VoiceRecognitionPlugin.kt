@@ -139,6 +139,8 @@ class VoiceRecognitionPlugin : Plugin() {
 
     override fun load() {
         super.load()
+        // A previous session ended without restoring its mute (the app was killed): undo it now.
+        RecognitionSoundsPolicy.decode(mutePrefs.getString(KEY_MUTED_STREAMS, null)).takeIf { it.isNotEmpty() }?.let { unmuteStreams(it) }
         try {
             context.registerReceiver(scoStateReceiver, IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED))
         } catch (e: Exception) {
@@ -235,30 +237,51 @@ class VoiceRecognitionPlugin : Plugin() {
     // app's music/media on STREAM_MUSIC for as long as Voice Tasbeeh is
     // actively listening — there is no way to mute only the recognizer's
     // own earcon and nothing else through the public AudioManager API.
-    private var startupChimeMuted = false
+    // The streams this session muted (see RecognitionSoundsPolicy), saved so a
+    // session cut off by the app being killed is undone at the next load().
+    private val mutedStreams = mutableListOf<Int>()
+    private val mutePrefs by lazy { context.getSharedPreferences(MUTE_PREFS, Context.MODE_PRIVATE) }
 
     private fun muteListeningChimeIfNeeded() {
-        if (startupChimeMuted) return
-        try {
-            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
-            startupChimeMuted = true
-            Log.d(TAG, "listening chime mute requested (STREAM_MUSIC)")
-        } catch (e: Exception) {
-            // Never fatal — recognition itself must keep working even if
-            // this specific mitigation can't be applied on this device.
-            Log.w(TAG, "failed to mute listening chime (non-fatal)", e)
+        if (mutedStreams.isNotEmpty()) return
+        // Another app playing a video or song keeps its sound: media is left alone then.
+        val otherMediaPlaying = try { audioManager.isMusicActive } catch (_: Exception) { true }
+        for (stream in RecognitionSoundsPolicy.streamsToMute(otherMediaPlaying)) {
+            try {
+                if (audioManager.isStreamMute(stream)) continue // the user's own mute: not ours to undo
+                val ringerBefore = audioManager.ringerMode
+                audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_MUTE, 0)
+                if (!RecognitionSoundsPolicy.keepMute(ringerBefore, audioManager.ringerMode)) {
+                    // This stream is the ringer on this device: muting it changed the ringer mode. Undo and skip.
+                    audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE, 0)
+                    Log.d(TAG, "listening chime: stream $stream skipped (it would change the ringer mode)")
+                    continue
+                }
+                mutedStreams += stream
+            } catch (e: Exception) {
+                // Never fatal (e.g. a SecurityException where Do Not Disturb rules apply): recognition must keep working.
+                Log.w(TAG, "listening chime: couldn't mute stream $stream (non-fatal)", e)
+            }
         }
+        mutePrefs.edit().putString(KEY_MUTED_STREAMS, RecognitionSoundsPolicy.encode(mutedStreams)).commit()
+        Log.d(TAG, "listening chime mute: streams $mutedStreams")
     }
 
     private fun unmuteListeningChimeIfMuted() {
-        if (!startupChimeMuted) return
-        try {
-            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
-        } catch (e: Exception) {
-            Log.w(TAG, "failed to restore STREAM_MUSIC volume after voice session (non-fatal)", e)
-        } finally {
-            startupChimeMuted = false
+        if (mutedStreams.isEmpty()) return
+        unmuteStreams(mutedStreams.toList())
+        mutedStreams.clear()
+    }
+
+    private fun unmuteStreams(streams: List<Int>) {
+        for (stream in streams) {
+            try {
+                audioManager.adjustStreamVolume(stream, AudioManager.ADJUST_UNMUTE, 0)
+            } catch (e: Exception) {
+                Log.w(TAG, "failed to restore stream $stream after a voice session (non-fatal)", e)
+            }
         }
+        mutePrefs.edit().remove(KEY_MUTED_STREAMS).commit()
     }
 
     @PluginMethod
@@ -384,7 +407,14 @@ class VoiceRecognitionPlugin : Plugin() {
             // LISTENING CHIME SUPPRESSION — see muteListeningChimeIfNeeded's
             // own comment. Same "attempt on every start, only actually acts
             // once" idempotent pattern as the Bluetooth routing call above.
-            muteListeningChimeIfNeeded()
+            // Only while the Tasbeeh screen's "Recognition Sounds" switch is
+            // off (RecognitionSoundsPolicy); switched on, the stream is left
+            // alone — and restored if an earlier pass had muted it.
+            if (RecognitionSoundsPolicy.muteWhileListening(call.getBoolean("recognitionSounds"))) {
+                muteListeningChimeIfNeeded()
+            } else {
+                unmuteListeningChimeIfMuted()
+            }
             activeSessionId = sessionId
 
             val elapsedSinceLastCreate = SystemClock.elapsedRealtime() - lastRecognizerCreateAtMs
@@ -743,6 +773,8 @@ class VoiceRecognitionPlugin : Plugin() {
     companion object {
         // TEMPORARY DIAGNOSTIC tag — `adb logcat -s DitharVoiceRecog`.
         private const val TAG = "DitharVoiceRecog"
+        private const val MUTE_PREFS = "dithar_voice_tasbeeh"
+        private const val KEY_MUTED_STREAMS = "muted_streams"
         // LIFECYCLE FIX — see doStartSession's own comment above. The
         // minimum time that must elapse between two
         // createSpeechRecognizer()+startListening() calls. Confirmed

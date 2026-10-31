@@ -1,41 +1,57 @@
-import { useCallback, useEffect, useState } from "react";
-import { BookOpenText, Check, ChevronLeft, ChevronRight, Languages, Pause, Play, Volume2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import type { ReactNode } from "react";
+import { BookOpenText, ListMusic, Languages, Pause, Play, SkipForward, Square, Volume2 } from "lucide-react";
 import { DeviceFrame } from "./DeviceFrame";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
+import { BackArrowButton } from "./BackHeader";
 import { BackHeader, StickyBackButton } from "./BackHeader";
 import { WrittenAdhkarCategoryCard } from "./WrittenAdhkarCategoryCard";
+import { ResumeAdhkarBanner } from "./ResumeAdhkarBanner";
 import { DraggableMeaningCard } from "./MeaningPopover";
 import { useLanguage } from "../theme/LanguageContext";
 import { navLabels } from "../data/content";
 import { writtenAdhkarCategoryLabels, writtenAdhkarLabels } from "../data/written-adhkar";
 import type { WrittenAdhkarItem } from "../data/written-adhkar";
-import { MISC_CATEGORIES, MISC_DUAS, miscLibraryLabels } from "../data/misc-library";
-import type { MiscCategoryKey, MiscDuaItem } from "../data/misc-library";
+import { miscLibraryLabels } from "../data/misc-library";
+import { tasbeehLabels } from "../data/tasbeeh";
+import { useAudioAdhkarCount } from "../lib/audioAdhkarCounts";
 import { dhikrLanguageLabels } from "../data/dhikr-language-labels";
-import { AUDIO_ADHKAR_CATEGORY_ORDER, AUDIO_MISC_CATEGORY_ORDER, audioAdhkarItems, audioMiscItems } from "../data/audio-adhkar";
-import type { AudioAdhkarCategoryKey } from "../data/audio-adhkar";
-import { audioRepetitionTotal } from "../data/audio-adhkar";
+import { AUDIO_ADHKAR_CATEGORY_ORDER, AUDIO_VARIOUS_ITEMS, audioAdhkarItems } from "../data/audio-adhkar";
+import type { AudioAdhkarCategoryKey, AudioVariousItem } from "../data/audio-adhkar";
 import { playbackFor, useAudioAdhkarPlayback } from "../lib/audioAdhkarPlayback";
+import { formatPlaybackTime, useAudioAdhkarProgress } from "../lib/useAudioAdhkarProgress";
+import { usePageVisible } from "../lib/pageVisibility";
+import { useInView } from "../lib/useInView";
 import {
   AUDIO_ENABLED_COLLECTIONS,
+  canSkipAudioAdhkar,
+  getAudioAdhkarPlayAll,
   getAudioAdhkarSource,
+  getAudioAdhkarPlaybackFailure,
+  getAudioVariousSource,
   pauseAudioAdhkar,
+  playableAudioAdhkar,
   resumeAudioAdhkar,
   startAudioAdhkar,
+  skipAudioAdhkar,
+  startAudioAdhkarPlayAll,
+  startAudioVarious,
   stopAudioAdhkar,
+  stopAudioAdhkarPlayback,
+  subscribeAudioAdhkarPlayAll,
+  subscribeAudioAdhkarSkip,
+  subscribeAudioAdhkarPlaybackFailure,
 } from "../lib/audioAdhkarPlayer";
 import type { AudioAdhkarCollection, AudioAdhkarNowPlaying, AudioAdhkarPlaybackState } from "../lib/audioAdhkarPlayback";
-import { USER_REPEAT_MAX, USER_REPEAT_MIN, setUserRepeatCount, useUserRepeatCount } from "../lib/audioUserRepeat";
-import { syncEveningAudioSchedule } from "../lib/eveningAudioSchedule";
+import type { AudioAdhkarPlayAllEntry, AudioAdhkarProgress } from "../lib/audioAdhkarPlayer";
 
-// Audio Adhkar ("الأذكار المسموعة") — the same Morning,
-// Evening and Various adhkar the Written section shows (see
-// data/audio-adhkar.ts), displayed read-only. Evening dhikr with a
-// recording get a Play/Pause/Resume player (lib/audioAdhkarPlayer.ts);
-// every other card keeps a placeholder. No scheduling or background
-// playback yet.
+// Audio Adhkar ("الأذكار المسموعة") — Morning and Evening (the same
+// adhkar the Written section shows) and Various (the Tasbeeh dhikr); see
+// data/audio-adhkar.ts. Displayed read-only. A dhikr with a recording gets
+// a Play/Pause/Resume player (lib/audioAdhkarPlayer.ts); every other card
+// keeps a placeholder.
 
 export interface AudioAdhkarNavProps {
   onNavigateHome: () => void;
@@ -67,8 +83,13 @@ const SELECT_TRANSITION_MS = 320;
 
 export function AudioAdhkarScreen({
   onSelectCategory,
+  onBack,
   ...nav
-}: AudioAdhkarNavProps & { onSelectCategory: (key: AudioAdhkarCategoryKey) => void }) {
+}: AudioAdhkarNavProps & {
+  onSelectCategory: (key: AudioAdhkarCategoryKey) => void;
+  /** The header's back arrow (to the Adhkar screen); without it, the header is as before. */
+  onBack?: () => void;
+}) {
   const { language } = useLanguage();
   const t = writtenAdhkarLabels[language];
   const [selectingKey, setSelectingKey] = useState<AudioAdhkarCategoryKey | null>(null);
@@ -84,15 +105,28 @@ export function AudioAdhkarScreen({
       <AppShell>
         <TopBar />
         <div className="flex flex-1 flex-col">
-          <h1
-            className="mt-2 text-center text-[20px] font-bold"
-            style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
-          >
-            {navLabels[language].audioAdhkar}
-          </h1>
+          {onBack ? (
+            <div className="mt-2 flex items-center gap-2">
+              <BackArrowButton onBack={onBack} backLabel={t.back} />
+              <h1 className="min-w-0 flex-1 text-center text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
+                {navLabels[language].audioAdhkar}
+              </h1>
+              <div className="h-9 w-9 shrink-0" aria-hidden="true" />
+            </div>
+          ) : (
+            <h1
+              className="mt-2 text-center text-[20px] font-bold"
+              style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
+            >
+              {navLabels[language].audioAdhkar}
+            </h1>
+          )}
           <p className="mt-0.5 text-center text-[13px]" style={{ color: "var(--wa-ink-muted)" }}>
             {t.chooseCategory}
           </p>
+
+          {/* An adhan-interrupted Morning/Evening session, offered back (Android only). */}
+          <ResumeAdhkarBanner />
 
           {/* Same 2×2 grid as Written Adhkar. The third tile sits centered on
               the bottom row at exactly one column's width (the row's width
@@ -100,7 +134,7 @@ export function AudioAdhkarScreen({
           <div className="mt-3 grid flex-1 grid-cols-2 grid-rows-2 gap-3">
             {AUDIO_ADHKAR_CATEGORY_ORDER.map((key) => {
               const itemsCountLabel =
-                key === "misc" ? miscLibraryLabels[language].itemsCount(MISC_DUAS.length) : t.itemsCount(audioAdhkarItems[key].length);
+                t.itemsCount(key === "misc" ? AUDIO_VARIOUS_ITEMS.length : audioAdhkarItems[key].length);
               const cardStateClass = !selectingKey
                 ? ""
                 : selectingKey === key
@@ -127,62 +161,7 @@ export function AudioAdhkarScreen({
   );
 }
 
-// Various: the Misc Library's categories, in the same order its grid shows.
-export function AudioMiscCategoriesScreen({
-  onBack,
-  onSelectCategory,
-  ...nav
-}: AudioAdhkarNavProps & { onBack: () => void; onSelectCategory: (key: MiscCategoryKey) => void }) {
-  const { language, dir } = useLanguage();
-  const t = miscLibraryLabels[language];
-  const Chevron = dir === "rtl" ? ChevronLeft : ChevronRight;
-
-  return (
-    <DeviceFrame background="var(--wa-page-bg)">
-      <AppShell>
-        <TopBar />
-        <div className="flex flex-1 flex-col">
-          <BackHeader title={writtenAdhkarCategoryLabels.misc[language]} onBack={onBack} backLabel={t.back} hideButton />
-          <StickyBackButton onBack={onBack} backLabel={t.back} dir={dir} />
-          <div className="mt-4 flex flex-col gap-2.5 pb-4">
-            {AUDIO_MISC_CATEGORY_ORDER.map((key) => {
-              const meta = MISC_CATEGORIES[key];
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => onSelectCategory(key)}
-                  className="flex items-center gap-3 px-4 py-3 text-start"
-                  style={{
-                    background: "var(--wa-surface)",
-                    borderRadius: "var(--wa-card-radius)",
-                    boxShadow: "0 8px 20px -16px rgba(var(--color-shadow-rgb), 0.14), inset 0 0 0 1px var(--wa-gold-hairline)",
-                  }}
-                >
-                  <span className="min-w-0 flex-1">
-                    <span
-                      className="block text-[15px] font-bold leading-[1.4]"
-                      style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}
-                    >
-                      {language === "en" ? meta.title_en : meta.title_ar}
-                    </span>
-                    <span className="block text-[11px]" style={{ color: "var(--wa-ink-muted)" }}>
-                      {t.itemsCount(audioMiscItems(key).length)}
-                    </span>
-                  </span>
-                  <Chevron size={16} strokeWidth={1.8} style={{ color: "var(--wa-gold)" }} />
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <AudioBottomNav {...nav} />
-      </AppShell>
-    </DeviceFrame>
-  );
-}
-
-export type AudioAdhkarList = { kind: "written"; key: "morning" | "evening" } | { kind: "misc"; key: MiscCategoryKey };
+export type AudioAdhkarList = { kind: "written"; key: "morning" | "evening" } | { kind: "various" };
 
 const CARD_STYLE = {
   background: "var(--wa-surface)",
@@ -313,8 +292,18 @@ const playerLabels = {
     nowPlaying: "يُشغَّل الآن",
     paused: "متوقف مؤقتًا",
     notRecorded: "لا يتوفر تسجيل صوتي بعد",
-    playCount: "عدد مرات التشغيل",
-    chooseCount: "اختر",
+    heard: "عدد مرات الاستماع",
+    reciter: "القارئ",
+    repetition: (n: number, total: number | null) => (total ? `التكرار ${n} من ${total}` : `التكرار ${n}`),
+    loading: "جارٍ التحميل…",
+    progress: "تقدّم التشغيل",
+    time: "الوقت المنقضي / المدة",
+    failed: "تعذّر تشغيل التسجيل الآن. حاول مرة أخرى.",
+    playAll: "تشغيل الكل",
+    stopAll: "إيقاف",
+    playAllHint: (n: number) => `${n} ${n === 1 ? "ذكر" : "أذكار"} متتالية`,
+    playAllPosition: (n: number, total: number) => `الذكر ${n} من ${total}`,
+    nextDhikr: "الذكر التالي",
   },
   en: {
     listen: "Listen",
@@ -323,8 +312,18 @@ const playerLabels = {
     nowPlaying: "Now playing",
     paused: "Paused",
     notRecorded: "No recording yet",
-    playCount: "Times to play",
-    chooseCount: "Choose",
+    heard: "Times heard",
+    reciter: "Reciter",
+    repetition: (n: number, total: number | null) => (total ? `Repetition ${n} of ${total}` : `Repetition ${n}`),
+    loading: "Loading…",
+    progress: "Playback progress",
+    time: "Elapsed / total",
+    failed: "Couldn't play this recording right now. Please try again.",
+    playAll: "Play All",
+    stopAll: "Stop",
+    playAllHint: (n: number) => `${n} ${n === 1 ? "dhikr" : "adhkar"} in sequence`,
+    playAllPosition: (n: number, total: number) => `Dhikr ${n} of ${total}`,
+    nextDhikr: "Next dhikr",
   },
 };
 
@@ -344,7 +343,191 @@ function AudioPlayerSlot({ label }: { label?: string }) {
   );
 }
 
-// Play / Pause / Resume for one dhikr's recording (see lib/audioAdhkarPlayer.ts).
+/** How many times this dhikr was heard to the end in this list (lib/audioAdhkarCounts.ts) — kept across restarts. */
+function HeardCount({ collection, itemId }: { collection: AudioAdhkarCollection; itemId: string }) {
+  const { language } = useLanguage();
+  const count = useAudioAdhkarCount(collection, itemId);
+  return (
+    <p className="mt-1 text-[11px] font-semibold" style={{ color: "var(--wa-gold)" }} data-audio-count={count}>
+      {playerLabels[language].heard}: <span dir="ltr">{count}</span>
+    </p>
+  );
+}
+
+/**
+ * The active dhikr's player details — every value read from the real
+ * playback: the title and reciter the player reports, the repetition from
+ * the playback state, and the position/length from the media itself
+ * (useAudioAdhkarProgress). The waveform moves only while audio plays.
+ */
+/**
+ * `large`: the Home screen's bigger player (larger title, details and
+ * progress), with `trailing` (its controls) beside the title; the Audio
+ * Adhkar cards use neither.
+ */
+export function NowPlayingPanel({ title, playback, large = false, trailing }: { title?: string; playback: AudioAdhkarNowPlaying; large?: boolean; trailing?: ReactNode }) {
+  const { language } = useLanguage();
+  const labels = playerLabels[language];
+  const progress = useAudioAdhkarProgress(true, playback.status === "playing", `${playback.collection}:${playback.itemId}:${playback.repetition}`);
+  const subtitle = (
+    <>
+      {labels.repetition(playback.repetition, playback.total)}
+      {/* The reciter actually heard — shown only when the player reports one (never guessed). */}
+      {playback.reciter && (
+        <span data-audio-reciter="">
+          {" · "}
+          {labels.reciter}: {playback.reciter}
+        </span>
+      )}
+    </>
+  );
+  return <NowPlayingView title={title} subtitle={subtitle} status={playback.status} progress={progress} large={large} trailing={trailing} />;
+}
+
+/**
+ * The now-playing panel itself — title, a detail line, waveform, real
+ * progress and "00:18 / 02:45" — for whatever plays: a dhikr
+ * (NowPlayingPanel above) or the adhan (HomeAdhanNowPlaying).
+ */
+export function NowPlayingView({
+  title,
+  subtitle,
+  status,
+  progress,
+  large = false,
+  trailing,
+}: {
+  title?: string;
+  subtitle?: ReactNode;
+  status: string;
+  progress: AudioAdhkarProgress | null;
+  large?: boolean;
+  trailing?: ReactNode;
+}) {
+  const { language } = useLanguage();
+  const labels = playerLabels[language];
+  const playing = status === "playing";
+  // Decorative motion (waveform, loading bar) only while it can be seen:
+  // never paused, in the background, or scrolled off screen.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const visible = usePageVisible();
+  const inView = useInView(panelRef);
+  const animate = playing && visible && inView;
+  const known = progress && progress.durationMs !== null && progress.durationMs > 0;
+  const fraction = known ? Math.min(1, progress.positionMs / progress.durationMs!) : 0;
+  return (
+    <div ref={panelRef} className={`flex flex-col px-1 ${large ? "gap-1.5" : "mt-2 gap-1.5"}`} data-now-playing={status}>
+      <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          {title && (
+            <p dir="auto" className={`truncate text-start font-semibold ${large ? "text-[16px] leading-snug" : "text-[12.5px]"}`} style={{ color: "var(--wa-ink)", fontFamily: language === "en" ? undefined : "var(--font-display)" }} data-now-playing-title="">
+              {title}
+            </p>
+          )}
+          <p className={`truncate ${large ? "text-[12px]" : "text-[11px]"}`} style={{ color: "var(--wa-ink-muted)" }}>
+            {subtitle}
+          </p>
+        </div>
+        <span className={`dithar-waveform ${animate ? "is-playing" : ""}`} aria-hidden="true" data-waveform={animate ? "on" : "off"}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span key={i} style={{ background: "var(--wa-gold)", animationDelay: `${i * 0.12}s` }} />
+          ))}
+        </span>
+        {trailing}
+      </div>
+      <div
+        role="progressbar"
+        aria-label={labels.progress}
+        aria-valuemin={0}
+        aria-valuemax={known ? Math.round(progress.durationMs! / 1000) : undefined}
+        aria-valuenow={progress ? Math.round(progress.positionMs / 1000) : undefined}
+        aria-busy={!progress || progress.loading}
+        className={`relative w-full overflow-hidden rounded-full ${large ? "h-2" : "h-1.5"}`}
+        style={{ background: "var(--wa-gold-hairline)" }}
+        data-progress={known ? Math.round(fraction * 1000) / 1000 : "unknown"}
+      >
+        {known ? (
+          <div className={`h-full rounded-full ${playing ? "dithar-progress-fill" : ""}`} style={{ width: `${fraction * 100}%`, background: "var(--wa-gold)" }} />
+        ) : (
+          <div className={`dithar-progress-indeterminate h-full w-1/3 rounded-full ${animate ? "is-playing" : ""}`} style={{ background: "var(--wa-gold-soft)" }} />
+        )}
+      </div>
+      {/* "00:18 / 02:45": the real position and the file's real length (--:-- while unknown, never guessed). */}
+      <div className={`flex items-center justify-between gap-2 tabular-nums ${large ? "text-[12px]" : "text-[11px]"}`} style={{ color: "var(--wa-ink-muted)" }}>
+        <span dir="ltr" data-playback-time="" aria-label={labels.time}>
+          <span data-elapsed="">{progress && !progress.loading ? formatPlaybackTime(progress.positionMs) : "--:--"}</span>
+          {" / "}
+          <span data-duration="">{known ? formatPlaybackTime(progress.durationMs) : "--:--"}</span>
+        </span>
+        {(!progress || progress.loading) && playing ? <span data-loading="">{labels.loading}</span> : null}
+      </div>
+    </div>
+  );
+}
+
+// The Listen / Pause / Resume bar every recorded dhikr card shows, with the
+// now-playing details below it while this dhikr is the one playing.
+function PlayerBar({
+  urls,
+  playback,
+  onStart,
+  title,
+  itemRef,
+}: {
+  urls: string[];
+  playback: AudioAdhkarNowPlaying | null;
+  onStart: () => void;
+  title?: string;
+  itemRef: { collection: AudioAdhkarCollection; itemId: string };
+}) {
+  const { language } = useLanguage();
+  const labels = playerLabels[language];
+  const failure = useSyncExternalStore(subscribeAudioAdhkarPlaybackFailure, getAudioAdhkarPlaybackFailure, () => null);
+  const failed = failure !== null && failure.collection === itemRef.collection && failure.itemId === itemRef.itemId;
+  const status = playback?.status;
+  const active = status === "playing" || status === "paused";
+  const [Icon, action, onClick] =
+    status === "playing"
+      ? [Pause, labels.pause, pauseAudioAdhkar]
+      : status === "paused"
+        ? [Play, labels.resume, resumeAudioAdhkar]
+        : [Play, labels.listen, onStart];
+
+  return (
+    <>
+      <div
+        data-audio-player-slot=""
+        data-audio-source={urls.join(",")}
+        className="mt-3 flex h-10 items-center gap-2 rounded-full ps-1 pe-4"
+        style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-soft)" }}
+      >
+        <button
+          type="button"
+          onClick={onClick}
+          aria-label={action}
+          className="flex h-8 items-center gap-1.5 rounded-full px-3 text-[11.5px] font-semibold"
+          style={{ background: "var(--wa-gold)", color: "var(--wa-surface)" }}
+        >
+          <Icon size={14} strokeWidth={2} aria-hidden="true" />
+          {action}
+        </button>
+        {active && (
+          <span className="min-w-0 truncate text-[11px]" style={{ color: "var(--wa-ink-muted)" }} aria-live="polite">
+            {status === "playing" ? labels.nowPlaying : labels.paused}
+          </span>
+        )}
+      </div>
+      {active && playback && <NowPlayingPanel title={title} playback={playback} />}
+      {failed && !active && (
+        <p role="status" className="mt-1.5 px-1 text-[11px]" style={{ color: "var(--wa-ink-muted)" }} data-audio-failed="">
+          {labels.failed}
+        </p>
+      )}
+    </>
+  );
+}
+
+// Play / Pause / Resume for one Morning/Evening dhikr's recording (see lib/audioAdhkarPlayer.ts).
 function AudioPlayerControl({
   collection,
   item,
@@ -356,70 +539,82 @@ function AudioPlayerControl({
 }) {
   const { language } = useLanguage();
   const labels = playerLabels[language];
-  const userCount = useUserRepeatCount(item.id);
   const source = getAudioAdhkarSource(collection, item);
   if (!AUDIO_ENABLED_COLLECTIONS.includes(collection)) return <AudioPlayerSlot />;
   if (!source) return <AudioPlayerSlot label={labels.notRecorded} />;
+  // The dhikr's own name, in the app's language.
+  const title = (language === "en" ? item.title_en : item.title_ar) ?? item.title_ar ?? undefined;
+  return <PlayerBar urls={source.urls} playback={playback} title={title} itemRef={{ collection, itemId: item.id }} onStart={() => startAudioAdhkar(collection, item)} />;
+}
 
-  const status = playback?.status;
-  const active = status === "playing" || status === "paused";
-  // No fixed count: the user picks how many times it plays; until then it can't start.
-  const needsCount = item.unboundedCount === true && userCount === null && !active;
+/**
+ * «تشغيل الكل» / Play All: the section's recorded adhkar one after another
+ * (lib/audioAdhkarPlayer.ts — startAudioAdhkarPlayAll), at any time, also
+ * after the scheduled time has passed. While its run plays here the same
+ * button pauses and resumes it, with Stop beside it and which dhikr it is
+ * on; the run's place survives leaving and re-entering the list.
+ */
+function PlayAllBar({ collection, entries, playback }: { collection: AudioAdhkarCollection; entries: readonly AudioAdhkarPlayAllEntry[]; playback: AudioAdhkarPlaybackState }) {
+  const { language } = useLanguage();
+  const labels = playerLabels[language];
+  const run = useSyncExternalStore(subscribeAudioAdhkarPlayAll, getAudioAdhkarPlayAll, () => null);
+  const canSkip = useSyncExternalStore(subscribeAudioAdhkarSkip, canSkipAudioAdhkar, () => false);
+  const mine = run?.collection === collection ? run : null;
+  const playableCount = useMemo(() => playableAudioAdhkar(collection, entries).length, [collection, entries]);
+  if (playableCount === 0) return null;
+  const status = mine && playback?.collection === collection ? playback.status : undefined;
   const [Icon, action, onClick] =
     status === "playing"
       ? [Pause, labels.pause, pauseAudioAdhkar]
       : status === "paused"
         ? [Play, labels.resume, resumeAudioAdhkar]
-        : [Play, labels.listen, () => startAudioAdhkar(collection, item)];
-
+        : [ListMusic, labels.playAll, () => void startAudioAdhkarPlayAll(collection, entries)];
+  const running = status === "playing" || status === "paused";
   return (
     <div
-      data-audio-player-slot=""
-      data-audio-source={source.urls.join(",")}
-      className="mt-3 flex h-10 items-center gap-2 rounded-full ps-1 pe-4"
-      style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-soft)" }}
+      className="mt-4 flex items-center gap-2 rounded-full py-1 ps-1 pe-3"
+      style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-soft)", background: "var(--wa-surface)" }}
+      data-play-all={running ? status : "idle"}
     >
       <button
         type="button"
         onClick={onClick}
-        disabled={needsCount}
-        aria-label={action}
-        className="flex h-8 items-center gap-1.5 rounded-full px-3 text-[11.5px] font-semibold disabled:opacity-50"
+        aria-label={running ? `${action} — ${labels.playAll}` : action}
+        className="flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[12.5px] font-bold"
         style={{ background: "var(--wa-gold)", color: "var(--wa-surface)" }}
+        data-play-all-button=""
       >
-        <Icon size={14} strokeWidth={2} aria-hidden="true" />
+        <Icon size={15} strokeWidth={2} aria-hidden="true" />
         {action}
       </button>
-      {active && (
-        <span className="text-[11px]" style={{ color: "var(--wa-ink-muted)" }} aria-live="polite">
-          {status === "playing" ? labels.nowPlaying : labels.paused}
-        </span>
+      <span className="min-w-0 flex-1 truncate text-[11.5px]" style={{ color: "var(--wa-ink-muted)" }} aria-live="polite" data-play-all-status="">
+        {running && mine ? labels.playAllPosition(mine.index + 1, mine.count) : labels.playAllHint(playableCount)}
+      </span>
+      {running && mine && canSkip && (
+        <button
+          type="button"
+          onClick={() => void skipAudioAdhkar()}
+          aria-label={labels.nextDhikr}
+          title={labels.nextDhikr}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
+          data-play-all-next=""
+        >
+          {/* Points the way the list reads: forward is left in Arabic. */}
+          <SkipForward size={14} strokeWidth={2} aria-hidden="true" className="rtl:-scale-x-100" />
+        </button>
       )}
-      {item.unboundedCount && (
-        <label className="ms-auto flex items-center gap-1.5 text-[11px]" style={{ color: "var(--wa-ink-muted)" }}>
-          <span>{labels.playCount}</span>
-          <select
-            data-user-repeat-count=""
-            value={userCount ?? ""}
-            disabled={active}
-            onChange={(e) => {
-              setUserRepeatCount(item.id, e.target.value ? Number(e.target.value) : null);
-              // The scheduled Evening playlist includes this dhikr only once it has a count.
-              void syncEveningAudioSchedule().catch(() => {});
-            }}
-            className="h-7 rounded-full px-2 text-[11.5px] font-semibold"
-            style={{ background: "var(--wa-surface)", color: "var(--wa-ink)", boxShadow: "inset 0 0 0 1px var(--wa-gold-soft)" }}
-          >
-            <option value="" disabled>
-              {labels.chooseCount}
-            </option>
-            {Array.from({ length: USER_REPEAT_MAX - USER_REPEAT_MIN + 1 }, (_, i) => USER_REPEAT_MIN + i).map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+      {running && (
+        <button
+          type="button"
+          onClick={stopAudioAdhkarPlayback}
+          aria-label={`${labels.stopAll} — ${labels.playAll}`}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
+          data-play-all-stop=""
+        >
+          <Square size={13} strokeWidth={2} aria-hidden="true" />
+        </button>
       )}
     </div>
   );
@@ -428,72 +623,6 @@ function AudioPlayerControl({
 const CARD_CLASS = "dithar-audio-dhikr-card px-4 py-4";
 // Same emphasis the Written reader gives its active card.
 const ACTIVE_CARD_SHADOW = "0 16px 34px -18px rgba(var(--color-shadow-rgb), 0.24), inset 0 0 0 1.5px var(--wa-gold-soft)";
-
-const repetitionLabels = {
-  ar: {
-    aria: (n: number, total: number | null) => (total === null ? `التكرار الحالي ${n}` : `التكرار الحالي ${n} من ${total}`),
-    finished: "اكتمل التكرار",
-  },
-  en: {
-    aria: (n: number, total: number | null) => (total === null ? `Current repetition ${n}` : `Current repetition ${n} of ${total}`),
-    finished: "Repetitions complete",
-  },
-};
-
-const RING_SIZE = 56;
-const RING_STROKE = 4;
-
-// Repetition STATUS — which repetition is playing right now — drawn with
-// the same ring as Written Adhkar's counter but deliberately NOT a button:
-// the user never counts here. The number comes only from the playback
-// state (lib/audioAdhkarPlayback.ts), which the audio engine advances
-// after each complete playback. With nothing playing, the ring rests
-// dimmed on 1 (where playback will start); after the last repetition it
-// shows ✓.
-function RepetitionIndicator({ total, playback }: { total: number | null; playback: AudioAdhkarNowPlaying | null }) {
-  const { language } = useLanguage();
-  const labels = repetitionLabels[language];
-  const finished = playback?.status === "finished";
-  const repetition = playback?.repetition ?? 1;
-  // While playing, the engine's own total wins (it knows what it plays).
-  const shownTotal = playback ? playback.total : total;
-
-  return (
-    <div
-      role="img"
-      aria-label={finished ? labels.finished : labels.aria(repetition, shownTotal)}
-      data-repetition-indicator=""
-      data-playback-status={playback?.status ?? "idle"}
-      className="relative flex shrink-0 items-center justify-center rounded-full"
-      style={{ width: RING_SIZE, height: RING_SIZE, opacity: playback ? 1 : 0.55 }}
-    >
-      <svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`} className="absolute inset-0" aria-hidden="true">
-        <circle
-          cx={RING_SIZE / 2}
-          cy={RING_SIZE / 2}
-          r={(RING_SIZE - RING_STROKE) / 2}
-          fill="none"
-          stroke={playback ? "var(--wa-gold-soft)" : "var(--wa-gold-hairline)"}
-          strokeWidth={RING_STROKE}
-        />
-      </svg>
-      {finished ? (
-        <Check size={20} strokeWidth={2.5} style={{ color: "var(--wa-gold)" }} aria-hidden="true" />
-      ) : (
-        <span className="flex flex-col items-center leading-none" aria-hidden="true">
-          <span className="text-[15px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--wa-ink)" }}>
-            {repetition}
-          </span>
-          {shownTotal !== null && shownTotal > 1 && (
-            <span className="mt-0.5 text-[8.5px]" style={{ color: "var(--wa-ink-muted)" }}>
-              {writtenAdhkarLabels[language].ofTarget(shownTotal)}
-            </span>
-          )}
-        </span>
-      )}
-    </div>
-  );
-}
 
 interface CardProps<T> {
   item: T;
@@ -507,8 +636,6 @@ function WrittenItemCard({ item, collection, playback, openInfo, onToggleInfo }:
   const { language } = useLanguage();
   const mine = playbackFor(playback, { collection, itemId: item.id });
   const isActive = mine?.status === "playing" || mine?.status === "paused";
-  // Re-renders the indicator's total when the user changes a chosen count.
-  useUserRepeatCount(item.id);
   const t = writtenAdhkarLabels[language];
   const isEn = language === "en";
   const title = isEn ? item.title_en : item.title_ar;
@@ -527,23 +654,10 @@ function WrittenItemCard({ item, collection, playback, openInfo, onToggleInfo }:
       )}
       <ArabicText text={item.text_ar} />
       <AudioPlayerControl collection={collection} item={item} playback={mine} />
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          {item.unboundedCount ? (
-            <p className="text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
-              {t.unboundedNote}
-            </p>
-          ) : (
-            <p className="text-[11.5px] font-semibold" style={{ color: "var(--wa-gold)" }}>
-              {t.repeatTimes(item.repeat ?? 1)}
-            </p>
-          )}
-          <p className="mt-1 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
-            {t.source}: {isEn ? item.source_en : item.source_ar}
-          </p>
-        </div>
-        <RepetitionIndicator total={audioRepetitionTotal(item)} playback={mine} />
-      </div>
+      <p className="mt-3 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
+        {t.source}: {isEn ? item.source_en : item.source_ar}
+      </p>
+      <HeardCount collection={collection} itemId={item.id} />
       <InfoControls
         itemId={item.id}
         title={item.title_en}
@@ -559,52 +673,46 @@ function WrittenItemCard({ item, collection, playback, openInfo, onToggleInfo }:
   );
 }
 
-function MiscItemCard({ item, collection, playback, openInfo, onToggleInfo }: CardProps<MiscDuaItem>) {
+// Various: a Tasbeeh dhikr with its own recording, played once per Listen;
+// one without a recording keeps the placeholder slot.
+function VariousItemCard({ item, collection, playback, openInfo, onToggleInfo }: CardProps<AudioVariousItem>) {
   const { language } = useLanguage();
-  const t = miscLibraryLabels[language];
+  const t = tasbeehLabels[language];
   const isEn = language === "en";
-  const occasion = isEn ? item.occasion_en : item.occasion_ar;
-  const count = isEn ? item.count_en : item.count_ar;
+  const virtue = isEn ? item.virtue_en : item.virtue_ar;
   const source = isEn ? item.source_en : item.source_ar;
-  const note = isEn ? item.note_en : item.note_ar;
+  const mine = playbackFor(playback, { collection, itemId: item.id });
+  const isActive = mine?.status === "playing" || mine?.status === "paused";
+  const recording = getAudioVariousSource(item);
 
   return (
-    <div className={CARD_CLASS} style={CARD_STYLE} data-dhikr-id={item.id}>
+    <div
+      className={CARD_CLASS}
+      style={isActive ? { ...CARD_STYLE, boxShadow: ACTIVE_CARD_SHADOW } : CARD_STYLE}
+      data-dhikr-id={item.id}
+      data-active-dhikr={isActive ? "" : undefined}
+    >
       <ArabicText text={item.text_ar} />
-      <AudioPlayerSlot />
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          {occasion && (
-            <p className="text-[11.5px] font-semibold" style={{ color: "var(--wa-gold)" }}>
-              {t.occasionLabel}: {occasion}
-            </p>
-          )}
-          {count && (
-            <p className="text-[11.5px] font-semibold" style={{ color: "var(--wa-gold)" }}>
-              {t.countLabel}: {count}
-            </p>
-          )}
-          {source && (
-            <p className="mt-1 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
-              {item.isQuranic ? t.sourceLabelQuran : t.sourceLabelHadith}: {source}
-            </p>
-          )}
-          {note && (
-            <p className="mt-1 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
-              {t.noteLabel}: {note}
-            </p>
-          )}
-        </div>
-        {/* Misc counts are display text (e.g. "ثلاث مرات"), not numbers — the
-            engine supplies the total when it starts playback. */}
-        <RepetitionIndicator total={null} playback={playbackFor(playback, { collection, itemId: item.id })} />
+      {recording ? <PlayerBar urls={recording.urls} playback={mine} title={isEn && item.text_en ? item.text_en : item.text_ar} itemRef={{ collection: "misc", itemId: item.id }} onStart={() => startAudioVarious(item)} /> : <AudioPlayerSlot />}
+      <div className="mt-3 min-w-0">
+        {virtue && (
+          <p className="text-[11.5px] font-semibold leading-snug" style={{ color: "var(--wa-gold)" }}>
+            {t.virtueLabel}: {virtue}
+          </p>
+        )}
+        {source && (
+          <p className="mt-1 text-[10.5px] leading-snug" style={{ color: "var(--wa-ink-muted)" }}>
+            {t.sourceLabel}: {source}
+          </p>
+        )}
+        <HeardCount collection={collection} itemId={item.id} />
       </div>
       <InfoControls
         itemId={item.id}
         text_ar={item.text_ar}
         entries={[
-          { kind: "meaning", body: item.englishMeaning },
-          { kind: "transliteration", body: item.englishTransliteration },
+          { kind: "meaning", body: item.text_en },
+          { kind: "transliteration", body: item.transliteration_en },
         ]}
         open={openInfo}
         onToggle={onToggleInfo}
@@ -618,7 +726,7 @@ export function AudioAdhkarListScreen({ list, onBack, ...nav }: AudioAdhkarNavPr
   const playback = useAudioAdhkarPlayback();
   const collection: AudioAdhkarCollection = list.kind === "written" ? list.key : "misc";
   const [openInfo, setOpenInfo] = useState<InfoTarget | null>(null);
-  // No background playback yet: leaving the list stops its audio.
+  // Leaving the list stops in-app (WebView) audio; Android's native playback continues (see stopAudioAdhkar).
   useEffect(() => stopAudioAdhkar, []);
   const handleToggleInfo = useCallback<ToggleInfo>((target, buttonEl) => {
     setOpenInfo((prev) =>
@@ -628,12 +736,22 @@ export function AudioAdhkarListScreen({ list, onBack, ...nav }: AudioAdhkarNavPr
     );
   }, []);
   const handleCloseInfo = useCallback(() => setOpenInfo(null), []);
-  const title =
-    list.kind === "written"
-      ? writtenAdhkarCategoryLabels[list.key][language]
-      : language === "en"
-        ? MISC_CATEGORIES[list.key].title_en
-        : MISC_CATEGORIES[list.key].title_ar;
+  const title = writtenAdhkarCategoryLabels[list.kind === "written" ? list.key : "misc"][language];
+  const playAllEntries = useMemo<AudioAdhkarPlayAllEntry[]>(
+    () =>
+      list.kind === "written"
+        ? audioAdhkarItems[list.key].map((item) => ({ kind: "written" as const, item }))
+        : AUDIO_VARIOUS_ITEMS.map((item) => ({ kind: "various" as const, item })),
+    [list],
+  );
+  // Play All moving on to the next dhikr brings its card into view (only while this list's run plays).
+  const run = useSyncExternalStore(subscribeAudioAdhkarPlayAll, getAudioAdhkarPlayAll, () => null);
+  const followId = run?.collection === collection && playback?.collection === collection && playback.status !== "finished" ? playback.itemId : null;
+  useEffect(() => {
+    if (!followId) return;
+    const card = [...document.querySelectorAll<HTMLElement>(".dithar-audio-list [data-dhikr-id]")].find((el) => el.dataset.dhikrId === followId);
+    if (card && typeof card.scrollIntoView === "function") card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [followId]);
 
   return (
     <DeviceFrame background="var(--wa-page-bg)" scrollLocked={openInfo !== null}>
@@ -644,13 +762,14 @@ export function AudioAdhkarListScreen({ list, onBack, ...nav }: AudioAdhkarNavPr
               it stays pinned while the dhikr list scrolls. */}
           <BackHeader title={title} onBack={onBack} backLabel={writtenAdhkarLabels[language].back} hideButton />
           <StickyBackButton onBack={onBack} backLabel={writtenAdhkarLabels[language].back} dir={dir} />
+          <PlayAllBar collection={collection} entries={playAllEntries} playback={playback} />
           <div className="dithar-audio-list mt-4 flex flex-col gap-4 pb-4">
             {list.kind === "written"
               ? audioAdhkarItems[list.key].map((item) => (
                   <WrittenItemCard key={item.id} item={item} collection={collection} playback={playback} openInfo={openInfo} onToggleInfo={handleToggleInfo} />
                 ))
-              : audioMiscItems(list.key).map((item) => (
-                  <MiscItemCard key={item.id} item={item} collection={collection} playback={playback} openInfo={openInfo} onToggleInfo={handleToggleInfo} />
+              : AUDIO_VARIOUS_ITEMS.map((item) => (
+                  <VariousItemCard key={item.id} item={item} collection={collection} playback={playback} openInfo={openInfo} onToggleInfo={handleToggleInfo} />
                 ))}
           </div>
           {openInfo && <InfoPopover key={`${openInfo.itemId}:${openInfo.kind}`} target={openInfo} onClose={handleCloseInfo} />}

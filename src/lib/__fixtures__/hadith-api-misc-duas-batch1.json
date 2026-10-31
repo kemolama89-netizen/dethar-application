@@ -1,0 +1,243 @@
+{
+ "source": "fawazahmed0/hadith-api@1 Arabic and English editions (cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/<ara|eng>-<book>.min.json), fetched 2026-10-23; al-Silsilah as-Sahihah 3228 as listed in Dorar's hadith encyclopedia, read through the surahquran.com mirror of that listing (dorar.net refuses automated requests), fetched 2026-10-23; Saheeh International 2:201 from api.quran.com/api/v4/quran/translations/20?verse_key=2:201, fetched 2026-10-23 — the narrations src/data/misc-library.test.ts checks the batch-1 source verification against.",
+ "narrations": [
+  {
+   "ref": "Sahih Muslim 2721a",
+   "edition": "ara-muslim / eng-muslim",
+   "hadithnumber": 6904,
+   "inBook": {
+    "book": 48,
+    "hadith": 97
+   },
+   "grades": [],
+   "text": "حَدَّثَنَا مُحَمَّدُ بْنُ الْمُثَنَّى، وَمُحَمَّدُ بْنُ بَشَّارٍ، قَالاَ حَدَّثَنَا مُحَمَّدُ بْنُ جَعْفَرٍ، حَدَّثَنَا شُعْبَةُ، عَنْ أَبِي إِسْحَاقَ، عَنْ أَبِي الأَحْوَصِ، عَنْ عَبْدِ اللَّهِ، عَنِ النَّبِيِّ صلى الله عليه وسلم أَنَّهُ كَانَ يَقُولُ ‏ \"‏ اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى ‏\"‏ ‏.‏",
+   "textEn": "Abdullah reported that Allah's Messenger (ﷺ) used to supplicate (in these words):\" O Allah. I beg of Thee the right guidance, safeguard against evils, chastity and freedom from want"
+  },
+  {
+   "ref": "Sahih Muslim 2697a",
+   "edition": "ara-muslim / eng-muslim",
+   "hadithnumber": 6849,
+   "inBook": {
+    "book": 48,
+    "hadith": 44
+   },
+   "grades": [],
+   "text": "حَدَّثَنَا أَبُو كَامِلٍ الْجَحْدَرِيُّ، حَدَّثَنَا عَبْدُ الْوَاحِدِ، - يَعْنِي ابْنَ زِيَادٍ - حَدَّثَنَا أَبُو مَالِكٍ الأَشْجَعِيُّ عَنْ أَبِيهِ، قَالَ كَانَ رَسُولُ اللَّهِ صلى الله عليه وسلم يُعَلِّمُ مَنْ أَسْلَمَ يَقُولُ ‏ \"‏ اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَاهْدِنِي وَارْزُقْنِي ‏\"‏ ‏.‏",
+   "textEn": "Abu Malik Ashaja'i reported on the authority of his father that whenever a person embraced Islam, Allah's Messenger (ﷺ) instructed him to recilte:\" O Allah, grant me pardon, have mercy upon me, direct me to the path of righteousness and provide me sustenance"
+  },
+  {
+   "ref": "Sahih Muslim 2697b",
+   "edition": "ara-muslim / eng-muslim",
+   "hadithnumber": 6850,
+   "inBook": {
+    "book": 48,
+    "hadith": 45
+   },
+   "grades": [],
+   "text": "حَدَّثَنَا سَعِيدُ بْنُ أَزْهَرَ الْوَاسِطِيُّ، حَدَّثَنَا أَبُو مُعَاوِيَةَ، حَدَّثَنَا أَبُو مَالِكٍ الأَشْجَعِيُّ، عَنْ أَبِيهِ، قَالَ كَانَ الرَّجُلُ إِذَا أَسْلَمَ عَلَّمَهُ النَّبِيُّ صلى الله عليه وسلم الصَّلاَةَ ثُمَّ أَمَرَهُ أَنْ يَدْعُوَ بِهَؤُلاَءِ الْكَلِمَاتِ ‏ \"‏ اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَاهْدِنِي وَعَافِنِي وَارْزُقْنِي ‏\"‏ ‏.‏",
+   "textEn": "Abu Malik reported on the authority of his father that when a person embraced Islam, Allah's Messenger (ﷺ) used to teach him how to observe prayer and then commanded him to supplicate in these words:\" O Allah, grant me pardon, have mercy upon me, direct me to the path of righteousness, grant me protection and provide me sustenance"
+  },
+  {
+   "ref": "Sahih Muslim 2725a",
+   "edition": "ara-muslim / eng-muslim",
+   "hadithnumber": 6911,
+   "inBook": {
+    "book": 48,
+    "hadith": 104
+   },
+   "grades": [],
+   "text": "حَدَّثَنَا أَبُو كُرَيْبٍ، مُحَمَّدُ بْنُ الْعَلاَءِ حَدَّثَنَا ابْنُ إِدْرِيسَ، قَالَ سَمِعْتُ عَاصِمَ بْنَ كُلَيْبٍ، عَنْ أَبِي بُرْدَةَ، عَنْ عَلِيٍّ، قَالَ قَالَ لِي رَسُولُ اللَّهِ صلى الله عليه وسلم ‏ \"‏ قُلِ اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي وَاذْكُرْ بِالْهُدَى هِدَايَتَكَ الطَّرِيقَ وَالسَّدَادِ سَدَادَ السَّهْمِ ‏\"‏ ‏.‏",
+   "textEn": "Ali reported that Allah's Messenger (ﷺ) said to him:Say,\" O Allah, direct me to the right path and make me adhere to the straight path,\" and when you make a mention of right guidance, keep in mind the right path and when you consider of the straight (path), keep in mind the straightness of the arrow"
+  },
+  {
+   "ref": "Sahih Muslim 2720",
+   "edition": "ara-muslim / eng-muslim",
+   "hadithnumber": 6903,
+   "inBook": {
+    "book": 48,
+    "hadith": 96
+   },
+   "grades": [],
+   "text": "حَدَّثَنَا إِبْرَاهِيمُ بْنُ دِينَارٍ، حَدَّثَنَا أَبُو قَطَنٍ، عَمْرُو بْنُ الْهَيْثَمِ الْقُطَعِيُّ عَنْ عَبْدِ الْعَزِيزِ، بْنِ عَبْدِ اللَّهِ بْنِ أَبِي سَلَمَةَ الْمَاجِشُونِ عَنْ قُدَامَةَ بْنِ مُوسَى، عَنْ أَبِي صَالِحٍ السَّمَّانِ، عَنْ أَبِي هُرَيْرَةَ، قَالَ كَانَ رَسُولُ اللَّهِ صلى الله عليه وسلم يَقُولُ ‏ \"‏ اللَّهُمَّ أَصْلِحْ لِي دِينِيَ الَّذِي هُوَ عِصْمَةُ أَمْرِي وَأَصْلِحْ لِي دُنْيَاىَ الَّتِي فِيهَا مَعَاشِي وَأَصْلِحْ لِي آخِرَتِي الَّتِي فِيهَا مَعَادِي وَاجْعَلِ الْحَيَاةَ زِيَادَةً لِي فِي كُلِّ خَيْرٍ وَاجْعَلِ الْمَوْتَ رَاحَةً لِي مِنْ كُلِّ شَرٍّ ‏\"‏ ‏.‏",
+   "textEn": "Abu Huraira reported that Allah's Messenger (ﷺ) used to supplicate (in these words):\" O Allah, set right for me my religion which is the safeguard of my affairs. And set right for me the affairs of my world wherein is my living. And set right for me my Hereafter on which depends my after-life. And make the life for me (a source) of abundance for every good and make my death a source of comfort for me protecting me against every evil"
+  },
+  {
+   "ref": "Sunan Ibn Majah 3846",
+   "edition": "ara-ibnmajah / eng-ibnmajah",
+   "hadithnumber": 3846,
+   "inBook": {
+    "book": 34,
+    "hadith": 20
+   },
+   "grades": [
+    {
+     "name": "Al-Albani",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Muhammad Fouad Abd al-Baqi",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Shuaib Al Arnaut",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Zubair Ali Zai",
+     "grade": "Isnaad Sahih"
+    }
+   ],
+   "text": "حَدَّثَنَا أَبُو بَكْرِ بْنُ أَبِي شَيْبَةَ، حَدَّثَنَا عَفَّانُ، حَدَّثَنَا حَمَّادُ بْنُ سَلَمَةَ، أَخْبَرَنِي جَبْرُ بْنُ حَبِيبٍ، عَنْ أُمِّ كُلْثُومٍ بِنْتِ أَبِي بَكْرٍ، عَنْ عَائِشَةَ، أَنَّ رَسُولَ اللَّهِ ـ صلى الله عليه وسلم ـ عَلَّمَهَا هَذَا الدُّعَاءَ ‏ \"‏ اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنَ الْخَيْرِ كُلِّهِ عَاجِلِهِ وَآجِلِهِ مَا عَلِمْتُ مِنْهُ وَمَا لَمْ أَعْلَمْ وَأَعُوذُ بِكَ مِنَ الشَّرِّ كُلِّهِ عَاجِلِهِ وَآجِلِهِ مَا عَلِمْتُ مِنْهُ وَمَا لَمْ أَعْلَمْ اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ مَا سَأَلَكَ عَبْدُكَ وَنَبِيُّكَ وَأَعُوذُ بِكَ مِنْ شَرِّ مَا عَاذَ بِهِ عَبْدُكَ وَنَبِيُّكَ اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ وَأَعُوذُ بِكَ مِنَ النَّارِ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ أَوْ عَمَلٍ وَأَسْأَلُكَ أَنْ تَجْعَلَ كُلَّ قَضَاءٍ قَضَيْتَهُ لِي خَيْرًا ‏\"‏ ‏.‏",
+   "textEn": "It was narrated from 'Aishah that :the Messenger of Allah (saas) taught her this supplication: \"Allahumma inni as'aluka minal-khayri kullihi, 'ajilihi wa ajilihi, ma 'alimtu minhu wa ma la a'lam. Wa a'udhu bika minash-sharri kullihi, 'ajilihi wa ajilihi, ma 'alimtu minhu wa ma la a'lam. Allahumma inni as'aluka min khayri ma sa'alaka 'abduka wa nabiyyuka, wa a'udhu bika min sharri ma 'adha bihi 'abduka wa nabiyyuka. Allahumma inni as'alukal-jannatah wa ma qarrab ilayha min qawlin aw 'amalin, wa a'udhu bika minan-nari wa ma qarraba ilayha min qawlin aw 'amalin, wa as'aluka an taj'al kulla qada'in qadaytahuli khayran (O Allah, I ask You for all that is good, in this world and in the Hereafter, what I know and what I do not know. O Allah, I seek refuge with You from all evil, in this world and in the Hereafter, what I know and what I do not know. O Allah, I ask You for the good that Your slave and Prophet has asked You for, and I seek refuge with You from the evil from which Your slave and Prophet sought refuge. O Allah, I ask You for Paradise and for that which brings one closer to it, in word and deed, and I seek refuge in You from Hell and from that which brings one closer to it, in word and deed. And I ask You to make every decree that You decree concerning me good)"
+  },
+  {
+   "ref": "Sunan Abi Dawud 5074",
+   "edition": "ara-abudawud / eng-abudawud",
+   "hadithnumber": 5074,
+   "inBook": {
+    "book": 43,
+    "hadith": 302
+   },
+   "grades": [
+    {
+     "name": "Al-Albani",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Muhammad Muhyi Al-Din Abdul Hamid",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Shuaib Al Arnaut",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Zubair Ali Zai",
+     "grade": "Isnaad Sahih"
+    }
+   ],
+   "text": "حَدَّثَنَا يَحْيَى بْنُ مُوسَى الْبَلْخِيُّ، حَدَّثَنَا وَكِيعٌ، ح وَحَدَّثَنَا عُثْمَانُ بْنُ أَبِي شَيْبَةَ، - الْمَعْنَى - حَدَّثَنَا ابْنُ نُمَيْرٍ، قَالاَ حَدَّثَنَا عُبَادَةُ بْنُ مُسْلِمٍ الْفَزَارِيُّ، عَنْ جُبَيْرِ بْنِ أَبِي سُلَيْمَانَ بْنِ جُبَيْرِ بْنِ مُطْعِمٍ، قَالَ سَمِعْتُ ابْنَ عُمَرَ، يَقُولُ لَمْ يَكُنْ رَسُولُ اللَّهِ صلى الله عليه وسلم يَدَعُ هَؤُلاَءِ الدَّعَوَاتِ حِينَ يُمْسِي وَحِينَ يُصْبِحُ ‏\"‏ اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَاىَ وَأَهْلِي وَمَالِي اللَّهُمَّ اسْتُرْ عَوْرَتِي ‏\"‏ ‏.‏ وَقَالَ عُثْمَانُ ‏\"‏ عَوْرَاتِي وَآمِنْ رَوْعَاتِي اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَىَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي ‏\"‏ ‏.‏ قَالَ أَبُو دَاوُدَ قَالَ وَكِيعٌ يَعْنِي الْخَسْفَ ‏.‏",
+   "textEn": "Narrated Abdullah ibn Umar: The Messenger of Allah (ﷺ) never failed to utter these supplications in the evening and in the morning: O Allah, I ask Thee for security in this world and in the Hereafter: O Allah! I ask Thee for forgiveness and security in my religion and my worldly affairs, in my family and my property; O Allah! conceal my fault or faults (according to Uthman's version), and keep me safe from the things which I fear; O Allah! guard me in front of me and behind me, on my right hand and on my left, and from above me: and I seek in Thy greatness from receiving unexpected harm from below me.\" AbuDawud said: Waki' said: That is to say, swallowing by the earth"
+  },
+  {
+   "ref": "Sunan Ibn Majah 3871",
+   "edition": "ara-ibnmajah / eng-ibnmajah",
+   "hadithnumber": 3871,
+   "inBook": {
+    "book": 34,
+    "hadith": 45
+   },
+   "grades": [
+    {
+     "name": "Al-Albani",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Muhammad Fouad Abd al-Baqi",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Shuaib Al Arnaut",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Zubair Ali Zai",
+     "grade": "Isnaad Sahih"
+    }
+   ],
+   "text": "حَدَّثَنَا عَلِيُّ بْنُ مُحَمَّدٍ الطَّنَافِسِيُّ، حَدَّثَنَا وَكِيعٌ، حَدَّثَنَا عُبَادَةُ بْنُ مُسْلِمٍ، حَدَّثَنَا جُبَيْرُ بْنُ أَبِي سُلَيْمَانَ بْنِ جُبَيْرِ بْنِ مُطْعِمٍ، قَالَ سَمِعْتُ ابْنَ عُمَرَ، يَقُولُ لَمْ يَكُنْ رَسُولُ اللَّهِ ـ صلى الله عليه وسلم ـ يَدَعُ هَؤُلاَءِ الدَّعَوَاتِ حِينَ يُمْسِي وَحِينَ يُصْبِحُ ‏ \"‏ اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَاىَ وَأَهْلِي وَمَالِي اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي وَاحْفَظْنِي مِنْ بَيْنِ يَدَىَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي ‏\"‏ ‏.‏ قَالَ وَكِيعٌ يَعْنِي الْخَسْفَ ‏.‏",
+   "textEn": "It was narrated that Ibn 'Umar said:\"The Messenger of Allah (saas) never abandoned these supplications, every morning and evening: Allahumma inni as'alukal-'afwa wal-'afiyah fid-dunya wal-akhirah. Allahumma inni as'alukal-'afwa wal-'afiyah fi dini wa dunyaya wa ahli wa mali. Allahum-mastur 'awrati, wa amin raw'ati wahfazni min bayni yadayya, wa min khalfi, wa 'an yamini wa 'an shimali, wa min fawqi, wa 'audhu bika an ughtala min tahti (O Allah, I ask You for forgiveness and well-being in this world and in the Hereafter. O Allah, I ask You for forgiveness and well-being in my religious and my worldly affairs. O Allah, conceal my faults, calm my fears, and protect me from before me and behind me, from my right and my left, and from above me, and I seek refuge in You from being taken unaware from beneath me).\" Waki' (one of the narrators, explaining) said: \"Meaning Al-Khasf (disgrace)"
+  },
+  {
+   "ref": "Jami' at-Tirmidhi 3502",
+   "edition": "ara-tirmidhi / eng-tirmidhi",
+   "hadithnumber": 3502,
+   "inBook": {
+    "book": 48,
+    "hadith": 133
+   },
+   "grades": [
+    {
+     "name": "Ahmad Muhammad Shakir",
+     "grade": "Hasan"
+    },
+    {
+     "name": "Al-Albani",
+     "grade": "Hasan"
+    },
+    {
+     "name": "Bashar Awad Maarouf",
+     "grade": "Hasan"
+    },
+    {
+     "name": "Zubair Ali Zai",
+     "grade": "Daif"
+    }
+   ],
+   "text": "حَدَّثَنَا عَلِيُّ بْنُ حُجْرٍ، أَخْبَرَنَا ابْنُ الْمُبَارَكِ، أَخْبَرَنَا يَحْيَى بْنُ أَيُّوبَ، عَنْ عُبَيْدِ اللَّهِ بْنِ زَحْرٍ، عَنْ خَالِدِ بْنِ أَبِي عِمْرَانَ، أَنَّ ابْنَ عُمَرَ، قَالَ قَلَّمَا كَانَ رَسُولُ اللَّهِ صلى الله عليه وسلم يَقُومُ مِنْ مَجْلِسٍ حَتَّى يَدْعُوَ بِهَؤُلاَءِ الْكَلِمَاتِ لأَصْحَابِهِ ‏ \"‏ اللَّهُمَّ اقْسِمْ لَنَا مِنْ خَشْيَتِكَ مَا يَحُولُ بَيْنَنَا وَبَيْنَ مَعَاصِيكَ وَمِنْ طَاعَتِكَ مَا تُبَلِّغُنَا بِهِ جَنَّتَكَ وَمِنَ الْيَقِينِ مَا تُهَوِّنُ بِهِ عَلَيْنَا مُصِيبَاتِ الدُّنْيَا وَمَتِّعْنَا بِأَسْمَاعِنَا وَأَبْصَارِنَا وَقُوَّتِنَا مَا أَحْيَيْتَنَا وَاجْعَلْهُ الْوَارِثَ مِنَّا وَاجْعَلْ ثَأْرَنَا عَلَى مَنْ ظَلَمَنَا وَانْصُرْنَا عَلَى مَنْ عَادَانَا وَلاَ تَجْعَلْ مُصِيبَتَنَا فِي دِينِنَا وَلاَ تَجْعَلِ الدُّنْيَا أَكْبَرَ هَمِّنَا وَلاَ مَبْلَغَ عِلْمِنَا وَلاَ تُسَلِّطْ عَلَيْنَا مَنْ لاَ يَرْحَمُنَا ‏\"‏ ‏.‏ قَالَ أَبُو عِيسَى هَذَا حَدِيثٌ حَسَنٌ غَرِيبٌ ‏.‏ وَقَدْ رَوَى بَعْضُهُمْ هَذَا الْحَدِيثَ عَنْ خَالِدِ بْنِ أَبِي عِمْرَانَ عَنْ نَافِعٍ عَنِ ابْنِ عُمَرَ ‏.‏",
+   "textEn": "Ibn `Umar said:“Rarely would the Messenger of Allah (ﷺ) stand from a sitting until he supplicated with these words for his Companions: ‘O Allah, apportion for us, fear of You, that shall come between us and disobedience of You, and of obedience to You, which shall cause us to obtain Your Paradise, and of certainty, which shall make the afflictions of the world easy for us, and enjoyment of our hearing, and our seeing, and our strength as long as You keep us alive, and make it the inheritor of us. And let our vengeance be upon those who have wronged us, and aid us against those who show enmity towards us, and do not make our affliction in our religion, and do not make this world our greatest concern, nor the limit of our knowledge, and do not give power over us to those who will not have mercy on us. (Allāhumma-qsim lanā min khashyatika mā yaḥūlu, bainanā wa baina ma`āṣīka wa min ṭā`atika mā tuballighuna bihī jannatak, wa minal-yaqīni mā tuhawwinu bihī `alainā muṣībatid-dunyā, wa matti`na bi-asmā`inā wa abṣārina wa quwwatina mā aḥyaytanā, waj`alhul-wāritha minnā, waj`al tha’ranā `alā man ẓalamanā, wanṣurna `alā man `ādānā, wa lā taj`al muṣībatanā fī dīninā, wa lā taj`alid-dunyā akbara hamminā wa lā mablagha `ilminā, wa lā tusalliṭ `alainā man lā yarḥamunā).’”"
+  },
+  {
+   "ref": "Sunan an-Nasa'i 1305",
+   "edition": "ara-nasai / eng-nasai",
+   "hadithnumber": 1305,
+   "inBook": {
+    "book": 13,
+    "hadith": 127
+   },
+   "grades": [
+    {
+     "name": "Abu Ghuddah",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Al-Albani",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Zubair Ali Zai",
+     "grade": "Isnaad Hasan"
+    }
+   ],
+   "text": "أَخْبَرَنَا يَحْيَى بْنُ حَبِيبِ بْنِ عَرَبِيٍّ، قَالَ حَدَّثَنَا حَمَّادٌ، قَالَ حَدَّثَنَا عَطَاءُ بْنُ السَّائِبِ، عَنْ أَبِيهِ، قَالَ صَلَّى بِنَا عَمَّارُ بْنُ يَاسِرٍ صَلاَةً فَأَوْجَزَ فِيهَا فَقَالَ لَهُ بَعْضُ الْقَوْمِ لَقَدْ خَفَّفْتَ أَوْ أَوْجَزْتَ الصَّلاَةَ ‏.‏ فَقَالَ أَمَّا عَلَى ذَلِكَ فَقَدْ دَعَوْتُ فِيهَا بِدَعَوَاتٍ سَمِعْتُهُنَّ مِنْ رَسُولِ اللَّهِ صلى الله عليه وسلم فَلَمَّا قَامَ تَبِعَهُ رَجُلٌ مِنَ الْقَوْمِ هُوَ أَبِي غَيْرَ أَنَّهُ كَنَى عَنْ نَفْسِهِ فَسَأَلَهُ عَنِ الدُّعَاءِ ثُمَّ جَاءَ فَأَخْبَرَ بِهِ الْقَوْمَ ‏ \"‏ اللَّهُمَّ بِعِلْمِكَ الْغَيْبَ وَقُدْرَتِكَ عَلَى الْخَلْقِ أَحْيِنِي مَا عَلِمْتَ الْحَيَاةَ خَيْرًا لِي وَتَوَفَّنِي إِذَا عَلِمْتَ الْوَفَاةَ خَيْرًا لِي اللَّهُمَّ وَأَسْأَلُكَ خَشْيَتَكَ فِي الْغَيْبِ وَالشَّهَادَةِ وَأَسْأَلُكَ كَلِمَةَ الْحَقِّ فِي الرِّضَا وَالْغَضَبِ وَأَسْأَلُكَ الْقَصْدَ فِي الْفَقْرِ وَالْغِنَى وَأَسْأَلُكَ نَعِيمًا لاَ يَنْفَدُ وَأَسْأَلُكَ قُرَّةَ عَيْنٍ لاَ تَنْقَطِعُ وَأَسْأَلُكَ الرِّضَاءَ بَعْدَ الْقَضَاءِ وَأَسْأَلُكَ بَرْدَ الْعَيْشِ بَعْدَ الْمَوْتِ وَأَسْأَلُكَ لَذَّةَ النَّظَرِ إِلَى وَجْهِكَ وَالشَّوْقَ إِلَى لِقَائِكَ فِي غَيْرِ ضَرَّاءَ مُضِرَّةٍ وَلاَ فِتْنَةٍ مُضِلَّةٍ اللَّهُمَّ زَيِّنَّا بِزِينَةِ الإِيمَانِ وَاجْعَلْنَا هُدَاةً مُهْتَدِينَ ‏\"‏ ‏.‏",
+   "textEn": "Ata bn As-Sa'ib narrated that his father said:\"Ammar bin Yasir led us in prayer and he made it brief. Some of the people said to him: 'You made the prayer sort (or brief).' He said: 'Nevertheless I still recited supplications that I heard from the Messenger of Allah (ﷺ).' When he got up and left, a man -- he was my father but he did not name himself -- followed him and asked him about that supplication, then he came and told the people: \"Allāhumma bi `ilmikal-ghaiba wa qudratika 'alal-khalqi aḥyinī mā `alimtal-ḥayāta khairan lī, wa tawaffanī idhā `alimtal-wafāta khairan lī. Allāhumma wa 'as'aluka khashyataka fil-ghaibi wash-shahādati wa 'as'aluka kalimatal-ḥaqqi fir-riḍā'i wal ghaḍab, wa as'alukal-qaṣda fil faqri wal-ghina, wa 'as'aluka na`īman lā yanfadu wa 'as'aluka qurrata `ainin lā tanqaṭi`u wa as'alukar-riḍā'i ba`dal-qaḍā'i wa 'as'aluka bardal `aishi ba`dal-mawti, wa 'as'aluka ladhdhatan-naẓari ilā wajhika wash-shawqa ilā liqā'ika fī ghairi ḍarrā'a muḍirratin wa lā fitnatin muḍillatin, Allāhumma zayyinnā bizīnatil-īmāni waj`alna hudātan muhtadīn (O Allah, by Your knowledge of the unseen and Your power over creation, keep me alive so long as You know that living is good for me and cause me to die when You know that death is better for me. O Allah, cause me to fear You in secret and in public. I ask You to make me true in speech in times of pleasure and of anger. I ask You to make me moderate in times of wealth and poverty. And I ask You for everlasting delight and joy that will never cease. I ask You to make me pleased with that which You have decreed and for an easy life after death. I askYou for the sweetness of looking upon Your face and a longing to meet You in a manner that does not entail a calamity that will bring about harm or a trial that will cause deviation. O Allah, beautify us with the adornment of faith and make us among those who guide and are rightly guided)"
+  },
+  {
+   "ref": "Sunan an-Nasa'i 1306",
+   "edition": "ara-nasai / eng-nasai",
+   "hadithnumber": 1306,
+   "inBook": {
+    "book": 13,
+    "hadith": 128
+   },
+   "grades": [
+    {
+     "name": "Abu Ghuddah",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Al-Albani",
+     "grade": "Sahih"
+    },
+    {
+     "name": "Zubair Ali Zai",
+     "grade": "Hasan"
+    }
+   ],
+   "text": "أَخْبَرَنَا عُبَيْدُ اللَّهِ بْنُ سَعْدِ بْنِ إِبْرَاهِيمَ بْنِ سَعْدٍ، قَالَ حَدَّثَنَا عَمِّي، قَالَ حَدَّثَنَا شَرِيكٌ، عَنْ أَبِي هَاشِمٍ الْوَاسِطِيِّ، عَنْ أَبِي مِجْلَزٍ، عَنْ قَيْسِ بْنِ عُبَادٍ، قَالَ صَلَّى عَمَّارُ بْنُ يَاسِرٍ بِالْقَوْمِ صَلاَةً أَخَفَّهَا فَكَأَنَّهُمْ أَنْكَرُوهَا فَقَالَ أَلَمْ أُتِمَّ الرُّكُوعَ وَالسُّجُودَ قَالُوا بَلَى ‏.‏ قَالَ أَمَّا إِنِّي دَعَوْتُ فِيهَا بِدُعَاءٍ كَانَ النَّبِيُّ صلى الله عليه وسلم يَدْعُو بِهِ ‏ \"‏ اللَّهُمَّ بِعِلْمِكَ الْغَيْبَ وَقُدْرَتِكَ عَلَى الْخَلْقِ أَحْيِنِي مَا عَلِمْتَ الْحَيَاةَ خَيْرًا لِي وَتَوَفَّنِي إِذَا عَلِمْتَ الْوَفَاةَ خَيْرًا لِي وَأَسْأَلُكَ خَشْيَتَكَ فِي الْغَيْبِ وَالشَّهَادَةِ وَكَلِمَةَ الإِخْلاَصِ فِي الرِّضَا وَالْغَضَبِ وَأَسْأَلُكَ نَعِيمًا لاَ يَنْفَدُ وَقُرَّةَ عَيْنٍ لاَ تَنْقَطِعُ وَأَسْأَلُكَ الرِّضَاءَ بِالْقَضَاءِ وَبَرْدَ الْعَيْشِ بَعْدَ الْمَوْتِ وَلَذَّةَ النَّظَرِ إِلَى وَجْهِكَ وَالشَّوْقَ إِلَى لِقَائِكَ وَأَعُوذُ بِكَ مِنْ ضَرَّاءَ مُضِرَّةٍ وَفِتْنَةٍ مُضِلَّةٍ اللَّهُمَّ زَيِّنَّا بِزِينَةِ الإِيمَانِ وَاجْعَلْنَا هُدَاةً مُهْتَدِينَ ‏\"‏ ‏.‏",
+   "textEn": "It was narrated that Qais bin 'Ubad said:\"Ammar bin Yasir led the people in prayer and he made the prayer short. It was as if they disliked that, so he said: 'Did I not do bowing and prostration properly?' They said: 'Yes.' He said: 'And I said a supplication that the Prophet (ﷺ) used to say:Allahumma bi 'ilmikal-ghaiba wa qudratika 'alal-khalqi ahini ma 'alimtal-hayata khairan li, wa tawaffani idha 'alimtal-wafata khairan li. Allahumma as'aluka khashyataka fil-ghaibi wash-shahadati wa as'aluka kalimatul-aqua fir-rida'i wal ghadab, wa as'alukal-qasda fil faqr wal-ghina, wa as'aluka na'iman la yanfadu wa as'aluka qurrata ainan la tanqati'u wa as'alukar-rida'i ba'dal-qada'i wa as'aluka bardal 'aishi ba'dal-mawti, wa as'aluka ladhatan-nazari ila wajhika wash-shawqa ila liqa'ika fi fitnatin mudillatin, Allahumma zayyina dizinatil-imani waj'alna hudatan muhtadin (O Allah, by Your knowledge of the unseen and Your power over creation, keep me alive so long as You know that living is good for me and cause me to die when You know that death is better for me. O Allah, cause me to fear You in secret and in public. I ask You to make me true in speech in times of pleasure and of anger. I ask You to make me moderate in times of wealth and poverty. And I ask You for everlasting delight and joy that will never cease. I ask You to make me pleased with that which You have decreed and for an easy life after death. I ask You for the sweetness of looking upon Your face and a longing to meet You in a manner that does not entail a calamity that will bring about harm or a trial that will cause deviation. O Allah, beautify us with the adornment of faith and make us among those who guide and are rightly guided)"
+  }
+ ],
+ "silsilah": {
+  "ref": "al-Silsilah as-Sahihah 3228",
+  "narrator": "شداد بن أوس",
+  "muhaddith": "الألباني",
+  "verdict": "إسناده صحيح",
+  "text": "يا شدَّادُ بنُ أوسٍ ! إذا رأيتَ النَّاسَ قد اكتنزوا الذَّهبَ والفضَّةَ؛ فاكنِز هؤلاء الكلماتِ : اللَّهمَّ ! إنِّي أسألُك الثَّباتَ في الأمرِ ، والعزيمةَ على الرُّشدِ ، وأسألُك موجِباتِ رحمتِك ، وعزائمَ مغفرتِك ، وأسألُك شُكرَ نعمتِك ، وحُسنَ عبادتِك ، وأسألُك قلبًا سليمًا ، ولسانًا صادقًا ، وأسألُك من خيرِ ما تعلَمُ ، وأعوذُ بك من شرِّ ما تعلَمُ ، وأستغفرُك لما تعلَمُ ؛ إنَّك أنت علَّامُ الغيوبِ"
+ },
+ "quran": {
+  "ref": "2:201",
+  "translation": "Saheeh International (quran.com translation 20)",
+  "text": "But among them is he who says, \"Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.\""
+ }
+}

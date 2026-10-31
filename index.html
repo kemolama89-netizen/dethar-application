@@ -12,12 +12,89 @@
           <link rel="preload" as="image" href="./logos/dithar_male_ar.png" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Not render-blocking: a stylesheet from the network held the very
+         first paint (the launch logo included) until it arrived — seconds on
+         a slow connection, longer offline. The fonts swap in when they come
+         (display=swap), as before; the launch intro waits for its Arabic
+         font (StartupHadithOverlay.tsx). -->
     <link
       href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
   </head>
   <body>
+    <!-- Bridges the native launch screen and the first React paint with the
+         launch intro's colour (DITHAR's page colour), so nothing white (or the
+         Home Screen) flashes in between — and, on a fresh launch, shows the
+         DITHAR logo at once, before any bundle has loaded. The intro
+         (StartupHadithOverlay.tsx, lib/startupOverlay.ts) fades it out once
+         the logo has had its time, revealing the Hadith beneath. Plain inline
+         CSS/JS: it must paint before any bundle has loaded. -->
+    <div id="dithar-launch-cover" style="position: fixed; inset: 0; z-index: 2147483647; background: #f2e9da">
+      <img
+        id="dithar-launch-logo"
+        alt=""
+        decoding="sync"
+        style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: min(26vh, 46vw, 210px); width: auto; visibility: hidden"
+      />
+    </div>
+    <script>
+      (function () {
+        var cover = document.getElementById("dithar-launch-cover");
+        // --color-bg of the men/women identity (index.css); the native launch screen uses the men's.
+        var bg = "#f2e9da";
+        var women = false;
+        var en = false;
+        var shownThisLaunch = false;
+        try {
+          women = localStorage.getItem("dithar:appearance:theme:v1") === "women";
+          en = localStorage.getItem("dithar:appearance:language:v1") === "en";
+        } catch (e) {}
+        try {
+          // lib/startupOverlay.ts SESSION_KEY: a WebView reload inside the same launch shows no logo again.
+          shownThisLaunch = sessionStorage.getItem("dithar:startup-intro-shown") === "1";
+        } catch (e) {}
+        if (women) bg = "#f6f2e9";
+        // The saved appearance theme's page colour (src/theme/looks.ts), so a Night/Nature/Sunset launch
+        // doesn't flash ivory first (automatic dark mode by the device included; by time is decided by the app).
+        try {
+          var look = JSON.parse(localStorage.getItem("dithar:appearance:look:v1") || "null");
+          var name = look && look.look;
+          if (look && look.autoDark === "device" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) name = "night";
+          var page = { night: "#0d1733", nature: "#e9eddf", sunset: "#f3e6ef" }[name];
+          if (page) bg = page;
+        } catch (e) {}
+        cover.style.background = bg;
+        document.documentElement.style.setProperty("--launch-bg", bg);
+        if (shownThisLaunch) return;
+        // The identity's own logo (theme/ThemeContext.tsx). Its time is counted from its first
+        // frame on screen (lib/startupOverlay.ts whenLaunchLogoDone).
+        cover.setAttribute("data-logo", "");
+        var logo = document.getElementById("dithar-launch-logo");
+        var shown = function () {
+          var mark = function () {
+            window.__ditharLogoShownAt = performance.now();
+            window.dispatchEvent(new Event("dithar-logo-shown"));
+          };
+          if (typeof requestAnimationFrame !== "function") return mark();
+          requestAnimationFrame(function () {
+            requestAnimationFrame(mark);
+          });
+        };
+        logo.onload = function () {
+          logo.style.visibility = "visible";
+          shown();
+        };
+        // No logo to show (it failed to load): its time is over at once.
+        logo.onerror = function () {
+          window.__ditharLogoShownAt = -Infinity;
+          window.dispatchEvent(new Event("dithar-logo-shown"));
+        };
+        logo.src = "./logos/dithar_" + (women ? "female" : "male") + "_" + (en ? "en" : "ar") + ".png";
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

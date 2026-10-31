@@ -32,7 +32,8 @@ const TIMING: Record<string, { reviewedStart?: number; start?: number; fullEnd?:
   "ali-mahmoud": { reviewedStart: 0.31, start: 0.31, fullEnd: 148.92, takbeerEnd: 20.37 },
   "mulla-haram": { reviewedStart: 0, start: 0.17, fullEnd: 216.6, takbeerEnd: 33.44 },
   "mulla-isha-1445": { reviewedStart: 4.01, start: 4.22, fullEnd: 220.84, takbeerEnd: 22.52 },
-  "banna": { reviewedStart: 0.47, start: 0.67, fullEnd: 152.78, takbeerEnd: 11.1 },
+  // Replaced 2026-10-10 (complete opening). Machine-measured, not yet listening-reviewed.
+  "banna": { reviewedStart: 0, start: 0.2, fullEnd: 164.6, takbeerEnd: 23.4 },
   "husary": { reviewedStart: 1.07, start: 1.26, fullEnd: 127.88, takbeerEnd: 13.36 },
   "mahmoud-ramadan": { reviewedStart: 0.23, start: 0.43, fullEnd: 232.44, takbeerEnd: 36.02 },
   "alafasy-saba-2": { reviewedStart: 0.31, start: 0.51, fullEnd: 245.84, takbeerEnd: 33.9 },

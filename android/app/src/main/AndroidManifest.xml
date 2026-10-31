@@ -54,10 +54,12 @@
             </intent-filter>
         </receiver>
 
-        <!-- Scheduled Evening Audio Adhkar (audioadhkar/). The alarm
-             receiver starts the media-playback service at the user's
-             chosen time; the reschedule receiver re-arms that alarm after
-             a reboot, an app update, or a time/zone change. None exported:
+        <!-- Scheduled Audio Adhkar — Morning, Evening, Misc (audioadhkar/).
+             The alarm receiver starts the media-playback service at the
+             user's chosen time / Misc interval; the resume receiver
+             continues a session an adhan window interrupted; the
+             reschedule receiver re-arms every alarm after a reboot, an app
+             update, or a time/zone change. None exported:
              only this app (AlarmManager / the system broadcasts above)
              reaches them. -->
         <service
@@ -69,6 +71,20 @@
             android:name=".audioadhkar.AudioAdhkarAlarmReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name=".audioadhkar.AudioAdhkarResumeReceiver"
+            android:exported="false" />
+
+        <!-- Miscellaneous adhkar paused for prayer: notifies the pause and its resume time. -->
+        <receiver
+            android:name=".audioadhkar.AudioAdhkarPauseReceiver"
+            android:exported="false" />
+
+        <!-- An adhan-interrupted Morning/Evening session: ONE "Resume Adhkar" notification after the pause (never auto-resumes). -->
+        <receiver
+            android:name=".audioadhkar.AudioAdhkarResumePromptReceiver"
+            android:exported="false" />
+
         <!-- One-minute pre-playback warning: posts a notification only. -->
         <receiver
             android:name=".audioadhkar.AudioAdhkarWarningReceiver"
@@ -76,6 +92,64 @@
 
         <receiver
             android:name=".audioadhkar.AudioAdhkarRescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Reminders, the home-screen widget and the end-of-day summary (reminders/).
+             The widget provider is exported, as every AppWidgetProvider must be for the
+             launcher to bind it; it only accepts the system's widget-update broadcast. -->
+        <receiver
+            android:name=".reminders.DhikrWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dhikr_widget_info" />
+        </receiver>
+
+        <!-- The widget's favorite heart. Not exported: only the widget's own
+             PendingIntent reaches it; it saves the shown item natively and the
+             app merges it into Favorites (lib/favoritesSync.ts). -->
+        <receiver
+            android:name=".reminders.FavoriteToggleReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".reminders.RemindersReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".reminders.RemindersRescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Prayer-time notifications (prayernotifications/): one exact alarm
+             for the next prayer; the receiver posts its notification and
+             arms the next; the reschedule receiver re-arms after a reboot,
+             an app update, or a time/zone change. Not exported. -->
+        <receiver
+            android:name=".prayernotifications.PrayerNotificationReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".prayernotifications.PrayerNotificationRescheduleReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

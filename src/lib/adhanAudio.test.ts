@@ -242,3 +242,22 @@ describe("coexistence with Quran / Audio Adhkar playback", () => {
     expect(getActiveAudio()?.channel).toBe("adhan");
   });
 });
+
+describe("adhan volume", () => {
+  it("follows the adhan slider while it plays", async () => {
+    const { saveAudioVolume } = await import("./audioVolumeSettings");
+    const fakeEl = el as FakeAdhanAudio & { volume?: number };
+    saveAudioVolume("adhan", 100);
+    playAdhanSegment(refaat, "takbeer");
+    expect(fakeEl.volume).toBe(1);
+    saveAudioVolume("adhan", 40);
+    expect(fakeEl.volume).toBe(0.4);
+    // Another category's slider leaves it alone.
+    saveAudioVolume("misc", 10);
+    expect(fakeEl.volume).toBe(0.4);
+    stopAudio();
+    saveAudioVolume("adhan", 90);
+    expect(fakeEl.volume).toBe(0.4); // stopped: no longer follows
+    saveAudioVolume("adhan", 100);
+  });
+});

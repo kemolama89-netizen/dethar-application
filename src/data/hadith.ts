@@ -1,4 +1,4 @@
-// DITHAR — Hadith Library (200 curated Hadiths).
+// DITHAR — Hadith Library (104 curated Hadiths; the 96 that did not pass the 2026-10-30 religious-content audit were removed — see backups/religious-content-cleanup-2026-10-30/).
 //
 // Source of truth: ASSETS/dithar_hadith_library_final.json — imported
 // directly at build time, verbatim, with no copy/transform step and no
@@ -151,6 +151,7 @@ const HADITH_GRADING_SOURCE_MAP: Readonly<Record<string, string>> = {
   "حسّنه الألباني في السلسلة الصحيحة رقم 446-447، وصححه في صحيح الجامع 5249، مع ملاحظة أن أحد طرقه فيه بقية بن الوليد وعنعنته تُضعَّف، لكن له شواهد ترقى به إلى الحسن":
     "Graded hasan by al-Albani in Silsilat al-Ahadith as-Sahihah, no. 446-447, and graded sahih by him in Sahih al-Jami', no. 5249 — noting that one of its chains includes Baqiyyah ibn al-Walid, whose 'an'anah (undisclosed transmission) is considered weak, though corroborating witnesses raise it to the level of hasan",
   "حسّنه الألباني في صحيح أبي داود": "Graded hasan by al-Albani in Sahih Abi Dawud",
+  "حسّنه الألباني في صحيح الترمذي": "Graded hasan by al-Albani in Sahih al-Tirmidhi",
   "حسّنه الألباني في صحيح أبي داود وصحيح الجامع (1464)، وقال المنذري: لا ينزل عن درجة الحسن وقد يكون على شرط الصحيحين أو أحدهما":
     "Graded hasan by al-Albani in Sahih Abi Dawud and Sahih al-Jami' (1464); al-Mundhiri said it is not below the level of hasan and may meet the standard of the two Sahihs or one of them",
   "حسّنه الألباني في صحيح أبي داود وصحيح الجامع (6537)": "Graded hasan by al-Albani in Sahih Abi Dawud and Sahih al-Jami' (6537)",
@@ -196,12 +197,14 @@ const HADITH_GRADING_SOURCE_MAP: Readonly<Record<string, string>> = {
   "صححه الألباني بمجموع طرقه في السلسلة الصحيحة رقم 250، وحسّنه في صحيح ابن ماجه":
     "Graded sahih by al-Albani through the sum of its chains in Silsilat al-Ahadith as-Sahihah, no. 250, and graded hasan by him in Sahih Ibn Majah",
   "صححه الألباني في صحيح أبي داود": "Graded sahih by al-Albani in Sahih Abi Dawud",
+  "صححه الألباني في صحيح أبي داود، وقال الحاكم: صحيح الإسناد": "Graded sahih by al-Albani in Sahih Abi Dawud; al-Hakim said: its chain is sahih",
   "صححه الألباني في صحيح أبي داود، والحاكم ووافقه الذهبي": "Graded sahih by al-Albani in Sahih Abi Dawud, and by al-Hakim, with al-Dhahabi concurring",
   "صححه الألباني في صحيح أبي داود، وله شواهد في الصحيحين بمعناه":
     "Graded sahih by al-Albani in Sahih Abi Dawud, with corroborating narrations of similar meaning in the two Sahihs",
   "صححه الألباني في صحيح الأدب المفرد": "Graded sahih by al-Albani in Sahih al-Adab al-Mufrad",
   "صححه الألباني في صحيح الجامع وصحيح الترغيب": "Graded sahih by al-Albani in Sahih al-Jami' and Sahih al-Targhib",
   "صححه الترمذي والألباني": "Graded sahih by al-Tirmidhi and al-Albani",
+  "قال ابن حجر: إسناده حسن، وقال العراقي: بسند جيد": "Ibn Hajar said: its chain is hasan; al-Iraqi said: with a good (jayyid) chain",
   "صححه الترمذي والألباني في صحيح الترمذي": "Graded sahih by al-Tirmidhi and by al-Albani in Sahih al-Tirmidhi",
   "صححه الترمذي والألباني في صحيح الترمذي وصحيح الجامع": "Graded sahih by al-Tirmidhi and by al-Albani in Sahih al-Tirmidhi and Sahih al-Jami'",
   "صححه الترمذي والحاكم، وحسّنه الألباني في صحيح الترمذي وصححه في السلسلة الصحيحة (925)":

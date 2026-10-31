@@ -21,7 +21,7 @@ export function QuranReciterSettingsView({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="mt-1 flex items-center gap-2">
+      <div className="dithar-sticky-header mt-1 flex items-center gap-2">
         <button
           type="button"
           onClick={onBack}

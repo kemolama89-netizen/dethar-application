@@ -10,6 +10,9 @@ import {
   resetAdhanAudioSettingsMemoryForTesting,
   saveFajrAdhanChoice,
   saveRegularAdhanChoice,
+  loadAdhanAutoPlay,
+  saveAdhanAutoPlay,
+  ADHAN_AUTOPLAY_STORAGE_KEY,
 } from "./adhanAudioSettings";
 import { QURAN_RECITER_STORAGE_KEY } from "./quranAudioPreferences";
 
@@ -76,4 +79,16 @@ describe("adhan audio settings", () => {
     expect(Object.keys(localStorage)).toEqual([ADHAN_AUDIO_STORAGE_KEY]);
     expect(localStorage.getItem(QURAN_RECITER_STORAGE_KEY)).toBeNull();
   });
+
+  it("auto-adhan is off by default, set per section, and survives a restart", () => {
+    expect(loadAdhanAutoPlay()).toEqual({ regular: false, fajr: false });
+    saveAdhanAutoPlay("fajr", true);
+    expect(loadAdhanAutoPlay()).toEqual({ regular: false, fajr: true });
+    resetAdhanAudioSettingsMemoryForTesting();
+    expect(loadAdhanAutoPlay()).toEqual({ regular: false, fajr: true });
+    expect(JSON.parse(localStorage.getItem(ADHAN_AUTOPLAY_STORAGE_KEY)!)).toEqual({ regular: false, fajr: true });
+    // The voice/mode choices are untouched.
+    expect(loadAdhanAudioSettings().fajr.recordingId).toBe(DEFAULT_FAJR_RECORDING_ID);
+  });
 });
+
