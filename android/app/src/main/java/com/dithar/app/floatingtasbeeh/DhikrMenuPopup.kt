@@ -1,14 +1,18 @@
 package com.dithar.app.floatingtasbeeh
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import com.dithar.app.look.AppLook
 
 /**
  * The popup a long-press on the bubble opens: a SCROLLABLE row for every
@@ -25,6 +29,9 @@ import android.widget.TextView
  * old 4-item quick-access design, it can't assume the list always fits on
  * screen.
  *
+ * Drawn in the active look (the same deep colours, ink and gold as the
+ * bubble), with the dhikr being counted marked in gold.
+ *
  * "ذكر مخصص" and "الإعدادات" both just bring DITHAR to the foreground
  * (MainActivity) rather than deep-linking to a specific in-app screen —
  * see FloatingTasbeehService's own doc comment for why that's a
@@ -35,6 +42,8 @@ class DhikrMenuPopup(
     private val windowManager: WindowManager,
     private val anchorParams: WindowManager.LayoutParams,
     private val dhikrItems: List<Pair<Int, String>>, // (dhikrId, label) — pushed from JS, full library
+    private val selectedDhikrId: Int,
+    private val colors: AppLook.Colors,
     private val customDhikrLabel: String,
     private val settingsLabel: String,
     private val onSelectDhikr: (dhikrId: Int, label: String) -> Unit,
@@ -59,7 +68,7 @@ class DhikrMenuPopup(
         }
 
         dhikrItems.forEach { (dhikrId, label) ->
-            container.addView(row(label) {
+            container.addView(row(label, selected = dhikrId == selectedDhikrId) {
                 dismiss()
                 onSelectDhikr(dhikrId, label)
             })
@@ -78,9 +87,10 @@ class DhikrMenuPopup(
             isVerticalScrollBarEnabled = true
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = context.resources.displayMetrics.density * 16f
-                setColor(Color.parseColor("#FBF6EC"))
-                setStroke((context.resources.displayMetrics.density * 1.5f).toInt(), Color.parseColor("#E4D3A6"))
+                cornerRadius = context.resources.displayMetrics.density * 18f
+                orientation = GradientDrawable.Orientation.TOP_BOTTOM
+                colors = intArrayOf(Color.parseColor(this@DhikrMenuPopup.colors.deepTop), Color.parseColor(this@DhikrMenuPopup.colors.deepBottom))
+                setStroke((context.resources.displayMetrics.density * 1.2f).toInt(), FloatingBubbleView.withAlpha(gold, 0.7f))
             }
             addView(container)
         }
@@ -178,11 +188,25 @@ class DhikrMenuPopup(
 
     val isShowing: Boolean get() = popupView != null
 
-    private fun row(label: String, onClick: () -> Unit): TextView = TextView(context).apply {
+    private val gold get() = Color.parseColor(colors.gold)
+
+    private fun row(label: String, selected: Boolean = false, onClick: () -> Unit): TextView = TextView(context).apply {
         text = label
         textSize = 14f
-        setTextColor(Color.parseColor("#2B2118"))
+        setTextColor(if (selected) FloatingBubbleView.mix(gold, Color.WHITE, 0.3f) else Color.parseColor(colors.ink))
+        if (selected) setTypeface(typeface, Typeface.BOLD)
         gravity = Gravity.CENTER
+        val rowShape = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = context.resources.displayMetrics.density * 12f
+            setColor(if (selected) FloatingBubbleView.withAlpha(gold, 0.16f) else Color.TRANSPARENT)
+        }
+        val mask = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = context.resources.displayMetrics.density * 12f
+            setColor(Color.WHITE)
+        }
+        background = RippleDrawable(ColorStateList.valueOf(FloatingBubbleView.withAlpha(gold, 0.32f)), rowShape, mask)
         val padH = (context.resources.displayMetrics.density * 18f).toInt()
         val padV = (context.resources.displayMetrics.density * 10f).toInt()
         setPadding(padH, padV, padH, padV)
@@ -190,7 +214,7 @@ class DhikrMenuPopup(
     }
 
     private fun divider(): View = View(context).apply {
-        setBackgroundColor(Color.parseColor("#E4D3A6"))
+        setBackgroundColor(FloatingBubbleView.withAlpha(gold, 0.35f))
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             (context.resources.displayMetrics.density).toInt(),

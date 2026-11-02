@@ -10,7 +10,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
-    "build:android:optimized": "tsc -b && VITE_AUDIO_VARIANT=optimized vite build && VITE_AUDIO_VARIANT=optimized node scripts/audio/apply-optimized-audio.mjs dist && cap sync android"
+    "build:android:optimized": "tsc -b && VITE_ADHAN_ON_DEMAND=1 VITE_AUDIO_VARIANT=optimized vite build && VITE_AUDIO_VARIANT=optimized node scripts/audio/apply-optimized-audio.mjs dist && VITE_ADHAN_ON_DEMAND=1 node scripts/audio/exclude-adhan-from-apk.mjs dist && cap sync android"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.1",

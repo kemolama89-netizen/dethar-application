@@ -1,7 +1,8 @@
 // The calm sound of the one-minute reminder before Morning/Evening Adhkar
 // (Settings → إعدادات الأذكار الصوتية → each section → صوت التنبيه):
-// a natural morning sound for Morning, a different calming one for Evening,
-// or none. The files are synthesized, license-free (CC0) — see
+// a natural morning sound for Morning, a real recording of a shallow river (or calm waves) for Evening,
+// or none. A device that had the former "crickets" saved now gets the river
+// (loadReminderSound and native's sanitize both fall back to the default). The files are license-free — see
 // public/audio/reminders/README.md. Pushed to native with the schedules;
 // Android plays it through a notification channel, so the phone's
 // notification volume and Do Not Disturb always apply. The reminder itself
@@ -10,13 +11,13 @@ import type { DailySection } from "./audioAdhkarScheduleSettings";
 import { AudioAdhkarNative, isAudioAdhkarNativeAvailable } from "./audioAdhkarNative";
 import { claimAudio, releaseAudio } from "./audioEngine";
 
-export type ReminderSoundId = "birdsong" | "stream" | "crickets" | "waves";
+export type ReminderSoundId = "birdsong" | "stream" | "river" | "waves";
 export type ReminderSoundChoice = ReminderSoundId | "off";
 
 /** The sounds offered per section, the default first. */
 export const REMINDER_SOUNDS: Readonly<Record<DailySection, readonly ReminderSoundId[]>> = {
   morning: ["birdsong", "stream"],
-  evening: ["crickets", "waves"],
+  evening: ["river", "waves"],
 };
 
 const KEY = "dithar:audio-adhkar:reminder-sounds:v1";

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Bell, BellRing, CalendarClock, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, ListChecks, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2, Heart, ShieldCheck } from "lucide-react";
+import { BarChart3, Bell, BellRing, CalendarClock, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, ListChecks, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2, Heart } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
 import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
@@ -17,8 +17,6 @@ import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
 import { AdhanAudioSettingsView } from "./AdhanAudioSettingsView";
 import { RemindersSettingsView } from "./RemindersSettingsView";
 import { FavoritesView } from "./FavoritesView";
-import { ContentReviewView } from "./ContentReviewView";
-import { contentReviewLabels } from "../data/contentReviewLabels";
 import { DailySummarySettingsView } from "./DailySummarySettingsView";
 import { WeeklyScheduleView } from "./WeeklyScheduleView";
 import { favoritesLabels, reminderLabels, summaryLabels } from "../data/reminderLabels";
@@ -65,7 +63,6 @@ type SettingsView =
   | "prayer-notifications"
   | "reminders"
   | "favorites"
-  | "content-review"
   | "daily-summary"
   | "weekly-schedule";
 
@@ -821,8 +818,6 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
           <RemindersSettingsView onBack={() => setView("menu")} />
         ) : view === "favorites" ? (
           <FavoritesView onBack={() => setView("menu")} />
-        ) : view === "content-review" ? (
-          <ContentReviewView onBack={() => setView("menu")} />
         ) : view === "daily-summary" ? (
           <DailySummarySettingsView onBack={() => setView("menu")} />
         ) : view === "weekly-schedule" ? (
@@ -856,16 +851,6 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                 </span>
                 <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-text-muted)" }} />
               </button>
-
-              {/* TEMPORARY — the owner's content review; remove this row with ContentReviewView when asked. */}
-              <MenuRow
-                rowKey="content-review"
-                icon={ShieldCheck}
-                title={contentReviewLabels[language].row}
-                hint={contentReviewLabels[language].rowHint}
-                onClick={() => setView("content-review")}
-                forwardIcon={ForwardIcon}
-              />
 
               <MenuRow
                 rowKey="favorites"

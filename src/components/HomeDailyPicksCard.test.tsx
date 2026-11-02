@@ -44,6 +44,18 @@ afterEach(() => {
 });
 
 describe("Home «مختارات اليوم»: one pick per local day", () => {
+  it("keeps the dua's own text hidden until it is opened", async () => {
+    const day = new Date(2026, 9, 22, 9);
+    vi.setSystemTime(day);
+    await act(async () => root.render(<LanguageProvider><HomeDailyPicksCard onOpen={() => {}} /></LanguageProvider>));
+    await settle();
+    expect(shownId()).toBe(firstPickOn(day));
+    const card = container.querySelector("[data-home-daily-picks]")!;
+    expect(card.querySelector("[data-home-daily-pick]")).toBeNull();
+    expect(card.textContent).toContain("مختارات اليوم");
+    expect(card.textContent).toContain("دعاءٌ موثّق");
+  });
+
   it("changes at local midnight while Home stays open, and stays the same all day", async () => {
     const evening = new Date(2026, 9, 21, 23, 59, 30);
     const yesterday = firstPickOn(evening);

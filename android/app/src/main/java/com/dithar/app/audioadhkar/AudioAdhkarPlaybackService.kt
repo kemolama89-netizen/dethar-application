@@ -122,6 +122,9 @@ class AudioAdhkarPlaybackService : Service() {
     /** An adhan session: where its segment starts and ends in the file (null for adhkar sessions). */
     private var adhanStartMillis: Long? = null
     private var adhanEndMillis: Long? = null
+    /** What this adhan plays if its downloaded file can't be played; used once. */
+    private var adhanFallback: AdhanFallback? = null
+    private var adhanTitle: String = ""
     private val adhanSession get() = adhanEndMillis != null
     private val stopAtAdhanEnd = Runnable { if (adhanSession) endSession(null) }
     private val sessionLabel get() = if (adhanSession) LABEL_ADHAN else sessionSection.label
@@ -292,6 +295,15 @@ class AudioAdhkarPlaybackService : Service() {
                 intent.getStringExtra(EXTRA_ADHAN_TITLE) ?: LABEL_ADHAN,
                 intent.getStringExtra(EXTRA_ADHAN_NAME) ?: "",
                 intent.getStringExtra(EXTRA_ADHAN_MUEZZIN) ?: "",
+                intent.getStringExtra(EXTRA_ADHAN_FALLBACK_PATH)?.let {
+                    AdhanFallback(
+                        it,
+                        intent.getLongExtra(EXTRA_ADHAN_FALLBACK_START, 0L),
+                        intent.getLongExtra(EXTRA_ADHAN_FALLBACK_END, 0L),
+                        intent.getStringExtra(EXTRA_ADHAN_FALLBACK_NAME) ?: "",
+                        intent.getStringExtra(EXTRA_ADHAN_FALLBACK_MUEZZIN) ?: "",
+                    )
+                },
             )
             ACTION_PLAY_NOW -> {
                 val items = try {
@@ -605,7 +617,7 @@ class AudioAdhkarPlaybackService : Service() {
      * [assetPath]. Adhkar in progress stops first (and continues after the
      * adhan window); a second adhan while one plays is ignored.
      */
-    private fun startAdhanSession(assetPath: String, startMillis: Long, endMillis: Long, title: String, voiceName: String, muezzin: String) {
+    private fun startAdhanSession(assetPath: String, startMillis: Long, endMillis: Long, title: String, voiceName: String, muezzin: String, fallback: AdhanFallback? = null) {
         getSystemService(NotificationManager::class.java).cancel(TAP_TO_START_NOTIFICATION_ID)
         if (cursor != null) {
             if (adhanSession) {
@@ -616,6 +628,8 @@ class AudioAdhkarPlaybackService : Service() {
         }
         adhanStartMillis = startMillis
         adhanEndMillis = endMillis
+        adhanFallback = fallback?.takeIf { assetPath.startsWith("/") }
+        adhanTitle = title
         isAdhanPlaying = true
         val newCursor = PlaybackCursor(listOf(PlaylistItem("adhan", title, voiceName, Recitation(listOf(assetPath), reciterName = muezzin), 1)))
         cursor = newCursor
@@ -696,17 +710,24 @@ class AudioAdhkarPlaybackService : Service() {
         publish(stateJson())
     }
 
+    /** Plays an APK asset, or a downloaded adhan (an absolute path). */
+    private fun MediaPlayer.setAudioSource(path: String) {
+        if (path.startsWith("/")) {
+            java.io.FileInputStream(path).use { setDataSource(it.fd) }
+        } else {
+            assets.openFd(path).use { afd -> setDataSource(afd.fileDescriptor, afd.startOffset, afd.length) }
+        }
+    }
+
     /** A player for file [part] of [files], with its completion and error handling — null (and the session stopped) if the file can't be opened. */
     private fun newPlayer(files: List<String>, token: Int, part: Int): MediaPlayer? {
         val assetPath = files[part]
         return try {
-            val afd = assets.openFd(assetPath)
             MediaPlayer().apply {
                 setAudioAttributes(audioAttributes)
                 setWakeMode(this@AudioAdhkarPlaybackService, PowerManager.PARTIAL_WAKE_LOCK)
                 gain().let { setVolume(it, it) }
-                setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
-                afd.close()
+                setAudioSource(assetPath)
                 setOnCompletionListener { onPartCompleted(files, token, part) }
                 setOnErrorListener { _, what, extra ->
                     Log.w(TAG, "playback error $what/$extra for $assetPath")
@@ -994,7 +1015,19 @@ class AudioAdhkarPlaybackService : Service() {
     }
 
     /** A recording couldn't play: the session ends, and the app is told which dhikr failed ("error") so it can say so. */
-    private fun failSession() = endSession(stateJson()?.put("active", false)?.put("status", "error"))
+    private fun failSession() {
+        // A downloaded adhan that can't be played gives way to the built-in voice: the adhan is never silent.
+        val fallback = adhanFallback.takeIf { adhanSession }
+        if (fallback != null) {
+            val title = adhanTitle
+            trace("adhan: downloaded file failed, playing the built-in voice")
+            AudioAdhkarStore(this).appendEvent("adhan: downloaded file failed, playing the built-in voice")
+            endSession(stateJson(), keepService = true, publishEnd = false)
+            handler.post { startAdhanSession(fallback.path, fallback.startMillis, fallback.endMillis, title, fallback.name, fallback.muezzin) }
+            return
+        }
+        endSession(stateJson()?.put("active", false)?.put("status", "error"))
+    }
 
     /**
      * [keepService]: another session starts next in this service. [publishEnd]
@@ -1033,6 +1066,7 @@ class AudioAdhkarPlaybackService : Service() {
         session.isActive = false
         adhanStartMillis = null
         adhanEndMillis = null
+        adhanFallback = null
         isAdhanPlaying = false
         if (publishEnd) publish(finalState) else lastState = null
         // Whatever this session was blocking, Misc may play again (it keeps its interval and window) —
@@ -1268,7 +1302,11 @@ class AudioAdhkarPlaybackService : Service() {
         durationCache[assetPath]?.let { return it }
         val retriever = MediaMetadataRetriever()
         return try {
-            assets.openFd(assetPath).use { afd -> retriever.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length) }
+            if (assetPath.startsWith("/")) {
+                java.io.FileInputStream(assetPath).use { retriever.setDataSource(it.fd) }
+            } else {
+                assets.openFd(assetPath).use { afd -> retriever.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length) }
+            }
             retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()?.takeIf { it > 0 }?.also { durationCache[assetPath] = it }
         } catch (e: Exception) {
             trace("cannot read the length of $assetPath: ${e.javaClass.simpleName}")
@@ -1502,6 +1540,11 @@ class AudioAdhkarPlaybackService : Service() {
         private const val HEARTBEAT_MILLIS = 30_000L
         private const val ADHAN_FOCUS_FOLLOW_UP_MILLIS = 1_500L
         private const val EXTRA_ADHAN_PATH = "com.dithar.app.audioadhkar.ADHAN_PATH"
+        private const val EXTRA_ADHAN_FALLBACK_PATH = "com.dithar.app.audioadhkar.ADHAN_FALLBACK_PATH"
+        private const val EXTRA_ADHAN_FALLBACK_START = "com.dithar.app.audioadhkar.ADHAN_FALLBACK_START"
+        private const val EXTRA_ADHAN_FALLBACK_END = "com.dithar.app.audioadhkar.ADHAN_FALLBACK_END"
+        private const val EXTRA_ADHAN_FALLBACK_NAME = "com.dithar.app.audioadhkar.ADHAN_FALLBACK_NAME"
+        private const val EXTRA_ADHAN_FALLBACK_MUEZZIN = "com.dithar.app.audioadhkar.ADHAN_FALLBACK_MUEZZIN"
         private const val EXTRA_ADHAN_START = "com.dithar.app.audioadhkar.ADHAN_START"
         private const val EXTRA_ADHAN_END = "com.dithar.app.audioadhkar.ADHAN_END"
         private const val EXTRA_ADHAN_TITLE = "com.dithar.app.audioadhkar.ADHAN_TITLE"
@@ -1636,7 +1679,7 @@ class AudioAdhkarPlaybackService : Service() {
          * without an exact/alarm-clock alarm's exemption) — the caller then
          * keeps the notification's own sound instead of a silent one.
          */
-        fun startAdhan(context: Context, voice: AdhanVoice, title: String): String? {
+        fun startAdhan(context: Context, voice: AdhanVoice, title: String, fallback: AdhanVoice? = null): String? {
             val intent = Intent(context, AudioAdhkarPlaybackService::class.java)
                 .setAction(ACTION_START_ADHAN)
                 .putExtra(EXTRA_ADHAN_PATH, voice.assetPath)
@@ -1645,6 +1688,13 @@ class AudioAdhkarPlaybackService : Service() {
                 .putExtra(EXTRA_ADHAN_TITLE, title)
                 .putExtra(EXTRA_ADHAN_NAME, voice.name)
                 .putExtra(EXTRA_ADHAN_MUEZZIN, voice.muezzin)
+            if (fallback != null) {
+                intent.putExtra(EXTRA_ADHAN_FALLBACK_PATH, fallback.assetPath)
+                    .putExtra(EXTRA_ADHAN_FALLBACK_START, fallback.startMillis)
+                    .putExtra(EXTRA_ADHAN_FALLBACK_END, fallback.endMillis)
+                    .putExtra(EXTRA_ADHAN_FALLBACK_NAME, fallback.name)
+                    .putExtra(EXTRA_ADHAN_FALLBACK_MUEZZIN, fallback.muezzin)
+            }
             return try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(intent) else context.startService(intent)
                 null
@@ -1726,3 +1776,6 @@ class AudioAdhkarPlaybackService : Service() {
         }
     }
 }
+
+/** The built-in voice standing by for an adhan playing a downloaded file. */
+private class AdhanFallback(val path: String, val startMillis: Long, val endMillis: Long, val name: String, val muezzin: String)

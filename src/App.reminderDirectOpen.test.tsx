@@ -18,6 +18,7 @@ type OpenEvent = { id: string; commentId?: string | null; shown?: ShownReminder 
 const native = vi.hoisted(() => ({
   listener: null as ((e: OpenEvent) => void) | null,
   launch: { id: null as string | null } as OpenEvent | { id: null },
+  coverRemovals: 0,
 }));
 
 vi.mock("./lib/remindersNative", () => ({
@@ -28,6 +29,10 @@ vi.mock("./lib/remindersNative", () => ({
       return { remove: async () => {} };
     },
     consumeLaunchReminder: async () => native.launch,
+    reminderViewShown: async () => {
+      native.coverRemovals++;
+    },
+    setAppLook: async () => {},
     setReminders: async () => ({ widgets: 0 }),
     setSummary: async () => {},
     setCustomBackground: async () => {},
@@ -97,6 +102,7 @@ beforeEach(() => {
   sessionStorage.setItem("dithar:startup-intro-shown", "1");
   Element.prototype.scrollIntoView ??= () => {};
   native.listener = null;
+  native.coverRemovals = 0;
   container = document.createElement("div");
   document.body.appendChild(container);
 });
@@ -130,6 +136,8 @@ describe("a tapped reminder opens directly — never Home first", () => {
       expect(text()).toBe(hadith.textAr);
       // The Hadith intro stepped aside: nothing stands between the user and the reminder.
       await waitFor(() => container.querySelector("[data-startup-overlay]") === null);
+      // Native's own cover goes once the reminder is up (ReminderOpenCover.kt).
+      await waitFor(() => native.coverRemovals === 1);
     });
   }
 
@@ -139,6 +147,7 @@ describe("a tapped reminder opens directly — never Home first", () => {
     await renderApp();
     await waitFor(() => document.getElementById("dithar-launch-cover") === null && container.querySelector("[data-home-dashboard]") !== null);
     expect(opened()).toBeNull();
+    expect(native.coverRemovals).toBe(0); // native put up no cover: nothing to take away
   });
 
   it('app open or in the background ("openReminder"): the view opens over the current screen at once — an opaque stand-in while its code loads', async () => {
@@ -150,9 +159,32 @@ describe("a tapped reminder opens directly — never Home first", () => {
     await act(async () => native.listener!(shownFor(dua.id)));
     // Right after the event is handled: the view, or its opaque stand-in, already covers the screen.
     expect(container.querySelector("[data-spiritual-reminder], [data-reminder-loading]")).not.toBeNull();
+    // Native's cover stays until the reminder's view is really up.
+    expect(native.coverRemovals).toBe(0);
     await waitFor(() => opened() === dua.id);
     watch.stop();
     expect(watch.gaps).toEqual([]);
     expect(text()).toBe(dua.textAr);
+    await waitFor(() => native.coverRemovals === 1);
+  });
+
+  it("tapping the reminder that is already open still takes native's cover away", async () => {
+    native.launch = { id: null };
+    await renderApp();
+    await waitFor(() => native.listener !== null && container.querySelector("[data-home-dashboard]") !== null);
+    const dua = reminderPool().find((i) => i.kind === "dua")!;
+    await act(async () => native.listener!(shownFor(dua.id)));
+    await waitFor(() => native.coverRemovals === 1);
+    await act(async () => native.listener!(shownFor(dua.id)));
+    await waitFor(() => native.coverRemovals === 2);
+  });
+
+  it("a reminder with nothing to show closes and takes native's cover away, rather than leaving it up until its timer", async () => {
+    native.launch = { id: null };
+    await renderApp();
+    await waitFor(() => native.listener !== null && container.querySelector("[data-home-dashboard]") !== null);
+    await act(async () => native.listener!({ id: "dua:no-such-item", commentId: null }));
+    await waitFor(() => native.coverRemovals === 1);
+    expect(opened()).toBeNull();
   });
 });

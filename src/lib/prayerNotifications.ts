@@ -30,11 +30,11 @@ import { loadLanguagePreference } from "./appearancePreferences";
 import { trackNativeSync } from "./appExit";
 import { loadAdhanAudioSettings, loadAdhanAutoPlay } from "./adhanAudioSettings";
 import type { AdhanAutoPlay } from "./adhanAudioSettings";
-import { adhanNextToken, loadAdhanRotationSettings, peekNextAdhanVoice, recordNativeAdhanPlay, rotationVoices } from "./adhanVoiceRotation";
+import { adhanNextToken, downloadChosenAdhanVoices, loadAdhanRotationSettings, peekNextAdhanVoice, recordNativeAdhanPlay, scheduledChosenVoice, scheduledRotationVoices } from "./adhanVoiceRotation";
 import type { AdhanSection } from "./adhanVoiceRotation";
 import { adhanMuezzinName, getAdhanRecordingById } from "../data/adhanRecordings";
 import type { AdhanRecording } from "../data/adhanRecordings";
-import { playableAudioPath } from "./audioAssets";
+import { adhanDownloadsReady, adhanFallbackId, adhanNativeSource, adhanOnDemand, onAdhanFilesChanged } from "./adhanDownloads";
 
 /** How far ahead notifications are handed to native. */
 export const PRAYER_NOTIFICATION_DAYS = 30;
@@ -69,6 +69,8 @@ export interface NativeAdhanConfig {
   /** The voice Settings shows as next, played by the next adhan (once — see nextToken). */
   nextVoiceId: string;
   nextToken: string;
+  /** A built-in voice, should the chosen files no longer be on the device (on-demand build only). */
+  fallback?: NativeAdhanVoice;
 }
 
 export interface PrayerNotificationStatus {
@@ -146,11 +148,12 @@ export function buildPrayerNotifications(
 
 function nativeVoice(recording: AdhanRecording, mode: "full" | "takbeer" | "fajrPhrase", language: Language): NativeAdhanVoice | null {
   const segment = recording.segments[mode];
-  if (!segment) return null;
+  const assetPath = adhanNativeSource(recording);
+  if (!segment || !assetPath) return null;
   return {
     id: recording.id,
     name: recording.name[language],
-    assetPath: `public/${playableAudioPath(recording.path)}`,
+    assetPath,
     startMillis: Math.round(segment.start * 1000),
     endMillis: Math.round(segment.end * 1000),
     muezzin: adhanMuezzinName(recording, language) ?? "",
@@ -164,13 +167,17 @@ function nativeVoice(recording: AdhanRecording, mode: "full" | "takbeer" | "fajr
  */
 export function buildAdhanConfig(which: AdhanSection, language: Language = loadLanguagePreference(), autoPlay: AdhanAutoPlay = loadAdhanAutoPlay()): NativeAdhanConfig | null {
   if (!autoPlay[which]) return null;
-  const { recordingId, mode } = loadAdhanAudioSettings()[which];
+  const { mode } = loadAdhanAudioSettings()[which];
   const rotate = loadAdhanRotationSettings()[which].enabled;
-  const pool = rotate ? rotationVoices(which) : [getAdhanRecordingById(recordingId)!];
+  const pool = rotate ? scheduledRotationVoices(which) : [scheduledChosenVoice(which)];
   const voices = pool.flatMap((r) => nativeVoice(r, mode, language) ?? []);
   if (voices.length === 0) return null;
   const next = peekNextAdhanVoice(which).recording.id;
-  return { rotate: rotate && voices.length > 1, voices, nextVoiceId: next, nextToken: rotate ? adhanNextToken(which) : "" };
+  const config = { rotate: rotate && voices.length > 1, voices, nextVoiceId: next, nextToken: rotate ? adhanNextToken(which) : "" };
+  if (!adhanOnDemand()) return config;
+  // Should a downloaded file have gone by the time the alarm fires, native plays this instead.
+  const fallback = nativeVoice(getAdhanRecordingById(adhanFallbackId(which))!, mode, language);
+  return fallback ? { ...config, fallback } : config;
 }
 
 /**
@@ -184,8 +191,19 @@ export function syncPrayerNotifications(now: Date = new Date(), language?: Langu
   return trackNativeSync(syncNow(now, language));
 }
 
+let unlistenAdhanFiles: (() => void) | null = null;
+
+/** A voice downloaded or removed changes what the alarm can play. */
+function listenForAdhanFiles(language?: Language): void {
+  unlistenAdhanFiles?.();
+  unlistenAdhanFiles = onAdhanFilesChanged(() => void syncPrayerNotifications(new Date(), language).catch(() => {}));
+}
+
 async function syncNow(now: Date, language?: Language): Promise<PrayerNotificationStatus | null> {
   if (!isPrayerNotificationsAvailable()) return null;
+  await adhanDownloadsReady();
+  listenForAdhanFiles(language);
+  downloadChosenAdhanVoices();
   const status = await PrayerNotificationsNative.getStatus().catch(() => null);
   for (const which of ["regular", "fajr"] as const) {
     const last = status?.adhanLast?.[which];

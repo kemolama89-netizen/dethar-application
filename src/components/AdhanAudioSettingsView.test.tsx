@@ -125,7 +125,7 @@ describe("Settings → صوت الأذان", () => {
     const next = section("regular").textContent!.match(/الأذان القادم: (.+?)استماع/)?.[1];
     expect(regularAdhanRecordings().map((r) => r.name.ar)).toContain(next);
     // Every regular voice starts included.
-    const rows = [...voices("regular").querySelectorAll("button")];
+    const rows = [...voices("regular").querySelectorAll(":scope > button")];
     expect(rows).toHaveLength(regularAdhanRecordings().length);
     expect(rows.every((b) => b.getAttribute("aria-pressed") === "true")).toBe(true);
     expect(loadAdhanRotationSettings()).toEqual({ regular: { enabled: true, excluded: [] }, fajr: { enabled: false, excluded: [] } });

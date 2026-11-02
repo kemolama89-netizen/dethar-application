@@ -167,10 +167,10 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
     private fun startAdhan(context: Context, store: PrayerNotificationStore, entry: PrayerNotification, config: AdhanConfig): String {
         val section = AdhanPlan.sectionFor(entry.prayer)
         val (lastVoice, _, consumedToken) = store.adhanLast(section)
-        val voice = AdhanPlan.pick(config, lastVoice, consumedToken) { Random.nextInt(it) } ?: return "no voice"
+        val voice = AdhanPlan.pick(AdhanPlan.onDevice(config) { java.io.File(it).exists() }, lastVoice, consumedToken) { Random.nextInt(it) } ?: return "no voice"
         // The media controls' title: "أذان الظهر" / "Dhuhr Adhan" (not the notification's "صلاة الظهر — 12:05").
         val en = AudioAdhkarStore(context).language == "en"
-        val refused = AudioAdhkarPlaybackService.startAdhan(context, voice, NowPlayingText.adhanTitle(entry.prayer, en))
+        val refused = AudioAdhkarPlaybackService.startAdhan(context, voice, NowPlayingText.adhanTitle(entry.prayer, en), config.fallback)
         if (refused != null) return "start refused: $refused"
         val usedToken = if (voice.id == config.nextVoiceId) config.nextToken else consumedToken
         store.recordAdhan(section, voice.id, entry.at, usedToken)

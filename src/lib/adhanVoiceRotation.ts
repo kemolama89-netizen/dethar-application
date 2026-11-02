@@ -27,6 +27,7 @@ import { getAdhanRecordingById } from "../data/adhanRecordings";
 import type { AdhanRecording } from "../data/adhanRecordings";
 import { fajrAdhanRecordings, loadAdhanAudioSettings, regularAdhanRecordings } from "./adhanAudioSettings";
 import type { AdhanMode } from "./adhanAudioSettings";
+import { adhanFallbackId, adhanOnDemand, downloadAdhan, isAdhanPlayableOffline } from "./adhanDownloads";
 
 export const ADHAN_ROTATION_PREFS_KEY = "dithar:adhan-audio:rotation:v1";
 export const ADHAN_ROTATION_STATE_KEY = "dithar:adhan-audio:rotation-state:v1";
@@ -161,6 +162,35 @@ export function rotationVoices(which: AdhanSection, rotation: AdhanRotationSetti
   return sectionRecordings(which).filter((r) => !excluded.has(r.id) && r.segments[mode] !== null);
 }
 
+/**
+ * The voices a section's rotation can actually play at prayer time: those the
+ * user left in that are on the device. The saved exclusions are never touched:
+ * a voice joins once it is downloaded. With none on the device, the built-in
+ * voice stands in, so there is always an adhan.
+ */
+export function scheduledRotationVoices(which: AdhanSection, rotation: AdhanRotationSettings = loadAdhanRotationSettings()): AdhanRecording[] {
+  const voices = rotationVoices(which, rotation);
+  if (!adhanOnDemand()) return voices;
+  const playable = voices.filter((r) => isAdhanPlayableOffline(r.id));
+  return playable.length > 0 ? playable : [getAdhanRecordingById(adhanFallbackId(which))!];
+}
+
+/** The section's voice when it isn't rotating and that voice isn't on the device: its built-in voice. */
+export function scheduledChosenVoice(which: AdhanSection): AdhanRecording {
+  const { recordingId } = loadAdhanAudioSettings()[which];
+  return isAdhanPlayableOffline(recordingId) ? getAdhanRecordingById(recordingId)! : getAdhanRecordingById(adhanFallbackId(which))!;
+}
+
+/** The voice the user picked is one they chose to have: it downloads without a further tap (also after updating from a build that had them all). */
+export function downloadChosenAdhanVoices(): void {
+  if (!adhanOnDemand()) return;
+  const rotation = loadAdhanRotationSettings();
+  const settings = loadAdhanAudioSettings();
+  for (const which of ["regular", "fajr"] as const) {
+    if (!rotation[which].enabled) void downloadAdhan(getAdhanRecordingById(settings[which].recordingId)!);
+  }
+}
+
 /** Voices offered as rotation rows: every section voice that can play the current mode. */
 export function rotationCandidates(which: AdhanSection): AdhanRecording[] {
   const mode = loadAdhanAudioSettings()[which].mode;
@@ -200,7 +230,7 @@ function draw(voices: AdhanRecording[], lastVoiceId: string | null): AdhanRecord
 function upcoming(which: AdhanSection): { voice: AdhanRecording; state: RotationState } | null {
   const rotation = loadAdhanRotationSettings();
   if (!rotation[which].enabled) return null;
-  const voices = rotationVoices(which, rotation);
+  const voices = scheduledRotationVoices(which, rotation);
   if (voices.length === 0) return null;
   const state = loadState();
   const { lastVoiceId, nextVoiceId } = state[which];
@@ -228,7 +258,7 @@ export function takeNextAdhanVoice(which: AdhanSection, occurrenceKey: string): 
   const base = chosen(which);
   const rotation = loadAdhanRotationSettings();
   if (!rotation[which].enabled) return base;
-  const voices = rotationVoices(which, rotation);
+  const voices = scheduledRotationVoices(which, rotation);
   const { occurrence } = loadState()[which];
   if (occurrence?.key === occurrenceKey) {
     const same = voices.find((r) => r.id === occurrence.voiceId);
@@ -248,7 +278,7 @@ export function startAdhanPreview(which: AdhanSection): AdhanVoiceChoice {
   const base = chosen(which);
   const rotation = loadAdhanRotationSettings();
   if (!rotation[which].enabled) return base;
-  const voice = consumeUpcoming(which, rotationVoices(which, rotation), null);
+  const voice = consumeUpcoming(which, scheduledRotationVoices(which, rotation), null);
   return voice ? { recording: voice, mode: base.mode } : base;
 }
 
@@ -291,7 +321,7 @@ export function recordNativeAdhanPlay(which: AdhanSection, voiceId: string, at: 
   const state = loadState();
   const cursor = state[which];
   if (!(at > cursor.nativeAt) || !sectionRecordings(which).some((r) => r.id === voiceId)) return;
-  const voices = rotationVoices(which);
+  const voices = scheduledRotationVoices(which);
   const nextOk = voices.some((r) => r.id === cursor.nextVoiceId) && cursor.nextVoiceId !== voiceId;
   saveState({
     ...state,

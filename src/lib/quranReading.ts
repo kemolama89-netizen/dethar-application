@@ -23,6 +23,8 @@ const BOOKMARKS_KEY = "dithar:quran:bookmarks:v1";
 // ("dithar:quran:font-size:v1") no longer applies and is not read.
 const ZOOM_KEY = "dithar:quran:zoom:v1";
 const TURN_SOUND_KEY = "dithar:quran:turn-sound:v1";
+const READING_MODE_KEY = "dithar:quran:reading-mode:v1";
+const TEXT_THEME_KEY = "dithar:quran:text-theme:v1";
 
 /** Page zooms the reader can be set to: 1 fits the whole page to the screen (the default). */
 export const QURAN_ZOOMS: readonly number[] = [1, 1.25, 1.5, 1.75, 2];
@@ -113,6 +115,26 @@ export function loadQuranZoom(): number {
 
 export function saveQuranZoom(zoom: number): void {
   if (QURAN_ZOOMS.includes(zoom)) write(ZOOM_KEY, zoom);
+}
+
+/** How the Mushaf is read: its printed pages (the default) or the text reading mode. */
+export type QuranReadingMode = "pages" | "text";
+export type QuranTextTheme = "paper" | "night";
+
+export function loadQuranReadingMode(): QuranReadingMode {
+  return read(READING_MODE_KEY) === "text" ? "text" : "pages";
+}
+
+export function saveQuranReadingMode(mode: QuranReadingMode): void {
+  write(READING_MODE_KEY, mode);
+}
+
+export function loadQuranTextTheme(): QuranTextTheme {
+  return read(TEXT_THEME_KEY) === "night" ? "night" : "paper";
+}
+
+export function saveQuranTextTheme(theme: QuranTextTheme): void {
+  write(TEXT_THEME_KEY, theme);
 }
 
 /** Whether a page turn makes its soft paper sound (lib/pageTurnSound.ts) — on unless muted in the reader's settings. */

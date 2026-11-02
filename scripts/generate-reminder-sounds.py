@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Synthesizes DITHAR's calm Morning/Evening reminder sounds.
 
+Not the Evening default, "river": that is a field recording, see
+public/audio/reminders/README.md.
+
 Every sound is generated here from scratch (sine tones, filtered noise and
 envelopes, with a fixed random seed) — no recording, sample or third-party
 asset is used, so the output is original work, dedicated to the public
@@ -13,7 +16,6 @@ Outputs (≈6 s each, gentle fade-in/out, peak ≈ -6 dBFS):
 
   birdsong  morning: soft dawn air with a few songbird phrases
   stream    morning: a gentle brook with light water bubbles
-  crickets  evening: crickets over a faint breeze
   waves     evening: slow sea swells on a quiet shore
 
 Requires numpy and ffmpeg.
@@ -120,22 +122,6 @@ def stream(rng):
     return track
 
 
-def crickets(rng):
-    n = int(RATE * DURATION)
-    t = t_axis()
-    breeze = one_pole_lowpass(pink_noise(n, rng), 500) * 0.25 * (0.7 + 0.3 * np.sin(2 * np.pi * 0.15 * t))
-    track = breeze
-    for carrier, period, offset, gain in [(4600, 0.62, 0.3, 0.16), (4150, 0.81, 0.55, 0.1)]:
-        at = offset
-        while at < DURATION - 0.3:
-            for pulse in range(3):
-                length = 0.018
-                tone = np.sin(2 * np.pi * carrier * t_axis(length)) * np.sin(np.pi * np.linspace(0, 1, int(RATE * length)))
-                place(track, gain * tone, at + pulse * 0.032)
-            at += period * rng.uniform(0.95, 1.05)
-    return track
-
-
 def waves(rng):
     n = int(RATE * DURATION)
     t = t_axis()
@@ -164,9 +150,10 @@ def write_wav(path, signal):
 def main():
     os.makedirs(RAW_DIR, exist_ok=True)
     os.makedirs(WEB_DIR, exist_ok=True)
-    sounds = {"birdsong": birdsong, "stream": stream, "crickets": crickets, "waves": waves}
-    for index, (name, make) in enumerate(sounds.items()):
-        rng = np.random.default_rng(1447 + index)
+    # Each sound keeps its own random seed, so re-running reproduces the same files.
+    sounds = {"birdsong": (birdsong, 1447), "stream": (stream, 1448), "waves": (waves, 1450)}
+    for name, (make, seed) in sounds.items():
+        rng = np.random.default_rng(seed)
         signal = finish(make(rng))
         with tempfile.TemporaryDirectory() as tmp:
             wav = os.path.join(tmp, f"{name}.wav")

@@ -90,7 +90,7 @@ export function BottomNav({
             className="flex min-w-0 flex-1 basis-0 flex-col items-center gap-1 py-0.5 text-center font-medium"
             style={{
               color: isActive ? "var(--color-primary)" : "var(--color-text-muted)",
-              fontSize: "clamp(8.5px, 2.35vw, 10.5px)",
+              fontSize: "var(--dithar-nav-label-size, clamp(8.5px, 2.35vw, 10.5px))",
               fontWeight: isActive ? 700 : 500,
             }}
           >

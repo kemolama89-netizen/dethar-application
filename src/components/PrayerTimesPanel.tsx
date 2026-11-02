@@ -11,11 +11,19 @@ import { settingsLabels } from "../data/settings";
 import { useNextPrayerCountdown } from "../lib/useNextPrayerCountdown";
 import { usePrayerReminder } from "../lib/usePrayerReminder";
 import { useAudioAdhkarMaster } from "../lib/useAudioAdhkarMaster";
+import { dailyWindowFor } from "../lib/dailyAzkarWindows";
+import { nextPrayerCountdownText } from "../lib/nextPrayerCountdownText";
+import { useTodayActivity } from "../lib/useTodayActivity";
+import { useLargeText } from "../lib/useLargeText";
+import { homeDashboardLabels } from "../data/homeDashboardLabels";
 import { SceneArch } from "./SceneArch";
+import { WirdLamp } from "./HomeWirdLamps";
+import type { WirdLampSection, WirdLampState } from "./HomeWirdLamps";
 
-// The hero panel shows the active look's scene in an arch (SceneArch): its text is light over the
-// shaded scene in every look, and its gold accents (icons, the next prayer's outline, the arch) a
-// light gold that reads on it. Set as tokens on the panel, so everything inside follows.
+// The hero panel shows the active look's scene in an arch (SceneArch): the text in that niche is
+// light over the shaded scene in every look, and its gold accents (icons, the next prayer's
+// outline) a light gold that reads on it. Set as tokens on the niche, so everything inside follows;
+// the panel's title and switches sit on the card's own colour, outside it.
 const HERO_PANEL_VARS = {
   "--color-primary-contrast": "#fffaf0",
   "--color-primary-contrast-rgb": "255, 250, 240",
@@ -43,7 +51,15 @@ function pad2(n: number): string {
 // label — `role="switch"`/`aria-checked` communicates state instead of a
 // changing text label). Reuses existing color tokens only (--color-gold,
 // --color-primary, --color-primary-contrast) — no new palette entries.
-function ReminderSwitch({ checked, onChange, label, name }: { checked: boolean; onChange: () => void; label: string; name: string }) {
+function ReminderSwitch({ checked, onChange, label, name, hero = false }: { checked: boolean; onChange: () => void; label: string; name: string; hero?: boolean }) {
+  if (hero) {
+    // Inside its <label> row (the whole row toggles it), on the card's own colour.
+    return (
+      <button type="button" role="switch" data-switch={name} aria-checked={checked} aria-label={label} onClick={onChange} className="dithar-hero-switch">
+        <span className="dithar-hero-switch__knob" />
+      </button>
+    );
+  }
   return (
     <button
       type="button"
@@ -97,7 +113,18 @@ function ReminderSwitch({ checked, onChange, label, name }: { checked: boolean; 
 // same two switches — only laid out larger, the next prayer framed by a
 // mihrab's niche (a decorative motif — no direction is shown), with the
 // next prayer's time highlighted. "compact" is the original strip.
-export function PrayerTimesPanel({ date, className = "", variant = "compact" }: { date: Date; className?: string; variant?: "compact" | "hero" }) {
+export function PrayerTimesPanel({
+  date,
+  className = "",
+  variant = "compact",
+  onOpenWird,
+}: {
+  date: Date;
+  className?: string;
+  variant?: "compact" | "hero";
+  /** Hero only: a session's lamp was tapped. */
+  onOpenWird?: (section: WirdLampSection) => void;
+}) {
   const { language, dir } = useLanguage();
   const t = labels[language];
   const names = prayerNames[language];
@@ -151,6 +178,24 @@ export function PrayerTimesPanel({ date, className = "", variant = "compact" }: 
   // Independent of the reminder switch above: every scheduled Audio Adhkar section.
   const audioAdhkar = useAudioAdhkarMaster();
 
+  // The lamps: done today, or inside the session's own window (the same windows Audio Adhkar uses).
+  const { activity } = useTodayActivity();
+  const largeText = useLargeText();
+  const sessionWindows = useMemo(() => {
+    if (variant !== "hero") return null;
+    const [year, month, day] = dayKey.split("-").map(Number);
+    const location = { coordinates, timezone, country: countryCode };
+    return {
+      morning: dailyWindowFor("morning", { year, month, day }, location),
+      evening: dailyWindowFor("evening", { year, month, day }, location),
+    };
+  }, [variant, dayKey, coordinates, countryCode, timezone]);
+  const lampState = (section: WirdLampSection): WirdLampState => {
+    if (activity.wirds.includes(section)) return "done";
+    const window = detecting ? null : sessionWindows?.[section];
+    return window && date.getTime() >= window.start && date.getTime() < window.end ? "due" : "idle";
+  };
+
   const countdownText = t.nextPrayerCountdown
     .replace("{h}", pad2(nextPrayer.remaining.hours))
     .replace("{m}", pad2(nextPrayer.remaining.minutes))
@@ -202,88 +247,82 @@ export function PrayerTimesPanel({ date, className = "", variant = "compact" }: 
     ) : null;
 
   if (variant === "hero") {
-    const NextIcon = PRAYER_ICONS[nextPrayer.key];
+    const dashboard = homeDashboardLabels[language];
     return (
-      <div
-        className={`relative flex min-w-0 flex-col overflow-hidden border px-[18px] pb-2.5 pt-2 [@media(max-height:820px)]:pb-2 [@media(max-height:820px)]:pt-1.5 ${className}`}
-        style={{
-          ...HERO_PANEL_VARS,
-          background: "#2b2a3a",
-          color: "#fffaf0",
-          borderColor: "var(--look-card-border)",
-          boxShadow: "0 16px 30px -18px rgba(var(--color-shadow-rgb), 0.7), 0 2px 6px -2px rgba(0, 0, 0, 0.25)",
-          borderRadius: "calc(var(--card-radius) + 6px)",
-          ["--rs-dir" as string]: dir === "rtl" ? -1 : 1,
-        }}
-        data-prayer-panel="hero"
-      >
+      <div className={`dithar-hero ${className}`} style={{ ["--rs-dir" as string]: dir === "rtl" ? -1 : 1 }} data-prayer-panel="hero">
+        <div className="dithar-hero__title" data-prayer-panel-title="">
+          <span className="dithar-hero__heading">
+            <KaabaMark />
+            <span>{t.prayerPanelTitle}</span>
+          </span>
+          <span className="dithar-hero__location">
+            <span>{locationLabel}</span>
+            <MapPin size={12} className="shrink-0" aria-hidden="true" />
+          </span>
+        </div>
+
         {/* The look's scene in an arch (components/SceneArch.tsx) — an architectural motif only: it shows
             no direction (the app doesn't calculate the Qibla). */}
-        <SceneArch />
-        {/* The title and location run across the top, above the arch's crown, on the card's own colour. */}
-        <div className="relative flex items-center gap-2" style={{ color: "var(--color-text-primary)", ["--color-gold" as string]: "var(--look-accent-on-card)" }} data-prayer-panel-title="">
-          <span className="flex min-w-0 items-center gap-1.5">
-            <KaabaMark />
-            <span className="truncate text-[14px] font-bold">{t.prayerPanelTitle}</span>
+        <div className="dithar-niche" style={HERO_PANEL_VARS} data-large-text={largeText.large ? "" : undefined}>
+          <span ref={largeText.probe} className="dithar-text-probe" style={{ fontSize: largeText.probeSize }} aria-hidden="true">
+            x
           </span>
-          <span className="flex min-w-0 flex-1 items-center justify-end gap-1 text-[10.5px] opacity-90">
-            <span className="truncate">{locationLabel}</span>
-            <MapPin size={11} className="shrink-0" style={{ color: "var(--color-gold)" }} />
-          </span>
-        </div>
-
-        {/* The next prayer, under the crown. */}
-        <div className="relative mt-1 flex w-full flex-1 flex-col items-center justify-end px-4 pb-1.5 pt-7 [@media(max-height:880px)]:pb-0.5 [@media(max-height:880px)]:pt-4" style={{ containerType: "inline-size" }} data-next-prayer={detecting ? undefined : nextPrayer.key}>
-          {detecting ? (
-            <span className="relative pb-2 text-[13px] opacity-85">{settingsLabels[language].locationDetecting}</span>
-          ) : (
-            <>
-              <span className="relative flex items-center gap-1 text-[11.5px] opacity-85 [@media(max-height:880px)]:hidden">
-                <NextIcon size={13} strokeWidth={1.7} style={{ color: "var(--color-gold)" }} aria-hidden="true" />
-                {t.nextPrayerHeading}
-              </span>
-              <strong className="relative text-[clamp(21px,6.6vw,30px)] leading-tight [@media(max-height:860px)]:text-[clamp(19px,5.8vw,24px)]" style={{ fontFamily: "var(--font-display)" }} data-next-prayer-name="">
-                {names[nextPrayer.key]}
-              </strong>
-              <span
-                className="relative whitespace-nowrap font-bold tabular-nums"
-                // Never wider than the niche between its pilasters: the size also follows the line's length (cqw: the niche's width).
-                style={{ direction: "ltr", fontSize: `min(clamp(12.5px, 3.7vw, 16px), calc(100cqw * 2.2 / ${Math.max(countdownText.length, 1)}))`, color: "var(--color-gold-on-primary)" }}
-                data-next-prayer-countdown=""
-              >
-                {countdownText}
-              </span>
-              <span className="relative mt-1.5 w-full [@media(max-height:880px)]:mt-1">{progressBar}</span>
-            </>
-          )}
-        </div>
-
-        <div className="relative mt-1.5 grid grid-cols-6 gap-1" data-prayer-times="">
-          {prayerOrder.map((key) => {
-            const Icon = PRAYER_ICONS[key];
-            const isNext = !detecting && key === nextPrayer.key;
-            return (
-              <div
-                key={key}
-                className="flex min-w-0 flex-col items-center gap-0.5 rounded-xl px-0.5 py-1 [@media(max-height:820px)]:gap-0 [@media(max-height:820px)]:py-0.5"
-                style={isNext ? { background: "color-mix(in srgb, var(--color-gold) 18%, transparent)", boxShadow: "inset 0 0 0 1px var(--color-gold)" } : { background: "rgba(var(--color-primary-contrast-rgb), 0.06)" }}
-                data-prayer={key}
-                data-next={isNext ? "" : undefined}
-              >
-                <Icon size={13} strokeWidth={1.6} className="shrink-0" style={{ color: "var(--color-gold)" }} aria-hidden="true" />
-                <span className="w-full truncate text-center opacity-90" style={{ fontSize: "clamp(8.5px, 2.4vw, 10.5px)" }}>
-                  {names[key]}
-                </span>
-                <span className="w-full truncate text-center font-bold" style={{ direction: "ltr", fontSize: "clamp(10.5px, 2.9vw, 13px)" }}>
-                  {detecting ? "--:--" : formatPrayerTime(times[key], timezone)}
-                </span>
+          <SceneArch />
+          <div className="dithar-niche__content">
+            <div className="dithar-niche__hero" data-next-prayer={detecting ? undefined : nextPrayer.key} data-home-wirds={activity.wirds.length} role="group" aria-label={`${dashboard.sessionsTitle}: ${dashboard.sessionsCount(activity.wirds.length)}`}>
+              <WirdLamp section="morning" state={lampState("morning")} how={activity.wirdsHow.morning} onOpen={onOpenWird} />
+              <div className="dithar-niche__next">
+                {detecting ? (
+                  <span className="dithar-niche__detecting">{settingsLabels[language].locationDetecting}</span>
+                ) : (
+                  <>
+                    <span className="dithar-niche__label">{t.nextPrayerHeading}</span>
+                    <strong className="dithar-niche__name" data-next-prayer-name="">
+                      {names[nextPrayer.key]}
+                    </strong>
+                  </>
+                )}
               </div>
-            );
-          })}
+              <WirdLamp section="evening" state={lampState("evening")} how={activity.wirdsHow.evening} onOpen={onOpenWird} />
+            </div>
+
+            {!detecting && (
+              <>
+                <span className="dithar-niche__countdown" data-next-prayer-countdown="">
+                  {nextPrayerCountdownText(nextPrayer.remaining, language)}
+                </span>
+                {progressBar && <span className="dithar-niche__progress">{progressBar}</span>}
+              </>
+            )}
+
+            <div className="dithar-prayer-times" data-prayer-times="">
+              {prayerOrder.map((key) => {
+                const Icon = PRAYER_ICONS[key];
+                const isNext = !detecting && key === nextPrayer.key;
+                return (
+                  <div key={key} className={`dithar-prayer-time${isNext ? " is-next" : ""}`} data-prayer={key} data-next={isNext ? "" : undefined}>
+                    <Icon className="dithar-prayer-time__icon" strokeWidth={1.6} aria-hidden="true" />
+                    <span className="dithar-prayer-time__name">{names[key]}</span>
+                    <span className="dithar-prayer-time__at">{detecting ? "--:--" : formatPrayerTime(times[key], timezone)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        <div className="relative mt-1.5 flex flex-col gap-0.5 border-t pt-1.5 opacity-95" style={{ borderColor: "color-mix(in srgb, var(--color-gold) 30%, transparent)", fontSize: "clamp(9.5px, 2.6vw, 11.5px)" }}>
-          {toggles}
+        <div className="dithar-hero__switches" data-toggles-row="">
+          <label className="dithar-switch-row" data-audio-adhkar-toggle="">
+            <Headphones className="dithar-switch-row__icon" aria-hidden="true" />
+            <span className="dithar-switch-row__label">{dashboard.audioAdhkarToggleShort}</span>
+            <ReminderSwitch hero checked={audioAdhkar.enabled} onChange={audioAdhkar.toggle} label={t.audioAdhkarToggle} name="audio-adhkar" />
+          </label>
+          <label className="dithar-switch-row">
+            <Bell className="dithar-switch-row__icon" aria-hidden="true" />
+            <span className="dithar-switch-row__label">{t.prayerReminder}</span>
+            <ReminderSwitch hero checked={reminder.enabled} onChange={reminder.toggle} label={t.prayerReminder} name="prayer-notifications" />
+          </label>
+          {reminder.enabled && !reminder.available && <p className="dithar-hero__note">{t.prayerReminderUnavailableNote}</p>}
         </div>
       </div>
     );

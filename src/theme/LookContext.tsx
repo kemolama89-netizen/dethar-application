@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from "react";
 import { CUSTOM_WALLPAPER_KEY, DEFAULT_LOOK_SETTINGS, LOOK_STORAGE_KEY, effectiveLook, loadCustomWallpaper, loadLookSettings, lookStylesheet, saveCustomWallpaper, saveLookSettings, shownWallpaper, veilAlpha } from "./looks";
 import type { CustomWallpaper, LookId, LookSettings } from "./looks";
+import { RemindersNative, isRemindersNativeAvailable } from "../lib/remindersNative";
 
 // The active appearance theme ("look", theme/looks.ts) for the whole app:
 // sets html[data-look] (the look's tokens) and
@@ -59,6 +60,10 @@ export function LookProvider({ children }: { children: ReactNode }) {
     return null;
   });
   useEffect(() => applyLookToDocument(settings, custom, look), [settings, custom, look]);
+  // The floating Tasbeeh and native's reminder cover follow the theme, also while the app is closed (AppLook.kt).
+  useEffect(() => {
+    if (isRemindersNativeAvailable()) void RemindersNative.setAppLook({ look: settings.look, autoDark: settings.autoDark }).catch(() => {});
+  }, [settings.look, settings.autoDark]);
 
   useEffect(() => {
     if (settings.autoDark !== "device" || typeof window.matchMedia !== "function") return;

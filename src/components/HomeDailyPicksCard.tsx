@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { homeDashboardLabels } from "../data/homeDashboardLabels";
 import { useLocalDateKey } from "../lib/useLocalDateKey";
@@ -55,41 +55,24 @@ export function HomeDailyPicksCard({ onOpen, className = "" }: { onOpen: (pick: 
   const pick = useTodayPick();
   const Arrow = dir === "rtl" ? ChevronLeft : ChevronRight;
   return (
+    // The dua's own text stays hidden until it is opened: a full dua can run many lines, and Home never shows part of one.
     <button
       type="button"
       onClick={() => {
         if (pick) onOpen(pick);
         else void loadTodayPick().then((p) => p && onOpen(p));
       }}
-      className={`dithar-glass flex w-full items-center gap-3 border px-3 py-2 text-start ${className}`}
-      style={{
-        borderColor: "var(--color-gold-soft)",
-        background: "linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface) 60%, rgba(var(--color-gold-rgb), 0.12) 100%)",
-        borderRadius: "var(--card-radius)",
-      }}
+      className={`dithar-glass dithar-daily-pick ${className}`}
       aria-label={`${t.dailyPicks} — ${t.dailyPicksAction}`}
       data-home-daily-picks={pick?.id ?? ""}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full" style={{ background: "rgba(var(--color-gold-rgb), 0.16)", color: "var(--color-primary)" }} aria-hidden="true">
-        <Sparkles size={17} />
+      <span className="dithar-daily-pick__text">
+        <span className="dithar-daily-pick__title">{t.dailyPicks}</span>
+        <span className="dithar-daily-pick__hint">{t.dailyPicksHint}</span>
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[12px] font-semibold" style={{ color: "var(--color-text-muted)" }}>
-          {t.dailyPicks}
-        </span>
-        {pick ? (
-          <span dir="rtl" lang="ar" className="line-clamp-1 text-[14.5px] font-bold leading-snug" style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-display)" }} data-home-daily-pick="">
-            {pick.text}
-          </span>
-        ) : (
-          <span className="line-clamp-1 text-[12px] leading-snug" style={{ color: "var(--color-text-muted)" }}>
-            {t.dailyPicksHint}
-          </span>
-        )}
-      </span>
-      <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[11.5px] font-semibold" style={{ background: "var(--color-primary)", color: "var(--color-primary-contrast)" }} data-home-daily-picks-action="">
+      <span className="dithar-daily-pick__action">
         {t.dailyPicksAction}
-        <Arrow size={14} aria-hidden="true" />
+        <Arrow size={15} strokeWidth={2.5} aria-hidden="true" />
       </span>
     </button>
   );

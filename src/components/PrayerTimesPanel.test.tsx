@@ -36,14 +36,14 @@ import { CITIES } from "../data/cities";
 // instead of re-deriving them.
 const DATE = new Date("2026-09-14T00:00:00Z");
 
-async function mount(variant: "compact" | "hero" = "compact") {
+async function mount(variant: "compact" | "hero" = "compact", date: Date = DATE) {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
   await act(async () => {
     root.render(
       <LanguageProvider>
-        <PrayerTimesPanel date={DATE} variant={variant} />
+        <PrayerTimesPanel date={date} variant={variant} />
       </LanguageProvider>,
     );
   });
@@ -400,5 +400,17 @@ describe("Home's prominent panel (variant=\"hero\")", () => {
     expect(arch.getAttribute("aria-hidden")).toBe("true");
     expect(panel.textContent).not.toMatch(/القبلة|Qibla|°/);
     await unmount();
+  });
+
+  it("marks only the session inside its own time window as due", async () => {
+    // Kuwait, 2 Nov 2026: Dhuhr is 11:32 and Asr 14:38, so 16:10 is in Evening's window and not Morning's.
+    const afternoon = await mount("hero", new Date("2026-11-02T16:10:00+03:00"));
+    expect(afternoon.container.querySelector("[data-home-wird='morning']")!.getAttribute("data-state")).toBe("idle");
+    expect(afternoon.container.querySelector("[data-home-wird='evening']")!.getAttribute("data-state")).toBe("due");
+    await afternoon.unmount();
+    const morning = await mount("hero", new Date("2026-11-02T07:00:00+03:00"));
+    expect(morning.container.querySelector("[data-home-wird='morning']")!.getAttribute("data-state")).toBe("due");
+    expect(morning.container.querySelector("[data-home-wird='evening']")!.getAttribute("data-state")).toBe("idle");
+    await morning.unmount();
   });
 });

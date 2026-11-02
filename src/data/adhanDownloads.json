@@ -1,0 +1,157 @@
+{
+ "baseUrl": "https://kemolama89-netizen.github.io/dethar-application/",
+ "bundled": {
+  "regular": "alafasy-kuwait",
+  "fajr": "alafasy-fajr-hijaz"
+ },
+ "files": {
+  "abdulbasit-fajr": {
+   "bytes": 11740472,
+   "sha256": "4222be6d387936725931e0a22f803ed50e0f4044a21a170a441ea1c7790c0fb5"
+  },
+  "alafasy-fajr-hijaz": {
+   "bytes": 3442335,
+   "sha256": "a095350889f45b40d1f5cc5e4e4121676ce799afb4e200d5ea85e166ea42fbd4"
+  },
+  "alafasy-fajr-kurd": {
+   "bytes": 5187729,
+   "sha256": "383c77f4a815c19e7869b5c58fb3403473a8815c55a2b3c79c94e443f2add874"
+  },
+  "alafasy-fajr-nahawand": {
+   "bytes": 4666647,
+   "sha256": "afdb1ff1f6c47305efef81f5cbcbfa50001b3e382fbd86dfd4a236a35b740afb"
+  },
+  "alafasy-fajr-nawa-athar": {
+   "bytes": 3836400,
+   "sha256": "9953e7b9889abbb7a32df3751580ddb6783b9a75d809f4cedd32a2b46179bba8"
+  },
+  "alafasy-fajr-rast": {
+   "bytes": 3350178,
+   "sha256": "8e5042bb3602f8d76d9927a65ed88610bdf68fd16734efd2f7c82120e8c16ef8"
+  },
+  "alafasy-fajr-saba": {
+   "bytes": 3311397,
+   "sha256": "d7f82855e04a273b6a5f1773b1d8692e8a4e339c55e0c79c83bf8cf889ec1998"
+  },
+  "alafasy-fajr-phrase-excerpt": {
+   "bytes": 464663,
+   "sha256": "4e5c731b5837a05978b6b43bb66733f04d4319021d74fd3d85cbc8d5657dbea4"
+  },
+  "omran-fajr": {
+   "bytes": 2844025,
+   "sha256": "1f12a594744bfcc3af84b309aa487b5dfd1631c9b512127c0a96a865316f87bf"
+  },
+  "tobar-fajr": {
+   "bytes": 4615104,
+   "sha256": "cb59d4508eb63d6b97df0355c35a4d5bc44d977340ed07893bd4306867254826"
+  },
+  "masjid-al-haram-fajr": {
+   "bytes": 2600892,
+   "sha256": "67906d2d99f5d1f68204ea79dd80daba22cdf099245d65ac955c8ed2d8ea63e8"
+  },
+  "masjid-an-nabawi-fajr": {
+   "bytes": 3742890,
+   "sha256": "c07c32fabdb9d332ae367a0ec608372fdfca1801a3c369ccafcd5dd690a9da70"
+  },
+  "abdulbasit": {
+   "bytes": 9943248,
+   "sha256": "cbbb619254cbf6f24359ab5ef57ccb1790e440a4fd9977ae37f48f473afd5b87"
+  },
+  "shuaisha": {
+   "bytes": 5620232,
+   "sha256": "93360cdda9d47340c84996b71f8fbde58ed0703a44b8fa6db2254c8b8fd0a6ab"
+  },
+  "nafees": {
+   "bytes": 3409337,
+   "sha256": "eca0ad96a759b3758c81ea09d4ca8a7a88031b1a3495d7aa53f038bfcfae7257"
+  },
+  "nuaina": {
+   "bytes": 424140,
+   "sha256": "98877b9a7d3f14514e6a63c09d5eb5e9c59790ebbbf8cfc0c835d4e00a1c207a"
+  },
+  "ali-mahmoud": {
+   "bytes": 597264,
+   "sha256": "afeab3010820fd938c31caf11ae7e31956ea80db4140a258cea4d550f1d56c7d"
+  },
+  "mulla-haram": {
+   "bytes": 3484834,
+   "sha256": "7526441525d71dbb6579f11fc02aa55c06deaee39b7d4e2a3d2716a2641d7f6e"
+  },
+  "mulla-isha-1445": {
+   "bytes": 3553635,
+   "sha256": "643219d515d3c19dbad32837ea26a88451b8d404208f09d69aa14b746601a01b"
+  },
+  "banna": {
+   "bytes": 2634243,
+   "sha256": "73b09872b7a2bc61159467681029379dbe03448e14d2aee16e855ceec66453c4"
+  },
+  "husary": {
+   "bytes": 3589152,
+   "sha256": "79738be8863e8dfbac77d4bb8876442867305a0d2d8be6403244ed760fb681ed"
+  },
+  "mahmoud-ramadan": {
+   "bytes": 6617304,
+   "sha256": "048ef3418fef5b60859de2219c1a3b57c9631af1cf62d47f6d0152e840611bbb"
+  },
+  "alafasy-saba-2": {
+   "bytes": 7884402,
+   "sha256": "6fc2cc0bc7eeb2b0e88f673b97dcde8261fe0522306524bf69f658c6fae02b3e"
+  },
+  "alafasy-classic": {
+   "bytes": 3711478,
+   "sha256": "5a787d8353a4131a46c626aa134540101efb458629c3ad734c5fb9d32b141a58"
+  },
+  "alafasy-kuwait": {
+   "bytes": 5563289,
+   "sha256": "f19f9d050b4100df2a762c82704556b2b5012b62891ef303a0e52323647e7b8f"
+  },
+  "tablawi": {
+   "bytes": 3021978,
+   "sha256": "29e7dbda5cf16da5b374ed5fdd26406b00335c5417360de8cfcc7f568bd11926"
+  },
+  "omran": {
+   "bytes": 5935019,
+   "sha256": "5f595a8e55a4faf09e38534c671dc7463a380aa58ade84843ac28c83936cabef"
+  },
+  "refaat": {
+   "bytes": 3740314,
+   "sha256": "8f0a44e89a82dbec5af8c9792e8444722a4f27c518069246bde6f78f163c35da"
+  },
+  "minshawi": {
+   "bytes": 6047053,
+   "sha256": "deba69cf461c771d4f02a0c9d36a26a409fed5dbe1af175bc4af84fe1c995f40"
+  },
+  "mustafa-ismail": {
+   "bytes": 1469411,
+   "sha256": "596b15ac4b481e6deebc562d76fb103e9b5dcec3e5e648f916fef8af23cfff2b"
+  },
+  "tobar": {
+   "bytes": 3534786,
+   "sha256": "289c3af1136109a2e5418480716ab154a7a2c01069448c9a65501ea87dc8dc6d"
+  },
+  "qatami": {
+   "bytes": 3358625,
+   "sha256": "aa900fd91c1a25a195951c4b7a8c094e06e94cab2664777cb1b3e9993a7e79da"
+  },
+  "saad-ghamdi": {
+   "bytes": 1686394,
+   "sha256": "5fafb2f40bf144da4d42d0da4c1a552291d032702f801aaa0ebfe0afdba05373"
+  },
+  "naqshbandi": {
+   "bytes": 2188015,
+   "sha256": "79b81256c9486d4bcb739e5bb9a7f1ee807966ea5dfcf3fcf761adffe754885e"
+  },
+  "taha-fashni": {
+   "bytes": 889488,
+   "sha256": "a5159c80409421716167cf2f448b227afef010e0a3c880f71a408d00805e4fec"
+  },
+  "masjid-an-nabawi-2": {
+   "bytes": 2863705,
+   "sha256": "6993473066d4c9d8345787842882293b98ff1337464d7fe0aa847ebea81a940c"
+  },
+  "masjid-an-nabawi-3": {
+   "bytes": 3552567,
+   "sha256": "a3caf8aff575e244380402ac688d790134ae28a690a80e0d388d54909e805f0c"
+  }
+ }
+}

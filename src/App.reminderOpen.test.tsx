@@ -12,6 +12,7 @@ type OpenEvent = { id: string; commentId?: string | null; shown?: ShownReminder 
 const native = vi.hoisted(() => ({
   listener: null as ((e: OpenEvent) => void) | null,
   launch: { id: null as string | null } as OpenEvent | { id: null },
+  coverRemovals: 0,
 }));
 
 vi.mock("./lib/remindersNative", () => ({
@@ -22,6 +23,10 @@ vi.mock("./lib/remindersNative", () => ({
       return { remove: async () => {} };
     },
     consumeLaunchReminder: async () => native.launch,
+    reminderViewShown: async () => {
+      native.coverRemovals++;
+    },
+    setAppLook: async () => {},
     setReminders: async () => ({ widgets: 0 }),
     setSummary: async () => {},
     setCustomBackground: async () => {},

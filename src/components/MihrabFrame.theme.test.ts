@@ -30,10 +30,10 @@ describe("the mihrab follows the theme", () => {
   // Home's panel now shows the appearance theme's scene in an arch (SceneArch, theme/looks.ts) instead
   // of the mihrab: its text is light over the shaded scene in every theme, so its "on primary" colours are
   // set once, as tokens on the panel (HERO_PANEL_VARS), and everything inside follows them.
-  it("Home's panel shows the theme's scene arch, its on-scene colours set once as tokens on the panel", () => {
+  it("Home's panel shows the theme's scene arch, its on-scene colours set once as tokens on the niche", () => {
     expect(panel).toContain("<SceneArch />");
     expect(panel).not.toContain("<MihrabFrame");
     expect(panel).toMatch(/const HERO_PANEL_VARS = \{[^}]*"--color-primary-contrast": "#fffaf0"[^}]*"--color-gold-on-primary": "#f3cf86"/s);
-    expect(panel).toContain("...HERO_PANEL_VARS,");
+    expect(panel).toContain('className="dithar-niche" style={HERO_PANEL_VARS}');
   });
 });

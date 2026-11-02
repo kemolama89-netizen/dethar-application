@@ -267,15 +267,30 @@ describe("Written Adhkar categories", () => {
   });
 });
 
+describe("the Morning and Evening lamps on Home", () => {
+  for (const [section, title] of [["morning", "أذكار الصباح"], ["evening", "أذكار المساء"]] as const) {
+    it(`the ${section} lamp opens that session in Written Adhkar`, async () => {
+      await expectScreen(TAB.home);
+      const lamp = container.querySelector<HTMLElement>(`[data-home-wird="${section}"]`);
+      expect(lamp!.textContent).toContain(title);
+      await click(lamp, `${section} lamp`);
+      await waitFor(() => container.querySelector("[data-home-wird]") === null, "Home to give way to the reader");
+      await waitFor(() => (container.textContent ?? "").includes(title), "the session's reader");
+      await browserBack();
+      await expectScreen(TAB.home);
+    });
+  }
+});
+
 describe("«مختارات اليوم» on Home", () => {
   it("opens like a tapped notification: the same full-screen view, on the very dua the card shows — never settings — and Back returns to Home", async () => {
     await expectScreen(TAB.home);
     const card = () => container.querySelector<HTMLElement>("[data-home-daily-picks]");
     await waitFor(() => !!card()?.getAttribute("data-home-daily-picks"), "today's pick on the card");
     const id = card()!.getAttribute("data-home-daily-picks")!;
-    const shownText = card()!.querySelector("[data-home-daily-pick]")!.textContent;
     const dua = MISC_DUAS.find((d) => d.id === id)!;
-    expect(shownText).toBe(dua.text_ar);
+    // The dua's text stays hidden on Home until it is opened.
+    expect(card()!.textContent).not.toContain(dua.text_ar.slice(0, 12));
     await click(card(), "Daily Picks card");
     await waitFor(() => container.querySelector("[data-spiritual-reminder]") !== null, "the reminder view");
     expect(container.querySelector("[data-spiritual-reminder]")!.getAttribute("data-spiritual-reminder")).toBe(`dua:${id}`);

@@ -9,6 +9,7 @@ import { QuranReaderScreen } from "./QuranReaderScreen";
 import { QuranContinueCard } from "./QuranContinueCard";
 import { HomeAudioPlayer } from "./HomeAudioPlayer";
 import { QURAN_VERSES } from "../lib/quranText";
+import { markedQuranVerses } from "../lib/quranShareText";
 import { QURAN_ZOOM_FIT, isQuranBookmarked, loadQuranPosition, loadQuranZoom, resetQuranReadingCacheForTesting, saveQuranPosition, toggleQuranBookmark } from "../lib/quranReading";
 import { MUSHAF_SHOWN_BOX, pageOf, pageVerses } from "../lib/quranMeta";
 import { rememberLastPlayed, resetLastPlayedForTesting } from "../lib/lastPlayedDhikr";
@@ -254,7 +255,7 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     const about = container.querySelector("[data-quran-panel='about']")!;
     expect(about.textContent).toContain("١٤٤١هـ");
     expect(about.textContent).toContain("CC BY 4.0");
-    expect([...about.querySelectorAll("a")].map((a) => a.getAttribute("href"))).toEqual(["https://github.com/quran-ws/quran-svg", "https://tanzil.net"]);
+    expect([...about.querySelectorAll("a")].map((a) => a.getAttribute("href"))).toEqual(["https://cms.itqan.dev/gallery/asset/138", "https://github.com/quran-ws/quran-svg", "https://tanzil.net"]);
     expect(container.querySelector("[data-quran-notice]")!.textContent).toContain("CHANGING IT IS NOT ALLOWED");
   });
 
@@ -280,17 +281,22 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     expect(container.querySelector("[data-quran-area]")!.hasAttribute("data-zoomed")).toBe(false);
   });
 
-  it("shares a long-pressed verse as an image: the complete verse as written, its surah and verse number", async () => {
+  it("shares a long-pressed verse as an image: the complete verse with its pause marks, its surah and verse number", async () => {
     sharedImages.length = 0;
     await open(2, 255);
     // Nothing to share before a verse is selected.
     expect(container.querySelector("[data-quran-select-share]")).toBeNull();
-    act(() => void container.querySelector("[data-verse='2:255']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+    await act(async () => {
+      container.querySelector("[data-verse='2:255']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
+      await import("../lib/quranShareText");
+    });
+    await vi.waitFor(() => expect(container.querySelector("[data-quran-select-share]")).not.toBeNull());
     click(container.querySelector("[data-quran-select-share]")!);
     const menu = document.querySelector("[data-share-menu]")!;
     expect(menu).not.toBeNull();
     await act(async () => void menu.querySelector("[data-share-option='image']")!.dispatchEvent(new MouseEvent("click", { bubbles: true })));
-    expect(sharedImages).toEqual([{ kindLabel: "القرآن الكريم", textAr: QURAN_VERSES[1][254], reference: "سورة البقرة · الآية ٢٥٥" }]);
+    expect(sharedImages).toEqual([{ kindLabel: "القرآن الكريم", textAr: markedQuranVerses()[1][254], reference: "سورة البقرة · الآية ٢٥٥", quranVerse: { ayah: 255 } }]);
+    expect((sharedImages[0] as { textAr: string }).textAr).toMatch(/[\u06D6-\u06DB]/); // its pause marks are there
     expect(document.querySelector("[data-share-menu]")).toBeNull(); // shared: the sheet closes
 
     // Verse 1 of a surah: the verse itself, without the basmala heading the surah.
@@ -298,13 +304,130 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     expect(container.querySelector("[data-quran-selection]")!.getAttribute("data-quran-selection")).toBe("2:256");
     click(container.querySelector("[data-quran-select-share]")!);
     await act(async () => void document.querySelector("[data-share-option='image']")!.dispatchEvent(new MouseEvent("click", { bubbles: true })));
-    expect(sharedImages[1]).toMatchObject({ textAr: QURAN_VERSES[1][255], reference: "سورة البقرة · الآية ٢٥٦" });
+    expect(sharedImages[1]).toMatchObject({ textAr: markedQuranVerses()[1][255], reference: "سورة البقرة · الآية ٢٥٦", quranVerse: { ayah: 256 } });
+  });
+
+  it("opens a selected verse's Tafsir over the page, and returns to exactly where it was", async () => {
+    await open(88, 5);
+    const page = shownPage();
+    act(() => void container.querySelector("[data-verse='88:5']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+    expect(container.querySelector("[data-quran-select-tafsir]")!.textContent).toContain("عرض التفسير");
+    const reader = container.querySelector("[data-quran-reader]");
+    click(container.querySelector("[data-quran-select-tafsir]")!);
+    // The first open also brings the surah's text, a large chunk.
+    await vi.waitFor(() => expect(container.querySelector("[data-tafsir-passage]")).not.toBeNull(), { timeout: 15000 });
+    // The selected verse's own comment, by its exact surah and number, not the surah's.
+    expect(container.querySelector("[data-verse-tafsir]")!.getAttribute("data-verse-tafsir")).toBe("88:5");
+    expect(container.querySelector("[data-tafsir-passage]")!.getAttribute("data-tafsir-passage")).toBe("88:5");
+    expect(container.querySelector("[data-tafsir-section]")).toBeNull();
+    // The arrow keys read the Tafsir's page, they don't turn the Mushaf's behind it.
+    act(() => void window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" })));
+    expect(shownPage()).toBe(page);
+    click(container.querySelector("[data-tafsir-back]")!);
+    expect(container.querySelector("[data-verse-tafsir]")).toBeNull();
+    // The same reader, never remounted: the page, the position and the selection all stand.
+    expect(container.querySelector("[data-quran-reader]")).toBe(reader);
+    expect(shownPage()).toBe(page);
+    expect(current()).toBe("88:5");
+    expect(container.querySelector("[data-quran-selection]")!.getAttribute("data-quran-selection")).toBe("88:5");
+  });
+
+  it("opens Tafsir al-Sa'di for a verse in any surah, and the reader follows a verse moved to there", async () => {
+    await open(2, 255);
+    act(() => void container.querySelector("[data-verse='2:255']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+    click(container.querySelector("[data-quran-select-tafsir]")!);
+    await vi.waitFor(() => expect(container.querySelector("[data-tafsir-passage]")?.getAttribute("data-tafsir-passage")).toBe("2:255"));
+    expect(container.querySelector("[data-tafsir-none]")).toBeNull();
+    click(container.querySelector("[data-saadi-next]")!);
+    await vi.waitFor(() => expect(container.querySelector("[data-tafsir-passage]")?.getAttribute("data-tafsir-passage")).toBe("2:256"));
+    click(container.querySelector("[data-tafsir-back]")!);
+    await vi.waitFor(() => expect(container.querySelector("[data-verse-tafsir]")).toBeNull());
+    expect(container.querySelector("[data-quran-selection]")!.getAttribute("data-quran-selection")).toBe("2:256");
+    expect(loadQuranPosition()).toMatchObject({ surah: 2, ayah: 256 });
+  });
+
+  describe("the text reading mode", () => {
+    const setMode = async (mode: "pages" | "text") => {
+      click([...container.querySelectorAll<HTMLElement>("button")].find((b) => b.getAttribute("aria-label") === "إعدادات القراءة")!);
+      click(container.querySelector(`[data-quran-mode='${mode}']`)!);
+    };
+
+    it("is off by default: the printed page is what opens", async () => {
+      await open(2, 255);
+      expect(container.querySelector("[data-quran-sheet]")).not.toBeNull();
+      expect(container.querySelector("[data-quran-text-page]")).toBeNull();
+    });
+
+    it("shows the same page's verses in the Complex's text, is remembered, and goes back to the printed page", async () => {
+      await open(2, 255);
+      await setMode("text");
+      await vi.waitFor(() => expect(container.querySelector("[data-verse='2:255'].dithar-mushaf-text__verse")).not.toBeNull());
+      const text = container.querySelector("[data-quran-text-page]")!;
+      expect(text.getAttribute("data-quran-text-page")).toBe("42");
+      expect(text.getAttribute("dir")).toBe("rtl");
+      expect(container.querySelector("[data-quran-sheet]")).toBeNull();
+      expect(localStorage.getItem("dithar:quran:reading-mode:v1")).toContain("text");
+      await setMode("pages");
+      await vi.waitFor(() => expect(container.querySelector("[data-quran-sheet]")).not.toBeNull());
+      expect(localStorage.getItem("dithar:quran:reading-mode:v1")).toContain("pages");
+    });
+
+    it("selects a verse with the same long press, and offers its Tafsir", async () => {
+      localStorage.setItem("dithar:quran:reading-mode:v1", JSON.stringify("text"));
+      await open(2, 255);
+      await vi.waitFor(() => expect(container.querySelector("[data-verse='2:255']")).not.toBeNull());
+      act(() => void container.querySelector("[data-verse='2:255']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+      expect(container.querySelector("[data-quran-selection]")!.getAttribute("data-quran-selection")).toBe("2:255");
+      click(container.querySelector("[data-quran-select-tafsir]")!);
+      await vi.waitFor(() => expect(container.querySelector("[data-tafsir-passage]")?.getAttribute("data-tafsir-passage")).toBe("2:255"));
+    });
+
+    it("starts each surah with its name, and the basmala except in At-Tawbah", async () => {
+      localStorage.setItem("dithar:quran:reading-mode:v1", JSON.stringify("text"));
+      await open(9, 1);
+      await vi.waitFor(() => expect(container.querySelector("[data-quran-text-surah='9']")).not.toBeNull());
+      expect(container.querySelector("[data-quran-text-surah='9'] .dithar-mushaf-text__basmala")).toBeNull();
+    });
+  });
+
+  it("opens the verse selected, whichever it is: a second selection gets its own comment", async () => {
+    await open(88, 5);
+    for (const [key, range] of [["88:12", "88:12"], ["88:7", "88:7"]]) {
+      act(() => void container.querySelector(`[data-verse='${key}']`)!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+      click(container.querySelector("[data-quran-select-tafsir]")!);
+      await vi.waitFor(() => expect(container.querySelector("[data-tafsir-passage]")?.getAttribute("data-tafsir-passage")).toBe(range));
+      expect(container.querySelector("[data-verse-tafsir]")!.getAttribute("data-verse-tafsir")).toBe(key);
+      click(container.querySelector("[data-tafsir-back]")!);
+    }
+  });
+
+  it("offers Basa'ir while reading, and returns to the same page", async () => {
+    await open(2, 255);
+    const page = shownPage();
+    const reader = container.querySelector("[data-quran-reader]");
+    click(container.querySelector("[data-basair-entry='reader']")!);
+    await vi.waitFor(() => expect(container.querySelector("[data-tafsir-passage='2:255']")).not.toBeNull());
+    click(container.querySelector("[data-tafsir-back]")!);
+    expect(container.querySelector("[data-basair]")).toBeNull();
+    expect(container.querySelector("[data-quran-reader]")).toBe(reader);
+    expect(shownPage()).toBe(page);
+    expect(current()).toBe("2:255");
+  });
+
+  it("offers Basa'ir on the Mushaf's index, without any new tab", async () => {
+    mount(<QuranReaderScreen start={null} onBack={() => {}} />);
+    await settle();
+    const entry = container.querySelector("[data-basair-entry='index']")!;
+    expect(entry.textContent).toContain("بصائر");
+    click(entry);
+    await vi.waitFor(() => expect(container.querySelector("[data-verse-tafsir='1:1']")).not.toBeNull());
   });
 
   it("shares verse 1 of a surah without the basmala that heads it", async () => {
     sharedImages.length = 0;
     await open(36, 1);
     act(() => void container.querySelector("[data-verse='36:1']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
+    await vi.waitFor(() => expect(container.querySelector("[data-quran-select-share]")).not.toBeNull());
     click(container.querySelector("[data-quran-select-share]")!);
     await act(async () => void document.querySelector("[data-share-option='image']")!.dispatchEvent(new MouseEvent("click", { bubbles: true })));
     const verse = (sharedImages[0] as { textAr: string }).textAr;

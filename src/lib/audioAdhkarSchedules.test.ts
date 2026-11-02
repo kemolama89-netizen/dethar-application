@@ -306,7 +306,7 @@ describe("schedule sync — Morning, Evening and Misc, each independent", () => 
   it("creates the Evening schedule when enabled with a start time; the others stay off", async () => {
     saveEveningAudioSettings({ eveningAudioEnabled: true, eveningAudioStartTime: "22:12" });
     const result = await syncAudioAdhkarSchedules(NOW);
-    expect(sent().evening).toEqual({ enabled: true, startMinutes: 22 * 60 + 12, playlist: buildEveningAudioPlaylist(), slots: expect.any(Array), reminderSound: "crickets" });
+    expect(sent().evening).toEqual({ enabled: true, startMinutes: 22 * 60 + 12, playlist: buildEveningAudioPlaylist(), slots: expect.any(Array), reminderSound: "river" });
     expect(sent().morning).toEqual({ enabled: false, startMinutes: -1, playlist: [], slots: [], reminderSound: "birdsong" });
     expect(sent().misc).toMatchObject({ enabled: false, playlist: [] });
     expect(result).toMatchObject({ available: true, exact: true, evening: { scheduledAt: 1_790_000_100_000 }, morning: { scheduledAt: null } });
@@ -317,7 +317,7 @@ describe("schedule sync — Morning, Evening and Misc, each independent", () => 
     saveDailySchedule("evening", { enabled: false, startTime: "17:00" });
     await syncAudioAdhkarSchedules(NOW);
     expect(sent().morning).toEqual({ enabled: true, startMinutes: 5 * 60 + 30, playlist: buildDailyAudioPlaylist("morning"), slots: expect.any(Array), reminderSound: "birdsong" });
-    expect(sent().evening).toEqual({ enabled: false, startMinutes: 17 * 60, playlist: [], slots: [], reminderSound: "crickets" });
+    expect(sent().evening).toEqual({ enabled: false, startMinutes: 17 * 60, playlist: [], slots: [], reminderSound: "river" });
     const morningIds = new Set(writtenAdhkarItems.morning.map((i) => i.id));
     for (const p of sent().morning.playlist) expect(morningIds.has(p.dhikrId), p.dhikrId).toBe(true);
     // Morning plays its own recordings, in Morning order.

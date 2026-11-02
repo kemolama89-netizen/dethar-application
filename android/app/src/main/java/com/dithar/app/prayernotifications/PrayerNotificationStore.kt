@@ -117,14 +117,13 @@ class PrayerNotificationStore(context: Context) {
             return try {
                 val obj = JSONObject(raw)
                 val voices = obj.getJSONArray("voices")
+                fun voice(v: JSONObject) = AdhanVoice(v.getString("id"), v.optString("name"), v.getString("assetPath"), v.getLong("startMillis"), v.getLong("endMillis"), v.optString("muezzin"))
                 AdhanConfig(
                     rotate = obj.optBoolean("rotate", false),
-                    voices = (0 until voices.length()).map { i ->
-                        val v = voices.getJSONObject(i)
-                        AdhanVoice(v.getString("id"), v.optString("name"), v.getString("assetPath"), v.getLong("startMillis"), v.getLong("endMillis"), v.optString("muezzin"))
-                    }.filter { it.endMillis > it.startMillis },
+                    voices = (0 until voices.length()).map { i -> voice(voices.getJSONObject(i)) }.filter { it.endMillis > it.startMillis },
                     nextVoiceId = obj.optString("nextVoiceId").ifEmpty { null },
                     nextToken = obj.optString("nextToken").ifEmpty { null },
+                    fallback = obj.optJSONObject("fallback")?.let(::voice),
                 )
             } catch (_: Exception) {
                 null

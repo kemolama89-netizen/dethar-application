@@ -20,6 +20,7 @@ import type { AdhanRecording, AdhanSegment } from "../data/adhanRecordings";
 import type { AdhanMode } from "./adhanAudioSettings";
 import { subscribeAudioVolumes, volumeGain } from "./audioVolumeSettings";
 import { playableAudioPath } from "./audioAssets";
+import { adhanOnDemandUrl } from "./adhanDownloads";
 
 export interface AdhanAudioElement {
   src: string;
@@ -74,7 +75,7 @@ export function adhanSegment(recording: AdhanRecording, mode: AdhanMode): AdhanS
 }
 
 export function adhanAudioUrl(recording: AdhanRecording): string {
-  return `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(recording.path))}`;
+  return adhanOnDemandUrl(recording) ?? `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(recording.path))}`;
 }
 
 export function adhanAudioKey(recording: AdhanRecording, mode: AdhanMode): string {

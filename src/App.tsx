@@ -128,12 +128,14 @@ function HomeScreen({
   onNavigateToSettings,
   onNavigateToAudio,
   onOpenDailyPick,
+  onOpenWird,
 }: {
   onNavigateToTasbeeh: () => void;
   onNavigateToWritten: () => void;
   onNavigateToSettings: () => void;
   onNavigateToAudio: () => void;
   onOpenDailyPick: (pick: DailyPickTarget) => void;
+  onOpenWird: (section: "morning" | "evening") => void;
 }) {
   const { language } = useLanguage();
   const t = labels[language];
@@ -198,19 +200,17 @@ function HomeScreen({
             the full-screen reflection (lib/reminderContent.ts — the Wamdat
             Lataif and the Hadith library are unchanged). In their place: */}
         {/* The dashboard fills the height between the header and the bottom
-            navigation: today's progress right under the header, then the
-            «مختارات اليوم» card (it opens today's dua itself), and the prayer
-            times — the main panel — growing to take all the room left
-            (the dhikr player and Qur'an cards that used to sit here are
-            gone: the Mushaf has its own item in the navigation, and the
-            player's controls appear only while something actually plays).
-            On a short phone everything keeps its minimum size (and the
-            screen scrolls inside its frame if it must). */}
-        <div className="flex min-h-0 flex-1 flex-col gap-1.5 py-1 [@media(min-height:820px)]:gap-2.5 [@media(min-height:820px)]:py-1.5" data-home-dashboard="">
-          <DailyProgressCard />
-          <HomeDailyPicksCard onOpen={onOpenDailyPick} />
+            navigation: the prayer times first — the main panel, with the
+            Morning and Evening lamps — growing to take all the room left,
+            then the dhikr player's controls while something actually plays,
+            «مختارات اليوم» (it opens today's dua itself) and today's counts.
+            On a short phone or with large text everything keeps its natural
+            size, and the screen scrolls inside its frame. */}
+        <div className="dithar-home-dashboard" data-home-dashboard="">
+          <PrayerTimesPanel key={locationChange.refreshToken} date={date} variant="hero" onOpenWird={onOpenWird} />
           <HomeActivePlayback />
-          <PrayerTimesPanel key={locationChange.refreshToken} date={date} variant="hero" className="flex-1" />
+          <HomeDailyPicksCard onOpen={onOpenDailyPick} />
+          <DailyProgressCard />
         </div>
 
         <BottomNav
@@ -512,6 +512,11 @@ function AppRouter() {
               shown: { category: "dua", title: "", text: pick.text, meaning: "", detail: "", source: pick.source, commentText: null },
             })
           }
+          onOpenWird={(section) => {
+            setSearchTargetItemId(null);
+            setWrittenCategory(section);
+            setScreen("written-reader");
+          }}
         />
       </div>
     );
@@ -536,10 +541,14 @@ function ReminderOverlayHost() {
   // The reminder to show, as the widget/notification showed it: its id, the
   // DITHAR comment shown with it, and the very strings it drew (so exactly
   // that content opens — lib/reminderOpen.ts).
-  const [openReminder, setOpenReminder] = useState<{ id: string; commentId: string | null; shown?: ShownReminder } | null>(null);
-  const closeReminder = useCallback(() => setOpenReminder(null), []);
+  // [tap] counts the opens: tapping the reminder that is already open still has to take native's cover away.
+  const [openReminder, setOpenReminder] = useState<{ id: string; commentId: string | null; shown?: ShownReminder; tap: number } | null>(null);
+  const tapCount = useRef(0);
+  const nextTap = () => ++tapCount.current;
   // A tap on a notification or the widget opens its reminder DIRECTLY — never Home first:
-  //  - cold start: the launch cover (index.html) is held from the first frame until native has said
+  //  - native covers the WebView with the page colour before the activity draws, whatever state the app
+  //    was in (ReminderOpenCover.kt), and takes the cover away when told the reminder has painted, below;
+  //  - cold start: the launch cover (index.html) is also held from the first frame until native has said
   //    whether the app was opened from a reminder (consumeLaunchReminder); if it was, the cover stays
   //    until the reminder's view has painted, then goes — Home, mounted beneath, is never seen;
   //  - running (background or open): native's "openReminder" event opens the view over the current
@@ -558,25 +567,31 @@ function ReminderOverlayHost() {
   const reminderPainted = useCallback(() => {
     launchReminderPending.current = false;
     launchHold.current?.release(true);
+    if (isRemindersNativeAvailable()) void RemindersNative.reminderViewShown().catch(() => {});
   }, []);
+  // Closing also covers a reminder that turned out to have nothing to show: it closes itself before it paints.
+  const closeReminder = useCallback(() => {
+    setOpenReminder(null);
+    reminderPainted();
+  }, [reminderPainted]);
   // The reminder the user tapped is what they came for: the launch intro steps aside at once.
   useEffect(() => {
     if (openReminder) dismissStartupOverlay();
   }, [openReminder]);
   // In-app requests (Home's «مختارات اليوم») take the very same path as a tapped notification.
   useEffect(
-    () => subscribeOpenReminderRequests(({ id, commentId, shown }) => setOpenReminder({ id, commentId, shown })),
+    () => subscribeOpenReminderRequests(({ id, commentId, shown }) => setOpenReminder({ id, commentId, shown, tap: nextTap() })),
     [],
   );
   useEffect(() => {
     if (!isRemindersNativeAvailable()) return;
     preloadOnIdle(loadSpiritualReminderView);
-    const handle = RemindersNative.addListener("openReminder", ({ id, commentId, shown }) => setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined }));
+    const handle = RemindersNative.addListener("openReminder", ({ id, commentId, shown }) => setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined, tap: nextTap() }));
     void RemindersNative.consumeLaunchReminder()
       .then(({ id, commentId, shown }) => {
         if (id) {
           launchReminderPending.current = true;
-          setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined });
+          setOpenReminder({ id, commentId: commentId ?? null, shown: shown ?? undefined, tap: nextTap() });
         } else if (!launchReminderPending.current) {
           // Not opened from a reminder: the launch goes on as usual (logo, intro, Home).
           launchHold.current?.release();
@@ -595,7 +610,7 @@ function ReminderOverlayHost() {
         shownAs={openReminder.shown}
         onClose={closeReminder}
       />
-      <AfterPaint onPainted={reminderPainted} />
+      <AfterPaint key={openReminder.tap} onPainted={reminderPainted} />
     </Suspense>
   );
 }

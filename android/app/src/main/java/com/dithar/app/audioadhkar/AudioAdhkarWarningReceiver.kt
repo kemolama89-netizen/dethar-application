@@ -83,8 +83,8 @@ class AudioAdhkarWarningReceiver : BroadcastReceiver() {
 /**
  * The calm sound of the one-minute Morning/Evening reminder (Settings →
  * إعدادات الأذكار الصوتية → صوت التنبيه): soft birdsong or a brook for the
- * morning, crickets or sea swells for the evening (res/raw, synthesized by
- * scripts/generate-reminder-sounds.py — CC0), or none.
+ * morning, a recorded shallow river or sea swells for the evening (res/raw; see
+ * public/audio/reminders/README.md), or none.
  *
  * Android fixes a channel's sound when the channel is first created, so
  * each sound has its own channel; "off" is a silent channel. The system
@@ -92,11 +92,14 @@ class AudioAdhkarWarningReceiver : BroadcastReceiver() {
  * per-channel choice they make in Android's settings.
  */
 object ReminderSounds {
-    val IDS = listOf("birdsong", "stream", "crickets", "waves")
+    val IDS = listOf("birdsong", "stream", "river", "waves")
     const val OFF = "off"
     private const val LEGACY_CHANNEL = "dithar_audio_adhkar_warning"
+    // The evening sound the river replaced. A channel keeps the sound it was created with, so the river
+    // has a channel of its own; a stored "crickets" is no longer known and sanitizes to the river.
+    private const val CRICKETS_CHANNEL = "dithar_adhkar_reminder_crickets"
 
-    fun defaultFor(section: Section): String = if (section == Section.EVENING) "crickets" else "birdsong"
+    fun defaultFor(section: Section): String = if (section == Section.EVENING) "river" else "birdsong"
 
     /** A stored/pushed value made safe: a known sound id, "off", or the section's default. */
     fun sanitize(value: String?, section: Section): String = when (value) {
@@ -113,7 +116,7 @@ object ReminderSounds {
         return when (sound) {
             "birdsong" -> if (en) "Adhkar reminder — birdsong" else "تنبيه الأذكار — تغريد الطيور"
             "stream" -> if (en) "Adhkar reminder — gentle stream" else "تنبيه الأذكار — جدول ماء"
-            "crickets" -> if (en) "Adhkar reminder — crickets" else "تنبيه الأذكار — صرير الليل"
+            "river" -> if (en) "Adhkar reminder — flowing water" else "تنبيه الأذكار — جريان ماء"
             "waves" -> if (en) "Adhkar reminder — sea waves" else "تنبيه الأذكار — أمواج هادئة"
             else -> if (en) "Adhkar reminder — silent" else "تنبيه الأذكار — بدون صوت"
         }
@@ -137,6 +140,7 @@ object ReminderSounds {
             val manager = context.getSystemService(NotificationManager::class.java)
             // The single system-sound channel this replaced.
             manager.deleteNotificationChannel(LEGACY_CHANNEL)
+            manager.deleteNotificationChannel(CRICKETS_CHANNEL)
             val uri = soundUri(context, sound)
             val channel = NotificationChannel(id, channelName(sound, language), NotificationManager.IMPORTANCE_DEFAULT).apply {
                 setSound(uri, if (uri != null) attributes else null)

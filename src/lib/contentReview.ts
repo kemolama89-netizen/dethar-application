@@ -1,5 +1,9 @@
 // Religious-content review decisions — the publication gate.
 //
+// The review SCREEN has been removed from the app; this store stays because
+// what is published (widgets, reminders, the startup overlay) still reads it,
+// so decisions and approved edits already saved on a device keep applying.
+//
 // Kept SEPARATE from the religious texts themselves: this store holds only
 // a status, notes, the reviewer's name and a history per content id; the
 // texts are never copied or changed here.

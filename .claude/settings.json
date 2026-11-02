@@ -1,0 +1,24 @@
+{
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "-e",
+              "const input = JSON.parse(require(\"fs\").readFileSync(0, \"utf8\"));\nif (process.env.DITHAR_ALLOW_PROTECTED_EDIT === \"1\") process.exit(0);\nconst names = \"(written-adhkar\\\\.ts|dithar-adhkar-cards\\\\.json|audio-adhkar\\\\.ts|importedDuas\\\\.ts|misc-library\\\\.ts|tasbeeh\\\\.ts|tasbeeh-library\\\\.json|morningEveningAudio\\\\.ts)\";\nconst t = input.tool_input || {};\nlet hit = false;\nif (input.tool_name === \"Bash\") {\n  const cmd = String(t.command || \"\").replace(/\\d?>&\\d/g, \"\").replace(/\\d?>\\s*\\/dev\\/null/g, \"\");\n  const named = new RegExp(\"(^|[^A-Za-z0-9_.-])\" + names + \"($|[^A-Za-z0-9_.-])\").test(cmd);\n  const writes = /(\\bsed\\s+(-[a-zA-Z-]+\\s+)*-[a-zA-Z]*i|>|\\btee\\b|\\bmv\\b|\\bcp\\b|\\brm\\b|\\bperl\\s+-[a-zA-Z]*i|\\btruncate\\b|\\bdd\\b|writeFile|write_text|\\bgit\\s+(checkout|restore|reset|stash|clean|apply)\\b)/.test(cmd);\n  hit = named && writes;\n} else {\n  const p = String(t.file_path || t.notebook_path || \"\").replace(/\\\\/g, \"/\");\n  hit = new RegExp(\"(^|/)src/data/\" + names + \"$\").test(p);\n}\nif (hit) {\n  console.error(\"Blocked: this is protected DITHAR adhkar, dua or Tasbeeh content (see CLAUDE.md). Ask the user first. For an approved change, the user restarts Claude Code with DITHAR_ALLOW_PROTECTED_EDIT=1.\");\n  process.exit(2);\n}\n"
+            ],
+            "timeout": 10,
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  }
+}

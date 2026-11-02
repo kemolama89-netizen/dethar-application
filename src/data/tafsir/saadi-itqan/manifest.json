@@ -1,0 +1,461 @@
+{
+"sourceSha256": "619759cf37bd69b94a54bb3595cbcb9910200785b581299a69a52ba498f2db89",
+"surahs": {
+"1": {
+"verses": 7,
+"contentSha256": "19979b59f2e0ea7ab9f89cf1c16747e6f655d4b722a41c81b4a553d46da65895"
+},
+"2": {
+"verses": 286,
+"contentSha256": "627280382a34ce4ebcc778263515cc187c5263dff5fc3f69a458c703c12e9859"
+},
+"3": {
+"verses": 200,
+"contentSha256": "4ce2b859d9238b8215672c60061f2af1413492a0418c6eb6d4dc2d7e235527c9"
+},
+"4": {
+"verses": 176,
+"contentSha256": "8a69c1190cd5ce2d40d934d7dac9e40f8c5168b1221edf5d3d3acacead63090d"
+},
+"5": {
+"verses": 120,
+"contentSha256": "6a3574527edd9acf1f352e0668781e2f6a8696c44eb99f02136e0f5a99e736c4"
+},
+"6": {
+"verses": 165,
+"contentSha256": "3b901bf347c26b7ff29c776a9aa233b9fbbdd767e2c847b82751ad15e6788713"
+},
+"7": {
+"verses": 206,
+"contentSha256": "2394fe0144aa386d2ecdf1c3cc37b16bf6dcefc62b85f1c4a7199a65b16f4927"
+},
+"8": {
+"verses": 75,
+"contentSha256": "fc2d9a44b068000b57b47bb66f9ca692d5dba76639ccebefad737693afb67d75"
+},
+"9": {
+"verses": 129,
+"contentSha256": "d5fbf8f8b78acdf1c08d3da4a3063e10335a2c5c0b040c6ac09337b7c2849148"
+},
+"10": {
+"verses": 109,
+"contentSha256": "b8d3fc40519a56ce191b51fa9196b60fa56271634da38c30ecdc9a2f9929e7b2"
+},
+"11": {
+"verses": 123,
+"contentSha256": "c068222b5e73b678bb51449b0dbdc998d1b79bffa420d21356ab7988907f0190"
+},
+"12": {
+"verses": 111,
+"contentSha256": "ad4b0b53d3bc97f4239e84e0589d7b96ab4bbfea2523db76aba45855adc74376"
+},
+"13": {
+"verses": 43,
+"contentSha256": "8c02ea196250aaf3b6cb56ccab6799890d6a8454c21978d591abfc54d4aff4fb"
+},
+"14": {
+"verses": 52,
+"contentSha256": "e66212d931067df3a85b429c44449e77a7102bfb4a6372eb283ae385e1297e91"
+},
+"15": {
+"verses": 99,
+"contentSha256": "3cb170902f2d78b8f236102c077a0e6caf350c27f14cb99655c9051fd34c3edf"
+},
+"16": {
+"verses": 128,
+"contentSha256": "b1419450b61d3f550948533b1d5940a0a1b9d7d2bf9065b9bf7f2bb7efd341b6"
+},
+"17": {
+"verses": 111,
+"contentSha256": "d689eb96dd02f2dcf60934c36420cec6d1037eb40e4da05783f353c995799c58"
+},
+"18": {
+"verses": 110,
+"contentSha256": "a9a20d56e4fa75a942804a93b50a6442e7b017333963e81a53ea9b227ee6bef3"
+},
+"19": {
+"verses": 98,
+"contentSha256": "42c7890dfa188f51983edce5a6abf47680d36b039a1c7f2b639d42b85ca51aff"
+},
+"20": {
+"verses": 135,
+"contentSha256": "ef4eaf345beba90ac2f87708c700d77551aea1b9ce447c10b78134af18646a24"
+},
+"21": {
+"verses": 112,
+"contentSha256": "7496314433b587bca543067624b37dce55d2d5b30d45efd0e708714cbb720c36"
+},
+"22": {
+"verses": 78,
+"contentSha256": "190130db555d7a246c94988d8ba969eb62872bd26087c683d3a30faad16e956a"
+},
+"23": {
+"verses": 118,
+"contentSha256": "066036acf69ea38536c107fda923ecbb8a75d9eaa33ecabab99bdd66e9e4f5b5"
+},
+"24": {
+"verses": 64,
+"contentSha256": "a76c69ba6761c0d145054e71ac06f3db4ea280626ee20a06e69601affb2dd2de"
+},
+"25": {
+"verses": 77,
+"contentSha256": "1f9bb993346194ff8dcfe6441a8559fa270238f7ed3489e8c511bf6bdc058598"
+},
+"26": {
+"verses": 227,
+"contentSha256": "7551fa207851837d0f7ae848afeb7a126f01f6a546e34cabe4691033365a9a32"
+},
+"27": {
+"verses": 93,
+"contentSha256": "ceebf479b0b7ec418890baede830f47a421bf19dbf69303548118fb35443ebf4"
+},
+"28": {
+"verses": 88,
+"contentSha256": "4dd5f99b90b4d2dee1aaa566d92228a8b9206b9e87783b9019e02db6eabd911e"
+},
+"29": {
+"verses": 69,
+"contentSha256": "b54b015ce7e17e3a47210c188de19c3da6fde401eb4b30f66806f81e7924b6db"
+},
+"30": {
+"verses": 60,
+"contentSha256": "2e6446a0e71dc7eb2c720e69f2c5f5a84c12d45a1f6db183a14af14aed199431"
+},
+"31": {
+"verses": 34,
+"contentSha256": "cfc3106b2550c46f126b8ffd0bbf707e615878523990e2eaa1d1f1120a3fa896"
+},
+"32": {
+"verses": 30,
+"contentSha256": "a83c09cd76a3967423e3034b9956ac86979ee5d92ff05ab7188f16450da73807"
+},
+"33": {
+"verses": 73,
+"contentSha256": "624243af555e091a14cad27c4db652075acf5a61931ef89890752c8369cad0b5"
+},
+"34": {
+"verses": 54,
+"contentSha256": "9cd164131485d2945e25d4b0504cb0c42f1f1855bca18b4a94517d3b214b16a2"
+},
+"35": {
+"verses": 45,
+"contentSha256": "f566cb3a4d8ba07ebe2a5949064a5d30b945ef02f5a0f0138d50d6c5717611a8"
+},
+"36": {
+"verses": 83,
+"contentSha256": "0a66cda4f6e831c4e5ef98a5fa972eb7e3c7593a18ba72ebe64c5aabf7fe9d78"
+},
+"37": {
+"verses": 182,
+"contentSha256": "15050f00e5fee4d5f0d1d8657abcb3f09abc2d73e99917dd31f472c5735dd60a"
+},
+"38": {
+"verses": 88,
+"contentSha256": "1baf8288c3fb83adf4eaacd2e295f6826b695be3a31a265a38864b6573ea3be9"
+},
+"39": {
+"verses": 75,
+"contentSha256": "ee82c80e32f73955828b1f8713b9641a8c4a26dfe87dfedadd31ff1b62946c7e"
+},
+"40": {
+"verses": 85,
+"contentSha256": "ffc07d19bdea9530390b52c090e6e4fce2dd008106dbade9c1e33b94f26d52df"
+},
+"41": {
+"verses": 54,
+"contentSha256": "f4d7f9adc0fd4a4e5c23b64e9c7d991ca8eef2c3e12aa1e75442c68227b4ab61"
+},
+"42": {
+"verses": 53,
+"contentSha256": "b2dd18cec4d14dcc3573924c50b5454511b72c562e3bdef9f6bdfdac4c216d4e"
+},
+"43": {
+"verses": 89,
+"contentSha256": "7243490bb3cdb616deee6f0c7cffe6ce8b1bad9e74c2a336e50ab0d01e6673cc"
+},
+"44": {
+"verses": 59,
+"contentSha256": "a8d04b9542e0c863724d0382254d4bbca2761443fa6a4b896cb679fe7fb19fbe"
+},
+"45": {
+"verses": 37,
+"contentSha256": "4887d3eca0e927822ad277aa09f93f69ced3928fa2db05fee762bb6ad3ae5e65"
+},
+"46": {
+"verses": 35,
+"contentSha256": "4a12ec28340a9ae5f70b9451cd74d193de33f71ebf8d97354a3c4d10ec403549"
+},
+"47": {
+"verses": 38,
+"contentSha256": "d34567911789fb86bcdead08830d222d57b4a629694105f09ce7b90b0376b6da"
+},
+"48": {
+"verses": 29,
+"contentSha256": "5ac2ca21e3255d658efd0424e480668c5400d39599fc8350958faaba4d1d6eaf"
+},
+"49": {
+"verses": 18,
+"contentSha256": "f622012e509c9c8f7676442bf9258297248e1feb5660534e6a579a2394eeb34f"
+},
+"50": {
+"verses": 45,
+"contentSha256": "29ac9a5c83eb76797195f082e9f249825997958cf8e0f5c05ae5896542a02437"
+},
+"51": {
+"verses": 60,
+"contentSha256": "41f5a9ce36eea2e88586300f860a34996227589ed069cafdabaaa584fdd646fd"
+},
+"52": {
+"verses": 49,
+"contentSha256": "ae610f17592015a9eab586e40bb5a309d20b0882a9ae1bef50420ca763cdd4ec"
+},
+"53": {
+"verses": 62,
+"contentSha256": "e294f7f73a7b177bafa861d0087133d456262711686fc1fb7316d3bf4294cc4d"
+},
+"54": {
+"verses": 55,
+"contentSha256": "b56a01933079b2b94f7bb265c75e59ce7fd47c0cd37720114b2391237b42fec3"
+},
+"55": {
+"verses": 78,
+"contentSha256": "3571aacc0ee901440312696af94c73c01888dbe3d1601688dd8216881fb5a67e"
+},
+"56": {
+"verses": 96,
+"contentSha256": "b8884795795bc97c29ed134da9ec304893620a815d83c1390d57e9b1b3a49777"
+},
+"57": {
+"verses": 29,
+"contentSha256": "45f64228318163e2698f09ff060b82a03be8556b3a37edcf4fbe8eef195451a0"
+},
+"58": {
+"verses": 22,
+"contentSha256": "6991dced7bd128997a05a3403e84b38de3446f4d3acf799a738af3a9df9e5fdf"
+},
+"59": {
+"verses": 24,
+"contentSha256": "6386c5b55df08dd22691cfb7cc894eb4271868a21bfc5832789bd37699109578"
+},
+"60": {
+"verses": 13,
+"contentSha256": "8a1ee79508e36db722ded678154b5a8b47ef5001b4de4d6651ed1460968bd726"
+},
+"61": {
+"verses": 14,
+"contentSha256": "76c81ba844b752fdd12a6444a654cf6205cd7c46dcda8b732d7396f393328121"
+},
+"62": {
+"verses": 11,
+"contentSha256": "9931b5e349b1ab421670f6f9799fde3ccc1f48c90f3e4ab397d5f9c8c8b4b986"
+},
+"63": {
+"verses": 11,
+"contentSha256": "672a3c465f66f11f530dce41aa07081e5c22d26a6aca1f411ff8a3def53933c7"
+},
+"64": {
+"verses": 18,
+"contentSha256": "66e2fad7da59e53699af9359ed687df26dac1daf4797db03438ece3f2d813ca9"
+},
+"65": {
+"verses": 12,
+"contentSha256": "44997e67c8a5cb87c190c1778e159d83d241281a2692c0b78530068591272453"
+},
+"66": {
+"verses": 12,
+"contentSha256": "7bf1fafb558a3d98e8fdf90b0a78e0bee39c151403ca9b6b7b3d79008fad1e7f"
+},
+"67": {
+"verses": 30,
+"contentSha256": "badf5b34c683e71d0a18c808f5a36aa287e0e0eff1c3648b8ac9e864ccd7f0a4"
+},
+"68": {
+"verses": 52,
+"contentSha256": "11bf269e6bb0290c415a992867c10ea93f62717051e56e1aa53f55a9a869c56b"
+},
+"69": {
+"verses": 52,
+"contentSha256": "74c53630fe2c4c265511d02b80477941b821cc2b5e40219b501c2e1a5bfb2c40"
+},
+"70": {
+"verses": 44,
+"contentSha256": "05877fec9392c8f6c0c4efc95a2c873c82799f1050e5ee92b55862a6e5c52b85"
+},
+"71": {
+"verses": 28,
+"contentSha256": "3357844b06e3749a3f64e431ac80676555a6d7c6142abbe62b2eb7c74e755c5b"
+},
+"72": {
+"verses": 28,
+"contentSha256": "d393d1264fbce6e73f606abc8dc2c7727fd53001da4f5e243f8b7b9a31fc7c46"
+},
+"73": {
+"verses": 20,
+"contentSha256": "d2cc0b2def82587aff13195a0bc9a7d503d15faddcd2b56d28af4925e2f5372f"
+},
+"74": {
+"verses": 56,
+"contentSha256": "db0e1e3294bc15734c59c9348267cd0db6667a6a74945187f2d087d95c9d9a04"
+},
+"75": {
+"verses": 40,
+"contentSha256": "95ce15972cb59869ae20c0db13d5c1b083d7b34234015851867a586eb090b730"
+},
+"76": {
+"verses": 31,
+"contentSha256": "a98f92278856287673af5ce405756a8aeaf83a62b77de87d5bd506692217c103"
+},
+"77": {
+"verses": 50,
+"contentSha256": "72ad03412f03505b0d946d9011f0f38c350f524119353b95550be6a42fbd467f"
+},
+"78": {
+"verses": 40,
+"contentSha256": "ba3c92a172cd06794f8c5df929974b1b4ba1bc57b2af95082fd628f0a8d27c3b"
+},
+"79": {
+"verses": 46,
+"contentSha256": "de6883e7a7b6f30c21fbdc9336aa63986fa5877885e55def64dd91a11358ec5d"
+},
+"80": {
+"verses": 42,
+"contentSha256": "bcc2294ec0465fbc397daf460b766528db65f5afceb2b6c2acfac036c48c6159"
+},
+"81": {
+"verses": 29,
+"contentSha256": "70358e03108dd9bef322b57f84ff5faf042f7ca0381b8ed081623b7b623b32b6"
+},
+"82": {
+"verses": 19,
+"contentSha256": "ed070da2415728bf9b524eaf709ad1b89292ff26a67067e57870e73155c44d3c"
+},
+"83": {
+"verses": 36,
+"contentSha256": "de82601bbd21677eefdf84b801ce3ab3387bbd33d1d26f539e1cae8b3f23c834"
+},
+"84": {
+"verses": 25,
+"contentSha256": "d6d2156e0ce0877275f9b933a0c534e35861969c426497a403875ffd0f9ca613"
+},
+"85": {
+"verses": 22,
+"contentSha256": "4d31144a3de4f12bf55ce892060a0ae58fe8d561391ee5902420e4aedd226777"
+},
+"86": {
+"verses": 17,
+"contentSha256": "1fde0c1c08071dcc41992857dc7cb1dfc6de6a4887a71a3d63468867ab6999c2"
+},
+"87": {
+"verses": 19,
+"contentSha256": "b4ac0ef7d4f4d4aa61e132c14e8e3ba3685ecaf918f58de6467497e78b251280"
+},
+"88": {
+"verses": 26,
+"contentSha256": "34bfd577682c6686d798a33a675d5b3a896740252bfb31ef5b5110539e4347b8"
+},
+"89": {
+"verses": 30,
+"contentSha256": "109eb56fd44f035f99bff94648ffb55a79ca100b179a3c2f9088c9af5c814ad0"
+},
+"90": {
+"verses": 20,
+"contentSha256": "7e642755e9b0d26f4ea0e8535156127fb2314fa9bc715d67b4b2a4e19df4463e"
+},
+"91": {
+"verses": 15,
+"contentSha256": "0a0cb41d475f74329843d55f231512ae730e33ac3a020c1c5b9211661e75b8de"
+},
+"92": {
+"verses": 21,
+"contentSha256": "f929069911d2b8ee8bf794b3d8476d72013d7f7a423704d9475bc56129d1cf9c"
+},
+"93": {
+"verses": 11,
+"contentSha256": "73d382420329b0ca397728c29d49f63ba8de59f4c0b7bd535f130dfd489a8a7c"
+},
+"94": {
+"verses": 8,
+"contentSha256": "81455881a0af5e2fd2c26f832a69bf14c2916ee5851da831633ba4cd6e076ed9"
+},
+"95": {
+"verses": 8,
+"contentSha256": "a2d8ad93fb89437e5cc5e4e60c64355c2f777d789d926c8fef2d3ce80ac2bd02"
+},
+"96": {
+"verses": 19,
+"contentSha256": "d5d8d45eb04d8dcc763c9ab0a5056b212e5b7b9a19c286fdd3e8cac4fbce65be"
+},
+"97": {
+"verses": 5,
+"contentSha256": "9638ea9e3dd9fb5fd321be232a6e3573d73a65bee4e6309c1a1b38bdb2c3addd"
+},
+"98": {
+"verses": 8,
+"contentSha256": "f0aa1a72e965b35463805048f4a6cb6d64f6152e356930dd626721a34a940371"
+},
+"99": {
+"verses": 8,
+"contentSha256": "b8f571da88a31c62055e885dd6226606144e589935226c441bf7af1185b69dc3"
+},
+"100": {
+"verses": 11,
+"contentSha256": "d0423269ed91c64b28498f234abbcb8ece3a33a05094449b022f3ae5b21b6c82"
+},
+"101": {
+"verses": 11,
+"contentSha256": "c12e8b46eebe900e13f8bbf6d9725b4131fd067133267d835be67fc4b6978f21"
+},
+"102": {
+"verses": 8,
+"contentSha256": "e53ae4ceb26b9e19b5ca672791e31d7869d25c504ac43562f63aa23840bd4328"
+},
+"103": {
+"verses": 3,
+"contentSha256": "9cf4733dcbda7e7fdadc98c67ba3327d49371608ce7ec88b513072256100607e"
+},
+"104": {
+"verses": 9,
+"contentSha256": "1463a028641b753ba5458bdc71d74d3cb49c1703faf85e3705fe7cb73d55c603"
+},
+"105": {
+"verses": 5,
+"contentSha256": "1c599b6d9944bb50fc4807ef4f50bdbb64f2ac82e4ee668615032c73a979bb07"
+},
+"106": {
+"verses": 4,
+"contentSha256": "ed7240aa34ff3e00dd3045a9b13f4f491c104bbf2609eadf0c3ebf0f0f0d95b9"
+},
+"107": {
+"verses": 7,
+"contentSha256": "cbe895ccc5bde045d0fd5eae0c979589238b176e28ccedbe57208431d8fc62c4"
+},
+"108": {
+"verses": 3,
+"contentSha256": "262021864bcfd5f94530f8f730356e4d6c17d6c5811e86943a0c2f056122ae6a"
+},
+"109": {
+"verses": 6,
+"contentSha256": "e8eaa8134b0c700dc938ae0c98c382aa915e3b649b1f533fc6d0d275a6ce03ef"
+},
+"110": {
+"verses": 3,
+"contentSha256": "ddd49c692008f89f27301b4f492b2911c3b35a4735b7cdcc2e985df5ed80a103"
+},
+"111": {
+"verses": 5,
+"contentSha256": "78997470914f16d9060f83549c52e395b268e8476e60940a0f0ab2fb1d6ec8f4"
+},
+"112": {
+"verses": 4,
+"contentSha256": "8b2b3b394846c3fca160034d2163f3701d95009fbbeb1793f7c0cec489c1a645"
+},
+"113": {
+"verses": 5,
+"contentSha256": "aea2a5a21f07bbedac72751071605ed34fab974cae05304ed646b0240b895dbc"
+},
+"114": {
+"verses": 6,
+"contentSha256": "9b287d4a9e983a8b7a6f341a4d1b20c85548f0faaf48611fb302e61bf04a8064"
+}
+}
+}

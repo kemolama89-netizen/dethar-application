@@ -6,6 +6,6 @@ SHA-512 checked against the release's `SHA512SUMS.txt`). Licensed under the SIL 
 License 1.1 (`OFL.txt`); "Scheherazade" is a Reserved Font Name, so the file is shipped as
 released — not subset or otherwise modified.
 
-Used by `src/components/quranReader.css` for the Mushaf text. It covers every letter and
+Used by `src/components/quranReader.css` for the Mushaf text, and by `src/lib/shareImage.ts` for a verse shared as an image. It covers every letter and
 Qur'anic mark of the Tanzil Uthmani text (`src/data/quran/tanzil-quran-uthmani.txt`), the
 Arabic-Indic digits and the end-of-ayah sign (۝).

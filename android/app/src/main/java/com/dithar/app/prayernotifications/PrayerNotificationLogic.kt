@@ -82,11 +82,11 @@ object PrayerNotificationPlan {
 
 enum class AdhanDecision { OFF, TOO_LATE, PLAY }
 
-/** One adhan voice the app can play: a recording in the APK and the segment of it to play. */
+/** One adhan voice the app can play: a recording on the device and the segment of it to play. */
 data class AdhanVoice(
     val id: String,
     val name: String,
-    /** Path inside the APK assets, e.g. "public/audio/adhan/….mp3". */
+    /** Path inside the APK assets, e.g. "public/audio/adhan/….mp3", or a downloaded file's absolute path. */
     val assetPath: String,
     val startMillis: Long,
     val endMillis: Long,
@@ -100,11 +100,24 @@ data class AdhanVoice(
  * enabled ones while rotating) and the voice Settings shows as next.
  * [nextToken] identifies that announcement, so it's honoured once only.
  */
-data class AdhanConfig(val rotate: Boolean, val voices: List<AdhanVoice>, val nextVoiceId: String?, val nextToken: String?)
+data class AdhanConfig(
+    val rotate: Boolean,
+    val voices: List<AdhanVoice>,
+    val nextVoiceId: String?,
+    val nextToken: String?,
+    /** A voice in the APK, to play if none of [voices] is on the device any more. */
+    val fallback: AdhanVoice? = null,
+)
 
 /** Which voice plays — the native twin of adhanVoiceRotation.ts. */
 object AdhanPlan {
     fun sectionFor(prayer: String): String = if (prayer == "fajr") "fajr" else "regular"
+
+    /** [config] with only the voices still on the device ([fileExists] is asked about downloaded files only), else its fallback. */
+    fun onDevice(config: AdhanConfig, fileExists: (String) -> Boolean): AdhanConfig {
+        val present = config.voices.filter { !it.assetPath.startsWith("/") || fileExists(it.assetPath) }
+        return config.copy(voices = present.ifEmpty { listOfNotNull(config.fallback) })
+    }
 
     /**
      * The voice for this adhan. Not rotating, or one voice → the first.

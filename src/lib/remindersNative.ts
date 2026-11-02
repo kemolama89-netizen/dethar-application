@@ -81,6 +81,10 @@ export interface RemindersPlugin {
   requestPinWidget(): Promise<{ requested: boolean }>;
   /** The reminder the app was launched from (a notification or the widget), and the comment shown with it, once. */
   consumeLaunchReminder(): Promise<{ id: string | null; commentId?: string | null; shown?: ShownReminder }>;
+  /** A tapped reminder's view has painted: native removes the cover it put over the WebView (ReminderOpenCover.kt). */
+  reminderViewShown(): Promise<void>;
+  /** The chosen appearance theme, for what native draws without the WebView: the floating Tasbeeh and that cover (AppLook.kt). */
+  setAppLook(options: { look: string; autoDark: string }): Promise<void>;
   /** Widget hearts not merged yet, oldest first. */
   getFavoriteOps(): Promise<{ ops: NativeFavoriteOp[] }>;
   /** The app's full list of favorite ids, after merging every op up to `ackThrough`. */

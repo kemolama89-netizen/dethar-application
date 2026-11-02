@@ -57,28 +57,38 @@ const DISPLAY = "var(--logo-display)";
 // doesn't resize — only its position within/above its own slot changes.
 const LIFT = "6px";
 
+// How much of each artwork, from its bottom edge, is the wordmark (the emblem is everything above it).
+const WORDMARK_SHARE: Record<string, string> = { ar: "33%", en: "27%" };
+
 export function BrandLogo() {
   const { logoSrc, theme } = useTheme();
   const { language } = useLanguage();
   const { width, height } = INTRINSIC_SIZE[`${theme}_${language}`];
 
   return (
-    <img
-      src={logoSrc}
-      alt={labels[language].appName}
-      width={width}
-      height={height}
-      loading="eager"
-      // "async" (rather than "sync") lets the browser present the image
-      // the instant it's decoded instead of holding that frame's commit
-      // until decode finishes — the fix for the logo visibly trailing the
-      // rest of the (image-free, instantly-painted) Home Screen content.
-      decoding="async"
-      // @ts-expect-error -- fetchpriority is valid HTML but not yet in React's DOM typings
-      fetchpriority="high"
-      className="mx-auto w-auto max-w-[58%] object-contain"
-      style={{ height: DISPLAY, marginTop: `calc(-1 * (${DISPLAY} - ${BUDGET}) - ${LIFT})` }}
+    <span
+      className="dithar-logo-art"
+      style={{ marginTop: `calc(-1 * (${DISPLAY} - ${BUDGET}) - ${LIFT})`, ["--dithar-logo-cut" as string]: WORDMARK_SHARE[language] }}
       key={`${theme}_${language}`}
-    />
+    >
+      <img
+        src={logoSrc}
+        alt={labels[language].appName}
+        width={width}
+        height={height}
+        loading="eager"
+        // "async" (rather than "sync") lets the browser present the image
+        // the instant it's decoded instead of holding that frame's commit
+        // until decode finishes — the fix for the logo visibly trailing the
+        // rest of the (image-free, instantly-painted) Home Screen content.
+        decoding="async"
+        // @ts-expect-error -- fetchpriority is valid HTML but not yet in React's DOM typings
+        fetchpriority="high"
+        className="dithar-logo-art__image object-contain"
+        style={{ height: DISPLAY }}
+      />
+      {/* The wordmark again, for a dark look: index.css shows it in gold over the artwork's navy one. */}
+      <img src={logoSrc} alt="" aria-hidden="true" width={width} height={height} decoding="async" className="dithar-logo-art__word object-contain" />
+    </span>
   );
 }

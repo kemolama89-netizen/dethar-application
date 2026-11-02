@@ -19,13 +19,13 @@ export function DateTimeStrip({ className = "" }: { className?: string }) {
         <p className="text-[13.5px] font-bold leading-snug tracking-[0.01em]" style={{ color: "var(--color-text-primary)" }}>
           {gregorianDate.formatted}
         </p>
-        <p className="flex items-center gap-1 text-[11.5px] font-medium leading-snug" style={{ color: "var(--color-text-muted)" }}>
+        <p className="flex flex-wrap items-center justify-center gap-1 text-[11.5px] font-medium leading-snug" style={{ color: "var(--color-text-muted)" }}>
           <Moon size={11} strokeWidth={2} className="shrink-0" style={{ color: "var(--look-accent-on-card, var(--color-gold))" }} aria-hidden="true" />
-          <span style={{ color: "var(--color-text-primary)", opacity: 0.86 }}>{hijriDate.formatted}</span>
+          <span className="whitespace-nowrap" style={{ color: "var(--color-text-primary)", opacity: 0.86 }}>{hijriDate.formatted}</span>
           <span className="mx-1" style={{ color: "var(--color-gold)" }} aria-hidden="true">
             •
           </span>
-          <span className="tabular-nums">{localTime}</span>
+          <span className="whitespace-nowrap tabular-nums">{localTime}</span>
         </p>
       </div>
     </div>

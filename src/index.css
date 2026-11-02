@@ -813,36 +813,628 @@ html[data-look="night"]:not([data-look-off]) .dithar-home-screen .dithar-logo-ha
   background: radial-gradient(closest-side, rgba(255, 236, 200, 0.42), rgba(255, 236, 200, 0) 100%);
 }
 
-/* The prayer-times arch (components/SceneArch.tsx): the look's scene inside a gold pointed arch. */
-.dithar-scene-arch {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  border-radius: inherit;
+/* The navigation on Night: the active item is the gold disc with dark ink (the look's primary is the gold). */
+html[data-look="night"]:not([data-look-off]) .device-screen {
+  color-scheme: dark;
 }
-.dithar-scene-arch__image {
-  position: absolute;
-  inset: 0;
-  /* A photograph cropped around its mosque (scripts/prepare-theme-photos.py): kept centred. */
-  background: var(--look-arch-scene) center 42% / cover no-repeat, #2b2a3a;
+
+/* ------------------------------------------------------------------ */
+/* Home: the prayer panel with its niche and lamps, today's dua link and */
+/* today's counts. Sizes follow the content column's width (cqi), text   */
+/* wraps and rows reflow rather than clip, and nothing here has a fixed  */
+/* height: on a short phone or with large text the screen scrolls inside */
+/* its frame (.device-screen) instead of the navigation covering content.*/
+/* ------------------------------------------------------------------ */
+.dithar-home-screen {
+  --dithar-nav-label-size: clamp(10.5px, 3vw, 12px);
+  --logo-display: clamp(70px, calc(14vw + 20px), 92px);
+  --logo-budget: calc(var(--logo-display) - 8px);
 }
-/* Shading for the text: a band behind the title, and a deeper one behind the next prayer, the
-   prayer times and the switches. */
-.dithar-scene-arch__shade {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(10, 12, 28, 0.42) 0%, rgba(10, 12, 28, 0.06) 16%, rgba(10, 12, 28, 0) 28%, rgba(10, 12, 28, 0.26) 44%, rgba(10, 12, 28, 0.66) 60%, rgba(10, 12, 28, 0.84) 100%);
+@media (max-height: 700px) {
+  .dithar-home-screen {
+    --logo-display: clamp(52px, calc(12vw + 10px), 64px);
+  }
 }
-.dithar-scene-arch__frame {
+
+/* Five items share the navigation's width, so its labels keep their own (larger) size at any text scale. */
+.dithar-home-screen nav button {
+  text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+}
+/* Content can scroll beneath the navigation on a short screen or with large text: it must not show through. */
+.dithar-home-screen nav.dithar-glass {
+  background: rgba(var(--look-card-rgb), 0.96) !important;
+}
+/* Landscape phones: too short to keep the navigation over the content, so it scrolls with the page. */
+@media (max-height: 500px) {
+  .dithar-home-screen {
+    --logo-display: 48px;
+    --logo-budget: 44px;
+  }
+  .dithar-home-screen nav.dithar-glass {
+    position: static;
+  }
+}
+
+.dithar-home-dashboard {
+  container-type: inline-size;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1vh, 10px);
+  padding-block: 6px;
+}
+
+/* The logo: on a dark look the artwork's navy wordmark is shown in gold over the dark page. */
+.dithar-logo-art {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: 58%;
+  margin-inline: auto;
+}
+.dithar-logo-art__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+}
+.dithar-logo-art__word {
+  display: none;
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
+html[data-look="night"]:not([data-look-off]) .dithar-logo-art__image {
+  clip-path: inset(0 0 var(--dithar-logo-cut) 0);
+}
+html[data-look="night"]:not([data-look-off]) .dithar-logo-art__word {
+  display: block;
+  clip-path: inset(calc(100% - var(--dithar-logo-cut)) 0 0 0);
+  filter: brightness(0) invert(0.86) sepia(1) saturate(1.9) hue-rotate(-8deg);
+}
+/* A firmer light behind the navy wordmark over Sunset's and Nature's mid-tone wallpapers. */
+html[data-look="sunset"] .dithar-home-screen .dithar-logo-halo::before,
+html[data-look="nature"] .dithar-home-screen .dithar-logo-halo::before {
+  background: radial-gradient(closest-side, rgba(var(--look-card-rgb), 0.92), rgba(var(--look-card-rgb), 0) 100%);
+}
 
-/* The navigation on Night: the active item is the gold disc with dark ink (the look's primary is the gold). */
-html[data-look="night"]:not([data-look-off]) .device-screen {
-  color-scheme: dark;
+/* The panel. */
+@media (max-height: 500px) {
+  .dithar-niche {
+    --dithar-crown: 44px;
+  }
+}
+.dithar-hero {
+  --dithar-arch-line: var(--color-gold);
+  --dithar-crown: clamp(70px, 30cqi, 170px);
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: rgba(var(--look-card-rgb, 255, 251, 243), 0.96);
+  border: 1px solid var(--look-card-border, var(--color-gold-soft));
+  border-radius: calc(var(--card-radius) + 6px);
+  box-shadow:
+    0 16px 30px -18px rgba(var(--color-shadow-rgb), 0.7),
+    0 2px 6px -2px rgba(0, 0, 0, 0.25);
+  color: var(--color-text-primary);
+}
+.dithar-hero__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 8px;
+  padding: 8px 14px 6px;
+  --color-gold: var(--look-accent-on-card, var(--color-gold));
+}
+.dithar-hero__heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(14px, 4.6cqi, 17px);
+  font-weight: 700;
+}
+.dithar-hero__location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: clamp(11.5px, 3.7cqi, 13px);
+  color: var(--color-text-muted);
+}
+.dithar-hero__location svg {
+  color: var(--color-gold);
+}
+
+/* The niche: the scene in its arch, with the next prayer and the day's times over it. */
+.dithar-niche {
+  position: relative;
+  flex: 1 0 auto;
+  display: flex;
+  margin-inline: 6px;
+  color: #fffaf0;
+}
+.dithar-scene-arch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.dithar-scene-arch__clip,
+.dithar-niche__content {
+  /* The crown's curve, stretched to --dithar-crown, over a plain block for the legs: both ends of the arch stay true at any height. */
+  -webkit-mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M1.6 100 C1.6 55 32 26 50 1.5 C68 26 98.4 55 98.4 100 Z'/%3E%3C/svg%3E") top center / 100% var(--dithar-crown) no-repeat,
+    linear-gradient(#000, #000) bottom center / 96.8% calc(100% - var(--dithar-crown) + 1px) no-repeat;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M1.6 100 C1.6 55 32 26 50 1.5 C68 26 98.4 55 98.4 100 Z'/%3E%3C/svg%3E") top center / 100% var(--dithar-crown) no-repeat,
+    linear-gradient(#000, #000) bottom center / 96.8% calc(100% - var(--dithar-crown) + 1px) no-repeat;
+}
+.dithar-scene-arch__clip {
+  position: absolute;
+  inset: 0;
+}
+.dithar-scene-arch__image {
+  position: absolute;
+  inset: 0;
+  /* A photograph cropped around its mosque (scripts/prepare-theme-photos.py). */
+  background: var(--look-arch-scene) center 30% / cover no-repeat, #2b2a3a;
+}
+.dithar-scene-arch__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 14, 28, 0) 12%, rgba(10, 14, 28, 0.34) 30%, rgba(10, 14, 28, 0.8) 47%, rgba(10, 14, 28, 0.95) 100%);
+}
+html[data-look="classic"] .dithar-scene-arch__shade {
+  background: linear-gradient(180deg, rgba(38, 26, 14, 0) 12%, rgba(38, 26, 14, 0.28) 30%, rgba(34, 24, 16, 0.74) 47%, rgba(30, 22, 18, 0.9) 100%);
+}
+html[data-look="night"] .dithar-scene-arch__shade {
+  background: linear-gradient(180deg, rgba(10, 14, 28, 0) 8%, rgba(10, 14, 28, 0.5) 28%, rgba(10, 14, 28, 0.86) 44%, rgba(10, 14, 28, 0.95) 100%);
+}
+html[data-look="nature"] .dithar-scene-arch__shade {
+  background: linear-gradient(180deg, rgba(10, 18, 16, 0) 12%, rgba(10, 18, 16, 0.34) 30%, rgba(10, 18, 16, 0.82) 47%, rgba(10, 18, 16, 0.98) 72%);
+}
+html[data-look="sunset"] .dithar-scene-arch__shade {
+  background: linear-gradient(180deg, rgba(20, 12, 40, 0) 26%, rgba(20, 12, 40, 0.34) 42%, rgba(20, 12, 40, 0.84) 60%, rgba(20, 12, 40, 0.94) 100%);
+}
+html[data-look="sunset"] .dithar-scene-arch__image {
+  background-position: center 62%;
+}
+.dithar-scene-arch__crown {
+  position: absolute;
+  overflow: visible;
+  inset: 0 0 auto;
+  width: 100%;
+  height: var(--dithar-crown);
+}
+.dithar-scene-arch__legs {
+  position: absolute;
+  overflow: visible;
+  top: var(--dithar-crown);
+  left: 0;
+  width: 100%;
+  /* 1px short of the niche's bottom, so the base line draws whole. */
+  height: calc(100% - var(--dithar-crown) - 1px);
+}
+.dithar-niche__content {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: calc(var(--dithar-crown) * 0.62) clamp(8px, 3.6cqi, 14px) clamp(7px, 2.8cqi, 12px);
+}
+.dithar-niche__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(2px, 1.2cqi, 8px);
+}
+.dithar-niche__next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 4px;
+  text-align: center;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+.dithar-niche__label {
+  font-size: clamp(11px, 3.7cqi, 13.5px);
+  font-weight: 500;
+  opacity: 0.92;
+}
+.dithar-niche__name {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 12.4cqi, 48px);
+  line-height: 1.15;
+  font-weight: 700;
+}
+.dithar-niche__detecting {
+  font-size: clamp(12px, 4cqi, 15px);
+  max-width: 7em;
+}
+.dithar-niche__countdown {
+  margin-top: 4px;
+  text-align: center;
+  font-size: clamp(15px, 5.6cqi, 21px);
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--color-gold-on-primary);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.dithar-niche__progress {
+  display: block;
+  margin: 5px 6% 7px;
+}
+/* Large text: the prayer's name, countdown and progress stay together, the lamps side by side beneath them. */
+.dithar-niche[data-large-text] .dithar-niche__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-content: end;
+  column-gap: 6px;
+}
+.dithar-niche[data-large-text] .dithar-niche__hero {
+  display: contents;
+}
+.dithar-niche[data-large-text] .dithar-niche__next,
+.dithar-niche[data-large-text] .dithar-niche__countdown,
+.dithar-niche[data-large-text] .dithar-niche__progress,
+.dithar-niche[data-large-text] .dithar-prayer-times {
+  grid-column: 1 / -1;
+}
+.dithar-niche[data-large-text] .dithar-niche__next { order: 1; }
+.dithar-niche[data-large-text] .dithar-niche__countdown { order: 2; }
+.dithar-niche[data-large-text] .dithar-niche__progress { order: 3; }
+.dithar-niche[data-large-text] .dithar-lamp { order: 4; margin-bottom: 6px; }
+.dithar-niche[data-large-text] .dithar-prayer-times { order: 5; }
+.dithar-niche[data-large-text] .dithar-lamp__chain { display: none; }
+.dithar-niche[data-large-text] .dithar-prayer-time {
+  flex-basis: 30%;
+}
+/* The name sits high in the niche here, so the shading starts at the top. */
+.dithar-niche[data-large-text] .dithar-scene-arch__shade {
+  background: rgba(10, 14, 28, 0.74);
+}
+@container (max-width: 240px) {
+  .dithar-niche__hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .dithar-niche__next {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}
+/* Six times won't share a row this narrow: two even rows of three, never five and one. */
+@container (max-width: 275px) {
+  .dithar-prayer-times .dithar-prayer-time {
+    flex-basis: 30%;
+  }
+}
+.dithar-text-probe {
+  position: absolute;
+  visibility: hidden;
+  line-height: 1;
+  pointer-events: none;
+}
+/* The name in Latin letters runs far wider than in Arabic: the lamps keep their room. */
+[dir="ltr"] .dithar-niche__name {
+  font-size: clamp(25px, 9cqi, 36px);
+}
+
+/* The Morning and Evening lamps. */
+.dithar-lamp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.dithar-lamp__chain {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 6px);
+  width: 1px;
+  height: 1000px;
+  background: #e9c983;
+  opacity: 0.8;
+}
+.dithar-lamp__art {
+  display: block;
+  position: relative;
+  width: clamp(36px, 14.2cqi, 54px);
+  height: auto;
+  aspect-ratio: 48 / 60;
+  margin-bottom: 3px;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45));
+}
+.dithar-lamp__pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex: 1 0 auto;
+  width: 100%;
+  min-height: 46px;
+  padding: 3px 4px;
+  border-radius: 13px;
+  line-height: 1.25;
+  text-align: center;
+  word-break: keep-all;
+  background: rgba(12, 18, 36, 0.62);
+  box-shadow: inset 0 0 0 1px rgba(233, 201, 131, 0.42);
+  transition: transform 0.12s ease;
+}
+.dithar-lamp:active .dithar-lamp__pill {
+  transform: scale(0.97);
+}
+.dithar-lamp:focus-visible {
+  outline: none;
+}
+.dithar-lamp:focus-visible .dithar-lamp__pill {
+  outline: 2px solid #fffaf0;
+  outline-offset: 1px;
+}
+.dithar-lamp__title {
+  font-size: clamp(11.5px, 3.9cqi, 14.5px);
+  font-weight: 700;
+}
+.dithar-lamp__state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: clamp(10.5px, 3.5cqi, 12.5px);
+  font-weight: 500;
+  color: #f0d9a4;
+}
+.dithar-lamp__icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+.dithar-lamp--due .dithar-lamp__pill {
+  background: #e9c983;
+  color: #17233f;
+  box-shadow: 0 2px 10px rgba(233, 201, 131, 0.35);
+}
+.dithar-lamp--due .dithar-lamp__state {
+  color: #17233f;
+  font-weight: 700;
+}
+
+/* The six prayer times: a single row while they fit, otherwise they reflow. */
+.dithar-prayer-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.dithar-prayer-time {
+  flex: 1 1 13%;
+  min-width: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 5px 2px 6px;
+  border-radius: 11px;
+  background: rgba(var(--color-primary-contrast-rgb), 0.09);
+}
+.dithar-prayer-time.is-next {
+  background: color-mix(in srgb, var(--color-gold) 20%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--color-gold);
+}
+.dithar-prayer-time__icon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-gold);
+}
+.dithar-prayer-time__name {
+  font-size: clamp(10.5px, 3.55cqi, 13px);
+  line-height: 1.3;
+  opacity: 0.95;
+}
+.dithar-prayer-time__at {
+  direction: ltr;
+  font-size: clamp(13px, 4.6cqi, 17px);
+  line-height: 1.25;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The two switches: the whole row is the touch target. */
+.dithar-hero__switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+}
+.dithar-switch-row {
+  flex: 1 1 40%;
+  min-width: min-content;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  background: rgba(var(--color-gold-rgb), 0.1);
+  box-shadow: inset 0 0 0 1px var(--look-card-border, var(--color-gold-soft));
+  font-size: clamp(11.5px, 3.75cqi, 14px);
+  line-height: 1.25;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.dithar-switch-row__icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--look-accent-on-card, var(--color-gold));
+}
+.dithar-switch-row__label {
+  flex: 1 1 auto;
+  word-break: keep-all;
+}
+.dithar-hero-switch {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(var(--color-shadow-rgb), 0.3);
+  transition: background-color 0.15s ease;
+}
+.dithar-hero-switch[aria-checked="true"] {
+  background: var(--look-accent-on-card, var(--color-gold));
+}
+.dithar-hero-switch__knob {
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease;
+}
+.dithar-hero-switch[aria-checked="true"] .dithar-hero-switch__knob {
+  transform: translateX(calc(var(--rs-dir, 1) * 14px));
+}
+.dithar-hero-switch:focus-visible,
+.dithar-daily-pick:focus-visible {
+  outline: 2px solid var(--look-accent-on-card, var(--color-gold));
+  outline-offset: 2px;
+}
+.dithar-hero__note {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
+/* Today's dua: a link, its text hidden until opened. */
+.dithar-daily-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  width: 100%;
+  padding: 6px 7px;
+  padding-inline-start: 14px;
+  text-align: start;
+  border: 1px solid var(--color-gold-soft);
+  border-radius: var(--card-radius);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+.dithar-daily-pick__text {
+  flex: 1 1 9em;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+.dithar-daily-pick__title {
+  font-size: clamp(14px, 4.6cqi, 17px);
+  font-weight: 700;
+}
+.dithar-daily-pick__hint {
+  font-size: clamp(11.5px, 3.75cqi, 14px);
+  color: var(--color-text-muted);
+}
+.dithar-daily-pick__action {
+  flex: none;
+  min-width: 70px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding-inline: 10px;
+  box-sizing: border-box;
+  border-radius: 13px;
+  font-size: clamp(13px, 4.2cqi, 15px);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1.25px var(--look-accent-on-card, var(--color-gold));
+}
+
+/* Today's counts: every one reads 0 until something actually happens. */
+.dithar-counts {
+  padding: 6px 4px 6px;
+  border: 1px solid var(--color-gold-soft);
+  border-radius: var(--card-radius);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+.dithar-counts__heading {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(11.5px, 3.6cqi, 13px);
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.dithar-counts__row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.dithar-stat {
+  flex: 1 1 20%;
+  min-width: min-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: 4px;
+  text-align: center;
+  border-inline-start: 1px solid var(--look-card-border, var(--color-gold-soft));
+  word-break: keep-all;
+}
+.dithar-stat:first-child {
+  border-inline-start: 0;
+}
+.dithar-stat__value {
+  direction: ltr;
+  font-size: clamp(16px, 5.4cqi, 20px);
+  line-height: 1.2;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.dithar-stat.is-zero .dithar-stat__value {
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.dithar-stat__label {
+  font-size: clamp(10.5px, 3.55cqi, 13px);
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--color-text-primary) 45%, var(--color-text-muted));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dithar-lamp__pill,
+  .dithar-hero-switch,
+  .dithar-hero-switch__knob {
+    transition: none;
+  }
+  .dithar-lamp:active .dithar-lamp__pill {
+    transform: none;
+  }
 }

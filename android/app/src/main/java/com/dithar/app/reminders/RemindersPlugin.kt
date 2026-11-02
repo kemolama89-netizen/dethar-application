@@ -5,6 +5,9 @@ import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.util.Base64
+import com.dithar.app.floatingtasbeeh.FloatingTasbeehService
+import com.dithar.app.look.AppLook
+import com.dithar.app.look.AppLookStore
 import com.getcapacitor.JSArray
 import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
@@ -24,11 +27,19 @@ import org.json.JSONObject
 class RemindersPlugin : Plugin() {
     /** The reminder (as it was shown) the app was opened with (cold start), until JS takes it. */
     private var launchReminder: ReminderOpen? = null
+    private var openCover: ReminderOpenCover? = null
 
     override fun load() {
         super.load()
+        openCover = activity?.let { ReminderOpenCover(it) }
         launchReminder = activity?.intent?.let(::takeReminderExtra)
+        if (launchReminder != null) openCover?.show(ReminderOpenCover.COLD_START_MAX_MS)
         markAppOpened()
+    }
+
+    override fun handleOnDestroy() {
+        openCover?.hide()
+        super.handleOnDestroy()
     }
 
     override fun handleOnResume() {
@@ -43,7 +54,11 @@ class RemindersPlugin : Plugin() {
 
     override fun handleOnNewIntent(intent: Intent) {
         super.handleOnNewIntent(intent)
-        takeReminderExtra(intent)?.let { notifyListeners(EVENT_OPEN, openJson(it), true) }
+        takeReminderExtra(intent)?.let {
+            // Before this activity draws again: its WebView still holds the last screen's frame.
+            openCover?.show(ReminderOpenCover.RUNNING_MAX_MS)
+            notifyListeners(EVENT_OPEN, openJson(it), true)
+        }
     }
 
     /** Reads (and removes, so a recreation doesn't reopen it) the reminder extras. */
@@ -73,6 +88,21 @@ class RemindersPlugin : Plugin() {
         val launch = launchReminder
         launchReminder = null
         call.resolve(openJson(launch))
+    }
+
+    /** The reminder's view has painted (or there was nothing to show): the cover goes. */
+    @PluginMethod
+    fun reminderViewShown(call: PluginCall) {
+        activity?.runOnUiThread { openCover?.hide() }
+        call.resolve()
+    }
+
+    /** The user's appearance theme, for what native draws without the WebView (com.dithar.app.look). */
+    @PluginMethod
+    fun setAppLook(call: PluginCall) {
+        AppLookStore(context).save(call.getString("look") ?: AppLook.DEFAULT_LOOK, call.getString("autoDark") ?: "off")
+        FloatingTasbeehService.refreshLook()
+        call.resolve()
     }
 
     /**

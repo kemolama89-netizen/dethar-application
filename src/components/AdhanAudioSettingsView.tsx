@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ChevronLeft, ChevronRight, Play, Square } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { adhanAudioLabels } from "../data/adhanAudioLabels";
@@ -30,6 +30,8 @@ import {
 import type { AdhanRotationSettings } from "../lib/adhanVoiceRotation";
 import { requestPrayerNotificationPermission, syncPrayerNotifications } from "../lib/prayerNotifications";
 import { OptionRow } from "./OptionRow";
+import { AdhanVoiceControls } from "./AdhanVoiceControls";
+import { adhanDownloadsOffered, adhanDownloadsVersion, adhanFallbackId, adhanOnDemand, adhanStorageNotice, isAdhanPlayableOffline, refreshAdhanDownloads, subscribeAdhanDownloads } from "../lib/adhanDownloads";
 import { WeekdayTimesEditor } from "./WeekdayTimesEditor";
 import { adhanDayTimesLabels } from "../data/scheduleLabels";
 import { prayerNames } from "../data/content";
@@ -60,6 +62,14 @@ export function AdhanAudioSettingsView({ onBack }: { onBack: () => void }) {
   // Per section, the rotated voice its running preview is playing.
   const [previewing, setPreviewing] = useState<Partial<Record<"regular" | "fajr", string>>>({});
   const previewKeyRef = useRef<string | null>(null);
+  // Listen and Download beneath each voice (the Android app and the web app).
+  const offered = adhanDownloadsOffered();
+  // What the prayer-time alarm can play depends on what's downloaded (the Android app only).
+  const onDemand = adhanOnDemand();
+  useSyncExternalStore(subscribeAdhanDownloads, adhanDownloadsVersion);
+  // Site data can be cleared, or files removed, between visits to this screen.
+  useEffect(() => void refreshAdhanDownloads(), []);
+  const storageNotice = adhanStorageNotice();
 
   useEffect(() => {
     // Reflect whatever actually owns the audio (e.g. the preview ended, or
@@ -134,6 +144,27 @@ export function AdhanAudioSettingsView({ onBack }: { onBack: () => void }) {
       setRotation(next);
       resync();
     };
+    // A voice's own Listen plays it directly: it doesn't use up the rotation's drawn voice.
+    const controls = (r: AdhanRecording) => {
+      if (!offered) return null;
+      const mode = supportedModes(r, allowedModes).includes(choice.mode) ? choice.mode : supportedModes(r, allowedModes)[0];
+      return (
+        <>
+          <AdhanVoiceControls
+            recording={r}
+            playing={playingKey === adhanAudioKey(r, mode)}
+            // On Android the chosen voice would only download again by itself.
+            canRemove={!onDemand || rotating || r.id !== choice.recordingId}
+            onListen={() => togglePreview(r, mode)}
+          />
+          {errorKey === adhanAudioKey(r, mode) && (
+            <p className="px-1 text-[11.5px]" role="alert" style={{ color: "var(--color-text-muted)" }}>
+              {onDemand ? t.streamError : t.webStreamError}
+            </p>
+          )}
+        </>
+      );
+    };
     const toggleIncluded = (id: string) => {
       const include = rotation[which].excluded.includes(id);
       const next = setAdhanVoiceIncluded(which, id, include);
@@ -201,6 +232,16 @@ export function AdhanAudioSettingsView({ onBack }: { onBack: () => void }) {
           <p className="px-1 text-[12.5px] font-semibold" style={{ color: "var(--color-text-muted)" }}>
             {rotating ? t.rotationVoices : t.voice}
           </p>
+          {onDemand && rotating && (
+            <p className="px-1 text-[11.5px]" style={{ color: "var(--color-text-muted)" }} data-adhan-rotation-on-device="">
+              {t.rotationOnDevice}
+            </p>
+          )}
+          {onDemand && !rotating && !isAdhanPlayableOffline(choice.recordingId) && (
+            <p className="px-1 text-[11.5px] font-medium" role="status" style={{ color: "var(--color-primary)" }} data-adhan-chosen-pending="">
+              {t.chosenPending(getAdhanRecordingById(adhanFallbackId(which))!.name[language])}
+            </p>
+          )}
           {rotating && keepOneIn === which && (
             <p className="px-1 text-[11.5px]" role="status" style={{ color: "var(--color-text-muted)" }}>
               {t.keepOneVoice}
@@ -208,10 +249,16 @@ export function AdhanAudioSettingsView({ onBack }: { onBack: () => void }) {
           )}
           {rotating
             ? rotationCandidates(which).map((r) => (
-                <OptionRow key={r.id} label={r.name[language]} selected={!rotation[which].excluded.includes(r.id)} onSelect={() => toggleIncluded(r.id)} />
+                <Fragment key={r.id}>
+                  <OptionRow label={r.name[language]} selected={!rotation[which].excluded.includes(r.id)} onSelect={() => toggleIncluded(r.id)} />
+                  {controls(r)}
+                </Fragment>
               ))
             : recordings.map((r) => (
-                <OptionRow key={r.id} label={r.name[language]} selected={r.id === choice.recordingId} onSelect={() => select({ recordingId: r.id })} />
+                <Fragment key={r.id}>
+                  <OptionRow label={r.name[language]} selected={r.id === choice.recordingId} onSelect={() => select({ recordingId: r.id })} />
+                  {controls(r)}
+                </Fragment>
               ))}
         </div>
       </section>
@@ -240,6 +287,16 @@ export function AdhanAudioSettingsView({ onBack }: { onBack: () => void }) {
         <p className="px-1 text-[11.5px] leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
           {t.note}
         </p>
+        {offered && (
+          <p className="px-1 text-[11.5px] leading-relaxed" style={{ color: "var(--color-text-muted)" }} data-adhan-on-demand-note="">
+            {onDemand ? t.onDemandNote : t.webDownloadsNote}
+          </p>
+        )}
+        {offered && storageNotice && (
+          <p className="px-1 text-[11.5px] leading-relaxed" role="status" style={{ color: storageNotice === "unavailable" ? "var(--color-primary)" : "var(--color-text-muted)" }} data-adhan-storage-notice={storageNotice}>
+            {storageNotice === "unavailable" ? t.storageUnavailable : t.storageNotGuaranteed}
+          </p>
+        )}
         {section("regular", t.regularTitle, t.regularHint, regularAdhanRecordings(), REGULAR_ADHAN_MODES)}
         {section("fajr", t.fajrTitle, t.fajrHint, fajrAdhanRecordings(), FAJR_ADHAN_MODES)}
         <AdhanDayTimes />

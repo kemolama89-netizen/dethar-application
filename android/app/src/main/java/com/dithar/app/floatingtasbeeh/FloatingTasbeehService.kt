@@ -24,6 +24,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import com.dithar.app.MainActivity
+import com.dithar.app.look.AppLook
+import com.dithar.app.look.AppLookStore
 
 /**
  * The Foreground Service that hosts the Floating Tasbeeh overlay window.
@@ -49,7 +51,7 @@ class FloatingTasbeehService : Service() {
     private var bubbleView: FloatingBubbleView? = null
     private var bubbleParams: WindowManager.LayoutParams? = null
     private var popup: DhikrMenuPopup? = null
-    private var closeButtonView: View? = null
+    private var closeButtonView: TextView? = null
     private var closeButtonParams: WindowManager.LayoutParams? = null
 
     // The calm-counting pacing gate — the SAME concept as TasbeehScreen's
@@ -60,12 +62,20 @@ class FloatingTasbeehService : Service() {
     // on mount and on every dhikr switch (see onSelectDhikr below).
     private var pacingReadyAtElapsedRealtime = 0L
 
+    private lateinit var lookStore: AppLookStore
+    private var lookColors: AppLook.Colors = AppLook.colors(AppLook.DEFAULT_LOOK)
+
+    // Automatic dark mode "by time" can change while the app is closed.
+    private val lookTick = Runnable { applyLook() }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         store = FloatingTasbeehStore(this)
+        lookStore = AppLookStore(this)
+        lookColors = lookStore.currentColors()
         activeInstance = this
     }
 
@@ -89,8 +99,10 @@ class FloatingTasbeehService : Service() {
     }
 
     override fun onDestroy() {
+        mainHandler.removeCallbacks(lookTick)
         removePopupIfShowing()
         bubbleView?.resetPacing()
+        bubbleView?.stopAnimations()
         bubbleView?.let { runCatching { windowManager.removeView(it) } }
         bubbleView = null
         closeButtonView?.let { runCatching { windowManager.removeView(it) } }
@@ -102,7 +114,7 @@ class FloatingTasbeehService : Service() {
     private fun addBubble() {
         val density = resources.displayMetrics.density
         val label = store.getSelectedDhikrLabel()
-        val sizePx = (bubbleSizeDpFor(label) * density).toInt()
+        val sizePx = windowSizePx(bubbleSizeDpFor(label))
 
         val params = WindowManager.LayoutParams(
             sizePx,
@@ -128,6 +140,7 @@ class FloatingTasbeehService : Service() {
             onPositionChanged = ::onBubbleMoved,
             keepInBounds = { x, y -> FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(x, y), placementArea(), params.width, closeRoomPx()) },
         )
+        view.colors = lookColors
         view.count = store.getLiveCount(store.selectedDhikrId)
         view.label = label
         // A fresh bubble always starts immediately ready — no carried-over
@@ -138,6 +151,23 @@ class FloatingTasbeehService : Service() {
         windowManager.addView(view, params)
 
         addCloseButton(params)
+        applyLook()
+    }
+
+    /** The bubble's window: the disc plus the room around it for its shadow and ripple. */
+    private fun windowSizePx(discSizeDp: Int): Int =
+        ((discSizeDp + 2 * FloatingBubbleView.HALO_DP) * resources.displayMetrics.density).toInt()
+
+    /** Brings the bubble and its close button to the look that should show now. */
+    private fun applyLook() {
+        val colors = lookStore.currentColors()
+        if (colors != lookColors) {
+            lookColors = colors
+            bubbleView?.colors = colors
+            closeButtonView?.let { styleCloseButton(it) }
+        }
+        mainHandler.removeCallbacks(lookTick)
+        if (bubbleView != null && lookStore.autoDark == "time") mainHandler.postDelayed(lookTick, LOOK_TICK_MS)
     }
 
     /**
@@ -170,8 +200,7 @@ class FloatingTasbeehService : Service() {
     private fun resizeBubbleForLabel(label: String) {
         val params = bubbleParams ?: return
         val view = bubbleView ?: return
-        val density = resources.displayMetrics.density
-        val newSizePx = (bubbleSizeDpFor(label) * density).toInt()
+        val newSizePx = windowSizePx(bubbleSizeDpFor(label))
         if (params.width == newSizePx) return
         params.width = newSizePx
         params.height = newSizePx
@@ -185,10 +214,13 @@ class FloatingTasbeehService : Service() {
         updateCloseButtonPosition(params.x, params.y)
     }
 
-    /** The room the close button takes above the bubble (its height and gap), px. */
+    /**
+     * The room the close button needs above the bubble's window, px: its
+     * height and gap, less the window's own empty room above the disc.
+     */
     private fun closeRoomPx(): Int {
         val density = resources.displayMetrics.density
-        return ((CLOSE_BUTTON_SIZE_DP + CLOSE_BUTTON_GAP_DP) * density).toInt()
+        return ((CLOSE_BUTTON_SIZE_DP + CLOSE_BUTTON_GAP_DP - FloatingBubbleView.HALO_DP) * density).toInt()
     }
 
     /**
@@ -214,6 +246,7 @@ class FloatingTasbeehService : Service() {
     /** The screen turned (or changed size): the bubble stays fully on it. */
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
         super.onConfigurationChanged(newConfig)
+        applyLook() // the phone's dark mode may be what changed
         val params = bubbleParams ?: return
         val view = bubbleView ?: return
         val kept = FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(params.x, params.y), placementArea(), params.width, closeRoomPx())
@@ -237,15 +270,10 @@ class FloatingTasbeehService : Service() {
         val view = TextView(this).apply {
             text = "×"
             textSize = 14f
-            setTextColor(Color.parseColor("#2B2118"))
             gravity = Gravity.CENTER
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(Color.parseColor("#FBF6EC"))
-                setStroke((resources.displayMetrics.density * 1.2f).toInt(), Color.parseColor("#C9A227"))
-            }
             setOnClickListener { closeBubble() }
         }
+        styleCloseButton(view)
 
         val density = resources.displayMetrics.density
         val sizePx = (CLOSE_BUTTON_SIZE_DP * density).toInt()
@@ -261,6 +289,16 @@ class FloatingTasbeehService : Service() {
         closeButtonView = view
         closeButtonParams = params
         windowManager.addView(view, params)
+    }
+
+    /** The close button in the active look: the bubble's deep colour, ink and gold. */
+    private fun styleCloseButton(view: TextView) {
+        view.setTextColor(Color.parseColor(lookColors.ink))
+        view.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.parseColor(lookColors.deepBottom))
+            setStroke((resources.displayMetrics.density * 1.2f).toInt(), Color.parseColor(lookColors.gold))
+        }
     }
 
     /**
@@ -290,8 +328,10 @@ class FloatingTasbeehService : Service() {
         val bubbleSizePx = bubbleParams?.width ?: (BUBBLE_SIZE_SMALL_DP * density).toInt()
         val closeSizePx = (CLOSE_BUTTON_SIZE_DP * density).toInt()
         val gapPx = (CLOSE_BUTTON_GAP_DP * density).toInt()
+        val haloPx = (FloatingBubbleView.HALO_DP * density).toInt()
         params.x = bubbleX + (bubbleSizePx - closeSizePx) / 2
-        params.y = bubbleY - closeSizePx - gapPx
+        // Just above the disc itself, inside the top of the window's empty room.
+        params.y = bubbleY + haloPx - closeSizePx - gapPx
     }
 
     /**
@@ -337,7 +377,7 @@ class FloatingTasbeehService : Service() {
         // separate mechanism from the pacing gate.
         val accepted = store.recordTapIfNotDuplicate(dhikrId, now)
         if (accepted) {
-            bubbleView?.count = store.getLiveCount(dhikrId)
+            bubbleView?.countAccepted(store.getLiveCount(dhikrId))
             triggerHapticFeedback()
             val readyDurationMs = store.getReadyDurationMs(dhikrId)
             pacingReadyAtElapsedRealtime = now + readyDurationMs
@@ -383,6 +423,8 @@ class FloatingTasbeehService : Service() {
             windowManager = windowManager,
             anchorParams = params,
             dhikrItems = store.getDhikrLabels(),
+            selectedDhikrId = store.selectedDhikrId,
+            colors = lookColors,
             customDhikrLabel = LABEL_CUSTOM_DHIKR,
             settingsLabel = LABEL_SETTINGS,
             onSelectDhikr = { dhikrId, _ ->
@@ -468,6 +510,7 @@ class FloatingTasbeehService : Service() {
     companion object {
         // The normal size for the majority of the library's short dhikr — a
         // little larger than the original 56dp, for comfortable repeated thumb taps.
+        private const val LOOK_TICK_MS = 60_000L
         private const val BUBBLE_SIZE_SMALL_DP = 64
         // A moderate, capped increase — never grows further/continuously
         // beyond this — for the handful of long dhikr whose text can't
@@ -543,6 +586,12 @@ class FloatingTasbeehService : Service() {
             mainHandler.post {
                 instance.bubbleView?.count = 0
             }
+        }
+
+        /** The app pushed a new look (RemindersPlugin#setAppLook). A safe no-op if the service isn't running. */
+        fun refreshLook() {
+            val instance = activeInstance ?: return
+            mainHandler.post { instance.applyLook() }
         }
 
         /**

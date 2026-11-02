@@ -15,6 +15,11 @@
 //    Android WebView can encode.
 //  - It waits for Amiri/Tajawal (index.html) before drawing; offline, the
 //    system Arabic font is used instead, still correctly shaped.
+//  - A verse of the Qur'an (content.quranVerse) is different: it is drawn in
+//    the bundled Scheherazade New, which has every letter and Qur'anic sign of
+//    the text and needs no network, with its characters passed to the canvas
+//    exactly as they are (wrapQuranText). If that font can't be loaded no image
+//    is made, rather than one in a font that may drop a sign.
 import type { ShareableContent } from "./shareContent";
 
 export const IMAGE_WIDTH = 1080;
@@ -45,6 +50,38 @@ const QURAN_MARK_AFTER_SPACE = /[ \t]+(?=[\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8
 
 export function forCanvas(text: string): string {
   return text.replace(QURAN_MARK_AFTER_SPACE, "\u00A0");
+}
+
+/**
+ * A sign that stands as its own word in the Qur'an's text — a pause mark, ۩,
+ * or the verse-end sign drawn after it. It belongs with the word before it, so
+ * a line never begins with one.
+ */
+const QURAN_SIGN_WORD = /^[\u06D6-\u06DD\u06E9]/;
+
+/** ۝ and the verse's number in Arabic-Indic digits; the font draws them as one ornament. */
+export function verseEndSign(ayah: number): string {
+  return `\u06DD${String(ayah).replace(/\d/g, (d) => String.fromCharCode(0x0660 + Number(d)))}`;
+}
+
+/**
+ * Lines of a verse, no wider than [maxWidth]. Unlike wrapText the characters
+ * are never replaced: only the spaces where a line ends are left out, so
+ * lines.join(" ") is the verse itself, character for character.
+ */
+export function wrapQuranText(text: string, maxWidth: number, measure: (s: string) => number): string[] {
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(" ")) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (!line || measure(candidate) <= maxWidth || QURAN_SIGN_WORD.test(word)) line = candidate;
+    else {
+      lines.push(line);
+      line = word;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
 }
 
 /** Splits [text] into lines no wider than [maxWidth], at ordinary spaces only (never a no-break space); a paragraph break (\n) always starts a new line. */
@@ -107,8 +144,15 @@ export function layoutShareImage(
     const lines = wrapText(text, maxWidth, (s) => measure(font, s));
     if (lines.length) blocks.push({ lines, font, color, lineHeight: Math.round(size * lh), dir, gap });
   };
-  const arSize = px(content.isPoetry ? 50 : 56);
-  push(content.textAr, `700 ${arSize}px "Amiri", "Noto Naskh Arabic", serif`, colors.ink, arSize, 1.85, "rtl", 0);
+  if (content.quranVerse) {
+    const size = px(62);
+    const font = `400 ${size}px "Scheherazade New"`;
+    const lines = wrapQuranText(`${content.textAr} ${verseEndSign(content.quranVerse.ayah)}`, maxWidth, (s) => measure(font, s));
+    blocks.push({ lines, font, color: colors.ink, lineHeight: Math.round(size * 1.95), dir: "rtl", gap: 0 });
+  } else {
+    const arSize = px(content.isPoetry ? 50 : 56);
+    push(content.textAr, `700 ${arSize}px "Amiri", "Noto Naskh Arabic", serif`, colors.ink, arSize, 1.85, "rtl", 0);
+  }
   if (language === "en" && content.meaningEn) {
     const size = px(34);
     push(content.meaningEn, `italic 400 ${size}px "Tajawal", "Segoe UI", sans-serif`, colors.muted, size, 1.5, "ltr", px(44));
@@ -177,6 +221,14 @@ export function currentShareColors(): ShareImageColors {
   };
 }
 
+/** The bundled Qur'anic font (components/quranReader.css), loaded for this very text; throws rather than fall back to another. */
+async function quranFontReady(text: string): Promise<void> {
+  const fonts = typeof document !== "undefined" ? document.fonts : undefined;
+  if (!fonts || typeof fonts.load !== "function") throw new Error("Qur'anic font unavailable");
+  const loaded = await fonts.load('400 62px "Scheherazade New"', text);
+  if (loaded.length === 0) throw new Error("Qur'anic font unavailable");
+}
+
 async function fontsReady(text: string): Promise<void> {
   const fonts = typeof document !== "undefined" ? document.fonts : undefined;
   if (!fonts || typeof fonts.load !== "function") return;
@@ -242,6 +294,7 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 export async function renderShareImage(content: ShareableContent, language: "ar" | "en", palette = currentShareColors()): Promise<string> {
   let colors = palette;
   await fontsReady(content.textAr);
+  if (content.quranVerse) await quranFontReady(`${content.textAr} ${verseEndSign(content.quranVerse.ayah)}`);
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("canvas unavailable");

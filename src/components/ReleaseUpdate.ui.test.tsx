@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
-// This round's screens: the Religious Content Review center, the startup
-// Hadith overlay, the Home dashboard, the now-playing panel, the Lataif in
+// This round's screens: the startup Hadith overlay, the Home dashboard, the now-playing panel, the Lataif in
 // the full-screen reflection, and the prayer countdown's progress.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // This file tests the review workflow itself (defaults, decisions, edits) on
@@ -28,15 +27,14 @@ vi.mock("../lib/audioAdhkarPlayer", async (importOriginal) => ({
 
 import { LanguageProvider } from "../theme/LanguageContext";
 import { LANGUAGE_STORAGE_KEY } from "../lib/appearancePreferences";
-import { ContentReviewView } from "./ContentReviewView";
-import { POEMS } from "../data/widgetContent";
 import { StartupHadithOverlay } from "./StartupHadithOverlay";
 import { FADE_MS, LOGO_VISIBLE_MS, MAX_VISIBLE_MS, MIN_VISIBLE_MS, dismissStartupOverlay, holdLaunchCover, resetStartupOverlayForTesting } from "../lib/startupOverlay";
 import { DailyProgressCard } from "./HomeDashboard";
+import { PrayerTimesPanel } from "./PrayerTimesPanel";
 import { NowPlayingPanel } from "./AudioAdhkarScreen";
 import { PROGRESS_POLL_MS } from "../lib/useAudioAdhkarProgress";
 import { SpiritualReminderView } from "./SpiritualReminderView";
-import { STARTUP_HADITH_REVIEW_ID, isPublished, resetContentReviewCacheForTesting, reviewStatusOf, setReview } from "../lib/contentReview";
+import { STARTUP_HADITH_REVIEW_ID, resetContentReviewCacheForTesting, setReview } from "../lib/contentReview";
 import { clearAllStats, recordListenedSessions, recordWirdComplete, recordWrittenRepetition } from "../lib/stats";
 import { commitAudioCompletions } from "../lib/audioAdhkarCounts";
 import { getCountdownFraction, getPreviousPrayerTime } from "../lib/nextPrayer";
@@ -60,100 +58,6 @@ afterEach(() => {
   container.remove();
   vi.useRealTimers();
 });
-const click = async (el: Element) => {
-  await act(async () => {
-    el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-  });
-};
-const type = async (input: HTMLInputElement, value: string) => {
-  await act(async () => {
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-};
-const choose = async (select: HTMLSelectElement, value: string) => {
-  await act(async () => {
-    select.value = value;
-    select.dispatchEvent(new Event("change", { bubbles: true }));
-  });
-};
-
-describe("Religious Content Review", () => {
-  it("lists the live content, filters it, and saves a decision that publishes the item", async () => {
-    mount(<ContentReviewView onBack={() => {}} />);
-    expect(container.textContent).toContain("مراجعة المحتوى الديني");
-    await choose(container.querySelector<HTMLSelectElement>("[data-review-filter='type']")!, "poetry");
-    expect(container.querySelector("[data-review-count]")!.getAttribute("data-review-count")).toBe(String(POEMS.length));
-    await type(container.querySelector<HTMLInputElement>("[data-review-search]")!, "البوصيري");
-    const card = container.querySelector("[data-review-item='poetry:busiri-nafs']")!;
-    expect(card.querySelector("[data-review-status]")!.getAttribute("data-review-status")).toBe("pending");
-    await click([...card.querySelectorAll("button")].find((b) => b.textContent === "التفاصيل")!);
-    expect(card.querySelector("[data-review-details]")!.textContent).toContain("src/data/widgetContent.ts");
-    expect(card.querySelector("[data-review-warnings]")!.textContent).toContain("يحتاج تحققًا علميًّا");
-    await choose(card.querySelector<HTMLSelectElement>("[data-review-select]")!, "approved");
-    await click(card.querySelector("[data-review-save]")!);
-    expect(isPublished("poetry:busiri-nafs")).toBe(true);
-    expect(card.querySelector("[data-review-status]")!.getAttribute("data-review-status")).toBe("approved");
-  });
-
-  it("applies one status to every item shown, after confirmation", async () => {
-    vi.spyOn(window, "confirm").mockReturnValue(true);
-    mount(<ContentReviewView onBack={() => {}} />);
-    await choose(container.querySelector<HTMLSelectElement>("[data-review-filter='type']")!, "poetry");
-    await choose(container.querySelector<HTMLSelectElement>("[data-review-bulk-status]")!, "needs-verification");
-    await click(container.querySelector("[data-review-bulk-apply]")!);
-    expect(reviewStatusOf("poetry:labid-batil")).toBe("needs-verification");
-    expect(reviewStatusOf("poetry:zuhayr-khaliqa")).toBe("needs-verification");
-  });
-});
-
-describe("Religious Content Review — categories and one-tap decisions", () => {
-  const card = (id: string) => container.querySelector(`[data-review-item='${id}']`)!;
-
-  it("offers the Lataif tab and the six categories, and a category lists its items in full", async () => {
-    mount(<ContentReviewView onBack={() => {}} />);
-    const cats = [...container.querySelectorAll("[data-review-category]")].map((b) => b.getAttribute("data-review-category"));
-    expect(cats).toEqual(["wamdat", "all", "quran", "tafsir-reflections", "hadith", "dua-adhkar", "poetry", "comments-translations"]);
-    await click(container.querySelector("[data-review-category='quran']")!);
-    await type(container.querySelector<HTMLInputElement>("[data-review-search]")!, "q33-41");
-    const latifa = card("lataif:q33-41");
-    // Shown in full at once: the verse, its place, the tafsir with its source and reference, and where it appears.
-    const details = latifa.querySelector("[data-review-details]")!;
-    expect(details.textContent).toContain("سورة الأحزاب، الآية 41–42");
-    expect(details.textContent).toContain("التفسير العلمي");
-    expect(details.textContent).toContain("تفسير السعدي");
-    expect(details.textContent).toContain("33:41");
-    expect(details.textContent).toContain("الودجت");
-    // DITHAR's own reflections are inside it, apart from the tafsir, each with its own decision.
-    const comments = latifa.querySelector("[data-review-comments='lataif:q33-41']")!;
-    expect(comments.textContent).toContain("ليست تفسيرًا");
-    expect(comments.querySelector("[data-review-comment='lataif:q33-41:c1']")).not.toBeNull();
-  });
-
-  it("approves, rejects or flags an item in one tap, persistently, and only approval publishes", async () => {
-    mount(<ContentReviewView onBack={() => {}} />);
-    await click(container.querySelector("[data-review-category='hadith']")!);
-    await type(container.querySelector<HTMLInputElement>("[data-review-search]")!, "tirmidhi-3377");
-    const item = card("hadith:tirmidhi-3377");
-    expect(reviewStatusOf("hadith:tirmidhi-3377")).toBe("pending");
-    expect(isPublished("hadith:tirmidhi-3377")).toBe(false);
-    const actions = item.querySelector("[data-review-actions='hadith:tirmidhi-3377']")!;
-    await click(actions.querySelector("[data-review-action='needs-verification']")!);
-    expect(reviewStatusOf("hadith:tirmidhi-3377")).toBe("needs-verification");
-    await click(actions.querySelector("[data-review-action='approved']")!);
-    expect(isPublished("hadith:tirmidhi-3377")).toBe(true);
-    // Its comment is decided separately, and stays unpublished until approved.
-    const comment = item.querySelector("[data-review-actions='hadith:tirmidhi-3377:c1']")!;
-    expect(isPublished("hadith:tirmidhi-3377:c1")).toBe(false);
-    await click(comment.querySelector("[data-review-action='rejected']")!);
-    expect(reviewStatusOf("hadith:tirmidhi-3377:c1")).toBe("rejected");
-    // Saved on the device, apart from the text: a fresh read (as after a restart) still has them.
-    resetContentReviewCacheForTesting();
-    expect(reviewStatusOf("hadith:tirmidhi-3377")).toBe("approved");
-    expect(reviewStatusOf("hadith:tirmidhi-3377:c1")).toBe("rejected");
-  });
-});
-
 describe("launch intro (startup Hadith)", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -368,10 +272,22 @@ describe("launch intro (startup Hadith)", () => {
 });
 
 describe("Home dashboard", () => {
+  const mountHome = () =>
+    mount(
+      <>
+        <PrayerTimesPanel date={new Date()} variant="hero" />
+        <DailyProgressCard />
+      </>,
+    );
+
   it("shows today's real activity, keeps listening apart from repetitions, and updates as things are recorded", async () => {
-    mount(<DailyProgressCard />);
+    clearAllStats();
+    mountHome();
     expect(container.querySelector("[data-home-wirds]")!.getAttribute("data-home-wirds")).toBe("0");
-    expect(container.textContent).toContain("ابدأ بذكرٍ واحد");
+    // Every count reads 0 until something actually happens: never a dash.
+    for (const stat of ["written", "tasbeeh", "prayer", "listening"]) {
+      expect(container.querySelector(`[data-home-stat='${stat}']`)!.querySelector(".dithar-stat__value")!.textContent).toBe("0");
+    }
     await act(async () => {
       recordWirdComplete("morning");
       recordWrittenRepetition("morning", "morning_001");
@@ -384,20 +300,22 @@ describe("Home dashboard", () => {
     expect(container.querySelector("[data-home-stat='tasbeeh']")!.textContent).toContain("0");
   });
 
-  it("labels the ring as completed Morning/Evening sessions, and says how each was completed", () => {
+  it("names the sessions on the lamps, says how each was completed, and lights only completed ones", () => {
     clearAllStats();
-    mount(<DailyProgressCard />);
-    const ring = container.querySelector("[data-home-sessions-ring]")!;
-    expect(ring.getAttribute("aria-label")).toBe("جلسات الأذكار المكتملة اليوم: 0 من 2");
-    expect(container.textContent).toContain("جلسات الأذكار المكتملة اليوم");
-    expect(container.textContent).toContain("أو بالاستماع إليها كاملةً");
+    mountHome();
+    expect(container.querySelector("[data-home-wirds]")!.getAttribute("aria-label")).toBe("جلسات الأذكار المكتملة اليوم: 0 من 2");
+    const lamp = (section: string) => container.querySelector(`[data-home-wird='${section}']`)!;
+    expect(lamp("morning").textContent).toContain("أذكار الصباح");
+    expect(lamp("evening").textContent).toContain("أذكار المساء");
+    expect(lamp("morning").hasAttribute("data-done")).toBe(false);
     // Read Morning, then listen to Evening's whole session: 2 of 2, each with how it was completed.
     act(() => recordWirdComplete("morning"));
     act(() => void recordListenedSessions([{ category: "evening", eventId: "native-session-complete:evening:1" }]));
     expect(container.querySelector("[data-home-wirds]")!.getAttribute("data-home-wirds")).toBe("2");
-    expect(container.querySelector("[data-home-wird='morning']")!.getAttribute("data-how")).toBe("read");
-    expect(container.querySelector("[data-home-wird='evening']")!.getAttribute("data-how")).toBe("listened");
-    expect(container.querySelector("[data-home-wird='evening']")!.textContent).toContain("(استماع)");
+    expect(lamp("morning").getAttribute("data-how")).toBe("read");
+    expect(lamp("evening").getAttribute("data-how")).toBe("listened");
+    expect(lamp("evening").textContent).toContain("(استماع)");
+    expect(lamp("evening").getAttribute("data-state")).toBe("done");
   });
 
   it("has no shortcut row: its destinations are all in the bottom navigation", () => {

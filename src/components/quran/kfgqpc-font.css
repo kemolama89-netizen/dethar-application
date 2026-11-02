@@ -1,0 +1,31 @@
+/* The King Fahd Complex's Uthmanic font, unmodified (src/assets/fonts/kfgqpc-hafs). Never set a fallback here:
+   its text uses this font's own verse-number glyphs (lib/kfgqpcText.ts). */
+@font-face {
+  font-family: "KFGQPC Hafs";
+  src: url("../../assets/fonts/kfgqpc-hafs/uthmanic_hafs_v20.ttf") format("truetype");
+  font-display: block;
+}
+/* !important: screens' own text rules must never win here. In any other font this text's
+   verse-number glyphs are wrong letters (a test holds every place it's drawn to this). */
+.dithar-kfgqpc,
+.dithar-kfgqpc * {
+  font-family: "KFGQPC Hafs" !important;
+}
+.dithar-kfgqpc {
+  font-feature-settings: normal;
+  /* Justifying breaks this font's joining in the browser, so lines stay natural. */
+  text-align: start;
+}
+.dithar-kfgqpc .sr-only {
+  font-family: var(--font-body) !important;
+}
+.dithar-kfgqpc-mark {
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* The Tafsir's offline reading font, bundled with the app (SIL OFL 1.1). */
+@font-face {
+  font-family: "Scheherazade New";
+  src: url("../../assets/fonts/scheherazade-new/ScheherazadeNew-Regular.woff2") format("woff2");
+  font-display: swap;
+}

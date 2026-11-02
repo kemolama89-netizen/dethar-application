@@ -37,6 +37,12 @@ export interface ShareableContent {
   /** Poetry keeps its line breaks. */
   isPoetry?: boolean;
   /**
+   * A verse of the Qur'an: the image draws [textAr] character for character
+   * in the bundled Qur'anic font, closing with this verse's end sign (۝ and
+   * its number) — drawn beside the text, never added to it.
+   */
+  quranVerse?: { ayah: number };
+  /**
    * The background the item is being shown on (the full-screen reminder's
    * photo: the user's own, their fixed choice, or the automatic one) — the
    * image is drawn on it exactly as previewed. Text sharing ignores it.
