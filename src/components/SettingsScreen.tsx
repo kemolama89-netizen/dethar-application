@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Bell, BellRing, CalendarClock, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, ListChecks, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2, Heart } from "lucide-react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { BarChart3, Bell, BellRing, CalendarClock, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, ListChecks, BookOpen, Clapperboard, Compass, LifeBuoy, Map, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2, Heart } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
 import { FloatingTasbeeh } from "../lib/floatingTasbeehBridge";
@@ -15,10 +15,21 @@ import { PrayerNotificationsSettingsView } from "./PrayerNotificationsSettingsVi
 import { prayerNotificationLabels } from "../data/prayerNotificationLabels";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
 import { AdhanAudioSettingsView } from "./AdhanAudioSettingsView";
+import { QuranJourneyStatCard } from "./QuranJourneyStatCard";
 import { RemindersSettingsView } from "./RemindersSettingsView";
 import { FavoritesView } from "./FavoritesView";
 import { DailySummarySettingsView } from "./DailySummarySettingsView";
+import { QuranJourneySettingsView } from "./QuranJourneySettingsView";
+import { appTourLabels } from "../data/onboardingLabels";
+import { requestTourReplay } from "../lib/onboarding";
+import { requestIntroReplay } from "../lib/introFilm";
+import { quranJourneyLabels } from "../data/quranJourneyLabels";
 import { WeeklyScheduleView } from "./WeeklyScheduleView";
+import { FeatureGuideView } from "./FeatureGuideView";
+import { AppTourView } from "./AppTourView";
+import { FirstVisitHint } from "./FirstVisitHint";
+import { featureGuideLabels } from "../data/featureGuideLabels";
+import type { GuideSectionId } from "../data/featureGuideLabels";
 import { favoritesLabels, reminderLabels, summaryLabels } from "../data/reminderLabels";
 import { weeklyScheduleLabels } from "../data/scheduleLabels";
 import { adhanAudioLabels } from "../data/adhanAudioLabels";
@@ -49,6 +60,8 @@ interface SettingsScreenProps {
   onNavigateToTasbeeh: () => void;
   onNavigateToWritten: () => void;
   onNavigateToAudio: () => void;
+  /** Opened from a notification on one of its pages (lib/notificationRoutes.ts): Statistics for the end-of-day summary. */
+  initialView?: "menu" | "statistics";
 }
 
 type SettingsView =
@@ -64,7 +77,10 @@ type SettingsView =
   | "reminders"
   | "favorites"
   | "daily-summary"
-  | "weekly-schedule";
+  | "journey-notify"
+  | "weekly-schedule"
+  | "guide"
+  | "app-tour";
 
 /** A Settings menu row (same look as the rows written out below). */
 function MenuRow({ icon: Icon, title, hint, onClick, rowKey, forwardIcon: ForwardIcon }: { icon: LucideIcon; title: string; hint: string; onClick: () => void; rowKey: string; forwardIcon: LucideIcon }) {
@@ -581,6 +597,8 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
           rows={audioRows}
           emptyLabel={t.noDataYet}
         />
+        {/* The Qur'an Journey: its own record (lib/quranJourney.ts), apart from the Adhkar and Tasbeeh above and untouched by their reset. */}
+        <QuranJourneyStatCard selection={selection} expanded={expandedKey === "journey"} onToggle={() => toggle("journey")} />
 
         {/* Deliberately separated (its own quiet, secondary row, not a 5th
             StatCategoryCard) and worded specifically as Statistics HISTORY
@@ -721,6 +739,7 @@ function FloatingTasbeehView({ onBack }: { onBack: () => void }) {
         <div className="h-9 w-9 shrink-0" aria-hidden="true" />
       </div>
 
+      {available && <FirstVisitHint id="settings-floating" text={featureGuideLabels[language].hints.floating} />}
       {!available ? (
         <div
           className="mt-4 flex flex-col items-center gap-3 rounded-2xl border px-5 py-8 text-center"
@@ -787,41 +806,103 @@ function FloatingTasbeehView({ onBack }: { onBack: () => void }) {
 // per spec. BottomNav's own "settings" nav item is what lands here; this
 // screen keeps that item active and lets the other four keys navigate away
 // exactly like every other screen already does.
-export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToWritten, onNavigateToAudio }: SettingsScreenProps) {
+export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigateToWritten, onNavigateToAudio, initialView = "menu" }: SettingsScreenProps) {
   const { language, dir } = useLanguage();
   const nav = navLabels[language];
   const t = settingsLabels[language];
-  const [view, setView] = useState<SettingsView>("menu");
+  const [view, setView] = useState<SettingsView>(initialView);
+  // A page opened from «دليل الميزات» goes back to the guide, at the section it came from.
+  const [fromGuide, setFromGuide] = useState(false);
+  const [guideSection, setGuideSection] = useState<GuideSectionId | null>(null);
+  const back = () => {
+    setView(fromGuide ? "guide" : "menu");
+    setFromGuide(false);
+  };
+  // Each page starts at its top (its first-visit hint sits there), not where the last page was scrolled.
+  const topRef = useRef<HTMLDivElement>(null);
+  const firstView = useRef(true);
+  useLayoutEffect(() => {
+    if (firstView.current) {
+      firstView.current = false;
+      return;
+    }
+    topRef.current?.scrollIntoView?.({ block: "start" });
+  }, [view]);
   const ForwardIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
 
   return (
     <DeviceFrame>
       <AppShell>
+        <div ref={topRef} aria-hidden="true" />
         <TopBar />
         {view === "statistics" ? (
-          <StatisticsView onBack={() => setView("menu")} />
+          <StatisticsView onBack={back} />
         ) : view === "appearance" ? (
-          <AppearanceSettings onBack={() => setView("menu")} />
+          <AppearanceSettings onBack={back} />
         ) : view === "floating-tasbeeh" ? (
-          <FloatingTasbeehView onBack={() => setView("menu")} />
+          <FloatingTasbeehView onBack={back} />
         ) : view === "audio-settings" ? (
-          <AudioSettingsView onBack={() => setView("menu")} />
+          <AudioSettingsView onBack={back} />
         ) : view === "location" ? (
-          <LocationSettingsView onBack={() => setView("menu")} />
+          <LocationSettingsView onBack={back} />
         ) : view === "prayer-notifications" ? (
-          <PrayerNotificationsSettingsView onBack={() => setView("menu")} />
+          <PrayerNotificationsSettingsView onBack={back} />
         ) : view === "audio-adhkar" ? (
-          <AudioAdhkarSettingsView onBack={() => setView("menu")} />
+          <AudioAdhkarSettingsView onBack={back} />
         ) : view === "adhan-audio" ? (
-          <AdhanAudioSettingsView onBack={() => setView("menu")} />
+          <AdhanAudioSettingsView onBack={back} />
         ) : view === "reminders" ? (
-          <RemindersSettingsView onBack={() => setView("menu")} />
+          <RemindersSettingsView onBack={back} />
         ) : view === "favorites" ? (
-          <FavoritesView onBack={() => setView("menu")} />
+          <FavoritesView onBack={back} />
         ) : view === "daily-summary" ? (
-          <DailySummarySettingsView onBack={() => setView("menu")} />
+          <DailySummarySettingsView onBack={back} />
+        ) : view === "journey-notify" ? (
+          <QuranJourneySettingsView onBack={back} />
         ) : view === "weekly-schedule" ? (
-          <WeeklyScheduleView onBack={() => setView("menu")} />
+          <WeeklyScheduleView onBack={back} />
+        ) : view === "app-tour" ? (
+          <AppTourView onBack={() => setView("menu")}>
+            <MenuRow
+              rowKey="intro-film"
+              icon={Clapperboard}
+              title={appTourLabels[language].film}
+              hint={appTourLabels[language].filmHint}
+              // It opens over this page, and comes back to it.
+              onClick={requestIntroReplay}
+              forwardIcon={ForwardIcon}
+            />
+            <MenuRow
+              rowKey="feature-guide"
+              icon={LifeBuoy}
+              title={appTourLabels[language].guide}
+              hint={appTourLabels[language].guideHint}
+              onClick={() => setView("guide")}
+              forwardIcon={ForwardIcon}
+            />
+            <MenuRow
+              rowKey="onboarding-tour"
+              icon={Map}
+              title={appTourLabels[language].tour}
+              hint={appTourLabels[language].tourHint}
+              onClick={() => {
+                // Home, where the tour points at the real controls.
+                onNavigateHome();
+                requestTourReplay();
+              }}
+              forwardIcon={ForwardIcon}
+            />
+          </AppTourView>
+        ) : view === "guide" ? (
+          <FeatureGuideView
+            onBack={() => setView("app-tour")}
+            onOpen={(target) => {
+              setFromGuide(true);
+              setView(target);
+            }}
+            openSection={guideSection}
+            onToggleSection={setGuideSection}
+          />
         ) : (
           <div className="flex flex-1 flex-col">
             <h1 className="mt-2 text-center text-[20px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-text-primary)" }}>
@@ -867,6 +948,24 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
                 title={summaryLabels[language].row}
                 hint={summaryLabels[language].rowHint}
                 onClick={() => setView("daily-summary")}
+                forwardIcon={ForwardIcon}
+              />
+
+              <MenuRow
+                rowKey="app-tour"
+                icon={Compass}
+                title={appTourLabels[language].row}
+                hint={appTourLabels[language].rowHint}
+                onClick={() => setView("app-tour")}
+                forwardIcon={ForwardIcon}
+              />
+
+              <MenuRow
+                rowKey="journey-notify"
+                icon={BookOpen}
+                title={quranJourneyLabels[language].settingsRow}
+                hint={quranJourneyLabels[language].settingsRowHint}
+                onClick={() => setView("journey-notify")}
                 forwardIcon={ForwardIcon}
               />
 

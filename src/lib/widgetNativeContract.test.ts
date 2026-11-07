@@ -9,15 +9,16 @@
 import { describe, expect, it } from "vitest";
 
 import fixture from "../../android/app/src/test/resources/widget-native-items.json";
-import { reminderPool } from "./reminderContent";
+import { reminderRotationPool } from "./reminderContent";
 import { nativeReminderItem } from "./remindersSync";
 
 const FIXTURE_URL = new URL("../../android/app/src/test/resources/widget-native-items.json", import.meta.url);
 
 function current() {
   return {
-    ar: reminderPool().map((i) => nativeReminderItem(i, "ar")).filter((i) => i.widget !== false),
-    en: reminderPool().map((i) => nativeReminderItem(i, "en")).filter((i) => i.widget !== false),
+    // What the widget is really given (remindersSync): the rotation pool — time-based items never reach it.
+    ar: reminderRotationPool().map((i) => nativeReminderItem(i, "ar")).filter((i) => i.widget !== false),
+    en: reminderRotationPool().map((i) => nativeReminderItem(i, "en")).filter((i) => i.widget !== false),
   };
 }
 

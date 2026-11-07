@@ -74,7 +74,12 @@ describe("the default feed takes only reviewed content", () => {
   it("the Prophet's ﷺ words are quoted whole: balanced «», and narrators outside them", () => {
     for (const h of ENRICHED_HADITHS) {
       expect((h.textAr.match(/«/g) ?? []).length, h.id).toBe((h.textAr.match(/»/g) ?? []).length);
-      expect(h.textAr.startsWith("عن "), h.id).toBe(true);
+      // A matn kept exactly as its source gives it (Open Hadith Data) names its narrator in the source line instead
+      // (lib/reminderContent.ts «الراوي: …»), and its own quotation marks stay balanced.
+      if (h.matnOnly) {
+        expect(h.narratorAr.trim(), h.id).not.toBe("");
+        expect((h.textAr.match(/"/g) ?? []).length % 2, h.id).toBe(0);
+      } else expect(h.textAr.startsWith("عن "), h.id).toBe(true);
     }
   });
 
@@ -140,7 +145,10 @@ describe("editorial comments", () => {
   });
 
   it("vary: several per item, theme and dua category, in more than one style", () => {
-    for (const entry of [...ENRICHED_HADITHS, ...ENRICHED_DUAS, ...POEMS]) {
+    // Comments vary what rotates; the time-based hadiths never rotate and carry only their text and source.
+    // So does the uncommon-hadiths batch (2026-11-07), shown with its text and source only.
+    for (const h of ENRICHED_HADITHS.filter((x) => x.timedOnly || x.textOnly)) expect(h.comments, h.id).toEqual([]);
+    for (const entry of [...ENRICHED_HADITHS.filter((x) => !x.timedOnly && !x.textOnly), ...ENRICHED_DUAS, ...POEMS]) {
       expect(entry.comments.length, entry.id).toBeGreaterThanOrEqual(2);
       expect(new Set(entry.comments.map((c) => c.style)).size, entry.id).toBeGreaterThanOrEqual(2);
     }

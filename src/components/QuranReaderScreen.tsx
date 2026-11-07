@@ -5,6 +5,8 @@ import "./quranReader.css";
 import { DeviceFrame } from "./DeviceFrame";
 import { BottomNav } from "./BottomNav";
 import { useLanguage } from "../theme/LanguageContext";
+import { FirstVisitHint } from "./FirstVisitHint";
+import { onboardingLabels } from "../data/onboardingLabels";
 import { quranLabels } from "../data/quranLabels";
 import { QURAN_VERSES, TANZIL_NOTICE, pageOpeningWords } from "../lib/quranText";
 import { JUZ_STARTS, MUSHAF_SHOWN_BOX, SURAH_META, TOTAL_PAGES, arabicDigits, hizbOf, juzOf, mushafViewBox, pageOf, pageVerses, quarterMarksOnPage, quarterStart, quarterStartsOnPage, surahMeta } from "../lib/quranMeta";
@@ -14,12 +16,8 @@ import {
   QURAN_ZOOMS,
   QURAN_ZOOM_FIT,
   isQuranBookmarked,
-  loadQuranReadingMode,
-  loadQuranTextTheme,
   loadQuranTurnSound,
   loadQuranZoom,
-  saveQuranReadingMode,
-  saveQuranTextTheme,
   saveQuranPosition,
   saveQuranTurnSound,
   saveQuranZoom,
@@ -41,7 +39,6 @@ import { basairLabels } from "../data/basairLabels";
 import { loadBasairPosition } from "../lib/basairPosition";
 
 // Basa'ir, the verse and its Tafsir, loads only when opened: the reading experience never pays for it.
-const MushafTextPage = lazy(() => import("./quran/MushafTextPage").then((m) => ({ default: m.MushafTextPage })));
 const VerseTafsirView = lazy(() => import("./basair/TafsirReadingView").then((m) => ({ default: m.VerseTafsirView })));
 /** Stands in, opaque, for the moment the code takes to arrive. */
 const overlayLoading = <div className="fixed inset-0 z-[85]" style={{ background: "var(--color-bg)" }} aria-hidden="true" />;
@@ -208,6 +205,8 @@ function SurahIndex({ onOpen, onBack, onNavigate }: { onOpen: (t: QuranTarget) =
       )}
 
       <BasairEntryCard onOpen={() => setBasairAt(loadBasairPosition() ?? { surah: 1, ayah: 1 })} />
+      {/* First visit: Basa'ir (the Journey's page) and long-press for Tafsir — on the index, never over a page. */}
+      <FirstVisitHint id="quran-basair" text={onboardingLabels[language].hintBasair} />
       {basairAt && (
         <Suspense fallback={overlayLoading}>
           <VerseTafsirView surah={basairAt.surah} ayah={basairAt.ayah} onClose={() => setBasairAt(null)} />
@@ -787,12 +786,6 @@ function MushafReader({
   // A search result stays marked (verse 1 too) until the page is tapped or turned.
   const [found, setFound] = useState<{ key: string; words: string[] } | null>(target.found ? { key: verseKey(target.surah, target.ayah), words: target.found } : null);
   const [turnSound, setTurnSound] = useState(loadQuranTurnSound);
-  // Printed pages by default; the text reading mode falls back to them if it can't load.
-  const [readingMode, setReadingMode] = useState(loadQuranReadingMode);
-  const [textTheme, setTextTheme] = useState(loadQuranTextTheme);
-  const [textUnavailable, setTextUnavailable] = useState(false);
-  const onTextUnavailable = useCallback(() => setTextUnavailable(true), []);
-  const textMode = readingMode === "text" && !textUnavailable;
   // The screen stays on while a page is open; the phone's own timeout returns when the reader closes.
   useKeepScreenAwake();
   const [selected, setSelected] = useState<string | null>(null);
@@ -908,7 +901,7 @@ function MushafReader({
   };
   const { w: sheetWidth, h: sheetHeight } = fitSheet(page, zoom);
   // The text mode's size changes its type, never a picture to pan.
-  const zoomed = !textMode && zoom > QURAN_ZOOM_FIT;
+  const zoomed = zoom > QURAN_ZOOM_FIT;
   // Wider than the screen (zoomed): a sideways drag pans instead of turning the page.
   const pansSideways = sheetWidth > area.w + 1;
   const scrollable = measured && (sheetHeight + FOLIO_PX > area.h + 1 || pansSideways);
@@ -999,7 +992,7 @@ function MushafReader({
   const turnOver = useRef<HTMLDivElement>(null);
   const turnUnder = useRef<HTMLDivElement>(null);
 
-  const canAnimateTurn = () => !textMode && measured && !zoomed && !pageTurnTooSlow() && typeof requestAnimationFrame === "function" && !prefersReducedMotion();
+  const canAnimateTurn = () => measured && !zoomed && !pageTurnTooSlow() && typeof requestAnimationFrame === "function" && !prefersReducedMotion();
   const turnShade = useRef<HTMLDivElement>(null);
   /** Watches the turn's frames while it lasts (lib/pageTurnPerformance.ts): the lightweight fallback if they are too slow. */
   const turnProbe = useRef<{ frame: number | null; slow: number; last: number | null }>({ frame: null, slow: 0, last: null });
@@ -1099,7 +1092,7 @@ function MushafReader({
   // the page changes at once and a plain sheet of paper — no artwork in it, so nothing is redrawn — sweeps
   // over it from the spine, shaded as it lifts (a CSS animation of transform and opacity only).
   const [liteTurn, setLiteTurn] = useState<{ dir: "next" | "prev"; n: number } | null>(null);
-  const canLiteTurn = () => !textMode && measured && !zoomed && typeof requestAnimationFrame === "function" && !prefersReducedMotion();
+  const canLiteTurn = () => measured && !zoomed && typeof requestAnimationFrame === "function" && !prefersReducedMotion();
 
   /** The paper sound of a page turning, unless muted in the settings (lib/pageTurnSound.ts), its landing at `landsInMs`. */
   const playTurnSound = (landsInMs: number) => {
@@ -1272,7 +1265,6 @@ function MushafReader({
       data-quran-reader={position.surah}
       data-quran-controls={controls ? "shown" : "hidden"}
       data-quran-orientation={landscape ? "landscape" : "portrait"}
-      data-quran-text-paper={textMode ? textTheme : undefined}
     >
       <div
         ref={stageRef}
@@ -1318,12 +1310,7 @@ function MushafReader({
       >
         <article className="dithar-mushaf-page" dir="rtl" lang="ar" data-quran-mushaf-page={page}>
           <div ref={bodyRef} onScroll={onScroll} className="dithar-mushaf-body" data-zoomed={zoomed ? "" : undefined} data-scrollable={scrollable ? "" : undefined} data-quran-area="">
-            {textMode ? (
-              <Suspense fallback={null}>
-                <MushafTextPage page={page} scale={zoom} theme={textTheme} selected={selected} highlight={highlight} found={found?.key ?? null} onLongPress={selectVerse} onUnavailable={onTextUnavailable} />
-              </Suspense>
-            ) : (
-              <MushafSheet
+            <MushafSheet
                 key={page}
                 page={page}
                 width={sheetWidth}
@@ -1336,7 +1323,6 @@ function MushafReader({
                 found={found?.key ?? null}
                 onLongPress={selectVerse}
               />
-            )}
           </div>
           {liteTurn && (
             <div className="dithar-mushaf-liteturn" aria-hidden="true" data-quran-lite-turn={liteTurn.dir}>
@@ -1547,60 +1533,6 @@ function MushafReader({
             </div>
             {panel === "settings" ? (
               <div className="flex flex-col gap-3">
-                {/* Printed pages (the default), or the text reading mode. */}
-                <div className="flex flex-col gap-1.5" data-quran-reading-mode={readingMode}>
-                  <span className="text-[12.5px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                    {t.readingMode}
-                  </span>
-                  <div className="grid grid-cols-2 rounded-full p-1" style={{ background: "var(--color-surface)", boxShadow: "inset 0 0 0 1px var(--color-gold-soft)" }}>
-                    {(["pages", "text"] as const).map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        aria-pressed={readingMode === m}
-                        onClick={() => {
-                          setReadingMode(m);
-                          setTextUnavailable(false);
-                          saveQuranReadingMode(m);
-                        }}
-                        className="min-h-9 rounded-full px-2 text-[12.5px] font-semibold"
-                        style={readingMode === m ? { background: "var(--color-primary)", color: "var(--color-primary-contrast)" } : { color: "var(--color-text-primary)" }}
-                        data-quran-mode={m}
-                      >
-                        {m === "pages" ? t.modePages : t.modeText}
-                      </button>
-                    ))}
-                  </div>
-                  {readingMode === "text" && (
-                    <p className="text-[11.5px]" style={{ color: "var(--color-text-muted)" }}>
-                      {textUnavailable ? t.textUnavailable : t.textModeNote}
-                    </p>
-                  )}
-                </div>
-                {textMode && (
-                  <div className="flex items-center justify-between gap-3" data-quran-text-theme={textTheme}>
-                    <span className="text-[12.5px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                      {t.textTheme}
-                    </span>
-                    <div className="grid grid-cols-2 rounded-full p-1" style={{ background: "var(--color-surface)", boxShadow: "inset 0 0 0 1px var(--color-gold-soft)" }}>
-                      {(["paper", "night"] as const).map((theme) => (
-                        <button
-                          key={theme}
-                          type="button"
-                          aria-pressed={textTheme === theme}
-                          onClick={() => {
-                            setTextTheme(theme);
-                            saveQuranTextTheme(theme);
-                          }}
-                          className="min-h-9 rounded-full px-3 text-[12.5px] font-semibold"
-                          style={textTheme === theme ? { background: "var(--color-primary)", color: "var(--color-primary-contrast)" } : { color: "var(--color-text-primary)" }}
-                        >
-                          {theme === "paper" ? t.themePaper : t.themeNight}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
                 {/* Page size: the page is scaled only — its lines never change. */}
                 <div className="flex items-center justify-between gap-3" data-quran-text-size="">
                   <span className="text-[12.5px] font-semibold" style={{ color: "var(--color-text-primary)" }}>
@@ -1619,10 +1551,10 @@ function MushafReader({
                     </button>
                   </div>
                 </div>
-                {!textMode && <button type="button" onClick={fitPage} aria-pressed={!zoomed} className="flex items-center justify-center gap-1.5 rounded-full px-3.5 py-2 text-[12.5px] font-semibold" style={!zoomed ? { background: "var(--color-primary)", color: "var(--color-primary-contrast)" } : ring} data-quran-zoom="fit">
+                <button type="button" onClick={fitPage} aria-pressed={!zoomed} className="flex items-center justify-center gap-1.5 rounded-full px-3.5 py-2 text-[12.5px] font-semibold" style={!zoomed ? { background: "var(--color-primary)", color: "var(--color-primary-contrast)" } : ring} data-quran-zoom="fit">
                   <Maximize2 size={14} />
                   {t.fitPage}
-                </button>}
+                </button>
                 {/* The page-turn sound: on, or muted (kept on this device — lib/quranReading.ts). */}
                 <button
                   type="button"

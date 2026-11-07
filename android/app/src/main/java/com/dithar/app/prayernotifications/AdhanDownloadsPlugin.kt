@@ -54,7 +54,9 @@ class AdhanDownloadsPlugin : Plugin() {
         val id = call.getString("id").orEmpty()
         val url = call.getString("url").orEmpty()
         val sha256 = call.getString("sha256").orEmpty()
-        val bytes = call.getLong("bytes") ?: 0L
+        // Not call.getLong: Capacitor's returns null unless JSON parsed the value as a Long, and
+        // org.json parses any size under 2 GB as an Integer, so every download was refused here.
+        val bytes = AdhanDownloadRules.byteCount(call.data.opt("bytes"))
         if (!AdhanDownloadRules.validId(id) || !AdhanDownloadRules.allowedUrl(url) || bytes <= 0L || sha256.isEmpty()) {
             return call.reject("invalid download")
         }
@@ -168,6 +170,13 @@ object AdhanDownloadRules {
     private val EXTENSIONS = listOf(".mp3", ".m4a")
 
     fun validId(id: String): Boolean = ID.matches(id)
+
+    /** The expected size sent from JS, whatever numeric type JSON gave it; 0 (refused) when it isn't a whole number. */
+    fun byteCount(value: Any?): Long = when (value) {
+        is Int, is Long -> (value as Number).toLong()
+        is Double -> if (value % 1.0 == 0.0) value.toLong() else 0L
+        else -> 0L
+    }
 
     /** Only DITHAR's own Adhan recordings, over HTTPS. */
     fun allowedUrl(url: String): Boolean = url.startsWith(HOST_PREFIX) && !url.contains("..") && EXTENSIONS.any { url.lowercase().endsWith(it) }

@@ -111,7 +111,17 @@ describe("inside the scope", () => {
     expect(auditShowsEnglish(STARTUP_HADITH_REVIEW_ID)).toBe(false);
   });
   it("keeps only Approved items in the content sources — the 293 that failed the audit were removed", () => {
-    expect(inScopeIds).toHaveLength(506);
+    // 506 audited on 2026-10-31, plus the 5 time-based hadiths checked on 2026-11-07 (lib/timedContent.ts).
+    const timed = ["hadith:bukhari-574", "hadith:muslim-854", "hadith:bukhari-935", "hadith:tirmidhi-761", "hadith:bukhari-1981"];
+    for (const id of timed) expect(inScopeIds).toContain(id);
+    // And the 50 uncommon hadiths checked on 2026-11-07 (data/widgetContent.ts, textOnly).
+    const uncommon = ENRICHED_HADITHS.filter((h) => h.textOnly && !h.matnOnly).map((h) => `hadith:${h.id}`);
+    expect(uncommon).toHaveLength(50);
+    // And the 50 from Open Hadith Data, checked the same day against the hadith-api editions.
+    const openData = ENRICHED_HADITHS.filter((h) => h.matnOnly).map((h) => `hadith:${h.id}`);
+    expect(openData).toHaveLength(50);
+    for (const id of [...uncommon, ...openData]) expect(inScopeIds).toContain(id);
+    expect(inScopeIds).toHaveLength(506 + timed.length + uncommon.length + openData.length);
     for (const id of inScopeIds) expect(auditShowsArabic(id), id).toBe(true);
   });
 });

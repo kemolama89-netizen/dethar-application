@@ -169,11 +169,21 @@ describe("pushFloatingDhikrList", () => {
       id: item.id,
       label: item.dhikr_ar,
       readyDurationMs: computeTasbeehReadyDurationMs(item.dhikr_ar),
+      target: 0,
     }));
     expect(FloatingTasbeeh.setDhikrList).toHaveBeenCalledWith({ items: expectedItems });
     // Guards against the popup silently showing only a subset again —
     // every library item must be represented, not a hardcoded few.
     expect(expectedItems).toHaveLength(dhikrItems.length);
+  });
+
+  it("pushes each dhikr's own saved target (0 when none), so the floating counter can show it", async () => {
+    localStorage.setItem("dithar:tasbeeh:targets:v1", JSON.stringify({ [dhikrItems[1].id]: "100" }));
+    await pushFloatingDhikrList();
+    const call = vi.mocked(FloatingTasbeeh.setDhikrList).mock.calls.at(-1)![0];
+    expect(call.items.find((i) => i.id === dhikrItems[1].id)!.target).toBe(100);
+    expect(call.items.find((i) => i.id === dhikrItems[0].id)!.target).toBe(0);
+    localStorage.removeItem("dithar:tasbeeh:targets:v1");
   });
 
   it("pushes the SAME readyDurationMs the main Tasbeeh screen itself would compute for a given dhikr", async () => {

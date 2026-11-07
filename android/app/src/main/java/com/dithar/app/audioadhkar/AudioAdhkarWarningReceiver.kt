@@ -1,5 +1,6 @@
 package com.dithar.app.audioadhkar
 
+import com.dithar.app.NotificationRoutes
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -49,12 +50,8 @@ class AudioAdhkarWarningReceiver : BroadcastReceiver() {
     private fun postWarning(context: Context, section: Section, sound: String, language: String) {
         val manager = context.getSystemService(NotificationManager::class.java)
         val channel = ReminderSounds.ensureChannel(context, sound, language)
-        val openApp = PendingIntent.getActivity(
-            context,
-            0,
-            Intent(context, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE,
-        )
+        // A tap opens the section that is about to play (NotificationRoutes).
+        val openApp = NotificationRoutes.openIntent(context, NotificationRoutes.audio(section.key))
         @Suppress("DEPRECATION")
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(context, channel) else Notification.Builder(context)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ReminderSounds.applyLegacySound(context, builder, sound)

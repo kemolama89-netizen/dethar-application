@@ -39,7 +39,9 @@ export interface FloatingTasbeehPlugin {
   // computeTasbeehReadyDurationMs (tasbeehTiming.ts) computes for the main
   // Tasbeeh screen — pushed here so the floating bubble's own pacing gate
   // uses the identical duration, never a native re-derivation of it.
-  setDhikrList(options: { items: { id: number; label: string; readyDurationMs: number }[] }): Promise<void>;
+  // `target` is the user's own target for that dhikr (0 = none, the
+  // optional default), so the floating counter can show «33 من 100».
+  setDhikrList(options: { items: { id: number; label: string; readyDurationMs: number; target: number }[] }): Promise<void>;
   getPendingEvents(): Promise<{ events: FloatingTasbeehPendingEvent[] }>;
   confirmPendingEventsDrained(options: { count: number }): Promise<void>;
   // Fired from native the instant a floating tap is accepted (see

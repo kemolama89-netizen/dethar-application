@@ -10,12 +10,13 @@ import type { PluginListenerHandle } from "@capacitor/core";
 import { RemindersNative, isRemindersNativeAvailable } from "./remindersNative";
 import type { NativeReminderItem } from "./remindersNative";
 import { loadCustomBackground, loadReminderSettings, subscribeReminderSettings } from "./reminderSettings";
-import { reminderPool } from "./reminderContent";
+import { reminderRotationPool } from "./reminderContent";
+import { subscribeTimedContentSettings, syncTimedContent } from "./timedContent";
 import type { ReminderItem } from "./reminderContent";
 import { REMINDER_CATEGORIES } from "./reminderContent";
 import { reminderLabels } from "../data/reminderLabels";
 import { holidayDayStarts, subscribeWeeklySchedule } from "./weeklySchedule";
-import { buildSummarySnapshot, loadSummarySettings, subscribeSummarySettings, unavailableSummarySnapshot } from "./dailySummary";
+import { buildSummarySnapshot, loadSummarySettings, nativeEncouragements, subscribeSummarySettings, unavailableSummarySnapshot } from "./dailySummary";
 import { subscribeStatsChanges } from "./stats";
 import { startTimeToMinutes } from "./eveningAudioSettings";
 import { loadLanguagePreference, loadThemePreference } from "./appearancePreferences";
@@ -32,7 +33,8 @@ import { bindDetachedMarks, tidyArabicSpacing } from "./arabicTypography";
 export function nativeReminderItem(item: ReminderItem, language: Language): NativeReminderItem {
   const t = reminderLabels[language];
   const text = forWidget(item.textAr);
-  const widgetText = widgetQuranText(item, text);
+  // The widget draws a long hadith's preview (its own opening, «…»); notifications and the card keep `text`.
+  const widgetText = widgetQuranText(item, item.widgetPreviewAr ? forWidget(item.widgetPreviewAr) : text);
   return {
     id: item.id,
     category: item.category,
@@ -94,7 +96,7 @@ export async function syncReminders({ withPool = false }: { withPool?: boolean }
       latitude: reliableLatitude(),
       widgetAccent: currentWidgetColors().accent,
       widgetTint: currentWidgetColors().tint,
-      ...(sendPool ? { pool: reminderPool().map((item) => nativeReminderItem(item, language)) } : {}),
+      ...(sendPool ? { pool: reminderRotationPool().map((item) => nativeReminderItem(item, language)) } : {}),
     }),
   );
 }
@@ -135,7 +137,16 @@ export async function syncSummary(): Promise<void> {
     // Pushed as unknown rather than not at all: a stale snapshot would read as "nothing recorded today".
     snapshot = unavailableSummarySnapshot();
   }
-  await trackNativeSync(RemindersNative.setSummary({ enabled: s.enabled, minutes: startTimeToMinutes(s.time), mode: s.content, snapshot }));
+  await trackNativeSync(
+    RemindersNative.setSummary({ enabled: s.enabled, minutes: startTimeToMinutes(s.time), mode: s.content, snapshot, encouragements: nativeEncouragements(loadLanguagePreference()) }),
+  );
+}
+
+/** The time-based content notifications (lib/timedContent.ts), in the interface language, with the reminders' own item conversion. */
+export async function syncTimedNotifications(): Promise<void> {
+  if (!isRemindersNativeAvailable()) return;
+  const language = loadLanguagePreference();
+  await trackNativeSync(syncTimedContent(language, (item) => nativeReminderItem(item, language)));
 }
 
 /** Once per launch (Android): pushes everything, then keeps it current. */
@@ -144,6 +155,7 @@ export function startRemindersSync(): () => void {
   const reminders = (withPool = false) => void syncReminders({ withPool }).catch(() => {});
   const background = () => void syncCustomBackground().catch(() => {});
   const summary = () => void syncSummary().catch(() => {});
+  const timed = () => void syncTimedNotifications().catch(() => {});
   let statsTimer: number | undefined;
   const summarySoon = () => {
     window.clearTimeout(statsTimer);
@@ -156,6 +168,8 @@ export function startRemindersSync(): () => void {
     App.addListener("resume", () => {
       reminders();
       summary();
+      // Prayer times move day by day, and a new day may be due: the next 14 days again.
+      timed();
     }),
     App.addListener("pause", summary),
   ];
@@ -165,7 +179,11 @@ export function startRemindersSync(): () => void {
       background();
     }),
     subscribeWeeklySchedule(() => reminders()),
-    subscribeLocationChanges(() => reminders()),
+    subscribeLocationChanges(() => {
+      reminders();
+      timed();
+    }),
+    subscribeTimedContentSettings(timed),
     subscribeSummarySettings(summary),
     subscribeStatsChanges(summarySoon),
     // The widget follows the app's palette (and identity, which picks the palette variant).
@@ -178,6 +196,7 @@ export function startRemindersSync(): () => void {
   reminders(true);
   background();
   summary();
+  timed();
   return () => {
     window.clearTimeout(statsTimer);
     document.removeEventListener("visibilitychange", onHidden);

@@ -335,6 +335,33 @@ object ReminderPlan {
  * the local time of day, and the season only where it is reliable — a real
  * location outside the tropics, by hemisphere; otherwise spring's palette.
  */
+/**
+ * What Home's «مختارات اليوم» previews (RemindersPlugin.getWidgetPreview): the widget's
+ * own content, never a rotation of its own. With a widget on the home screen, exactly
+ * the item (and comment) it drew for the slot it shows — the tap on either opens the
+ * same thing. With none, or before it has drawn this slot, the item the same rotation
+ * is due to show there (WidgetRotation.candidates' first, with the slot's comment).
+ */
+object WidgetPreview {
+    /** The widget's drawing: what a tap on it opens, and the slot it was drawn for. */
+    data class Drawn(val open: ReminderOpen, val slot: Long)
+
+    enum class From(val key: String) { WIDGET("widget"), ROTATION("rotation") }
+
+    fun current(
+        pool: List<ReminderItem>,
+        slot: Long,
+        current: ReminderItem?,
+        drawn: Drawn?,
+        commentFor: (ReminderItem) -> ReminderComment?,
+    ): Pair<ReminderOpen, From>? {
+        // Only while it is still this slot's drawing of an item the widget may show (a new pool or language redraws it).
+        if (drawn != null && drawn.slot == slot && WidgetRotation.pool(pool).any { it.id == drawn.open.id }) return drawn.open to From.WIDGET
+        val item = WidgetRotation.candidates(pool, slot, current).firstOrNull() ?: return null
+        return ReminderOpen.of(item, commentFor(item)) to From.ROTATION
+    }
+}
+
 object WidgetBackgrounds {
     val FIXED = setOf("mosque-night", "arches-dusk", "pattern-navy", "pattern-sage")
     private val PERIOD_STARTS = listOf(4, 8, 16, 19)
@@ -570,7 +597,8 @@ object DailySummary {
         return head + parts.joinToString(" · ")
     }
 
-    data class Message(val title: String, val body: String)
+    /** [encouragementId]: the library message used (DailySummaryEncouragement), to rotate; null when none. */
+    data class Message(val title: String, val body: String, val encouragementId: String? = null)
 
     private fun days(n: Int, en: Boolean): String = if (en) {
         if (n == 1) "1 day" else "$n days"
@@ -627,6 +655,10 @@ object DailySummary {
         allTimeSoFar: AllTime? = snapshot?.allTime,
         // Whether the app's records of the day are known (recordsKnown); false = never "nothing recorded".
         recordsKnown: Boolean = snapshot?.recordsReadable ?: true,
+        // The encouragement library the app pushed (src/data/summaryEncouragement.ts), in the interface language; empty = the fixed lines below.
+        encouragements: List<DailySummaryEncouragement.Item> = emptyList(),
+        // Library ids used recently, newest last: not repeated while others fit.
+        recentEncouragements: List<String> = emptyList(),
     ): Message {
         val en = language == "en"
         val known = recordsKnown && snapshot?.recordsReadable != false
@@ -667,28 +699,33 @@ object DailySummary {
             // Only listening: the Audio Adhkar were heard — said as it is, never "no adhkar". Listening
             // is still not turned into the user's own repetitions; it has its own line.
             val note = if (en) "You listened to adhkar in DITHAR $dayEn; nothing was read or counted in Written Adhkar or Tasbeeh." else "استمعتَ إلى الأذكار في دِثار $dayAr، ولم تُسجَّل قراءةٌ في الأذكار المكتوبة ولا تسبيحٌ في السبحة."
-            val encouragement = if (en) {
+            val picked = if (mode == "stats") null else DailySummaryEncouragement.pick(encouragements, setOf(DailySummaryEncouragement.LISTENING), recentEncouragements, today)
+            val encouragement = picked?.let(DailySummaryEncouragement::text) ?: if (en) {
                 "May Allah accept your listening. Saying a dhikr along with it — even once — is counted as your own."
             } else {
                 "تقبّل الله استماعك. وإن ردّدتَ معه ذكرًا ولو مرة، سُجّل لك ذكرًا منك."
             }
             val body = when (mode) {
                 "stats" -> listOfNotNull(note, listening, partialNote, allTimeText).joinToString("\n")
-                "motivational" -> if (en) "You listened to adhkar in DITHAR $dayEn. $encouragement" else "استمعتَ إلى الأذكار في دِثار $dayAr. $encouragement"
+                "motivational" -> if (en) "You listened to adhkar in DITHAR $dayEn.\n$encouragement" else "استمعتَ إلى الأذكار في دِثار $dayAr.\n$encouragement"
                 else -> listOfNotNull(note, listening, partialNote, allTimeText, encouragement).joinToString("\n")
             }
-            return Message(title, body)
+            return Message(title, body, picked?.id)
         }
         if (!activity.any) {
             // Nothing that day — and, when there is, what was recorded before, so it never reads as "never".
+            // Gentle, never guilt: the library's "empty" messages, else the fixed line.
+            val picked = if (mode == "stats") null else DailySummaryEncouragement.pick(encouragements, setOf(DailySummaryEncouragement.EMPTY), recentEncouragements, today)
+            val fresh = picked?.let(DailySummaryEncouragement::text)
+                ?: if (en) "Tomorrow is a fresh page: begin with a single dhikr after Fajr, and let a little grow." else "غدًا صفحةٌ جديدة: ابدأ بذكرٍ واحد بعد الفجر، ودَع القليل يكبر."
             val body = when {
                 mode == "stats" -> listOfNotNull(if (en) "No dhikr was recorded in DITHAR $dayEn." else "لم يُسجَّل أي ذكر في دِثار $dayAr.", allTimeText).joinToString("\n")
-                mode == "motivational" && en -> "No dhikr was recorded in DITHAR $dayEn — and that's okay. Tomorrow is a fresh page: begin with a single dhikr after Fajr, and let a little grow."
-                mode == "motivational" -> "لم يُسجَّل في دِثار ذكرٌ $dayAr، ولا بأس. غدًا صفحةٌ جديدة: ابدأ بذكرٍ واحد بعد الفجر، ودَع القليل يكبر."
-                en -> listOfNotNull("No dhikr was recorded in DITHAR $dayEn — and that's okay.", allTimeText, "Tomorrow is a fresh page: begin with a single dhikr after Fajr, and let a little grow.").joinToString("\n")
-                else -> listOfNotNull("لم يُسجَّل في دِثار ذكرٌ $dayAr، ولا بأس.", allTimeText, "غدًا صفحةٌ جديدة: ابدأ بذكرٍ واحد بعد الفجر، ودَع القليل يكبر.").joinToString("\n")
+                mode == "motivational" && en -> "No dhikr was recorded in DITHAR $dayEn — and that's okay.\n$fresh"
+                mode == "motivational" -> "لم يُسجَّل في دِثار ذكرٌ $dayAr، ولا بأس.\n$fresh"
+                en -> listOfNotNull("No dhikr was recorded in DITHAR $dayEn — and that's okay.", allTimeText, fresh).joinToString("\n")
+                else -> listOfNotNull("لم يُسجَّل في دِثار ذكرٌ $dayAr، ولا بأس.", allTimeText, fresh).joinToString("\n")
             }
-            return Message(title, body)
+            return Message(title, body, picked?.id)
         }
         val parts = mutableListOf<String>()
         if ("morning" in activity.wirds) parts += if (en) "Morning Adhkar ✓" else "أذكار الصباح ✓"
@@ -715,17 +752,25 @@ object DailySummary {
                 else -> null
             }
         }
-        val motivation = if (en) {
+        // What was really done that day decides which messages fit (DailySummaryEncouragement.situations).
+        val picked = if (mode == "stats") {
+            null
+        } else {
+            val week = known && snapshot != null && DailySummaryEncouragement.recordedEveryDay(snapshot, today, activity.total)
+            DailySummaryEncouragement.pick(encouragements, DailySummaryEncouragement.situations(activity, week), recentEncouragements, today)
+        }
+        val motivation = picked?.let(DailySummaryEncouragement::text) ?: if (en) {
             "May Allah bless your day and accept your remembrance. A little, kept up, goes a long way — see you tomorrow."
         } else {
             "بارك الله في يومك وتقبّل ذكرك. القليل الدائم يصنع الكثير — نلقاك غدًا على الذكر."
         }
         val body = when (mode) {
             "stats" -> listOfNotNull(stats, comparisonText, listening, partialNote, allTimeText).joinToString("\n")
-            "motivational" -> motivation
+            // What was done, without numbers, then the encouragement that fits it.
+            "motivational" -> listOf(DailySummaryEncouragement.achievements(activity, en, dayEn, dayAr), motivation).joinToString("\n")
             else -> listOfNotNull(stats, comparisonText, listening, partialNote, allTimeText, motivation).joinToString("\n")
         }
-        return Message(title, body)
+        return Message(title, body, picked?.id)
     }
 
     /** The next local [minutes]-after-midnight strictly after [afterMillis]. */

@@ -25,7 +25,7 @@ export const reminderLabels = {
     categoryNames: { dua: "أدعية موثّقة", hadith: "أحاديث صحيحة وحسنة", virtue: "فضل الذكر وأهميته", poetry: "شعر في الإيمان والأخلاق (منسوب لقائله)", lataif: "لطائف قرآنية" } as Record<ReminderCategory, string>,
     categoryTitle: { dua: "دعاء", hadith: "حديث نبوي", virtue: "فضل الذكر", poetry: "من الشعر", lataif: "لطيفة قرآنية" } as Record<ReminderCategory, string>,
     /** What the text IS — a Qur'anic dua is labelled as Qur'an, poetry as poetry. */
-    kindTitle: { "quran-dua": "دعاء من القرآن", dua: "دعاء", hadith: "حديث نبوي", virtue: "فضل الذكر", poetry: "من الشعر", quran: "آية كريمة", lataif: "لطيفة قرآنية" } as Record<ReminderKind, string>,
+    kindTitle: { "quran-dua": "دعاء من القرآن", dua: "دعاء", hadith: "حديث نبوي", virtue: "فضل الذكر", poetry: "من الشعر", quran: "آية كريمة", lataif: "لطيفة قرآنية", reminder: "تذكير" } as Record<ReminderKind, string>,
     oneCategoryNeeded: "اختر نوعًا واحدًا على الأقل.",
     interval: "المدة بين التذكيرات",
     intervalLabel: intervalAr,
@@ -99,7 +99,7 @@ export const reminderLabels = {
     categories: "Content",
     categoryNames: { dua: "Verified duas", hadith: "Sahih and hasan hadiths", virtue: "Virtue and importance of dhikr", poetry: "Poetry on faith and character (attributed)", lataif: "Quranic Lataif" } as Record<ReminderCategory, string>,
     categoryTitle: { dua: "Dua", hadith: "Hadith", virtue: "Virtue of dhikr", poetry: "Poetry", lataif: "Quranic Lataif" } as Record<ReminderCategory, string>,
-    kindTitle: { "quran-dua": "Dua from the Qur'an", dua: "Dua", hadith: "Hadith", virtue: "Virtue of dhikr", poetry: "Poetry", quran: "From the Qur'an", lataif: "Quranic Lataif" } as Record<ReminderKind, string>,
+    kindTitle: { "quran-dua": "Dua from the Qur'an", dua: "Dua", hadith: "Hadith", virtue: "Virtue of dhikr", poetry: "Poetry", quran: "From the Qur'an", lataif: "Quranic Lataif", reminder: "Reminder" } as Record<ReminderKind, string>,
     oneCategoryNeeded: "Choose at least one kind.",
     interval: "Time between reminders",
     intervalLabel: intervalEn,
@@ -262,5 +262,46 @@ export const favoritesLabels = {
     savedFromWidget: "Saved from the widget",
     libraryDua: "Dua from the library",
     count: (n: number) => (n === 1 ? "1 item" : `${n} items`),
+  },
+};
+
+/**
+ * Time-based content notifications (lib/timedContent.ts), shown in Settings → Reminders.
+ * Interface words only: titles name the moment; the hadith itself is the notification's text.
+ */
+export const timedContentLabels = {
+  ar: {
+    asrTitle: "اقتربت صلاة العصر",
+    fridayTitle: "يوم الجمعة",
+    kahfTitle: "سورة الكهف",
+    whiteDaysTitle: "غدًا الثالث عشر: أول الأيام البيض",
+    section: "تنبيهات الأوقات",
+    sectionHint: "حديث موثَّق المصدر في أوقات بعينها، يُفتح في بطاقة التذكير نفسها مع مصدره وإمكانية مشاركته.",
+    master: "تنبيهات الأوقات",
+    asr: "قبل صلاة العصر",
+    friday: "يوم الجمعة (قبل صلاة الجمعة بساعتين)",
+    kahf: "تذكير بقراءة سورة الكهف (يوم الجمعة، في الوقت نفسه)",
+    whiteDays: "الأيام البيض (مساء الثاني عشر من كل شهر هجري)",
+    asrLead: "قبل العصر بـ",
+    minutes: (n: number) => `${n} دقيقة`,
+    needsLocation: "تنبيه العصر والجمعة يحتاجان موقعك لحساب مواقيت الصلاة.",
+    webOnly: "التنبيهات متاحة في تطبيق أندرويد فقط.",
+  },
+  en: {
+    asrTitle: "Asr is near",
+    fridayTitle: "Friday",
+    kahfTitle: "Surah Al-Kahf",
+    whiteDaysTitle: "Tomorrow is the 13th: the White Days begin",
+    section: "Time-based reminders",
+    sectionHint: "A source-checked hadith at particular times, opened in the same reminder card with its source and sharing.",
+    master: "Time-based reminders",
+    asr: "Before Asr",
+    friday: "Friday (two hours before Jumu'ah)",
+    kahf: "Reminder to read Surah Al-Kahf (Friday, at the same time)",
+    whiteDays: "The White Days (evening of the 12th of each Hijri month)",
+    asrLead: "Before Asr by",
+    minutes: (n: number) => `${n} min`,
+    needsLocation: "The Asr and Friday reminders need your location to calculate prayer times.",
+    webOnly: "These reminders are available in the Android app only.",
   },
 };

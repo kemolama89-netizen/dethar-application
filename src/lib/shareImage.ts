@@ -21,6 +21,7 @@
 //    exactly as they are (wrapQuranText). If that font can't be loaded no image
 //    is made, rather than one in a font that may drop a sign.
 import type { ShareableContent } from "./shareContent";
+import { layoutTafsirCard } from "./shareImageTafsir";
 
 export const IMAGE_WIDTH = 1080;
 /** Taller than this and the card is drawn smaller rather than risk an unencodable canvas. */
@@ -290,6 +291,73 @@ function loadImage(url: string): Promise<HTMLImageElement> {
   });
 }
 
+/** The framed card: page, then the surface with a gold hairline — the app's own reading-card look. */
+function drawCardFrame(ctx: CanvasRenderingContext2D, W: number, H: number, colors: ShareImageColors) {
+  ctx.fillStyle = colors.bg;
+  ctx.fillRect(0, 0, W, H);
+  roundRect(ctx, 36, 36, W - 72, H - 72, 44);
+  ctx.fillStyle = colors.surface;
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = colors.gold;
+  ctx.stroke();
+}
+
+/** Footer: gold rule, then DITHAR's name. */
+function drawFooter(ctx: CanvasRenderingContext2D, W: number, H: number, colors: ShareImageColors) {
+  const footerTop = H - FOOTER_H;
+  ctx.textAlign = "center";
+  ctx.fillStyle = colors.gold;
+  ctx.fillRect(W / 2 - 30, footerTop + 10, 60, 3);
+  ctx.direction = "rtl";
+  ctx.fillStyle = colors.primary;
+  ctx.font = '700 46px "Amiri", "Noto Naskh Arabic", serif';
+  ctx.fillText("دِثار", W / 2, footerTop + 70);
+  ctx.direction = "ltr";
+  ctx.fillStyle = colors.gold;
+  ctx.font = '600 22px "Tajawal", "Segoe UI", sans-serif';
+  ctx.fillText("D I T H A R", W / 2, footerTop + 118);
+}
+
+/** The portrait Tafsir card (a verse with its Tafsir): the same frame, header and footer, the layout of lib/shareImageTafsir.ts. */
+function drawTafsirCard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, content: ShareableContent, language: "ar" | "en", colors: ShareImageColors, measure: (font: string, s: string) => number): string {
+  const layout = layoutTafsirCard(content, language, colors, measure);
+  const W = layout.width;
+  const H = layout.height;
+  canvas.width = Math.round(W * layout.ratio);
+  canvas.height = Math.round(H * layout.ratio);
+  ctx.scale(canvas.width / W, canvas.height / H);
+  drawCardFrame(ctx, W, H, colors);
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
+  ctx.fillStyle = colors.gold;
+  ctx.fillRect(W / 2 - 30, 92, 60, 3);
+  if (content.kindLabel) {
+    ctx.direction = language === "en" ? "ltr" : "rtl";
+    ctx.font = '700 32px "Tajawal", "Segoe UI", sans-serif';
+    ctx.fillText(content.kindLabel, W / 2, 140);
+  }
+  // The gold rule that carries the Tafsir's label, on either side of it.
+  if (layout.rule) {
+    const { y, left, right, gapLeft, gapRight } = layout.rule;
+    ctx.save();
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = colors.gold;
+    ctx.fillRect(left, y - 0.75, Math.max(0, gapLeft - left), 1.5);
+    ctx.fillRect(gapRight, y - 0.75, Math.max(0, right - gapRight), 1.5);
+    ctx.restore();
+  }
+  for (const line of layout.lines) {
+    ctx.font = line.font;
+    ctx.fillStyle = line.color;
+    ctx.direction = line.dir;
+    ctx.textAlign = line.align;
+    ctx.fillText(line.text, line.x, line.y);
+  }
+  drawFooter(ctx, W, H, colors);
+  return canvas.toDataURL("image/png");
+}
+
 /** Draws the card and returns it as a PNG data URL. */
 export async function renderShareImage(content: ShareableContent, language: "ar" | "en", palette = currentShareColors()): Promise<string> {
   let colors = palette;
@@ -302,6 +370,7 @@ export async function renderShareImage(content: ShareableContent, language: "ar"
     ctx.font = font;
     return ctx.measureText(s).width;
   };
+  if (content.tafsirCard && !content.background) return drawTafsirCard(canvas, ctx, content, language, colors, measure);
   // On a photo (the background the full-screen reminder showed it on): that photo, its scrim, white text.
   const photo = content.background ? await loadImage(content.background) : null;
   const style = photo ? photoStyle() : null;
@@ -330,15 +399,7 @@ export async function renderShareImage(content: ShareableContent, language: "ar"
     ctx.fillStyle = tint;
     ctx.fillRect(0, 0, W, H);
   } else {
-    // Page, then a framed card in the surface colour with a gold hairline — the app's own reading-card look.
-    ctx.fillStyle = colors.bg;
-    ctx.fillRect(0, 0, W, H);
-    roundRect(ctx, 36, 36, W - 72, H - 72, 44);
-    ctx.fillStyle = colors.surface;
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = colors.gold;
-    ctx.stroke();
+    drawCardFrame(ctx, W, H, colors);
   }
 
   ctx.textAlign = "center";
@@ -372,18 +433,7 @@ export async function renderShareImage(content: ShareableContent, language: "ar"
     Object.assign(ctx, { shadowColor: "transparent", shadowBlur: 0, shadowOffsetY: 0 });
   }
 
-  // Footer: gold rule, then DITHAR's name.
-  const footerTop = H - FOOTER_H;
-  ctx.fillStyle = colors.gold;
-  ctx.fillRect(W / 2 - 30, footerTop + 10, 60, 3);
-  ctx.direction = "rtl";
-  ctx.fillStyle = colors.primary;
-  ctx.font = '700 46px "Amiri", "Noto Naskh Arabic", serif';
-  ctx.fillText("دِثار", W / 2, footerTop + 70);
-  ctx.direction = "ltr";
-  ctx.fillStyle = colors.gold;
-  ctx.font = '600 22px "Tajawal", "Segoe UI", sans-serif';
-  ctx.fillText("D I T H A R", W / 2, footerTop + 118);
+  drawFooter(ctx, W, H, colors);
 
   return canvas.toDataURL("image/png");
 }

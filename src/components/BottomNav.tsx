@@ -87,6 +87,7 @@ export function BottomNav({
               if (item.key === "adhkar" && activeKey !== "adhkar") openAdhkar?.();
             }}
             aria-current={isActive ? "page" : undefined}
+            data-tour-tab={item.key}
             className="flex min-w-0 flex-1 basis-0 flex-col items-center gap-1 py-0.5 text-center font-medium"
             style={{
               color: isActive ? "var(--color-primary)" : "var(--color-text-muted)",

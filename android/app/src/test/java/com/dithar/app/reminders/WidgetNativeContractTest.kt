@@ -152,7 +152,13 @@ class WidgetNativeContractTest {
                 // Any other text keeps its own wording; only a Qur'anic portion or quotation inside it is in
                 // ﴿ … ﴾ (the istirjaʿ dua's «إنا لله وإنا إليه راجعون», Hadith 94's «الم»), never braces.
                 assertFalse(item.id, Regex("[{}]").containsMatchIn(item.widgetShownText))
-                assertEquals(item.id, stripped(item.text), stripped(item.widgetShownText))
+                if (item.widgetShownText.endsWith("…")) {
+                    // A long hadith's widget preview (widgetPreviewAr): its own opening, word for word, ending «…».
+                    val letters = { t: String -> stripped(t).replace(Regex("\\s"), "") }
+                    assertTrue(item.id, letters(item.text).startsWith(letters(item.widgetShownText.dropLast(1))))
+                } else {
+                    assertEquals(item.id, stripped(item.text), stripped(item.widgetShownText))
+                }
                 if (item.id == "dua:inna-lillahi-wa-inna-ilayhi-rajiun") {
                     assertTrue(item.widgetShownText, item.widgetShownText.startsWith("\uFD3F\u00A0إنا لله وإنا إليه راجعون\u00A0\uFD3E، اللهم"))
                     partial++

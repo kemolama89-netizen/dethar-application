@@ -9,6 +9,8 @@ import { BackArrowButton } from "./BackHeader";
 import { BackHeader, StickyBackButton } from "./BackHeader";
 import { WrittenAdhkarCategoryCard } from "./WrittenAdhkarCategoryCard";
 import { ResumeAdhkarBanner } from "./ResumeAdhkarBanner";
+import { FirstVisitHint } from "./FirstVisitHint";
+import { onboardingLabels } from "../data/onboardingLabels";
 import { DraggableMeaningCard } from "./MeaningPopover";
 import { useLanguage } from "../theme/LanguageContext";
 import { navLabels } from "../data/content";
@@ -37,6 +39,7 @@ import {
   startAudioAdhkar,
   skipAudioAdhkar,
   startAudioAdhkarPlayAll,
+  playAllRunIds,
   startAudioVarious,
   stopAudioAdhkar,
   stopAudioAdhkarPlayback,
@@ -46,6 +49,8 @@ import {
 } from "../lib/audioAdhkarPlayer";
 import type { AudioAdhkarCollection, AudioAdhkarNowPlaying, AudioAdhkarPlaybackState } from "../lib/audioAdhkarPlayback";
 import type { AudioAdhkarPlayAllEntry, AudioAdhkarProgress } from "../lib/audioAdhkarPlayer";
+import { clearResumePoint, isResumableSection, loadResumePoint, resumesRun, subscribeResumePoints } from "../lib/audioAdhkarResume";
+import type { PlayAllResumePoint } from "../lib/audioAdhkarResume";
 
 // Audio Adhkar ("الأذكار المسموعة") — Morning and Evening (the same
 // adhkar the Written section shows) and Various (the Tasbeeh dhikr); see
@@ -303,6 +308,11 @@ const playerLabels = {
     stopAll: "إيقاف",
     playAllHint: (n: number) => `${n} ${n === 1 ? "ذكر" : "أذكار"} متتالية`,
     playAllPosition: (n: number, total: number) => `الذكر ${n} من ${total}`,
+    resumeRun: "متابعة",
+    restartRun: "من البداية",
+    resumeRunAria: (n: number, total: number) => `متابعة الأذكار من الذكر ${n} من ${total}`,
+    restartRunAria: "البدء من أول الأذكار",
+    resumeStatus: (n: number, total: number, rep: number) => `توقفت عند الذكر ${n} من ${total}${rep > 1 ? `، التكرار ${rep}` : ""}`,
     nextDhikr: "الذكر التالي",
   },
   en: {
@@ -323,6 +333,11 @@ const playerLabels = {
     stopAll: "Stop",
     playAllHint: (n: number) => `${n} ${n === 1 ? "dhikr" : "adhkar"} in sequence`,
     playAllPosition: (n: number, total: number) => `Dhikr ${n} of ${total}`,
+    resumeRun: "Resume",
+    restartRun: "Restart",
+    resumeRunAria: (n: number, total: number) => `Resume the adhkar from dhikr ${n} of ${total}`,
+    restartRunAria: "Start the adhkar from the beginning",
+    resumeStatus: (n: number, total: number, rep: number) => `Stopped at dhikr ${n} of ${total}${rep > 1 ? `, repetition ${rep}` : ""}`,
     nextDhikr: "Next dhikr",
   },
 };
@@ -561,15 +576,56 @@ function PlayAllBar({ collection, entries, playback }: { collection: AudioAdhkar
   const canSkip = useSyncExternalStore(subscribeAudioAdhkarSkip, canSkipAudioAdhkar, () => false);
   const mine = run?.collection === collection ? run : null;
   const playableCount = useMemo(() => playableAudioAdhkar(collection, entries).length, [collection, entries]);
-  if (playableCount === 0) return null;
   const status = mine && playback?.collection === collection ? playback.status : undefined;
+  const running = status === "playing" || status === "paused";
+  // Resume Adhkar: an unfinished run of this section, offered while nothing of it plays (lib/audioAdhkarResume.ts).
+  const resume = usePlayAllResumePoint(collection, entries, running);
+  if (playableCount === 0) return null;
   const [Icon, action, onClick] =
     status === "playing"
       ? [Pause, labels.pause, pauseAudioAdhkar]
       : status === "paused"
         ? [Play, labels.resume, resumeAudioAdhkar]
         : [ListMusic, labels.playAll, () => void startAudioAdhkarPlayAll(collection, entries)];
-  const running = status === "playing" || status === "paused";
+  if (!running && resume) {
+    const { index, repetition, ids } = resume;
+    return (
+      <div
+        className="mt-4 flex items-center gap-2 rounded-[1.4rem] py-1 ps-1 pe-1"
+        style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-soft)", background: "var(--wa-surface)" }}
+        data-play-all="resume"
+      >
+        <button
+          type="button"
+          onClick={() => void startAudioAdhkarPlayAll(collection, entries, { index, repetition })}
+          aria-label={labels.resumeRunAria(index + 1, ids.length)}
+          className="flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[12.5px] font-bold"
+          style={{ background: "var(--wa-gold)", color: "var(--wa-surface)" }}
+          data-play-all-resume=""
+        >
+          <Play size={15} strokeWidth={2} aria-hidden="true" />
+          {labels.resumeRun}
+        </button>
+        {/* Two lines when narrow: where it stopped (dhikr, total, repetition) is the point of the message — never cut off. */}
+        <span className="line-clamp-2 min-w-0 flex-1 text-[11px] leading-[1.35]" style={{ color: "var(--wa-ink-muted)" }} aria-live="polite" data-play-all-status="">
+          {labels.resumeStatus(index + 1, ids.length, repetition)}
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            if (!isResumableSection(collection)) return;
+            void clearResumePoint(collection).then(() => startAudioAdhkarPlayAll(collection, entries));
+          }}
+          aria-label={labels.restartRunAria}
+          className="flex h-8 shrink-0 items-center rounded-full px-3 text-[11.5px] font-semibold"
+          style={{ boxShadow: "inset 0 0 0 1px var(--wa-gold-hairline)", color: "var(--wa-ink-muted)" }}
+          data-play-all-restart=""
+        >
+          {labels.restartRun}
+        </button>
+      </div>
+    );
+  }
   return (
     <div
       className="mt-4 flex items-center gap-2 rounded-full py-1 ps-1 pe-3"
@@ -618,6 +674,30 @@ function PlayAllBar({ collection, entries, playback }: { collection: AudioAdhkar
       )}
     </div>
   );
+}
+
+/**
+ * The section's Resume Adhkar point, when it belongs to a run of exactly these adhkar, read again
+ * whenever a run stops or ends, the point changes here, or the app comes back to the foreground
+ * (the native player may have moved it meanwhile). Null while a run of it plays.
+ */
+function usePlayAllResumePoint(collection: AudioAdhkarCollection, entries: readonly AudioAdhkarPlayAllEntry[], running: boolean): PlayAllResumePoint | null {
+  const [point, setPoint] = useState<PlayAllResumePoint | null>(null);
+  const [version, setVersion] = useState(0);
+  const visible = usePageVisible();
+  const ids = useMemo(() => playAllRunIds(collection, entries), [collection, entries]);
+  useEffect(() => subscribeResumePoints(() => setVersion((v) => v + 1)), []);
+  useEffect(() => {
+    if (!isResumableSection(collection) || running || !visible) return;
+    let live = true;
+    void loadResumePoint(collection).then((p) => {
+      if (live) setPoint(resumesRun(p, ids) ? p : null);
+    });
+    return () => {
+      live = false;
+    };
+  }, [collection, ids, running, visible, version]);
+  return running || !isResumableSection(collection) ? null : point;
 }
 
 const CARD_CLASS = "dithar-audio-dhikr-card px-4 py-4";
@@ -763,6 +843,8 @@ export function AudioAdhkarListScreen({ list, onBack, ...nav }: AudioAdhkarNavPr
           <BackHeader title={title} onBack={onBack} backLabel={writtenAdhkarLabels[language].back} hideButton />
           <StickyBackButton onBack={onBack} backLabel={writtenAdhkarLabels[language].back} dir={dir} />
           <PlayAllBar collection={collection} entries={playAllEntries} playback={playback} />
+          {/* First visit: what Play All and resuming do — in the controls area, above the adhkar, never over them. */}
+          {list.kind === "written" && <FirstVisitHint id="audio-play-all" text={onboardingLabels[language].hintPlayAll} />}
           <div className="dithar-audio-list mt-4 flex flex-col gap-4 pb-4">
             {list.kind === "written"
               ? audioAdhkarItems[list.key].map((item) => (

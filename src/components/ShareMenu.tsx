@@ -38,7 +38,8 @@ const shareMenuLabels = {
   },
 } as const;
 
-export function ShareMenu({ content, open, onClose }: { content: ShareableContent; open: boolean; onClose: () => void }) {
+/** [subtitle] names what is being shared (e.g. «سورة البقرة · الآية ٢») under the sheet's title. */
+export function ShareMenu({ content, open, onClose, subtitle }: { content: ShareableContent; open: boolean; onClose: () => void; subtitle?: string }) {
   const { language, dir } = useLanguage();
   const t = shareMenuLabels[language];
   const [busy, setBusy] = useState(false);
@@ -99,9 +100,16 @@ export function ShareMenu({ content, open, onClose }: { content: ShareableConten
         <div className="mx-auto mb-2 h-1 w-10 rounded-full" style={{ background: "var(--color-gold-soft)" }} aria-hidden="true" />
         <div className="mb-3 flex items-center gap-2">
           <Share2 size={17} style={{ color: "var(--color-gold)" }} />
-          <h2 className="flex-1 text-[16px] font-bold" style={{ color: "var(--color-text-primary)" }}>
-            {t.title}
-          </h2>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <h2 className="text-[16px] font-bold" style={{ color: "var(--color-text-primary)" }}>
+              {t.title}
+            </h2>
+            {subtitle && (
+              <p className="text-[12.5px] font-semibold" style={{ color: "var(--color-text-muted)" }} data-share-subtitle="">
+                {subtitle}
+              </p>
+            )}
+          </div>
           <button type="button" onClick={close} disabled={busy} aria-label={t.close} className="flex h-9 w-9 items-center justify-center rounded-full" style={{ color: "var(--color-text-muted)" }}>
             <X size={18} />
           </button>

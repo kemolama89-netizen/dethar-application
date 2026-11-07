@@ -13,6 +13,8 @@ import {
 } from "../lib/prayerNotifications";
 import type { PrayerNotificationStatus } from "../lib/prayerNotifications";
 import { knownPrayerLocation } from "../lib/prayerSchedule";
+import { FirstVisitHint } from "./FirstVisitHint";
+import { featureGuideLabels } from "../data/featureGuideLabels";
 
 // Settings → تنبيهات الصلاة: the master switch (the same one as the Prayer
 // Times card's reminder toggle) and one switch per prayer. Every change is
@@ -99,6 +101,7 @@ export function PrayerNotificationsSettingsView({ onBack }: { onBack: () => void
         </h1>
         <div className="h-9 w-9 shrink-0" aria-hidden="true" />
       </div>
+      <FirstVisitHint id="settings-prayer-notifications" text={featureGuideLabels[language].hints.prayerNotifications} />
 
       <div className="mt-4 flex flex-col gap-3 rounded-2xl border p-4" style={CARD}>
         <div className="flex items-center justify-between gap-3">

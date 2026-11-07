@@ -34,6 +34,9 @@ export const basairLabels = {
     retry: "إعادة المحاولة",
     sourceTitle: "المصدر",
     close: "إغلاق",
+    shareVerse: "مشاركة الآية مع تفسيرها",
+    shareKind: "آية مع تفسيرها",
+    tafsirLabel: "تفسير السعدي",
   },
   en: {
     name: "Basa'ir",
@@ -68,5 +71,8 @@ export const basairLabels = {
     retry: "Try again",
     sourceTitle: "Source",
     close: "Close",
+    shareVerse: "Share verse with Tafsir",
+    shareKind: "A verse with its Tafsir",
+    tafsirLabel: "Tafsir al-Sa'di",
   },
 } as const;

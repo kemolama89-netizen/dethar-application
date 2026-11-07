@@ -128,6 +128,8 @@ describe("every Qur'anic text the widget draws (both interfaces)", () => {
   const WIDGET_NOT_QURAN_QUOTES: Record<string, string> = {
     "hadith:102": "«من صلى قبل طلوع الشمس وقبل غروبها» (Muslim 634) — the Prophet's words, not Taha 130",
     "virtue:6": "the tahlil «لا إله إلا الله وحده لا شريك له، له الملك وله الحمد…» — a Prophetic dhikr",
+    "hadith:bukhari-1370": "«وجدتم ما وعد ربكم حقا» — the Prophet's ﷺ words to the dead of Badr (al-Bukhari 1370), echoing al-A'raf 7:44, not a quotation of it",
+    "hadith:bukhari-4836": "«غفر الله لك ما تقدم من ذنبك وما تأخر» — the Companions' words to the Prophet ﷺ (al-Bukhari 4836), echoing al-Fath 48:2, not a quotation of it",
   };
   const items = (["ar", "en"] as const).flatMap((language) => reminderPool().map((i) => ({ i, n: nativeReminderItem(i, language), language }))).filter(({ n }) => n.widget !== false);
 
@@ -159,7 +161,12 @@ describe("every Qur'anic text the widget draws (both interfaces)", () => {
   it("puts nothing but Qur'an in the brackets, and only around the Arabic text", () => {
     for (const { i, n } of items) {
       const drawn = n.widgetText || n.text;
-      expect(wording(drawn), i.id).toBe(wording(n.text)); // only brackets added
+      // Only brackets added — or, for a long hadith, its own opening word for word, ending «…» (widgetPreviewAr).
+      if (i.widgetPreviewAr) {
+        expect(drawn.endsWith("…"), i.id).toBe(true);
+        const letters = (t: string) => wording(t).replace(/\s/gu, "");
+        expect(letters(n.text).startsWith(letters(drawn.slice(0, -1))), i.id).toBe(true);
+      } else expect(wording(drawn), i.id).toBe(wording(n.text));
       for (const [, quoted] of drawn.matchAll(BRACKETED)) expect(inQuran(quoted), `${i.id}: ${quoted}`).toBe(true);
       expect(drawn, i.id).not.toMatch(/[{}]/u);
       // Translations, sources, the virtue line and DITHAR's comments: never bracketed.

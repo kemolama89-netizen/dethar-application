@@ -18,8 +18,9 @@ const native = vi.hoisted(() => ({
 vi.mock("./lib/remindersNative", () => ({
   isRemindersNativeAvailable: () => true,
   RemindersNative: {
-    addListener: async (_: string, listener: (e: OpenEvent) => void) => {
-      native.listener = listener;
+    // Like the real plugin, each event has its own listeners: only "openReminder" is the one under test.
+    addListener: async (event: string, listener: (e: OpenEvent) => void) => {
+      if (event === "openReminder") native.listener = listener;
       return { remove: async () => {} };
     },
     consumeLaunchReminder: async () => native.launch,

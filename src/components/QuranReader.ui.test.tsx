@@ -346,47 +346,37 @@ describe("Qur'an reader (one page of the 1441H Madinah Mushaf at a time)", () =>
     expect(loadQuranPosition()).toMatchObject({ surah: 2, ayah: 256 });
   });
 
-  describe("the text reading mode", () => {
-    const setMode = async (mode: "pages" | "text") => {
-      click([...container.querySelectorAll<HTMLElement>("button")].find((b) => b.getAttribute("aria-label") === "إعدادات القراءة")!);
-      click(container.querySelector(`[data-quran-mode='${mode}']`)!);
-    };
+  describe("reading settings (the «نص القراءة» mode was removed)", () => {
+    const openSettings = () => click([...container.querySelectorAll<HTMLElement>("button")].find((b) => b.getAttribute("aria-label") === "إعدادات القراءة")!);
 
-    it("is off by default: the printed page is what opens", async () => {
+    it("offers no reading-mode or page-colour choice, and keeps every other setting", async () => {
+      await open(2, 255);
+      openSettings();
+      expect(container.querySelector("[data-quran-reading-mode]")).toBeNull();
+      expect(container.querySelector("[data-quran-mode]")).toBeNull();
+      expect(container.querySelector("[data-quran-text-theme]")).toBeNull();
+      expect(container.textContent).not.toContain("نص القراءة");
+      expect(container.textContent).not.toContain("طريقة القراءة");
+      // Page size and fitting the page remain, as before.
+      expect(container.querySelector("[data-quran-text-size]")).not.toBeNull();
+      expect(container.querySelector("[data-quran-zoom='fit']")).not.toBeNull();
+    });
+
+    it("opens the printed page — also for a reader who had chosen the text mode before", async () => {
+      localStorage.setItem("dithar:quran:reading-mode:v1", JSON.stringify("text"));
       await open(2, 255);
       expect(container.querySelector("[data-quran-sheet]")).not.toBeNull();
       expect(container.querySelector("[data-quran-text-page]")).toBeNull();
+      expect(container.querySelector("[data-quran-text-paper]")).toBeNull();
     });
 
-    it("shows the same page's verses in the Complex's text, is remembered, and goes back to the printed page", async () => {
-      await open(2, 255);
-      await setMode("text");
-      await vi.waitFor(() => expect(container.querySelector("[data-verse='2:255'].dithar-mushaf-text__verse")).not.toBeNull());
-      const text = container.querySelector("[data-quran-text-page]")!;
-      expect(text.getAttribute("data-quran-text-page")).toBe("42");
-      expect(text.getAttribute("dir")).toBe("rtl");
-      expect(container.querySelector("[data-quran-sheet]")).toBeNull();
-      expect(localStorage.getItem("dithar:quran:reading-mode:v1")).toContain("text");
-      await setMode("pages");
-      await vi.waitFor(() => expect(container.querySelector("[data-quran-sheet]")).not.toBeNull());
-      expect(localStorage.getItem("dithar:quran:reading-mode:v1")).toContain("pages");
-    });
-
-    it("selects a verse with the same long press, and offers its Tafsir", async () => {
-      localStorage.setItem("dithar:quran:reading-mode:v1", JSON.stringify("text"));
+    it("still selects a verse with a long press on the printed page, and offers its Tafsir", async () => {
       await open(2, 255);
       await vi.waitFor(() => expect(container.querySelector("[data-verse='2:255']")).not.toBeNull());
       act(() => void container.querySelector("[data-verse='2:255']")!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true })));
       expect(container.querySelector("[data-quran-selection]")!.getAttribute("data-quran-selection")).toBe("2:255");
       click(container.querySelector("[data-quran-select-tafsir]")!);
       await vi.waitFor(() => expect(container.querySelector("[data-tafsir-passage]")?.getAttribute("data-tafsir-passage")).toBe("2:255"));
-    });
-
-    it("starts each surah with its name, and the basmala except in At-Tawbah", async () => {
-      localStorage.setItem("dithar:quran:reading-mode:v1", JSON.stringify("text"));
-      await open(9, 1);
-      await vi.waitFor(() => expect(container.querySelector("[data-quran-text-surah='9']")).not.toBeNull());
-      expect(container.querySelector("[data-quran-text-surah='9'] .dithar-mushaf-text__basmala")).toBeNull();
     });
   });
 

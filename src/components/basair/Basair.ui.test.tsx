@@ -198,6 +198,39 @@ describe("the opening", () => {
   });
 });
 
+describe("sharing the verse with its Tafsir", () => {
+  it("opens the share sheet naming the verse, copies the verse and al-Sa'di's words exactly, and closes on Back before Basa'ir", async () => {
+    let copied = "";
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async (t: string) => void (copied = t) } });
+    await open(112, 1);
+    const button = q("[data-tafsir-share]")!;
+    expect(button.getAttribute("aria-label")).toBe("مشاركة الآية مع تفسيرها: سورة الإخلاص · الآية ١");
+    await click(button);
+    await until(() => document.querySelector("[data-share-menu]") !== null);
+    expect(document.querySelector("[data-share-subtitle]")!.textContent).toBe("سورة الإخلاص · الآية ١");
+
+    // System Back closes the sheet, not Basa'ir.
+    expect(backOverlayCount()).toBe(2);
+    await act(async () => void dismissTopBackOverlay());
+    expect(document.querySelector("[data-share-menu]")).toBeNull();
+    expect(q("[data-basair]")).not.toBeNull();
+    expect(backOverlayCount()).toBe(1);
+
+    await click(button);
+    await until(() => document.querySelector("[data-share-menu]") !== null);
+    await click(document.querySelector("[data-share-option='copy']"));
+    await until(() => copied !== "");
+    const { markedVerseForSharing } = await import("../../lib/quranShareText");
+    const tafsir = await getSaadiVerse(112, 1);
+    if (tafsir.status !== "found") throw new Error("no tafsir");
+    expect(copied.startsWith(`${markedVerseForSharing(112, 1)}\n\n`)).toBe(true);
+    // Every paragraph of the book's text on this verse, as it stands (this one has no editor's notes).
+    expect(tafsir.text).not.toMatch(/[¬¥]/);
+    expect(copied).toContain(`تفسير السعدي:\n${tafsir.text.split("\n").filter((l) => l.trim()).join("\n")}\n`);
+    expect(q("[data-basair]")).not.toBeNull();
+  });
+});
+
 describe("the source's verse ranges", () => {
   const notices = () => container.querySelectorAll("[data-saadi-heading-together], [data-saadi-comment-also]").length;
 

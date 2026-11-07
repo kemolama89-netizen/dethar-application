@@ -68,8 +68,10 @@ export type AudioAdhkarPlaybackState = AudioAdhkarNowPlaying | null;
 // Pure transitions
 // ---------------------------------------------------------------------
 
-export function startedState(ref: AudioAdhkarRef, total: number | null, reciter?: string): AudioAdhkarNowPlaying {
-  const started: AudioAdhkarNowPlaying = { collection: ref.collection, itemId: ref.itemId, repetition: 1, total, status: "playing" };
+export function startedState(ref: AudioAdhkarRef, total: number | null, reciter?: string, repetition = 1): AudioAdhkarNowPlaying {
+  // A resumed Play All run may start part-way through a dhikr's repetitions (lib/audioAdhkarResume.ts).
+  const from = total !== null ? Math.min(Math.max(1, repetition), total) : Math.max(1, repetition);
+  const started: AudioAdhkarNowPlaying = { collection: ref.collection, itemId: ref.itemId, repetition: from, total, status: "playing" };
   if (reciter) started.reciter = reciter;
   return started;
 }
@@ -107,7 +109,7 @@ export function subscribeAudioAdhkarPlayback(listener: () => void): () => void {
 }
 
 export const audioAdhkarPlayback = {
-  startDhikr: (ref: AudioAdhkarRef, total: number | null, reciter?: string) => set(startedState(ref, total, reciter)),
+  startDhikr: (ref: AudioAdhkarRef, total: number | null, reciter?: string, repetition?: number) => set(startedState(ref, total, reciter, repetition)),
   repetitionEnded: () => set(afterRepetitionEnded(state)),
   pause: () => set(withStatus(state, "playing", "paused")),
   resume: () => set(withStatus(state, "paused", "playing")),

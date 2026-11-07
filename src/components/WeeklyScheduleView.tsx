@@ -4,6 +4,8 @@ import { useLanguage } from "../theme/LanguageContext";
 import { WEEKDAYS, loadHolidayStart, saveHolidayStart } from "../lib/weeklySchedule";
 import type { HolidayStart, Weekday } from "../lib/weeklySchedule";
 import { weeklyScheduleLabels } from "../data/scheduleLabels";
+import { FirstVisitHint } from "./FirstVisitHint";
+import { featureGuideLabels } from "../data/featureGuideLabels";
 
 // Settings → الجدول الأسبوعي: the weekly holiday start — days off and one
 // start time for them. Saving notifies lib/weeklySchedule.ts's subscribers,
@@ -51,6 +53,7 @@ export function WeeklyScheduleView({ onBack }: { onBack: () => void }) {
         <div className="h-9 w-9 shrink-0" aria-hidden="true" />
       </div>
 
+      <FirstVisitHint id="settings-weekly" text={featureGuideLabels[language].hints.weekly} />
       <div className="mt-4 flex flex-col gap-3 rounded-2xl border p-4" style={CARD} data-holiday-start="">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">

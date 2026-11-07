@@ -187,7 +187,9 @@ class ReminderLogicTest {
         val combined = DailySummary.compose(s, today, 0, "combined", "ar").body
         assertTrue(stats.contains("التسبيح 10"))
         assertFalse(stats.contains("بارك الله"))
-        assertFalse(motivational.contains("التسبيح"))
+        // Encouragement only: what was done is named (personalised), never counted.
+        assertFalse(motivational.contains("التسبيح 10") || motivational.contains("10"))
+        assertTrue(motivational.startsWith("سجّلتَ اليوم: التسبيح."))
         assertTrue(combined.contains("التسبيح 10") && combined.contains("بارك الله"))
     }
 

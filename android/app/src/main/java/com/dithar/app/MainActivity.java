@@ -4,6 +4,7 @@ import android.os.Bundle;
 import com.dithar.app.audioadhkar.AudioAdhkarPlugin;
 import com.dithar.app.audioadhkar.AudioAdhkarTrace;
 import com.dithar.app.floatingtasbeeh.FloatingTasbeehPlugin;
+import com.dithar.app.journey.QuranJourneyPlugin;
 import com.dithar.app.location.LocationPermissionPlugin;
 import com.dithar.app.orientation.OrientationPlugin;
 import com.dithar.app.prayernotifications.AdhanDownloadsPlugin;
@@ -27,6 +28,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(SharePlugin.class);
         registerPlugin(OrientationPlugin.class);
         registerPlugin(ScreenAwakePlugin.class);
+        registerPlugin(QuranJourneyPlugin.class);
         super.onCreate(savedInstanceState);
         trace("onCreate");
     }

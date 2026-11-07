@@ -1,5 +1,6 @@
 package com.dithar.app.prayernotifications
 
+import com.dithar.app.NotificationRoutes
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
@@ -76,13 +77,8 @@ object PrayerNotificationScheduler {
         return mode
     }
 
-    /** What tapping the system's "next alarm" (status bar / lock screen) opens: DITHAR. */
-    private fun openAppIntent(context: Context): PendingIntent = PendingIntent.getActivity(
-        context,
-        SHOW_APP_REQUEST_CODE,
-        Intent(context, MainActivity::class.java),
-        PendingIntent.FLAG_IMMUTABLE,
-    )
+    /** What tapping the system's "next alarm" (status bar / lock screen) opens: the prayer times (NotificationRoutes). */
+    private fun openAppIntent(context: Context): PendingIntent = NotificationRoutes.openIntent(context, NotificationRoutes.PRAYER)
 
     private const val SHOW_APP_REQUEST_CODE = 7402
 
@@ -113,7 +109,8 @@ object PrayerNotificationScheduler {
                 manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, LABEL_CHANNEL, NotificationManager.IMPORTANCE_HIGH))
             }
         }
-        val openApp = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        // A tap opens the prayer times (NotificationRoutes), not just the app.
+        val openApp = NotificationRoutes.openIntent(context, NotificationRoutes.PRAYER)
         @Suppress("DEPRECATION")
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(context, channel) else Notification.Builder(context)
         // Gone by itself after 5 minutes (NotificationExpiry) — the adhan and the next alarms are unaffected.

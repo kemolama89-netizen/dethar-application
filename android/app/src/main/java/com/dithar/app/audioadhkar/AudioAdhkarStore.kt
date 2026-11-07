@@ -212,6 +212,15 @@ class AudioAdhkarStore(context: Context) {
                 prefs.edit().putInt(key("resume_index"), value).commit()
             }
 
+        /** Daily only: where an unfinished «تشغيل الكل» run continues (PlayAllProgress) — null when none. Written synchronously. */
+        var playAllProgress: PlayAllProgress?
+            get() = PlayAllProgress.parse(prefs.getString(key("play_all_progress"), null))
+            set(value) {
+                val edit = prefs.edit()
+                if (value == null) edit.remove(key("play_all_progress")) else edit.putString(key("play_all_progress"), value.toJson().toString())
+                edit.commit()
+            }
+
         /**
          * Daily only: a session the adhan interrupted, waiting for the user's
          * "Resume Adhkar" (SavedProgress) — null when none. Written synchronously.

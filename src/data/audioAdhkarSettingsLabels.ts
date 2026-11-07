@@ -63,11 +63,6 @@ export const audioAdhkarSettingsLabels = {
       "في هواتف HONOR وHuawei قد يؤخّر النظام الأذكار المجدولة بعد إغلاق دِثار من قائمة التطبيقات الأخيرة. من الإعدادات ← البطارية ← تشغيل التطبيقات، اجعل دِثار «إدارة يدوية» وفعّل التشغيل التلقائي والتشغيل الثانوي والتشغيل في الخلفية.",
     backgroundLaunchOpen: "فتح الإعدادات",
     backgroundLaunchDismiss: "إخفاء",
-    diagnostics: "سجل الجدولة (للاختبار)",
-    shareLog: "مشاركة سجل التشخيص",
-    viewLog: "عرض السجل الكامل",
-    hideLog: "إخفاء السجل",
-    clearLog: "مسح السجل",
   },
   en: {
     row: "Audio Adhkar Settings",
@@ -126,10 +121,5 @@ export const audioAdhkarSettingsLabels = {
       "On HONOR and Huawei phones, the system can hold scheduled adhkar after DITHAR is swiped from Recents. In Settings → Battery → App launch, set DITHAR to manage manually and keep Auto-launch, Secondary launch and Run in background on.",
     backgroundLaunchOpen: "Open settings",
     backgroundLaunchDismiss: "Dismiss",
-    diagnostics: "Schedule log (for testing)",
-    shareLog: "Share diagnostics log",
-    viewLog: "View full log",
-    hideLog: "Hide log",
-    clearLog: "Clear log",
   },
 };

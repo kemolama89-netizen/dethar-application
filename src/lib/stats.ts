@@ -650,7 +650,7 @@ export type StatSelection =
 
 // All comparisons are plain string comparisons against fixed-width
 // "YYYY-MM-DD" values, which sort/compare correctly as dates.
-function matchesSelection(localDate: string, selection: StatSelection): boolean {
+export function matchesSelection(localDate: string, selection: StatSelection): boolean {
   switch (selection.kind) {
     case "daily":
       return localDate === selection.date;

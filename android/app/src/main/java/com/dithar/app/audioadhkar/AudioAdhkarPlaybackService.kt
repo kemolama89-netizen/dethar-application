@@ -1,5 +1,6 @@
 package com.dithar.app.audioadhkar
 
+import com.dithar.app.NotificationRoutes
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -118,6 +119,10 @@ class AudioAdhkarPlaybackService : Service() {
     private var repetitionStartOffset: Long? = null
     /** How many playlist items this session skipped (a resumed session): absolute index = startOffset + cursor.index. */
     private var startOffset = 0
+    /** A resumed «تشغيل الكل» run: where in [playAllIds] it started (its reported index and count are the whole run's). */
+    private var manualOffset = 0
+    /** The «تشغيل الكل» run's whole list (dhikr ids), for its Resume Adhkar point (PlayAllProgress). */
+    private var playAllIds: List<String> = emptyList()
     private val stopForAdhan = Runnable { interruptForAdhan() }
     /** An adhan session: where its segment starts and ends in the file (null for adhkar sessions). */
     private var adhanStartMillis: Long? = null
@@ -319,7 +324,7 @@ class AudioAdhkarPlaybackService : Service() {
                     trace("playNow: bad item ${e.javaClass.simpleName}: ${e.message}")
                     emptyList()
                 }
-                startManualSession(Section.of(intent.getStringExtra(EXTRA_SECTION)), items)
+                startManualSession(Section.of(intent.getStringExtra(EXTRA_SECTION)), items, intent.getIntExtra(EXTRA_PLAY_ALL_START_INDEX, 0), intent.getIntExtra(EXTRA_PLAY_ALL_START_REPETITION, 1))
             }
             ACTION_PAUSE -> userPause()
             ACTION_NEXT_DHIKR -> skipToNextDhikr()
@@ -504,7 +509,7 @@ class AudioAdhkarPlaybackService : Service() {
      * refused while the adhan plays. Not tied to any schedule: it plays
      * whenever the user starts it, also after the section's scheduled time.
      */
-    private fun startManualSession(section: Section, items: List<PlaylistItem>) {
+    private fun startManualSession(section: Section, items: List<PlaylistItem>, startIndex: Int = 0, startRepetition: Int = 1) {
         if (items.isEmpty() || adhanSession) {
             if (cursor == null) {
                 startForegroundCompat(buildNotification()) // required after startForegroundService, even to stop
@@ -525,7 +530,10 @@ class AudioAdhkarPlaybackService : Service() {
         val store = AudioAdhkarStore(this)
         val rotation = AudioAdhkarRotation.apply(items, store.quranLastRotationSlot)
         if (items.any { it.rotation.isNotEmpty() }) store.quranLastRotationSlot = rotation.lastSlot
-        cursor = PlaybackCursor(rotation.items)
+        // Resume Adhkar: a «تشغيل الكل» run may continue from its saved point — the dhikr and repetition not yet finished.
+        playAllIds = if (playAllSession) items.map { it.dhikrId } else emptyList()
+        manualOffset = if (playAllSession) startIndex.coerceIn(0, items.size - 1) else 0
+        cursor = PlaybackCursor(rotation.items.drop(manualOffset), if (manualOffset > 0 || startRepetition > 1) startRepetition else 1)
         isSessionActive = true
         startForegroundCompat(buildNotification())
         val now = System.currentTimeMillis()
@@ -804,7 +812,10 @@ class AudioAdhkarPlaybackService : Service() {
             completionListener?.invoke()
         }
         when (step) {
-            PlaybackCursor.Step.NEXT_REPETITION, PlaybackCursor.Step.NEXT_DHIKR -> startSilence()
+            PlaybackCursor.Step.NEXT_REPETITION, PlaybackCursor.Step.NEXT_DHIKR -> {
+                savePlayAllProgress() // only now, with the repetition really heard to its end
+                startSilence()
+            }
             PlaybackCursor.Step.FINISHED -> finishSession()
             else -> Unit // stale/duplicate completion — ignored
         }
@@ -955,6 +966,7 @@ class AudioAdhkarPlaybackService : Service() {
         trace("next dhikr requested → $step")
         when (step) {
             PlaybackCursor.Step.NEXT_DHIKR -> {
+                savePlayAllProgress() // the user moved on: the run continues from the next dhikr
                 releasePlayer()
                 playCurrent()
                 publish(stateJson())
@@ -968,9 +980,26 @@ class AudioAdhkarPlaybackService : Service() {
         }
     }
 
+    /**
+     * Resume Adhkar: a Morning/Evening «تشغيل الكل» run saves where it continues — after each repetition
+     * heard to its end (or a skip), never on a stop — so leaving, a call, closing the app or a restart
+     * can't lose or overstate it (PlayAllProgress).
+     */
+    private fun savePlayAllProgress() {
+        if (!playAllSession || !sessionSection.isDaily) return
+        val progress = PlayAllProgress.from(cursor?.resumePoint(), playAllIds, manualOffset, System.currentTimeMillis()) ?: return
+        AudioAdhkarStore(this).section(sessionSection).playAllProgress = progress
+        trace("play all: progress saved ${sessionSection.key} #${progress.index} rep ${progress.repetition}")
+    }
+
     /** The last dhikr's last repetition ended: report "finished", then end the session. */
     private fun finishSession() {
         if (adhanSession) return endSession(null)
+        // A «تشغيل الكل» run heard to its end: nothing left to resume.
+        if (playAllSession && sessionSection.isDaily) {
+            AudioAdhkarStore(this).section(sessionSection).playAllProgress = null
+            AudioAdhkarStore(this).appendEvent("${sessionSection.key}: play all completed — resume point cleared")
+        }
         // A completed scheduled session has nothing left to offer back.
         if (sessionSection.isDaily && !manualSession) AudioAdhkarScheduler.clearSavedProgress(this, sessionSection, "completed")
         // Heard to its end: practiced (already recorded as its audio began — this never adds a second record).
@@ -986,8 +1015,8 @@ class AudioAdhkarPlaybackService : Service() {
                 .put("repetition", last.repetitions)
                 .put("total", last.repetitions)
                 .put("status", "finished")
-                .put("index", c.items.size - 1)
-                .put("count", c.items.size)
+                .put("index", manualOffset + c.items.size - 1)
+                .put("count", manualOffset + c.items.size)
         } else {
             null
         }
@@ -1061,6 +1090,8 @@ class AudioAdhkarPlaybackService : Service() {
         ducked = false
         manualSession = false
         playAllSession = false
+        manualOffset = 0
+        playAllIds = emptyList()
         isManualSession = false
         isSessionActive = false
         session.isActive = false
@@ -1236,8 +1267,8 @@ class AudioAdhkarPlaybackService : Service() {
             .put("repetition", c.repetition)
             .put("total", item.repetitions)
             .put("status", if (paused) "paused" else "playing")
-            .put("index", c.index)
-            .put("count", c.items.size)
+            .put("index", manualOffset + c.index)
+            .put("count", manualOffset + c.items.size)
             .put("manual", manualSession)
             // Who is heard now (the reciter of this recitation, after random rotation); "" when unknown.
             .put("reciter", item.recitation.reciterName)
@@ -1428,12 +1459,8 @@ class AudioAdhkarPlaybackService : Service() {
             )
         }
         val item = cursor?.current
-        val openApp = PendingIntent.getActivity(
-            this,
-            0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE,
-        )
+        // A tap opens what plays: the adhan → the prayer times; adhkar → their section's list (NotificationRoutes).
+        val openApp = NotificationRoutes.openIntent(this, if (adhanSession) NotificationRoutes.PRAYER else NotificationRoutes.audio(sessionSection.key))
         // Control labels follow the interface language; the dhikr text itself stays Arabic.
         val en = AudioAdhkarStore(this).language == "en"
         val toggle = if (paused) {
@@ -1536,8 +1563,11 @@ class AudioAdhkarPlaybackService : Service() {
         private const val EXTRA_ITEM = "com.dithar.app.audioadhkar.ITEM"
         /** Play All: the section's playlist items, as a JSON array. */
         private const val EXTRA_ITEMS = "com.dithar.app.audioadhkar.ITEMS"
+        private const val EXTRA_PLAY_ALL_START_INDEX = "com.dithar.app.audioadhkar.PLAY_ALL_START_INDEX"
+        private const val EXTRA_PLAY_ALL_START_REPETITION = "com.dithar.app.audioadhkar.PLAY_ALL_START_REPETITION"
         private const val SESSION_WAKE_LOCK_MILLIS = 3 * 60 * 60_000L
-        private const val HEARTBEAT_MILLIS = 30_000L
+        /** Diagnostics only (a trace line, written to disk): every 2 minutes still shows when the process froze. */
+        private const val HEARTBEAT_MILLIS = 120_000L
         private const val ADHAN_FOCUS_FOLLOW_UP_MILLIS = 1_500L
         private const val EXTRA_ADHAN_PATH = "com.dithar.app.audioadhkar.ADHAN_PATH"
         private const val EXTRA_ADHAN_FALLBACK_PATH = "com.dithar.app.audioadhkar.ADHAN_FALLBACK_PATH"
@@ -1713,8 +1743,10 @@ class AudioAdhkarPlaybackService : Service() {
             startPlayNow(context, section, "${section.key}/${item.optString("dhikrId")} ×${item.optInt("repetitions")}") { it.putExtra(EXTRA_ITEM, item.toString()) }
 
         /** «تشغيل الكل» (Play All): [items] (playlist item JSONs) one after another, as one manual session. False when refused. */
-        fun playAllNow(context: Context, section: Section, items: JSONArray): Boolean =
-            startPlayNow(context, section, "${section.key} play all ×${items.length()}") { it.putExtra(EXTRA_ITEMS, items.toString()) }
+        fun playAllNow(context: Context, section: Section, items: JSONArray, startIndex: Int = 0, startRepetition: Int = 1): Boolean =
+            startPlayNow(context, section, "${section.key} play all ×${items.length()} from #$startIndex rep $startRepetition") {
+                it.putExtra(EXTRA_ITEMS, items.toString()).putExtra(EXTRA_PLAY_ALL_START_INDEX, startIndex).putExtra(EXTRA_PLAY_ALL_START_REPETITION, startRepetition)
+            }
 
         private fun startPlayNow(context: Context, section: Section, what: String, extras: (Intent) -> Intent): Boolean {
             AudioAdhkarTrace.log(context, "service", "playNow requested $what adhanPlaying=$isAdhanPlaying")

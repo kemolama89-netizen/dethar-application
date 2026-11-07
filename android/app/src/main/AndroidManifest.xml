@@ -43,7 +43,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Shows the user's live Tasbeeh count in a small floating bubble over other apps, so they can keep counting without switching back to DITHAR." />
+                android:value="Shows the user's live Tasbeeh counter over other apps, as a small floating pill or a full-screen counting mode the user opens from it, so they can keep counting without switching back to DITHAR. Both can be minimized or closed at any time, from the screen or the notification." />
         </service>
 
         <receiver
@@ -130,6 +130,24 @@
 
         <receiver
             android:name=".reminders.RemindersRescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- The Qur'an Journey's daily notification (journey/): its alarm, and re-arming
+             after a reboot, an app update or a time/zone change. -->
+        <receiver
+            android:name=".journey.JourneyReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".journey.JourneyRescheduleReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

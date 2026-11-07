@@ -139,7 +139,11 @@ class AudioAdhkarLifecycleGuardTest {
     fun theServiceInsertsTheSilenceNativelyAfterEveryNonFinalPlayback() {
         val service = audio("AudioAdhkarPlaybackService.kt")
         val completed = service.substringAfter("private fun onPlaybackCompleted(").substringBefore("// ---- silence")
-        assertTrue(completed.contains("PlaybackCursor.Step.NEXT_REPETITION, PlaybackCursor.Step.NEXT_DHIKR -> startSilence()"))
+        // After a non-final playback: the «تشغيل الكل» resume point is saved (Resume Adhkar), then the silence.
+        val nonFinal = completed.substringAfter("PlaybackCursor.Step.NEXT_REPETITION, PlaybackCursor.Step.NEXT_DHIKR -> {").substringBefore("}")
+        assertTrue(nonFinal.contains("savePlayAllProgress()"))
+        assertTrue(nonFinal.contains("startSilence()"))
+        assertTrue(nonFinal.indexOf("savePlayAllProgress()") < nonFinal.indexOf("startSilence()"))
         assertTrue(completed.contains("PlaybackCursor.Step.FINISHED -> finishSession()"))
         val silence = service.substringAfter("private fun startSilence()").substringBefore("private fun cancelSilence()")
         assertTrue(silence.contains("handler.postDelayed(playNextAfterSilence"))

@@ -48,6 +48,11 @@ export interface ShareableContent {
    * image is drawn on it exactly as previewed. Text sharing ignores it.
    */
   background?: string;
+  /**
+   * The image is the portrait Tafsir card (lib/shareImageTafsir.ts): a verse with its Tafsir.
+   * Layout only; the text is the same.
+   */
+  tafsirCard?: boolean;
 }
 
 export interface ShareSection {
@@ -59,6 +64,12 @@ export interface ShareSection {
   source?: string;
   /** A short qualifier shown under it (e.g. "An educational reflection by DITHAR…"). */
   note?: string;
+  /**
+   * What the Tafsir card draws instead of [text], when the card already shows part of it
+   * elsewhere: a Tafsir without the book's quotation of the very verse the card shows
+   * beside it. Paragraphs left out whole, never changed; [text] is still what's shared as text.
+   */
+  imageText?: string;
 }
 
 interface SharePluginApi {

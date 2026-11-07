@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { ChevronLeft, ChevronRight, ImagePlus } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
-import { reminderLabels } from "../data/reminderLabels";
+import { reminderLabels, timedContentLabels } from "../data/reminderLabels";
+import { ASR_LEAD_CHOICES, loadTimedContentSettings, saveTimedContentSettings, TIMED_KINDS } from "../lib/timedContent";
+import type { TimedContentSettings, TimedKind } from "../lib/timedContent";
+import { knownPrayerLocation } from "../lib/prayerSchedule";
 import {
   REMINDER_INTERVALS,
   clearCustomBackground,
@@ -13,7 +16,7 @@ import {
   saveReminderSettings,
 } from "../lib/reminderSettings";
 import type { BackgroundMode, ReminderSettings } from "../lib/reminderSettings";
-import { REMINDER_CATEGORIES, reminderPool } from "../lib/reminderContent";
+import { REMINDER_CATEGORIES, reminderRotationPool } from "../lib/reminderContent";
 import type { ReminderCategory } from "../lib/reminderContent";
 import { BACKGROUNDS, backgroundUrl } from "../lib/reminderBackgrounds";
 import { RemindersNative, isRemindersNativeAvailable } from "../lib/remindersNative";
@@ -76,6 +79,68 @@ function ToggleRow({ title, hint, checked, onChange, t }: { title: string; hint?
   );
 }
 
+/**
+ * The time-based content notifications (lib/timedContent.ts): one switch, which moments, and how
+ * long before Asr. Independent of the interval reminders above; asks for the notification
+ * permission on an explicit enable tap only.
+ */
+function TimedContentCard({ t, native }: { t: (typeof reminderLabels)["ar"]; native: boolean }) {
+  const { language } = useLanguage();
+  const tl = timedContentLabels[language];
+  const [settings, setSettings] = useState<TimedContentSettings>(() => loadTimedContentSettings());
+  const update = (next: TimedContentSettings) => {
+    setSettings(next);
+    saveTimedContentSettings(next);
+  };
+  async function toggle() {
+    if (!settings.enabled && isAudioAdhkarNativeAvailable()) await AudioAdhkarNative.requestPermissions({ permissions: ["notifications"] }).catch(() => {});
+    update({ ...settings, enabled: !settings.enabled });
+  }
+  const kindLabel: Record<TimedKind, string> = { asr: tl.asr, friday: tl.friday, kahf: tl.kahf, whiteDays: tl.whiteDays };
+  return (
+    <Card data-timed-content="">
+      <ToggleRow title={tl.master} hint={tl.sectionHint} checked={settings.enabled} onChange={() => void toggle()} t={t} />
+      <div className="flex flex-col gap-2" style={{ opacity: settings.enabled ? 1 : 0.6 }}>
+        {TIMED_KINDS.map((k) => (
+          <label key={k} className="flex cursor-pointer items-center gap-2 text-[13px]" style={primaryText}>
+            <input type="checkbox" data-timed-kind={k} checked={settings.kinds[k]} onChange={() => update({ ...settings, kinds: { ...settings.kinds, [k]: !settings.kinds[k] } })} style={{ accentColor: "var(--color-primary)" }} />
+            {kindLabel[k]}
+          </label>
+        ))}
+        <div className="flex items-center justify-between gap-3">
+          <label htmlFor="timed-asr-lead" className="text-[13px]" style={primaryText}>
+            {tl.asrLead}
+          </label>
+          <select
+            id="timed-asr-lead"
+            data-timed-asr-lead=""
+            value={settings.asrLeadMinutes}
+            onChange={(e) => update({ ...settings, asrLeadMinutes: Number(e.target.value) as TimedContentSettings["asrLeadMinutes"] })}
+            className="rounded-lg border px-2 py-1 text-[13px]"
+            style={{ borderColor: "var(--color-gold-soft)", background: "var(--color-surface)", ...primaryText }}
+          >
+            {ASR_LEAD_CHOICES.map((m) => (
+              <option key={m} value={m}>
+                {tl.minutes(m)}
+              </option>
+            ))}
+          </select>
+        </div>
+        {settings.enabled && !knownPrayerLocation() && (
+          <p className="text-[11px]" style={muted} data-timed-needs-location="">
+            {tl.needsLocation}
+          </p>
+        )}
+        {!native && (
+          <p className="text-[11px]" style={muted}>
+            {tl.webOnly}
+          </p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
 function Card({ children, ...rest }: { children: ReactNode } & Record<string, unknown>) {
   return (
     <div className="mt-3 flex flex-col gap-3 rounded-2xl border p-4" style={CARD} {...rest}>
@@ -86,7 +151,7 @@ function Card({ children, ...rest }: { children: ReactNode } & Record<string, un
 
 /** One example per kind, for the preview list. */
 function previewItems() {
-  const pool = reminderPool();
+  const pool = reminderRotationPool();
   return REMINDER_CATEGORIES.map((c) => pool.find((i) => i.category === c)).filter((i) => i !== undefined);
 }
 
@@ -192,6 +257,8 @@ export function RemindersSettingsView({ onBack }: { onBack: () => void }) {
       <Card data-reminders-master="">
         <ToggleRow title={t.master} hint={t.masterHint} checked={settings.enabled} onChange={() => void toggleEnabled()} t={t} />
       </Card>
+
+      <TimedContentCard t={t} native={native} />
 
       <div style={{ opacity: settings.enabled ? 1 : 0.6 }}>
         <Card>

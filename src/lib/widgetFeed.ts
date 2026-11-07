@@ -134,8 +134,10 @@ export function isWidgetItem(item: ReminderItem, language: Language): boolean {
     const detail = widgetDetail(item, language);
     if (!detail || detail.length > WIDGET_MAX_TEXT_CHARS || item.textAr.length + detail.length > WIDGET_MAX_TEXT_CHARS * 1.5 || widgetTextProblem(detail)) return false;
   }
-  if (item.textAr.length > WIDGET_MAX_TEXT_CHARS) return false;
-  if (widgetTextProblem(item.textAr)) return false;
+  // A long hadith with a preview (its own opening, «…») is drawn as that; the full card shows it all.
+  const drawn = item.widgetPreviewAr ?? item.textAr;
+  if (drawn.length > WIDGET_MAX_TEXT_CHARS) return false;
+  if (widgetTextProblem(drawn)) return false;
   if (language === "en" && !item.meaningEn) return false;
   // The English line is drawn too: a published translation's «ﷺ» (a presentation form) can't be drawn reliably.
   if (language === "en" && widgetTextProblem(item.meaningEn!)) return false;

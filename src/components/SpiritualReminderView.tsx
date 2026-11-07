@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Heart, Pause, Play, Share2, X } from "lucide
 import { useLanguage } from "../theme/LanguageContext";
 import { useBackDismiss } from "../lib/backOverlays";
 import { reminderLabels } from "../data/reminderLabels";
-import { findReminderItem, reminderPool } from "../lib/reminderContent";
+import { findReminderItem, reminderRotationPool } from "../lib/reminderContent";
 import { resolveOpenedReminder } from "../lib/reminderOpen";
 import type { ShownReminder } from "../lib/remindersNative";
 import { reminderBackgroundFor } from "../lib/reminderBackgroundChoice";
@@ -40,7 +40,7 @@ const REMINDER_DISPLAY_MS = 30_000;
 function nextItem(current: ReminderItem): ReminderItem {
   const { categories } = loadReminderSettings();
   const anyEnabled = Object.values(categories).some(Boolean);
-  const pool = reminderPool().filter((i) => i.id !== current.id && (categories[i.category] || !anyEnabled));
+  const pool = reminderRotationPool().filter((i) => i.id !== current.id && (categories[i.category] || !anyEnabled));
   return pickFreshItem(pool, loadContentHistory().items) ?? current;
 }
 

@@ -1330,7 +1330,7 @@ html[data-look="sunset"] .dithar-scene-arch__image {
   color: var(--color-text-muted);
 }
 
-/* Today's dua: a link, its text hidden until opened. */
+/* «مختارات اليوم»: the widget's item, its kind and the start of its text (clipped on screen only); a tap opens it in full. */
 .dithar-daily-pick {
   display: flex;
   flex-wrap: wrap;
@@ -1360,6 +1360,24 @@ html[data-look="sunset"] .dithar-scene-arch__image {
 .dithar-daily-pick__hint {
   font-size: clamp(11.5px, 3.75cqi, 14px);
   color: var(--color-text-muted);
+}
+.dithar-daily-pick__kind {
+  margin-inline-start: 8px;
+  padding-inline-start: 8px;
+  border-inline-start: 1px solid var(--color-gold-soft);
+  font-size: clamp(11.5px, 3.75cqi, 13.5px);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+/* The whole text (widget items are short by design): never clipped, never cut. */
+.dithar-daily-pick__excerpt {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 4.4cqi, 16.5px);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  text-align: start;
 }
 .dithar-daily-pick__action {
   flex: none;
@@ -1436,5 +1454,96 @@ html[data-look="sunset"] .dithar-scene-arch__image {
   }
   .dithar-lamp:active .dithar-lamp__pill {
     transform: none;
+  }
+}
+
+/* ---- First-time tour («العتبة», components/OnboardingTour.tsx) and first-visit hints ---- */
+/* One lit control: a gold ring, the rest of the screen dimmed in the identity's navy (also over the
+   dark looks); the note is the app's own surface, Amiri title, Tajawal text. Nothing moves but the ring. */
+.dithar-tour__ring {
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 2px var(--color-gold),
+    0 0 0 9999px rgba(18, 33, 63, 0.6);
+  transition: top 220ms ease, left 220ms ease, width 220ms ease, height 220ms ease;
+}
+.dithar-tour__card {
+  width: min(420px, calc(100vw - 32px));
+  padding: 16px 16px 14px;
+  border-radius: var(--card-radius, 22px);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: 0 0 0 1px var(--color-gold-soft), 0 18px 40px -18px rgba(0, 0, 0, 0.55);
+}
+.dithar-tour__stem {
+  position: absolute;
+  width: 1px;
+  background: var(--color-gold);
+}
+.dithar-tour__title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.dithar-tour__count {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+}
+.dithar-tour__body {
+  margin-top: 4px;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+.dithar-tour__primary,
+.dithar-tour__secondary,
+.dithar-tour__skip {
+  min-height: 44px;
+  border-radius: 9999px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.dithar-tour__primary {
+  /* The identity's own navy on gold, in every look (the look's primary is gold itself in Night). */
+  background: var(--color-gold);
+  color: #12213f;
+}
+.dithar-tour__secondary {
+  box-shadow: inset 0 0 0 1px var(--color-gold-soft);
+  color: var(--color-text-primary);
+}
+.dithar-tour__skip {
+  padding: 0 8px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.dithar-tour__primary:focus-visible,
+.dithar-tour__secondary:focus-visible,
+.dithar-tour__skip:focus-visible,
+.dithar-first-hint__ok:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+.dithar-first-hint {
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: inset 0 0 0 1px var(--color-gold-soft);
+}
+.dithar-first-hint__ok {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  background: var(--color-gold-soft);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dithar-tour__ring {
+    transition: none;
   }
 }

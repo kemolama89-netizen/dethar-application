@@ -1,5 +1,6 @@
 package com.dithar.app.audioadhkar
 
+import com.dithar.app.NotificationRoutes
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -75,12 +76,8 @@ class AudioAdhkarResumePromptReceiver : BroadcastReceiver() {
                 // Default importance: one ordinary notification sound — it is the only notice the user gets.
                 manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, channelName(language), NotificationManager.IMPORTANCE_DEFAULT))
             }
-            val openApp = PendingIntent.getActivity(
-                context,
-                notificationId(section),
-                Intent(context, MainActivity::class.java),
-                PendingIntent.FLAG_IMMUTABLE,
-            )
+            // A tap opens Audio Adhkar, where this session's "Resume Adhkar" banner is (its action button resumes at once).
+            val openApp = NotificationRoutes.openIntent(context, NotificationRoutes.AUDIO)
             val resume = AudioAdhkarPlaybackService.resumeSavedIntent(context, section)
             @Suppress("DEPRECATION")
             val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(context, CHANNEL_ID) else Notification.Builder(context)

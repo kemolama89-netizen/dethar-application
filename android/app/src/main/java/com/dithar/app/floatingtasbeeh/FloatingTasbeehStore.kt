@@ -71,8 +71,8 @@ class FloatingTasbeehStore(context: Context) {
     }
 
     /**
-     * The currently selected dhikr's own label text, for the bubble's own
-     * display (see FloatingBubbleView#label) — looked up from the same
+     * The currently selected dhikr's own label text, for the full-screen
+     * counter's display (see FullScreenCounterView#setDhikr) — looked up from the same
      * library JS pushed via [setDhikrLabels], never a separately-persisted
      * copy that could drift from it. Empty if the list hasn't been pushed
      * yet (e.g. a service restart racing the app's own startup) or the
@@ -102,6 +102,20 @@ class FloatingTasbeehStore(context: Context) {
     // ---- live counter mirror (bubble's own displayed number) --------------
 
     fun getLiveCount(dhikrId: Int): Int = prefs.getInt("$KEY_LIVE_COUNT_PREFIX$dhikrId", 0)
+
+    /**
+     * Each dhikr's own target as the Tasbeeh screen holds it (0 = none — it's
+     * optional), pushed from JS with the dhikr list, so the floating counter
+     * shows «33 من 100» exactly when the app does. Display only: a target
+     * never changes what a tap counts.
+     */
+    fun setDhikrTargets(targets: Map<Int, Int>) {
+        val editor = prefs.edit()
+        for ((id, target) in targets) editor.putInt("$KEY_TARGET_PREFIX$id", target.coerceAtLeast(0))
+        editor.apply()
+    }
+
+    fun getTarget(dhikrId: Int): Int = prefs.getInt("$KEY_TARGET_PREFIX$dhikrId", 0)
 
     /**
      * Public (not private, unlike before) so a Floating Voice Tasbeeh
@@ -139,8 +153,8 @@ class FloatingTasbeehStore(context: Context) {
      * for a given dhikr's own pace; this one exists purely to guard
      * against the OS/gesture layer accidentally dispatching two touch
      * events for the ONE SAME physical tap — a real-world hazard for a
-     * custom-drawn, draggable overlay view doing its own raw touch
-     * handling (see FloatingBubbleView). 80ms is far below any realistic
+     * custom-drawn overlay view doing its own raw touch
+     * handling (see FullScreenCounterView#onTouchEvent). 80ms is far below any realistic
      * deliberate double-tap cadence (typically 150ms+) and below even the
      * shortest real pacing duration (500ms), so it never interferes with
      * that gate — it only ever catches a duplicate dispatch of a tap the
@@ -152,10 +166,9 @@ class FloatingTasbeehStore(context: Context) {
 
     /**
      * Called once per tap the gesture layer already confirmed as a genuine
-     * single tap (see FloatingBubbleView's GestureDetector wiring, which is
-     * the FIRST and primary line of defense — GestureDetector#onSingleTapConfirmed
-     * is specifically designed to fire once per real tap and never during a
-     * drag). This is the second, defense-in-depth layer: reject only an
+     * single tap (see FullScreenCounterView#onTouchEvent and
+     * CounterOverlayRules.onRelease, the FIRST and primary line of defense —
+     * one count per finger lift, never for a drag or a touch on the controls). This is the second, defense-in-depth layer: reject only an
      * implausibly-fast repeat that can't be a deliberate second tap.
      *
      * Returns true if the tap was accepted and committed, false if it was
@@ -227,6 +240,7 @@ class FloatingTasbeehStore(context: Context) {
         private const val KEY_DHIKR_LABEL_PREFIX = "dhikr_label_"
         private const val KEY_DHIKR_DURATION_PREFIX = "dhikr_duration_"
         private const val KEY_LIVE_COUNT_PREFIX = "live_count_"
+        private const val KEY_TARGET_PREFIX = "target_"
         private const val KEY_PENDING_QUEUE = "pending_queue_v1"
         private const val DEFAULT_DHIKR_ID = 1 // "سُبْحَانَ اللَّهِ" — tasbeeh-library.json id 1
         // Matches tasbeehTiming.ts's own FALLBACK_READY_DURATION_MS.

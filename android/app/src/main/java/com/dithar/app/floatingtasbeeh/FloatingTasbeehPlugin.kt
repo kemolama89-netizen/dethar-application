@@ -89,7 +89,7 @@ class FloatingTasbeehPlugin : Plugin() {
     @PluginMethod
     fun isSupported(call: PluginCall) {
         // API 26+ is required for TYPE_APPLICATION_OVERLAY (see
-        // DhikrMenuPopup's overlayWindowType() doc comment); DITHAR's
+        // overlayWindowType() in CounterOverlayRules.kt); DITHAR's
         // realistic minSdk already exceeds this, but this call lets JS
         // avoid ever offering the toggle on a device/OS combination where
         // it genuinely can't work.
@@ -216,11 +216,16 @@ class FloatingTasbeehPlugin : Plugin() {
     fun setDhikrList(call: PluginCall) {
         val items = call.getArray("items") ?: JSArray()
         val parsed = mutableListOf<Triple<Int, String, Long>>()
+        val targets = mutableMapOf<Int, Int>()
         for (i in 0 until items.length()) {
             val obj = items.getJSONObject(i)
             parsed.add(Triple(obj.getInt("id"), obj.getString("label"), obj.getLong("readyDurationMs")))
+            // Optional: each dhikr's own target (0 = none), shown as «33 من 100».
+            targets[obj.getInt("id")] = obj.optInt("target", 0)
         }
         store.setDhikrLabels(parsed)
+        store.setDhikrTargets(targets)
+        FloatingTasbeehService.refreshTarget()
         call.resolve()
     }
 

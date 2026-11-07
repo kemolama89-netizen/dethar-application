@@ -98,6 +98,47 @@ class ReminderStore(context: Context) {
             prefs.edit().putLong("widget_slot", value).commit()
         }
 
+    /** What the widget last drew (WidgetPreview.Drawn), for Home's preview; null before it has drawn an item, or once removed. */
+    var widgetDrawn: WidgetPreview.Drawn?
+        get() = try {
+            prefs.getString("widget_drawn", null)?.let { raw ->
+                val o = JSONObject(raw)
+                val open = ReminderOpen(
+                    id = o.getString("id"),
+                    category = o.optString("category"),
+                    title = o.optString("title"),
+                    text = o.optString("text"),
+                    meaning = o.optString("meaning"),
+                    detail = o.optString("detail"),
+                    source = o.optString("source"),
+                    commentId = if (o.isNull("commentId")) null else o.optString("commentId"),
+                    commentText = if (o.isNull("commentText")) null else o.optString("commentText"),
+                )
+                WidgetPreview.Drawn(open, o.getLong("slot"))
+            }
+        } catch (_: Exception) {
+            null
+        }
+        set(value) {
+            if (value == null) {
+                prefs.edit().remove("widget_drawn").apply()
+                return
+            }
+            val o = value.open
+            val json = JSONObject()
+                .put("slot", value.slot)
+                .put("id", o.id)
+                .put("category", o.category)
+                .put("title", o.title)
+                .put("text", o.text)
+                .put("meaning", o.meaning)
+                .put("detail", o.detail)
+                .put("source", o.source)
+                .put("commentId", o.commentId ?: JSONObject.NULL)
+                .put("commentText", o.commentText ?: JSONObject.NULL)
+            putIfChanged("widget_drawn", json.toString())
+        }
+
     var lastCategory: String?
         get() = prefs.getString("last_category", null)
         set(value) = prefs.edit().putString("last_category", value).apply()
@@ -207,6 +248,35 @@ class ReminderStore(context: Context) {
         }
         putIfChanged("summary_snapshot", json.toString())
     }
+
+    // ---- time-based content notifications (TimedContentScheduler) -------------
+
+    /** The entries as the app last pushed them (lib/timedContent.ts). */
+    var timedEntriesJson: String?
+        get() = prefs.getString("timed_entries", null)
+        set(value) = putIfChanged("timed_entries", value ?: "[]")
+
+    val timedEntries: List<TimedEntry>
+        get() = timedEntriesJson?.let { raw -> runCatching { TimedContentPlan.parse(JSONArray(raw)) }.getOrNull() } ?: emptyList()
+
+    /** Keys already posted (each entry once), newest last. Written synchronously. */
+    var timedPosted: List<String>
+        get() = prefs.getString("timed_posted", null)?.let { raw -> runCatching { JSONArray(raw).let { a -> (0 until a.length()).map { a.getString(it) } } }.getOrNull() } ?: emptyList()
+        set(value) {
+            prefs.edit().putString("timed_posted", JSONArray(value).toString()).commit()
+        }
+
+    /** The summary's encouragement library as the app pushed it, in the interface language (DailySummaryEncouragement). */
+    var summaryEncouragements: List<DailySummaryEncouragement.Item>
+        get() = prefs.getString("summary_encouragements", null)?.let { raw -> runCatching { DailySummaryEncouragement.parse(JSONArray(raw)) }.getOrNull() } ?: emptyList()
+        set(value) = putIfChanged("summary_encouragements", DailySummaryEncouragement.toJson(value).toString())
+
+    /** Library ids shown in recent summaries, newest last (rotation). */
+    var summaryRecentEncouragements: List<String>
+        get() = prefs.getString("summary_recent_encouragements", null)?.let { raw ->
+            runCatching { JSONArray(raw).let { a -> (0 until a.length()).map { a.getString(it) } } }.getOrNull()
+        } ?: emptyList()
+        set(value) = prefs.edit().putString("summary_recent_encouragements", JSONArray(value).toString()).apply()
 
     /** True when a snapshot is stored but can't be read: the day's records are then unknown. */
     val summarySnapshotUnreadable: Boolean

@@ -17,12 +17,13 @@
         <item name="android:windowBackground">@color/dithar_launch_background</item>
     </style>
 
-    <!-- The launch screen (before the WebView): DITHAR's emblem on its page colour,
-         the same colour as index.html's cover and the launch intro that follow. -->
+    <!-- The launch screen (before the WebView): DITHAR's page colour only, no emblem,
+         the same colour as index.html's cover, which then shows the branded splash
+         (emblem + "DITHAR"). An emblem here made a second, logo-only splash. -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <!-- Android 12+: the system splash. -->
         <item name="windowSplashScreenBackground">@color/dithar_launch_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_blank</item>
         <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
         <!-- Before Android 12. -->
         <item name="android:background">@drawable/launch_background</item>

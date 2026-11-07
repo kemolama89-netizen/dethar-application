@@ -35,10 +35,15 @@ class RemindersPlugin : Plugin() {
         launchReminder = activity?.intent?.let(::takeReminderExtra)
         if (launchReminder != null) openCover?.show(ReminderOpenCover.COLD_START_MAX_MS)
         markAppOpened()
+        WidgetRenderer.onChange = widgetChanged
     }
+
+    /** The widget redrew (or was asked to): Home's preview reads it again (getWidgetPreview). */
+    private val widgetChanged: () -> Unit = { notifyListeners(EVENT_WIDGET_CHANGED, JSObject()) }
 
     override fun handleOnDestroy() {
         openCover?.hide()
+        if (WidgetRenderer.onChange === widgetChanged) WidgetRenderer.onChange = null
         super.handleOnDestroy()
     }
 
@@ -134,6 +139,32 @@ class RemindersPlugin : Plugin() {
         call.resolve(JSObject().put("widgets", RemindersScheduler.widgetCount(context)))
     }
 
+    /**
+     * Home's «مختارات اليوم» preview (WidgetPreview): { open: openJson | null, from: "widget" | "rotation" | null,
+     * nextChangeAt: ms | null } — nextChangeAt is when the clock moves the widget on (reminders off); while
+     * reminders are on it moves with each delivered reminder, which redraws and sends "widgetChanged".
+     */
+    @PluginMethod
+    fun getWidgetPreview(call: PluginCall) {
+        val store = ReminderStore(context)
+        val now = System.currentTimeMillis()
+        val pool = store.pool
+        val slot = WidgetRotation.displaySlot(store.enabled, store.widgetSlot, now)
+        val current = if (store.enabled) pool.firstOrNull { it.id == store.currentId } else null
+        val drawn = if (RemindersScheduler.widgetCount(context) > 0) store.widgetDrawn else null
+        val (keep, avoid) = store.widgetComments.forSlot(slot)
+        val preview = WidgetPreview.current(pool, slot, current, drawn) { item ->
+            WidgetRotation.comment(item, slot, keep ?: if (item.id == current?.id) store.currentCommentId else null, avoid)
+        }
+        val clockMoves = !store.enabled || store.widgetSlot < 0
+        call.resolve(
+            JSObject()
+                .put("open", preview?.let { openJson(it.first) } ?: JSONObject.NULL)
+                .put("from", preview?.second?.key ?: JSONObject.NULL)
+                .put("nextChangeAt", if (clockMoves) WidgetBackgrounds.nextChange(now) else JSONObject.NULL),
+        )
+    }
+
     /** The end-of-day summary's settings and today's activity snapshot (lib/dailySummary.ts). */
     @PluginMethod
     fun setSummary(call: PluginCall) {
@@ -142,8 +173,22 @@ class RemindersPlugin : Plugin() {
         store.summaryMinutes = call.getInt("minutes") ?: (21 * 60 + 30)
         store.summaryMode = call.getString("mode") ?: "combined"
         call.getObject("snapshot")?.let(store::setSummarySnapshotJson)
+        // Older apps push none: the summary then keeps its fixed lines.
+        call.getArray("encouragements")?.let { store.summaryEncouragements = DailySummaryEncouragement.parse(it) }
         RemindersScheduler.armSummary(context)
         call.resolve()
+    }
+
+    /**
+     * The time-based content notifications (lib/timedContent.ts): { entries: [{ key, kind, at, title, item }] }
+     * replaces every stored entry (empty = none) and re-arms. Keys already posted stay posted. Safe to repeat.
+     */
+    @PluginMethod
+    fun setTimedContent(call: PluginCall) {
+        val store = ReminderStore(context)
+        call.getString("language")?.let { store.language = it }
+        val at = TimedContentScheduler.replace(context, call.getArray("entries") ?: JSArray())
+        call.resolve(JSObject().put("nextAt", at ?: JSONObject.NULL))
     }
 
     /** The user's own background photo: a JPEG (base64, already cropped and downscaled), or { clear: true }. */
@@ -205,6 +250,7 @@ class RemindersPlugin : Plugin() {
 
     companion object {
         private const val EVENT_OPEN = "openReminder"
+        private const val EVENT_WIDGET_CHANGED = "widgetChanged"
         private const val MAX_CUSTOM_BYTES = 2 * 1024 * 1024
     }
 }

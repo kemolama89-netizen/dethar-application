@@ -280,6 +280,23 @@ export function effectiveLook(settings: LookSettings, deviceDark: boolean, now: 
   return settings.look;
 }
 
+/** Night by time: from 18:30 until 05:30 (local). */
+const NIGHT_FROM = 18 * 60 + 30;
+const NIGHT_UNTIL = 5 * 60 + 30;
+
+/**
+ * Milliseconds until automatic dark mode by time next switches (05:30 or 18:30, local), so the look
+ * changes exactly then — one timer, instead of re-checking every minute. Computed on the calendar,
+ * so a DST change is followed.
+ */
+export function msUntilNextLookChange(now: Date = new Date()): number {
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const next = minutes < NIGHT_UNTIL ? NIGHT_UNTIL : minutes < NIGHT_FROM ? NIGHT_FROM : 24 * 60 + NIGHT_UNTIL;
+  target.setMinutes(next);
+  return Math.max(1_000, target.getTime() - now.getTime());
+}
+
 /** The wallpaper image shown on Home, and its tone. */
 export function shownWallpaper(settings: LookSettings, look: LookId, custom: CustomWallpaper | null): { url: string; tone: Tone } {
   if (settings.wallpaper === "custom" && custom) return { url: custom.dataUrl, tone: custom.tone };

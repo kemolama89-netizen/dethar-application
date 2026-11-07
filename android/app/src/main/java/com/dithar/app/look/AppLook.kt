@@ -37,6 +37,20 @@ object AppLook {
 
     fun colors(look: String): Colors = COLORS[look] ?: COLORS.getValue(DEFAULT_LOOK)
 
+    /**
+     * Milliseconds from [minutesOfDay]:[secondsOfMinute] until automatic dark mode by time next switches
+     * (05:30 or 18:30) — one wakeup at that moment instead of a check every minute (looks.ts
+     * msUntilNextLookChange). At least a second.
+     */
+    fun millisUntilNextChange(minutesOfDay: Int, secondsOfMinute: Int = 0): Long {
+        val next = when {
+            minutesOfDay < NIGHT_UNTIL_MINUTES -> NIGHT_UNTIL_MINUTES
+            minutesOfDay < NIGHT_FROM_MINUTES -> NIGHT_FROM_MINUTES
+            else -> 24 * 60 + NIGHT_UNTIL_MINUTES
+        }
+        return ((next - minutesOfDay) * 60_000L - secondsOfMinute * 1_000L).coerceAtLeast(1_000L)
+    }
+
     /** The look shown: Night when automatic dark mode says so, else the chosen one (effectiveLook in looks.ts). */
     fun effective(look: String, autoDark: String, deviceDark: Boolean, minutesOfDay: Int): String {
         if (autoDark == "device" && deviceDark) return "night"

@@ -36,6 +36,8 @@ import { getDateTimeInfo } from "../lib/dateTime";
 import { REMINDER_SOUNDS, loadReminderSound, previewReminderSound, saveReminderSound, stopReminderSoundPreview } from "../lib/adhkarReminderSounds";
 import type { ReminderSoundChoice } from "../lib/adhkarReminderSounds";
 import { useAudioAdhkarMaster } from "../lib/useAudioAdhkarMaster";
+import { FirstVisitHint } from "./FirstVisitHint";
+import { featureGuideLabels } from "../data/featureGuideLabels";
 
 // Settings → إعدادات الأذكار الصوتية: three independent sections —
 // Morning, Evening (each: automatic playback, daily start time, Quran
@@ -249,60 +251,6 @@ function StatusBlock({
         {t.adhanPause}
       </p>
     </>
-  );
-}
-
-function Diagnostics({ diagnostics, t }: { diagnostics: AudioAdhkarDiagnostics | null; t: Labels }) {
-  const [report, setReport] = useState<string | null>(null);
-  if (!diagnostics) return null;
-  const button = "rounded-full border px-3 py-1 text-[11.5px] font-medium";
-  const buttonStyle = { borderColor: "var(--color-gold)", color: "var(--color-text-primary)" };
-  return (
-    <details className="mt-3 rounded-2xl border p-3 text-[11px]" style={{ borderColor: "var(--color-gold-soft)", color: "var(--color-text-muted)" }}>
-      <summary className="cursor-pointer text-[12px]">{t.diagnostics}</summary>
-      <p className="mt-2" dir="ltr">
-        exactAlarms={String(diagnostics.exactAlarms)} · notifications={String(diagnostics.notifications)} · batteryUnrestricted=
-        {String(diagnostics.ignoringBatteryOptimizations)} · standbyBucket={diagnostics.standbyBucket}
-      </p>
-      {/* The full background-playback trace (AudioAdhkarTrace.kt): every stage, exit reasons, device state. */}
-      <div className="mt-2 flex flex-wrap gap-2" data-diagnostics-actions="">
-        <button type="button" className={button} style={buttonStyle} onClick={() => void AudioAdhkarNative.shareDiagnostics().catch(() => {})}>
-          {t.shareLog}
-        </button>
-        <button
-          type="button"
-          className={button}
-          style={buttonStyle}
-          onClick={() => {
-            if (report !== null) return setReport(null);
-            AudioAdhkarNative.getDiagnosticsReport().then(({ report: text }) => setReport(text), () => setReport(""));
-          }}
-        >
-          {report !== null ? t.hideLog : t.viewLog}
-        </button>
-        <button type="button" className={button} style={buttonStyle} onClick={() => void AudioAdhkarNative.clearDiagnostics().then(() => setReport(null), () => {})}>
-          {t.clearLog}
-        </button>
-      </div>
-      {report !== null && (
-        <pre className="mt-2 max-h-[60vh] overflow-auto whitespace-pre-wrap break-all text-[10px] leading-[1.4]" dir="ltr" data-diagnostics-report="">
-          {report}
-        </pre>
-      )}
-      <ol className="mt-1 flex flex-col gap-0.5" dir="ltr">
-        {diagnostics.events
-          .slice()
-          .reverse()
-          .map((event, i) => {
-            const [ms, message] = event.split("|");
-            return (
-              <li key={i}>
-                {new Date(Number(ms)).toLocaleString("en-GB")} — {message.replace(/\b1\d{12}\b/g, (n) => new Date(Number(n)).toLocaleString("en-GB"))}
-              </li>
-            );
-          })}
-      </ol>
-    </details>
   );
 }
 
@@ -682,7 +630,6 @@ function DailyView({ section, onBack }: { section: DailySection; onBack: () => v
         }}
       />
 
-      <Diagnostics diagnostics={diagnostics} t={t} />
     </div>
   );
 }
@@ -818,7 +765,6 @@ function MiscView({ onBack }: { onBack: () => void }) {
 
       <OccasionsCard onChange={apply} />
 
-      <Diagnostics diagnostics={diagnostics} t={t} />
     </div>
   );
 }
@@ -853,6 +799,7 @@ export function AudioAdhkarSettingsView({ onBack }: { onBack: () => void }) {
   return (
     <div className="flex flex-1 flex-col">
       <Header title={t.pageTitle} onBack={onBack} />
+      <FirstVisitHint id="settings-audio-adhkar" text={featureGuideLabels[language].hints.audioAdhkar} />
       {/* The master switch — the same one as the home screen's toggle beside "الصلاة القادمة". */}
       <div className="mt-4 flex flex-col gap-2 rounded-2xl border p-4" style={CARD} data-audio-adhkar-master="">
         <div className="flex items-center justify-between gap-3">

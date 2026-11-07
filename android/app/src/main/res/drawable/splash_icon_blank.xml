@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The system splash's icon (Android 12+, and the compat splash before it): deliberately
+     empty. Android always shows a native splash on a cold start; with no icon it is just
+     DITHAR's page colour, so the only launch screen anyone sees is the branded one that
+     follows (index.html's #dithar-launch-cover: the emblem with "DITHAR" beneath it).
+     An icon here showed a logo-only screen first, then the branded one: two splashes. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
+    <size android:width="108dp" android:height="108dp" />
+</shape>

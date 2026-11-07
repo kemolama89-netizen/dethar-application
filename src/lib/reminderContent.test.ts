@@ -24,6 +24,14 @@ describe("reminder content — only verified content the app already has", () =>
 
   it("every text is a shipped library's own, unchanged — the written library, the Hadith library, the Tasbeeh library, or the source-checked additions", () => {
     for (const item of reminderPool()) {
+      // DITHAR's own plain reminders (the Friday Surah al-Kahf one): no source by design, nothing attributed,
+      // and only ever sent by their time-based notification.
+      if (item.kind === "reminder") {
+        expect(item.sourceAr, item.id).toBe("");
+        expect(item.evidence, item.id).toBeUndefined();
+        expect(item.timedOnly, item.id).toBe(true);
+        continue;
+      }
       const [, id] = item.id.split(":");
       const added =
         item.category === "dua" ? [...ENRICHED_DUAS, ...IMPORTED_DUAS].find((d) => d.id === id)?.textAr : item.category === "hadith" ? ENRICHED_HADITHS.find((h) => h.id === id)?.textAr : undefined;

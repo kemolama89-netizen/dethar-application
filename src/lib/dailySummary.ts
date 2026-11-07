@@ -34,6 +34,9 @@ import type { DailyActivity, StatSelection } from "./stats";
 import { writtenAdhkarItems } from "../data/written-adhkar";
 import { dhikrItems } from "../data/tasbeeh";
 import { isValidStartTime } from "./eveningAudioSettings";
+import { SUMMARY_ENCOURAGEMENT, encouragementCredit } from "../data/summaryEncouragement";
+import type { Encouragement } from "../data/summaryEncouragement";
+import type { NativeEncouragement } from "./remindersNative";
 
 export type SummaryContent = "combined" | "stats" | "motivational";
 
@@ -262,4 +265,18 @@ export function buildSummarySnapshot(date: string = todayLocalDate()): SummarySn
     audio: buildSummaryAudio(date),
     taken: getNativeTakenIn(date),
   };
+}
+
+/**
+ * The encouragement library as native shows it, in [language] (data/summaryEncouragement.ts):
+ * a grounded message with its «مستفاد من» credit; DITHAR's own wording with none. Native picks
+ * one per summary from the day's real records (DailySummaryEncouragement.kt).
+ */
+export function nativeEncouragements(language: "ar" | "en", library: readonly Encouragement[] = SUMMARY_ENCOURAGEMENT): NativeEncouragement[] {
+  return library.map((e) => ({
+    id: e.id,
+    situations: [...e.situations],
+    text: language === "en" ? e.en : e.ar,
+    ...(e.kind === "grounded" && e.source ? { credit: encouragementCredit(e.source, language) } : {}),
+  }));
 }

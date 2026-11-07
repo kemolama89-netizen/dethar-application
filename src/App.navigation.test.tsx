@@ -287,10 +287,13 @@ describe("«مختارات اليوم» on Home", () => {
     await expectScreen(TAB.home);
     const card = () => container.querySelector<HTMLElement>("[data-home-daily-picks]");
     await waitFor(() => !!card()?.getAttribute("data-home-daily-picks"), "today's pick on the card");
-    const id = card()!.getAttribute("data-home-daily-picks")!;
+    // No widget in the browser: today's dua, under the id the reminder view opens it by.
+    const id = card()!.getAttribute("data-home-daily-picks")!.replace(/^dua:/, "");
     const dua = MISC_DUAS.find((d) => d.id === id)!;
-    // The dua's text stays hidden on Home until it is opened.
-    expect(card()!.textContent).not.toContain(dua.text_ar.slice(0, 12));
+    // Home shows its whole text when it is as short as a widget item — never part of it.
+    const excerpt = card()!.querySelector("[data-home-daily-pick-excerpt]");
+    if (dua.text_ar.length <= 190) expect(excerpt!.textContent).toBe(dua.text_ar);
+    else expect(excerpt).toBeNull();
     await click(card(), "Daily Picks card");
     await waitFor(() => container.querySelector("[data-spiritual-reminder]") !== null, "the reminder view");
     expect(container.querySelector("[data-spiritual-reminder]")!.getAttribute("data-spiritual-reminder")).toBe(`dua:${id}`);

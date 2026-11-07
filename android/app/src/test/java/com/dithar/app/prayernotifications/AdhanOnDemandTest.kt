@@ -90,4 +90,15 @@ class AdhanOnDemandTest {
         assertFalse(AdhanDownloadRules.isAudio("husary.mp3.sha256"))
         assertFalse(AdhanDownloadRules.isAudio("husary.mp3.part"))
     }
+
+    @Test
+    fun `the expected size is read whatever numeric type JSON gives it`() {
+        // org.json parses a size under 2 GB as an Integer: refusing it broke every download.
+        assertEquals(3442335L, AdhanDownloadRules.byteCount(3442335))
+        assertEquals(3_000_000_000L, AdhanDownloadRules.byteCount(3_000_000_000L))
+        assertEquals(3442335L, AdhanDownloadRules.byteCount(3442335.0))
+        assertEquals(0L, AdhanDownloadRules.byteCount(1.5))
+        assertEquals(0L, AdhanDownloadRules.byteCount("3442335"))
+        assertEquals(0L, AdhanDownloadRules.byteCount(null))
+    }
 }

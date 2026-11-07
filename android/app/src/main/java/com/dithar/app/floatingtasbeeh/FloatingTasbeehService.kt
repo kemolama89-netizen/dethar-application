@@ -1,5 +1,6 @@
 package com.dithar.app.floatingtasbeeh
 
+import com.dithar.app.NotificationRoutes
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,9 +8,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -20,9 +20,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
 import android.view.Gravity
-import android.view.View
 import android.view.WindowManager
-import android.widget.TextView
 import com.dithar.app.MainActivity
 import com.dithar.app.look.AppLook
 import com.dithar.app.look.AppLookStore
@@ -38,28 +36,37 @@ import com.dithar.app.look.AppLookStore
  * FloatingTasbeehPlugin#drainPendingEvents, whenever the app is next
  * foregrounded (see floatingTasbeehSync.ts on the JS side).
  *
- * LIMITATION (documented, not an oversight): "ذكر مخصص" (Custom Dhikr) and
- * "الإعدادات" (Settings) in the long-press popup both just bring MainActivity
- * to the foreground — they do not deep-link to a specific in-app screen.
- * Implementing that would need an intent-extra contract with App.tsx's
- * navigation state, which is out of scope for this native-focused phase.
+ * Two modes: full-screen counting (FullScreenCounterView — a tap anywhere above
+ * its controls is one count) and the minimized pill (CounterPillView — a tap
+ * expands, it never counts). It always starts as the pill. Neither mode can
+ * trap anyone: full screen keeps its تصغير / إغلاق controls on screen, never
+ * takes focus (Back, Home and the status bar keep working), folds back to the
+ * pill after [CounterOverlayRules.IDLE_TO_PILL_MS] untouched, and the
+ * notification carries تصغير / إيقاف as well.
+ *
+ * LIMITATION (documented, not an oversight): "ذكر مخصص" (Custom Dhikr) in
+ * the Adhkar sheet just brings MainActivity to the foreground — it does not
+ * deep-link to a specific in-app screen. Implementing that would need an
+ * intent-extra contract with App.tsx's navigation state.
  */
 class FloatingTasbeehService : Service() {
 
     private lateinit var windowManager: WindowManager
     private lateinit var store: FloatingTasbeehStore
-    private var bubbleView: FloatingBubbleView? = null
-    private var bubbleParams: WindowManager.LayoutParams? = null
-    private var popup: DhikrMenuPopup? = null
-    private var closeButtonView: TextView? = null
-    private var closeButtonParams: WindowManager.LayoutParams? = null
+
+    // Two modes, one shown at a time: full-screen counting (FullScreenCounterView)
+    // and the minimized pill (CounterPillView). It always starts as the pill.
+    private var fullView: FullScreenCounterView? = null
+    private var pillView: CounterPillView? = null
+    private var pillParams: WindowManager.LayoutParams? = null
+    private var mode = CounterOverlayRules.Mode.CLOSED
 
     // The calm-counting pacing gate — the SAME concept as TasbeehScreen's
     // own pacingPhase, just expressed as a plain timestamp check instead of
     // React state: a tap before this moment is silently ignored (see
     // handleTap). 0L means "ready right now" — the initial/just-selected
     // state, mirroring TasbeehScreen's own `pacingPhase = "ready"` default
-    // on mount and on every dhikr switch (see onSelectDhikr below).
+    // on mount and on every dhikr switch (see applySelectedDhikr below).
     private var pacingReadyAtElapsedRealtime = 0L
 
     private lateinit var lookStore: AppLookStore
@@ -67,6 +74,9 @@ class FloatingTasbeehService : Service() {
 
     // Automatic dark mode "by time" can change while the app is closed.
     private val lookTick = Runnable { applyLook() }
+
+    // Full screen left untouched folds back to the pill: it can never stay covering the phone.
+    private val idleToPill = Runnable { go(CounterOverlayRules.Event.IDLE) }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -83,7 +93,7 @@ class FloatingTasbeehService : Service() {
         startForegroundWithNotification()
 
         // Guards against a stale system-triggered restart (START_STICKY)
-        // resurrecting the bubble after the user already disabled it from
+        // resurrecting the overlay after the user already disabled it from
         // Settings while the service was momentarily killed — persisted
         // `enabled` is always the source of truth, never "the service
         // happens to still be running".
@@ -92,271 +102,254 @@ class FloatingTasbeehService : Service() {
             return START_NOT_STICKY
         }
 
-        if (bubbleView == null) {
-            addBubble()
+        when (intent?.action) {
+            // The notification's own actions: a way out that never depends on the overlay itself.
+            ACTION_STOP -> {
+                go(CounterOverlayRules.Event.NOTIFICATION_STOP)
+                return START_NOT_STICKY
+            }
+            // A restarted service that hasn't shown anything yet starts as the pill instead.
+            ACTION_MINIMIZE -> go(if (mode == CounterOverlayRules.Mode.CLOSED) CounterOverlayRules.Event.START else CounterOverlayRules.Event.NOTIFICATION_MINIMIZE)
+            else -> if (mode == CounterOverlayRules.Mode.CLOSED) go(CounterOverlayRules.Event.START)
         }
         return START_STICKY
     }
 
     override fun onDestroy() {
         mainHandler.removeCallbacks(lookTick)
-        removePopupIfShowing()
-        bubbleView?.resetPacing()
-        bubbleView?.stopAnimations()
-        bubbleView?.let { runCatching { windowManager.removeView(it) } }
-        bubbleView = null
-        closeButtonView?.let { runCatching { windowManager.removeView(it) } }
-        closeButtonView = null
+        mainHandler.removeCallbacks(idleToPill)
+        removeFull()
+        removePill()
         if (activeInstance === this) activeInstance = null
         super.onDestroy()
     }
 
-    private fun addBubble() {
-        val density = resources.displayMetrics.density
-        val label = store.getSelectedDhikrLabel()
-        val sizePx = windowSizePx(bubbleSizeDpFor(label))
+    // ---- Modes (CounterOverlayRules.next decides; this only shows the result) ----
 
-        val params = WindowManager.LayoutParams(
-            sizePx,
-            sizePx,
-            overlayWindowType(),
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT,
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-            // Centred, a little below the middle of the screen (FloatingBubblePlacement).
-            val start = FloatingBubblePlacement.initial(placementArea(), sizePx, closeRoomPx())
-            x = start.x
-            y = start.y
+    private fun go(event: CounterOverlayRules.Event) {
+        val next = CounterOverlayRules.next(mode, event)
+        if (next == mode && event != CounterOverlayRules.Event.START) return
+        mode = next
+        when (next) {
+            CounterOverlayRules.Mode.FULL -> showFull()
+            CounterOverlayRules.Mode.PILL -> showPill()
+            CounterOverlayRules.Mode.CLOSED -> closeOverlay()
         }
-        bubbleParams = params
+    }
 
-        val view = FloatingBubbleView(
-            context = this,
-            windowManager = windowManager,
-            layoutParams = params,
-            onTap = ::handleTap,
-            onLongPress = ::handleLongPress,
-            onPositionChanged = ::onBubbleMoved,
-            keepInBounds = { x, y -> FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(x, y), placementArea(), params.width, closeRoomPx()) },
-        )
-        view.colors = lookColors
-        view.count = store.getLiveCount(store.selectedDhikrId)
-        view.label = label
-        // A fresh bubble always starts immediately ready — no carried-over
-        // pacing from whatever the service was doing before it last
-        // stopped, mirroring TasbeehScreen's own mount behavior.
-        pacingReadyAtElapsedRealtime = 0L
-        bubbleView = view
-        windowManager.addView(view, params)
-
-        addCloseButton(params)
+    /** Full-screen counting over whatever app is open. */
+    private fun showFull() {
+        removePill()
+        if (fullView == null) {
+            val view = FullScreenCounterView(this, fullListener)
+            view.showSheetRequested = { openAdhkarSheet() }
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                overlayWindowType(),
+                // Never focusable: the phone's own Back, Home and the status bar keep working.
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT,
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                }
+            }
+            view.setColors(lookColors)
+            fullView = view
+            windowManager.addView(view, params)
+        }
+        applyScreen()
+        applySelectedDhikr()
+        restartIdleTimer()
         applyLook()
     }
 
-    /** The bubble's window: the disc plus the room around it for its shadow and ripple. */
-    private fun windowSizePx(discSizeDp: Int): Int =
-        ((discSizeDp + 2 * FloatingBubbleView.HALO_DP) * resources.displayMetrics.density).toInt()
+    /** The minimized pill. */
+    private fun showPill() {
+        mainHandler.removeCallbacks(idleToPill)
+        removeFull()
+        if (pillView == null) {
+            val density = resources.displayMetrics.density
+            val w = ((CounterPillView.PILL_WIDTH_DP + 2 * CounterPillView.SHADOW_DP) * density).toInt()
+            val h = ((CounterPillView.PILL_HEIGHT_DP + 2 * CounterPillView.SHADOW_DP) * density).toInt()
+            val params = pillParams ?: WindowManager.LayoutParams(
+                w,
+                h,
+                overlayWindowType(),
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT,
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                val start = CounterOverlayRules.pillInitial(placementArea(), w, h, pillEdgeInsetPx())
+                x = start.x
+                y = start.y
+            }
+            pillParams = params
+            val view = CounterPillView(this, pillListener)
+            view.setColors(lookColors)
+            pillView = view
+            windowManager.addView(view, params)
+        }
+        applySelectedDhikr()
+        applyLook()
+    }
 
-    /** Brings the bubble and its close button to the look that should show now. */
+    private fun removeFull() {
+        fullView?.let {
+            it.stopAnimations()
+            runCatching { windowManager.removeView(it) }
+        }
+        fullView = null
+    }
+
+    private fun removePill() {
+        pillView?.let { runCatching { windowManager.removeView(it) } }
+        pillView = null
+    }
+
+    private fun restartIdleTimer() {
+        mainHandler.removeCallbacks(idleToPill)
+        if (fullView != null) mainHandler.postDelayed(idleToPill, CounterOverlayRules.IDLE_TO_PILL_MS)
+    }
+
+    private val fullListener = object : FullScreenCounterView.Listener {
+        override fun onCountTap() = handleTap()
+        override fun onMinimize() = go(CounterOverlayRules.Event.MINIMIZE)
+        override fun onClose() = go(CounterOverlayRules.Event.CLOSE)
+        override fun onSelectDhikr(dhikrId: Int) {
+            store.selectedDhikrId = dhikrId
+            applySelectedDhikr()
+            // Lets an already-mounted in-app Tasbeeh screen follow this
+            // pick immediately (see selectedDhikrChanged in the plugin).
+            notifySelectedDhikrChanged(dhikrId)
+        }
+        override fun onCustomDhikr() {
+            go(CounterOverlayRules.Event.OPEN_APP)
+            openApp()
+        }
+        override fun onOpenSettings() {
+            go(CounterOverlayRules.Event.OPEN_APP)
+            // Opens the app's existing Settings screen directly — the route
+            // extra is read by FloatingTasbeehPlugin (see EXTRA_OPEN_ROUTE).
+            openApp(FloatingTasbeehPlugin.ROUTE_SETTINGS)
+        }
+        override fun onActivity() = restartIdleTimer()
+    }
+
+    private val pillListener = object : CounterPillView.Listener {
+        override fun onExpand() = go(CounterOverlayRules.Event.EXPAND)
+        override fun onDrag(rawDx: Float, rawDy: Float) {
+            val params = pillParams ?: return
+            val view = pillView ?: return
+            val moved = CounterOverlayRules.pillDrag(
+                CounterOverlayRules.Position(params.x + rawDx.toInt(), params.y + rawDy.toInt()),
+                placementArea(), params.width, params.height,
+            )
+            params.x = moved.x
+            params.y = moved.y
+            runCatching { windowManager.updateViewLayout(view, params) }
+        }
+        override fun onDragEnd() = settlePill()
+    }
+
+    /** The pill comes to rest against the nearer side edge, fully on screen. */
+    private fun settlePill() {
+        val params = pillParams ?: return
+        val view = pillView ?: return
+        val kept = CounterOverlayRules.pillSettle(CounterOverlayRules.Position(params.x, params.y), placementArea(), params.width, params.height, pillEdgeInsetPx())
+        params.x = kept.x
+        params.y = kept.y
+        runCatching { windowManager.updateViewLayout(view, params) }
+    }
+
+    /** The pill sits [CounterPillView.EDGE_INSET_DP] in from the edge; its window already holds the shadow's room. */
+    private fun pillEdgeInsetPx(): Int =
+        ((CounterPillView.EDGE_INSET_DP - CounterPillView.SHADOW_DP) * resources.displayMetrics.density).toInt().coerceAtLeast(0)
+
+    /** The Adhkar sheet: every dhikr with its own current count, the one being counted marked. */
+    private fun openAdhkarSheet() {
+        val rows = store.getDhikrLabels().map { (id, label) -> FullScreenCounterView.DhikrRow(id, label, store.getLiveCount(id)) }
+        fullView?.showSheet(rows, store.selectedDhikrId)
+    }
+
+    /** Tells the full-screen view where the system bars are and how round the screen's corners are. */
+    private fun applyScreen() {
+        val view = fullView ?: return
+        val area = placementArea()
+        var corner: Int? = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            corner = windowManager.currentWindowMetrics.windowInsets.getRoundedCorner(android.view.RoundedCorner.POSITION_TOP_LEFT)?.radius
+        }
+        view.setScreen(area.top, area.bottom, area.height, corner)
+    }
+
+    /** Brings both modes to the look that should show now. */
     private fun applyLook() {
         val colors = lookStore.currentColors()
         if (colors != lookColors) {
             lookColors = colors
-            bubbleView?.colors = colors
-            closeButtonView?.let { styleCloseButton(it) }
+            fullView?.setColors(colors)
+            pillView?.setColors(colors)
         }
         mainHandler.removeCallbacks(lookTick)
-        if (bubbleView != null && lookStore.autoDark == "time") mainHandler.postDelayed(lookTick, LOOK_TICK_MS)
-    }
-
-    /**
-     * Picks the SMALL bubble size unless [label] needs the LARGE one to
-     * show complete (no ellipsis) — see FloatingBubbleView#labelFitsComplete,
-     * which runs the exact same 2-line/shrink-to-fit search onDraw itself
-     * uses, so this decision and what actually gets drawn can never
-     * disagree with each other.
-     */
-    private fun bubbleSizeDpFor(label: String): Int {
-        val density = resources.displayMetrics.density
-        val smallRadiusPx = (BUBBLE_SIZE_SMALL_DP * density) / 2f
-        return if (FloatingBubbleView.labelFitsComplete(label, smallRadiusPx)) {
-            BUBBLE_SIZE_SMALL_DP
-        } else {
-            BUBBLE_SIZE_LARGE_DP
+        // Automatic dark mode by time: the colours change at the next switch (05:30 / 18:30) — one wakeup, not one a minute.
+        if ((fullView != null || pillView != null) && lookStore.autoDark == "time") {
+            val now = java.util.Calendar.getInstance()
+            val wait = com.dithar.app.look.AppLook.millisUntilNextChange(now.get(java.util.Calendar.HOUR_OF_DAY) * 60 + now.get(java.util.Calendar.MINUTE), now.get(java.util.Calendar.SECOND))
+            mainHandler.postDelayed(lookTick, wait + LOOK_TICK_SLACK_MS)
         }
     }
 
     /**
-     * Grows or shrinks the ALREADY-SHOWING bubble's window to fit [label]
-     * — called after the user selects a different dhikr (see
-     * handleLongPress's onSelectDhikr below), since a shorter/longer
-     * dhikr may need a different size than whatever the bubble was
-     * created with. A no-op when the currently needed size already
-     * matches (the common case — most selections don't cross the
-     * small/large threshold), so an ordinary selection never triggers a
-     * pointless relayout.
+     * The screen as the overlay may use it: its size, and the room the status
+     * bar (and any display cutout) and the navigation bar take.
      */
-    private fun resizeBubbleForLabel(label: String) {
-        val params = bubbleParams ?: return
-        val view = bubbleView ?: return
-        val newSizePx = windowSizePx(bubbleSizeDpFor(label))
-        if (params.width == newSizePx) return
-        params.width = newSizePx
-        params.height = newSizePx
-        // A larger bubble still fits where it is: moved in from an edge if it would now cross one.
-        val kept = FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(params.x, params.y), placementArea(), newSizePx, closeRoomPx())
-        params.x = kept.x
-        params.y = kept.y
-        runCatching { windowManager.updateViewLayout(view, params) }
-        // The bubble's own footprint just changed — the close button's
-        // anchor offset (half the bubble's width) must be recomputed too.
-        updateCloseButtonPosition(params.x, params.y)
-    }
-
-    /**
-     * The room the close button needs above the bubble's window, px: its
-     * height and gap, less the window's own empty room above the disc.
-     */
-    private fun closeRoomPx(): Int {
-        val density = resources.displayMetrics.density
-        return ((CLOSE_BUTTON_SIZE_DP + CLOSE_BUTTON_GAP_DP - FloatingBubbleView.HALO_DP) * density).toInt()
-    }
-
-    /**
-     * The screen as the bubble may use it: its size, and the room the status
-     * bar (and any display cutout) and the navigation bar take — the bubble
-     * never covers them (FloatingBubblePlacement).
-     */
-    private fun placementArea(): FloatingBubblePlacement.Area {
+    private fun placementArea(): CounterOverlayRules.Area {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val metrics = windowManager.currentWindowMetrics
             val insets = metrics.windowInsets.getInsetsIgnoringVisibility(
                 android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout(),
             )
-            return FloatingBubblePlacement.Area(metrics.bounds.width(), metrics.bounds.height(), insets.top, insets.bottom)
+            return CounterOverlayRules.Area(metrics.bounds.width(), metrics.bounds.height(), insets.top, insets.bottom)
         }
         val dm = resources.displayMetrics
         val statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android")
         val statusBar = if (statusBarId > 0) resources.getDimensionPixelSize(statusBarId) else 0
         // Before Android 11 the display metrics already leave the navigation bar out.
-        return FloatingBubblePlacement.Area(dm.widthPixels, dm.heightPixels, statusBar, 0)
+        return CounterOverlayRules.Area(dm.widthPixels, dm.heightPixels, statusBar, 0)
     }
 
-    /** The screen turned (or changed size): the bubble stays fully on it. */
+    /** The screen turned (or changed size): the pill stays on it, and full screen re-measures. */
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
         super.onConfigurationChanged(newConfig)
         applyLook() // the phone's dark mode may be what changed
-        val params = bubbleParams ?: return
-        val view = bubbleView ?: return
-        val kept = FloatingBubblePlacement.clamp(FloatingBubblePlacement.Position(params.x, params.y), placementArea(), params.width, closeRoomPx())
-        if (kept.x == params.x && kept.y == params.y) return
-        params.x = kept.x
-        params.y = kept.y
-        runCatching { windowManager.updateViewLayout(view, params) }
-        onBubbleMoved(params.x, params.y)
+        applyScreen()
+        settlePill()
     }
 
     /**
-     * The small "×" hide/close affordance anchored just above the bubble —
-     * a plain click target (never draggable, never ambiguous with the
-     * bubble's own tap/long-press/drag gestures, which it shares no touch
-     * handling with) that only removes the overlay for THIS running
-     * instance (see [closeBubble]). It never touches
-     * [FloatingTasbeehStore.isEnabled] — the Settings toggle is the only
-     * thing that persists on/off.
+     * Closes the floating Tasbeeh and turns it OFF — the exact same persisted
+     * state a Settings "Disable" would set (see FloatingTasbeehPlugin#setEnabled),
+     * so the Settings screen correctly shows "تفعيل"/"Enable" afterward.
+     * Deliberately NEVER touches [FloatingTasbeehStore.selectedDhikrId] or any
+     * live-count/`live_count_*` value — closing is not a Reset: enabling it
+     * again shows that SAME dhikr and its SAME persisted count.
      */
-    private fun addCloseButton(anchorBubbleParams: WindowManager.LayoutParams) {
-        val view = TextView(this).apply {
-            text = "×"
-            textSize = 14f
-            gravity = Gravity.CENTER
-            setOnClickListener { closeBubble() }
-        }
-        styleCloseButton(view)
-
-        val density = resources.displayMetrics.density
-        val sizePx = (CLOSE_BUTTON_SIZE_DP * density).toInt()
-        val params = WindowManager.LayoutParams(
-            sizePx,
-            sizePx,
-            overlayWindowType(),
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT,
-        ).apply { gravity = Gravity.TOP or Gravity.START }
-        positionCloseButton(params, anchorBubbleParams.x, anchorBubbleParams.y)
-
-        closeButtonView = view
-        closeButtonParams = params
-        windowManager.addView(view, params)
-    }
-
-    /** The close button in the active look: the bubble's deep colour, ink and gold. */
-    private fun styleCloseButton(view: TextView) {
-        view.setTextColor(Color.parseColor(lookColors.ink))
-        view.background = GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(Color.parseColor(lookColors.deepBottom))
-            setStroke((resources.displayMetrics.density * 1.2f).toInt(), Color.parseColor(lookColors.gold))
-        }
-    }
-
-    /**
-     * Fired on every drag move: keeps the close button AND the open dhikr
-     * menu (if any) attached to the bubble, continuously — not only after
-     * the finger lifts.
-     */
-    private fun onBubbleMoved(bubbleX: Int, bubbleY: Int) {
-        updateCloseButtonPosition(bubbleX, bubbleY)
-        popup?.reposition()
-    }
-
-    /** Keeps the close button anchored just above the bubble as it's dragged. */
-    private fun updateCloseButtonPosition(bubbleX: Int, bubbleY: Int) {
-        val params = closeButtonParams ?: return
-        val view = closeButtonView ?: return
-        positionCloseButton(params, bubbleX, bubbleY)
-        runCatching { windowManager.updateViewLayout(view, params) }
-    }
-
-    private fun positionCloseButton(params: WindowManager.LayoutParams, bubbleX: Int, bubbleY: Int) {
-        val density = resources.displayMetrics.density
-        // Reads the bubble's CURRENT (possibly LARGE-sized) window width
-        // rather than a fixed constant, so the close button stays
-        // correctly centered above the bubble regardless of which size it
-        // was created or resized to — see bubbleSizeDpFor/resizeBubbleForLabel.
-        val bubbleSizePx = bubbleParams?.width ?: (BUBBLE_SIZE_SMALL_DP * density).toInt()
-        val closeSizePx = (CLOSE_BUTTON_SIZE_DP * density).toInt()
-        val gapPx = (CLOSE_BUTTON_GAP_DP * density).toInt()
-        val haloPx = (FloatingBubbleView.HALO_DP * density).toInt()
-        params.x = bubbleX + (bubbleSizePx - closeSizePx) / 2
-        // Just above the disc itself, inside the top of the window's empty room.
-        params.y = bubbleY + haloPx - closeSizePx - gapPx
-    }
-
-    /**
-     * Hides the floating bubble (and its close button) and turns Floating
-     * Tasbeeh OFF — the exact same persisted state a Settings "Disable"
-     * would set (see FloatingTasbeehPlugin#setEnabled), so the Settings
-     * screen correctly shows "تفعيل"/"Enable" afterward instead of
-     * silently drifting out of sync with what's actually on screen.
-     * Deliberately NEVER touches [FloatingTasbeehStore.selectedDhikrId] or
-     * any live-count/`live_count_*` value — × is a hide/stop action, not a
-     * Reset: pressing "تفعيل" in Settings afterward calls
-     * FloatingTasbeehPlugin#setEnabled(true), which starts this service
-     * fresh via [addBubble] — reading that SAME still-selected dhikr and
-     * its SAME still-persisted counter back out, unresetted.
-     */
-    private fun closeBubble() {
+    private fun closeOverlay() {
+        mainHandler.removeCallbacks(idleToPill)
+        removeFull()
+        removePill()
         store.isEnabled = false
         stopSelf()
     }
 
     private fun handleTap() {
-        // A tap while the dhikr menu is open only closes the menu — never
+        // A tap while the Adhkar sheet is open only closes it — never
         // counts — so dismissing it can't accidentally add a dhikr.
-        if (popup?.isShowing == true) {
-            removePopupIfShowing()
+        if (fullView?.isSheetOpen == true) {
+            fullView?.hideSheet()
             return
         }
 
@@ -377,11 +370,11 @@ class FloatingTasbeehService : Service() {
         // separate mechanism from the pacing gate.
         val accepted = store.recordTapIfNotDuplicate(dhikrId, now)
         if (accepted) {
-            bubbleView?.countAccepted(store.getLiveCount(dhikrId))
-            triggerHapticFeedback()
             val readyDurationMs = store.getReadyDurationMs(dhikrId)
+            fullView?.countAccepted(store.getLiveCount(dhikrId), readyDurationMs)
+            pillView?.setCount(store.getLiveCount(dhikrId), store.getTarget(dhikrId))
+            triggerHapticFeedback()
             pacingReadyAtElapsedRealtime = now + readyDurationMs
-            bubbleView?.startPacing(readyDurationMs)
             // Event-driven, not polled: lets JS's reconcileFloatingTasbeeh
             // run immediately, even while this JS runtime is already alive
             // and foregrounded (a floating tap never itself triggers an
@@ -414,54 +407,29 @@ class FloatingTasbeehService : Service() {
         }
     }
 
-    private fun handleLongPress() {
-        val params = bubbleParams ?: return
-        if (popup?.isShowing == true) return
-
-        popup = DhikrMenuPopup(
-            context = this,
-            windowManager = windowManager,
-            anchorParams = params,
-            dhikrItems = store.getDhikrLabels(),
-            selectedDhikrId = store.selectedDhikrId,
-            colors = lookColors,
-            customDhikrLabel = LABEL_CUSTOM_DHIKR,
-            settingsLabel = LABEL_SETTINGS,
-            onSelectDhikr = { dhikrId, _ ->
-                store.selectedDhikrId = dhikrId
-                applySelectedDhikrToBubble()
-                // Lets an already-mounted in-app Tasbeeh screen follow this
-                // pick immediately (see selectedDhikrChanged in the plugin).
-                notifySelectedDhikrChanged(dhikrId)
-            },
-            onCustomDhikr = { openApp() },
-            // Opens the app's existing Settings screen directly — the route
-            // extra is read by FloatingTasbeehPlugin (see EXTRA_OPEN_ROUTE).
-            onOpenSettings = { openApp(FloatingTasbeehPlugin.ROUTE_SETTINGS) },
-        ).also { it.show() }
-    }
-
     /**
-     * Re-reads the persisted selected dhikr and reflects it on the bubble:
-     * its count, its name (and the size that name needs), and a fresh,
-     * immediately-ready pacing state — pacing is per-current-dhikr, never
-     * carried over from a different one's in-progress ring, mirroring
-     * TasbeehScreen's own `useEffect(..., [selectedId])` reset. Shared by a
-     * floating-menu pick and an in-app selection pushed via the plugin.
+     * Re-reads the persisted selected dhikr and shows it in whichever mode is
+     * up: its name, count and target, and a fresh, immediately-ready pacing
+     * state — pacing is per-current-dhikr, never carried over from a
+     * different one, mirroring TasbeehScreen's own `useEffect(..., [selectedId])`
+     * reset. Shared by a pick in the Adhkar sheet and an in-app selection
+     * pushed via the plugin.
      */
-    private fun applySelectedDhikrToBubble() {
+    private fun applySelectedDhikr() {
         val dhikrId = store.selectedDhikrId
-        val label = store.getSelectedDhikrLabel()
-        bubbleView?.count = store.getLiveCount(dhikrId)
-        bubbleView?.label = label
-        resizeBubbleForLabel(label)
+        val count = store.getLiveCount(dhikrId)
+        val target = store.getTarget(dhikrId)
         pacingReadyAtElapsedRealtime = 0L
-        bubbleView?.resetPacing()
+        fullView?.setDhikr(store.getSelectedDhikrLabel(), count, target)
+        fullView?.resetPacing()
+        pillView?.setCount(count, target)
     }
 
-    private fun removePopupIfShowing() {
-        popup?.dismiss()
-        popup = null
+    /** Shows [count] for the selected dhikr in whichever mode is up. */
+    private fun showCount(count: Int) {
+        val target = store.getTarget(store.selectedDhikrId)
+        fullView?.setCount(count, target)
+        pillView?.setCount(count, target)
     }
 
     private fun openApp(route: String? = null) {
@@ -483,21 +451,29 @@ class FloatingTasbeehService : Service() {
             manager.createNotificationChannel(channel)
         }
 
-        val openAppIntent = PendingIntent.getActivity(
-            this,
-            0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE,
-        )
+        // A tap opens the Tasbeeh screen (NotificationRoutes), not just the app.
+        val openAppIntent = NotificationRoutes.openIntent(this, NotificationRoutes.TASBEEH)
         // The channel-taking constructor is API 26+; minSdk is 24.
         @Suppress("DEPRECATION")
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(this, CHANNEL_ID) else Notification.Builder(this)
+        // تصغير / إيقاف from the notification shade: a way out that never depends on the overlay itself.
+        fun action(action: String, label: String, requestCode: Int): Notification.Action {
+            val pending = PendingIntent.getService(
+                this,
+                requestCode,
+                Intent(this, FloatingTasbeehService::class.java).setAction(action),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+            return Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel), label, pending).build()
+        }
         val notification: Notification = builder
             .setContentTitle(LABEL_NOTIFICATION_TITLE)
             .setContentText(LABEL_NOTIFICATION_BODY)
             .setSmallIcon(android.R.drawable.ic_menu_myplaces) // TODO: replace with a DITHAR-branded icon asset
             .setContentIntent(openAppIntent)
             .setOngoing(true)
+            .addAction(action(ACTION_MINIMIZE, LABEL_ACTION_MINIMIZE, 1))
+            .addAction(action(ACTION_STOP, LABEL_ACTION_STOP, 2))
             .build()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -508,26 +484,18 @@ class FloatingTasbeehService : Service() {
     }
 
     companion object {
-        // The normal size for the majority of the library's short dhikr — a
-        // little larger than the original 56dp, for comfortable repeated thumb taps.
-        private const val LOOK_TICK_MS = 60_000L
-        private const val BUBBLE_SIZE_SMALL_DP = 64
-        // A moderate, capped increase — never grows further/continuously
-        // beyond this — for the handful of long dhikr whose text can't
-        // show complete at the small size (see labelFitsComplete/
-        // bubbleSizeDpFor). Roughly 2x the small bubble's AREA, still a
-        // clearly "bubble-sized" overlay, not a card.
-        private const val BUBBLE_SIZE_LARGE_DP = 88
-        private const val CLOSE_BUTTON_SIZE_DP = 20
-        private const val CLOSE_BUTTON_GAP_DP = 4
+        /** Just past the switch, so the look is already the new one. */
+        private const val LOOK_TICK_SLACK_MS = 1_000L
         private const val HAPTIC_TAP_DURATION_MS = 15L
+        const val ACTION_MINIMIZE = "com.dithar.app.floatingtasbeeh.MINIMIZE"
+        const val ACTION_STOP = "com.dithar.app.floatingtasbeeh.STOP"
         private const val CHANNEL_ID = "floating_tasbeeh"
         private const val NOTIFICATION_ID = 1001
         private const val LABEL_NOTIFICATION_CHANNEL = "السبحة العائمة"
         private const val LABEL_NOTIFICATION_TITLE = "السبحة العائمة نشطة"
-        private const val LABEL_NOTIFICATION_BODY = "اضغط لإيقاف السبحة العائمة من الإعدادات"
-        private const val LABEL_CUSTOM_DHIKR = "ذكر مخصص"
-        private const val LABEL_SETTINGS = "الإعدادات"
+        private const val LABEL_NOTIFICATION_BODY = "يمكنك التصغير أو الإيقاف من هنا متى شئت"
+        private const val LABEL_ACTION_MINIMIZE = "تصغير"
+        private const val LABEL_ACTION_STOP = "إيقاف"
 
         // The single running instance, if any — used ONLY by
         // refreshBubbleIfSelected()/refreshBubbleToZero() below (called
@@ -545,8 +513,8 @@ class FloatingTasbeehService : Service() {
         // Capacitor executes every @PluginMethod call (FloatingTasbeehPlugin's
         // syncLiveCount/resetAllLiveCounts included) on its OWN background
         // thread, never the main/UI thread — see Bridge.callPluginMethod's
-        // `taskHandler.post(...)`. Touching a View (bubbleView.count's own
-        // setter calls invalidate()) from any thread but the one that
+        // `taskHandler.post(...)`. Touching a View (a counter view's own
+        // setters call invalidate()) from any thread but the one that
         // created its window throws CalledFromWrongThreadException, an
         // uncaught exception on that background thread that crashes the
         // ENTIRE app process — this is the exact crash a Reset (or, more
@@ -568,9 +536,7 @@ class FloatingTasbeehService : Service() {
         fun refreshBubbleIfSelected(dhikrId: Int, count: Int) {
             val instance = activeInstance ?: return
             mainHandler.post {
-                if (instance.store.selectedDhikrId == dhikrId) {
-                    instance.bubbleView?.count = count
-                }
+                if (instance.store.selectedDhikrId == dhikrId) instance.showCount(count)
             }
         }
 
@@ -583,9 +549,7 @@ class FloatingTasbeehService : Service() {
          */
         fun refreshBubbleToZero() {
             val instance = activeInstance ?: return
-            mainHandler.post {
-                instance.bubbleView?.count = 0
-            }
+            mainHandler.post { instance.showCount(0) }
         }
 
         /** The app pushed a new look (RemindersPlugin#setAppLook). A safe no-op if the service isn't running. */
@@ -603,7 +567,13 @@ class FloatingTasbeehService : Service() {
          */
         fun refreshBubbleSelection() {
             val instance = activeInstance ?: return
-            mainHandler.post { instance.applySelectedDhikrToBubble() }
+            mainHandler.post { instance.applySelectedDhikr() }
+        }
+
+        /** The dhikr list (with each dhikr's target) was pushed again: the count's «من …» follows. */
+        fun refreshTarget() {
+            val instance = activeInstance ?: return
+            mainHandler.post { instance.showCount(instance.store.getLiveCount(instance.store.selectedDhikrId)) }
         }
 
         // Set by FloatingTasbeehPlugin#load, cleared on handleOnDestroy —

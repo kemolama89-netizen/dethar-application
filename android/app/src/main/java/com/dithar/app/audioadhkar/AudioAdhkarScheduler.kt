@@ -1,5 +1,6 @@
 package com.dithar.app.audioadhkar
 
+import com.dithar.app.NotificationRoutes
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -227,13 +228,8 @@ object AudioAdhkarScheduler {
         }
     }
 
-    /** What tapping the system's "next alarm" (status bar / lock screen) opens: DITHAR. */
-    private fun openAppIntent(context: Context): PendingIntent = PendingIntent.getActivity(
-        context,
-        SHOW_APP_REQUEST_CODE,
-        Intent(context, MainActivity::class.java),
-        PendingIntent.FLAG_IMMUTABLE,
-    )
+    /** What tapping the system's "next alarm" (status bar / lock screen) opens: Audio Adhkar (NotificationRoutes). */
+    private fun openAppIntent(context: Context): PendingIntent = NotificationRoutes.openIntent(context, NotificationRoutes.AUDIO)
 
     private const val SHOW_APP_REQUEST_CODE = 7330
 

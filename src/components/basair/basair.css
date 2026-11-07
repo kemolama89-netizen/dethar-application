@@ -397,6 +397,8 @@ html[data-look="night"] .dithar-saadi-noteref {
 /* Only if its shortened labels still can't share one row. Measuring happens on one row, so this can't hide the need. */
 .dithar-opening-top[data-short-labels] {
   flex-wrap: wrap;
+  /* Room for the share button beside the shortened labels on the narrowest phones. */
+  column-gap: 2px;
 }
 [data-compact] .dithar-saadi-nav-label {
   position: absolute;
@@ -453,4 +455,155 @@ html[data-look="night"] .dithar-saadi-noteref {
   min-width: 1.3em;
   font-size: 1.15em;
   text-align: center;
+}
+
+/* ---- The Qur'an Journey: the day's page (lib/quranJourney.ts) ---- */
+/* The page number in a ring, like the verse-end ornament it sits beside in Basa'ir: small, so the verse stays first. */
+.dithar-journey-medallion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding-inline: 3px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1.5px var(--look-accent-on-card, var(--basair-gold));
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.dithar-journey-mark {
+  position: relative;
+}
+/* Read: the ring fills and a check joins it — a change of shape, not only of colour. */
+.dithar-journey-mark[data-journey-mark="read"] .dithar-journey-medallion {
+  background: var(--color-gold-soft);
+}
+.dithar-journey-check {
+  position: absolute;
+  inset-block-end: 5px;
+  inset-inline-end: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  color: var(--basair-on-deep);
+  background: var(--basair-deep);
+  box-shadow: 0 0 0 1.5px var(--color-bg);
+}
+.dithar-journey-mark:focus-visible,
+.dithar-journey-footer:focus-visible,
+.dithar-journey-context:focus-visible {
+  outline: 2px solid var(--look-accent-on-card, var(--basair-gold));
+  outline-offset: 2px;
+}
+.dithar-opening-hint-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.dithar-opening-hint-row .dithar-opening-hint {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+}
+.dithar-journey-footer {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  box-shadow: inset 0 0 0 1px var(--look-accent-on-card, var(--basair-gold));
+}
+/* The leaf lies over Basa'ir, with its own top bar: its × is the one way out. */
+.dithar-journey-leaf {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+.dithar-journey-leaf-top {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) 4px max(8px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--color-gold-soft);
+}
+.dithar-journey-leaf-title {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.dithar-journey-leaf-spacer {
+  flex: none;
+  width: 44px;
+}
+.dithar-journey-leaf-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 20px 14px;
+  text-align: center;
+}
+.dithar-journey-leaf-meta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.dithar-journey-leaf-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.dithar-journey-leaf-passage {
+  border-block-start: 1.5px solid var(--look-accent-on-card, var(--color-gold));
+  /* The footer's own rule closes the leaf: no second rule and empty strip above it. */
+  border-block-end: 0;
+}
+.dithar-journey-leaf-passage > [data-tafsir-verse] {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.dithar-journey-leaf-ref {
+  margin-top: -6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-gold-soft);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.dithar-journey-context {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--basair-on-deep);
+  background: var(--basair-deep);
+  /* On Night the deep colour is close to the page: the gold edge keeps the action plainly a button. */
+  box-shadow: inset 0 0 0 1px var(--look-accent-on-card, var(--basair-gold));
 }

@@ -18,7 +18,7 @@ import { AdhkarNavContext } from "./lib/adhkarNav";
 import { DailyProgressCard } from "./components/HomeDashboard";
 import { HomeActivePlayback } from "./components/HomeAudioPlayer";
 import { HomeDailyPicksCard } from "./components/HomeDailyPicksCard";
-import type { DailyPickTarget } from "./components/HomeDailyPicksCard";
+import type { OpenReminderRequest } from "./lib/reminderOpenRequests";
 import type { QuranTarget } from "./components/QuranReaderScreen";
 import { loadQuranPosition } from "./lib/quranReading";
 import { LocationChangePrompt } from "./components/LocationChangePrompt";
@@ -40,6 +40,26 @@ import { requestOpenReminder, subscribeOpenReminderRequests } from "./lib/remind
 import { StartupHadithOverlay } from "./components/StartupHadithOverlay";
 import { dismissStartupOverlay, holdLaunchCover, startupIntroWillShow } from "./lib/startupOverlay";
 import type { LaunchCoverHold } from "./lib/startupOverlay";
+import { QuranJourneyNative, isJourneyNativeAvailable } from "./lib/quranJourneyNative";
+import { deliverAppRoute, parseAppRoute, subscribeAppRoutes, takeAppRoute } from "./lib/notificationRoutes";
+import type { AppRoute } from "./lib/notificationRoutes";
+import { OnboardingTour } from "./components/OnboardingTour";
+import { saveOnboardingState, shouldAutoShowTour, subscribeTourReplay } from "./lib/onboarding";
+import { notifyIntroClosed, subscribeIntroClosed, subscribeIntroReplay } from "./lib/introFilm";
+
+// DITHAR's film (components/IntroFilm.tsx), watched from Settings → «جولة داخل التطبيق»: its own chunk,
+// fetched only when it is opened. It is not part of the first launch.
+type IntroFilmProps = { firstLaunch: boolean; onShown?: () => void; onClose: (how: "finished" | "skipped") => void };
+const loadIntroFilm = (): Promise<{ default: React.ComponentType<IntroFilmProps> }> =>
+  import("./components/IntroFilm").catch(() => ({
+    // Couldn't load: never stand between the user and Home.
+    default: function IntroUnavailable({ onClose }: IntroFilmProps) {
+      useEffect(() => onClose("skipped"), [onClose]);
+      return null;
+    },
+  }));
+const IntroFilm = lazy(loadIntroFilm);
+import type { JourneyOpen } from "./lib/quranJourneyNative";
 
 // Every screen except Home is loaded lazily, in its own chunk, fetched only
 // the first time the user actually navigates there — Home is the one
@@ -134,7 +154,7 @@ function HomeScreen({
   onNavigateToWritten: () => void;
   onNavigateToSettings: () => void;
   onNavigateToAudio: () => void;
-  onOpenDailyPick: (pick: DailyPickTarget) => void;
+  onOpenDailyPick: (request: OpenReminderRequest) => void;
   onOpenWird: (section: "morning" | "evening") => void;
 }) {
   const { language } = useLanguage();
@@ -203,7 +223,7 @@ function HomeScreen({
             navigation: the prayer times first — the main panel, with the
             Morning and Evening lamps — growing to take all the room left,
             then the dhikr player's controls while something actually plays,
-            «مختارات اليوم» (it opens today's dua itself) and today's counts.
+            «مختارات اليوم» (a preview of the widget's item, which it opens) and today's counts.
             On a short phone or with large text everything keeps its natural
             size, and the screen scrolls inside its frame. */}
         <div className="dithar-home-dashboard" data-home-dashboard="">
@@ -283,7 +303,9 @@ function AppRouter() {
     // The Misc "paused for prayer" notifications are in the interface language too.
     if (isAudioAdhkarNativeAvailable()) void import("./lib/audioAdhkarSchedules").then((m) => m.syncAudioAdhkarSchedules()).catch(() => {});
     // So are reminders, the widget's text and the end-of-day summary.
-    if (isRemindersNativeAvailable()) void import("./lib/remindersSync").then((m) => Promise.all([m.syncReminders({ withPool: true }), m.syncSummary()])).catch(() => {});
+    if (isRemindersNativeAvailable()) void import("./lib/remindersSync").then((m) => Promise.all([m.syncReminders({ withPool: true }), m.syncSummary(), m.syncTimedNotifications()])).catch(() => {});
+    // And the Qur'an Journey's daily notification.
+    if (isJourneyNativeAvailable()) void import("./lib/quranJourneyNotify").then((m) => m.syncJourneyNotice()).catch(() => {});
   }, [language]);
   // The specific Dhikr/dua a global search result pointed at — set ONLY
   // right before jumping into "written-reader" FROM a
@@ -307,20 +329,92 @@ function AppRouter() {
     onNavigateHome: () => setScreen("home"),
     onNavigateToTasbeeh: () => setScreen("tasbeeh"),
     onNavigateToWritten: () => setScreen("written"),
-    onNavigateToSettings: () => setScreen("settings"),
+    onNavigateToSettings: () => openSettingsMenu(),
     onNavigateToAudio: () => setScreen("audio"),
   };
 
-  // The Floating Tasbeeh menu's "الإعدادات" row asks the app to open its
-  // existing Settings screen — routed through this same screen switcher,
-  // never via Home. A no-op on web/iOS.
+  // A tapped notification (or the Floating Tasbeeh menu's «الإعدادات») opens its own screen
+  // (lib/notificationRoutes.ts): the one taken before this router existed is its first screen —
+  // applied before the first paint, so Home is never seen first — and later ones navigate.
+  // Settings opened on Statistics (the end-of-day summary); `n` remounts it for a new request.
+  const [settingsStart, setSettingsStart] = useState<{ view: "menu" | "statistics"; n: number }>({ view: "menu", n: 0 });
+  const openRoute = useCallback(
+    (route: AppRoute) => {
+      switch (route.kind) {
+        case "settings":
+        case "statistics":
+          setSettingsStart((s) => ({ view: route.kind === "statistics" ? "statistics" : "menu", n: s.n + 1 }));
+          setScreen("settings");
+          return;
+        case "prayer":
+          setScreen("home");
+          // Home's top is the prayer times: brought into view if Home was scrolled.
+          window.requestAnimationFrame(() => document.querySelector("[data-prayer-panel]")?.scrollIntoView?.({ block: "start" }));
+          return;
+        case "tasbeeh":
+          setScreen("tasbeeh");
+          return;
+        case "audio":
+          setScreen("audio");
+          return;
+        case "audio-list":
+          setAudioList(route.section === "misc" ? { kind: "various" } : { kind: "written", key: route.section });
+          setScreen("audio-list");
+          return;
+      }
+    },
+    [setScreen],
+  );
+  useLayoutEffect(() => {
+    const first = takeAppRoute();
+    if (first) openRoute(first);
+    return subscribeAppRoutes(() => {
+      const next = takeAppRoute();
+      if (next) openRoute(next);
+    });
+  }, [openRoute]);
+  // The first-time tour (components/OnboardingTour.tsx): on Home only. Automatically once for a new
+  // install — after the launch intro has gone and only when nothing else is open (a reminder or
+  // insight opened from a notification comes first: the tour then waits for the next launch) — and
+  // on request from Settings. It never navigates, presses or plays anything.
+  const [tourOpen, setTourOpen] = useState(false);
+  // The film (opened from Settings) comes first: when it closes, a waiting tour gets its turn.
+  const [introClosed, setIntroClosed] = useState(0);
+  useEffect(() => subscribeIntroClosed(() => setIntroClosed((n) => n + 1)), []);
+  useEffect(() => {
+    if (screen !== "home" || tourOpen || !shouldAutoShowTour()) return;
+    let timer = 0;
+    const check = (waited: number) => {
+      // The launch Hadith (and the film) are waited for — on a new install's first launch the Hadith is still
+      // on screen when Home is ready. Anything a notification opened comes first: the tour waits for the next launch.
+      if (document.querySelector("[data-spiritual-reminder], [data-reminder-loading], [data-journey-leaf], [data-journey-loading], [data-basair]")) return;
+      if (document.querySelector("[data-startup-overlay], [data-intro-film]")) {
+        if (waited < 15_000) timer = window.setTimeout(() => check(waited + 600), 600);
+        return;
+      }
+      setTourOpen(true);
+    };
+    timer = window.setTimeout(() => check(1200), 1200);
+    return () => window.clearTimeout(timer);
+  }, [screen, tourOpen, introClosed]);
   useEffect(
     () =>
-      startFloatingOpenRouteRequests((route) => {
-        if (route === "settings") setScreen("settings");
+      subscribeTourReplay(() => {
+        setScreen("home");
+        window.setTimeout(() => setTourOpen(true), 450);
       }),
-    [],
+    [setScreen],
   );
+  const closeTour = useCallback((how: "finished" | "skipped") => {
+    saveOnboardingState(how);
+    setTourOpen(false);
+  }, []);
+
+  // Ordinary visits to Settings start at its menu: a notification's page applies to its own opening only.
+  const openSettingsMenu = useCallback(() => {
+    setSettingsStart((st) => (st.view === "menu" ? st : { view: "menu", n: st.n + 1 }));
+    setScreen("settings");
+  }, [setScreen]);
 
   function handleSelectSearchResult(result: WrittenSearchResult) {
     setSearchTargetItemId(result.itemId);
@@ -357,7 +451,7 @@ function AppRouter() {
             <TasbeehScreen
               onNavigateHome={() => setScreen("home")}
               onNavigateToWritten={() => setScreen("written")}
-              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToSettings={openSettingsMenu}
               onNavigateToAudio={() => setScreen("audio")}
             />
           </Suspense>
@@ -373,7 +467,7 @@ function AppRouter() {
               onOpenWritten={() => setScreen("written")}
               onNavigateHome={() => setScreen("home")}
               onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToSettings={openSettingsMenu}
               onBack={back}
             />
           </Suspense>
@@ -387,7 +481,7 @@ function AppRouter() {
             <WrittenAdhkarScreen
               onNavigateHome={() => setScreen("home")}
               onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToSettings={openSettingsMenu}
               onNavigateToAudio={() => setScreen("audio")}
               onSelectCategory={(key) => {
                 setSearchTargetItemId(null);
@@ -409,7 +503,7 @@ function AppRouter() {
               category={writtenCategory}
               onNavigateHome={() => setScreen("home")}
               onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToSettings={openSettingsMenu}
               onNavigateToAudio={() => setScreen("audio")}
               onBackToCategories={() => setScreen("written")}
               targetItemId={searchTargetItemId ?? undefined}
@@ -426,7 +520,7 @@ function AppRouter() {
               onBack={() => setScreen("written")}
               onNavigateHome={() => setScreen("home")}
               onNavigateToTasbeeh={() => setScreen("tasbeeh")}
-              onNavigateToSettings={() => setScreen("settings")}
+              onNavigateToSettings={openSettingsMenu}
               onNavigateToAudio={() => setScreen("audio")}
               onSelectResult={handleSelectSearchResult}
             />
@@ -474,7 +568,7 @@ function AppRouter() {
                 if (key === "home") setScreen("home");
                 if (key === "tasbih") setScreen("tasbeeh");
                 if (key === "written") setScreen("written");
-                if (key === "settings") setScreen("settings");
+                if (key === "settings") openSettingsMenu();
                 if (key === "audio") setScreen("audio");
               }}
             />
@@ -484,9 +578,10 @@ function AppRouter() {
     }
     if (screen === "settings") {
       return (
-        <div key={screen} className="dithar-app-transition">
+        <div key={`${screen}:${settingsStart.n}`} className="dithar-app-transition">
           <Suspense fallback={<ScreenFallback />}>
             <SettingsScreen
+              initialView={settingsStart.view}
               onNavigateHome={() => setScreen("home")}
               onNavigateToTasbeeh={() => setScreen("tasbeeh")}
               onNavigateToWritten={() => setScreen("written")}
@@ -498,20 +593,15 @@ function AppRouter() {
     }
     return (
       <div key={screen} className="dithar-app-transition">
+        {tourOpen && <OnboardingTour onClose={closeTour} />}
         <HomeScreen
           onNavigateToTasbeeh={() => setScreen("tasbeeh")}
           onNavigateToWritten={() => setScreen("written")}
-          onNavigateToSettings={() => setScreen("settings")}
+          onNavigateToSettings={openSettingsMenu}
           onNavigateToAudio={() => setScreen("audio")}
-          // «مختارات اليوم» opens like a tapped notification: the same
-          // full-screen view, on the very dua the card shows.
-          onOpenDailyPick={(pick) =>
-            requestOpenReminder({
-              id: `dua:${pick.id}`,
-              commentId: null,
-              shown: { category: "dua", title: "", text: pick.text, meaning: "", detail: "", source: pick.source, commentText: null },
-            })
-          }
+          // «مختارات اليوم» opens like a tap on the widget: the same full-screen
+          // view, on the very item the card previews (the widget's own request).
+          onOpenDailyPick={requestOpenReminder}
           onOpenWird={(section) => {
             setSearchTargetItemId(null);
             setWrittenCategory(section);
@@ -615,6 +705,98 @@ function ReminderOverlayHost() {
   );
 }
 
+// A tapped notification that points at a screen (lib/notificationRoutes.ts): taken here, at the app's
+// top level, from the first moment — before the router exists — so a cold start's route is never lost
+// and the router opens on it. The launch intro steps aside at once (as for a tapped reminder): the
+// user came for that screen. Pull-and-clear (startFloatingOpenRouteRequests): never applied twice.
+function NotificationRouteHost() {
+  useEffect(
+    () =>
+      startFloatingOpenRouteRequests((raw) => {
+        const route = parseAppRoute(raw);
+        if (!route) return;
+        // The Floating Tasbeeh menu's «الإعدادات» is not a launch: the intro, if any, carries on as before.
+        if (route.kind !== "settings") dismissStartupOverlay();
+        deliverAppRoute(route);
+      }),
+    [],
+  );
+  return null;
+}
+
+const loadJourneyTafsirView = () => import("./components/basair/TafsirReadingView").then((m) => ({ default: m.VerseTafsirView }));
+const JourneyTafsirView = lazy(loadJourneyTafsirView);
+
+/** The verse a tap opens on: today's assignment (what the notification invited to — a missed day keeps the same page), else the tapped one. */
+async function journeyVerse(tapped: JourneyOpen): Promise<{ surah: number; ayah: number } | null> {
+  const [{ dailyAssignment }, { todayLocalDate }, { isValidVerse }] = await Promise.all([import("./lib/quranJourney"), import("./lib/stats"), import("./lib/quranMeta")]);
+  const status = await dailyAssignment(todayLocalDate()).catch(() => null);
+  const insight = status?.kind === "assigned" ? status.assignment.insight : tapped.insight;
+  const [surah, ayah] = (insight ?? "").split(":").map(Number);
+  return isValidVerse(surah, ayah) ? { surah, ayah } : null;
+}
+
+// The Qur'an Journey's daily notification opened the app (Android): Basa'ir opens over whatever
+// screen is open, straight on the day's leaf — the assigned insight — never the Mushaf or
+// Basa'ir's start first. Like a reminder: native covers the WebView until the insight has painted
+// (journeyViewShown), and on a cold start the launch cover is held until native has answered.
+// Opening counts nothing: the leaf counts the page once the insight has stayed on screen (TafsirReadingView).
+function JourneyOpenHost() {
+  const [open, setOpen] = useState<{ surah: number; ayah: number; tap: number } | null>(null);
+  const tapCount = useRef(0);
+  const launchHold = useRef<LaunchCoverHold | null>(null);
+  useLayoutEffect(() => {
+    if (!isJourneyNativeAvailable()) return;
+    const hold = holdLaunchCover();
+    launchHold.current = hold;
+    return () => hold.cancel();
+  }, []);
+  const shown = useCallback(() => {
+    launchHold.current?.release(true);
+    if (isJourneyNativeAvailable()) void QuranJourneyNative.journeyViewShown().catch(() => {});
+  }, []);
+  const close = useCallback(() => {
+    setOpen(null);
+    shown();
+  }, [shown]);
+  useEffect(() => {
+    if (!isJourneyNativeAvailable()) return;
+    // Keep the notification sync current: the notice native posts, re-sent on every change (lib/quranJourneyNotify.ts).
+    let stopSync: (() => void) | undefined;
+    let live = true;
+    void import("./lib/quranJourneyNotify").then((m) => {
+      if (live) stopSync = m.startJourneyNotifySync();
+    });
+    const openFrom = (tapped: JourneyOpen) => {
+      dismissStartupOverlay();
+      void journeyVerse(tapped).then((verse) => {
+        if (!live) return;
+        if (verse) setOpen({ ...verse, tap: ++tapCount.current });
+        else shown();
+      }, shown);
+    };
+    preloadOnIdle(loadJourneyTafsirView);
+    const handle = QuranJourneyNative.addListener("openJourney", openFrom);
+    void QuranJourneyNative.consumeLaunchJourney()
+      .then((tapped) => {
+        if (tapped.page) openFrom(tapped);
+        else launchHold.current?.release();
+      })
+      .catch(() => launchHold.current?.release());
+    return () => {
+      live = false;
+      stopSync?.();
+      void handle.then((h) => h.remove());
+    };
+  }, [shown]);
+  if (!open) return null;
+  return (
+    <Suspense fallback={<div className="fixed inset-0 z-[86]" style={{ background: "var(--color-bg)" }} aria-hidden="true" data-journey-loading="" />}>
+      <JourneyTafsirView key={open.tap} surah={open.surah} ayah={open.ayah} openDailyLeaf onDailyLeafShown={shown} onClose={close} />
+    </Suspense>
+  );
+}
+
 /** Calls [onPainted] once what was committed with it is on screen (two frames later). */
 function AfterPaint({ onPainted }: { onPainted: () => void }) {
   useEffect(() => {
@@ -675,6 +857,14 @@ export default function App() {
 
   // With the launch intro, the Home Screen mounts once the intro's text is on
   // screen (so the two never compete for the first frames); without it, at once.
+  // The film, opened from Settings → «جولة داخل التطبيق»: over the screen it was opened from, which is
+  // where it returns.
+  const [intro, setIntro] = useState(false);
+  useEffect(() => subscribeIntroReplay(() => setIntro(true)), []);
+  const closeIntro = useCallback(() => {
+    setIntro(false);
+    notifyIntroClosed();
+  }, []);
   const [homeMounted, setHomeMounted] = useState(() => !startupIntroWillShow());
   const mountHome = useCallback(() => setHomeMounted(true), []);
   // The first screen has painted (one frame after it mounted): the launch
@@ -694,7 +884,14 @@ export default function App() {
             <QuranReciterProvider>
               {homeMounted && <AppRouter />}
               <ReminderOverlayHost />
+              <JourneyOpenHost />
+              <NotificationRouteHost />
               <StartupHadithOverlay appReady={appReady} onShown={mountHome} />
+              {intro && (
+                <Suspense fallback={<div className="fixed inset-0 z-[95]" style={{ background: "var(--launch-bg, var(--color-bg))" }} data-intro-film="loading" />}>
+                  <IntroFilm firstLaunch={false} onClose={closeIntro} />
+                </Suspense>
+              )}
             </QuranReciterProvider>
           </LookProvider>
         </PaletteProvider>

@@ -10,6 +10,7 @@ import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "./floatingTasbeehBr
 import { loadTasbeehCounters } from "./tasbeehCounters";
 import { commitFloatingTasbeehRepetitions } from "./tasbeehCommit";
 import { computeTasbeehReadyDurationMs } from "./tasbeehTiming";
+import { loadTasbeehTargets } from "./tasbeehSelection";
 import { dhikrItems } from "../data/tasbeeh";
 import type { FloatingTasbeehBatchEntry } from "./stats";
 
@@ -28,12 +29,17 @@ export { isFloatingTasbeehAvailable };
 // the floating bubble's own calm-counting pacing gate uses the identical
 // per-dhikr duration as the main screen, without native code ever needing
 // to know the word-count tiering logic itself.
+// Each item also carries the user's own target for it (0 = none), so the
+// floating counter shows «33 من 100» exactly when the Tasbeeh screen has one;
+// TasbeehScreen pushes the list again whenever a target changes.
 export async function pushFloatingDhikrList(): Promise<void> {
   if (!isFloatingTasbeehAvailable()) return;
+  const targets = loadTasbeehTargets((id) => dhikrItems.some((item) => item.id === id));
   const items = dhikrItems.map((item) => ({
     id: item.id,
     label: item.dhikr_ar,
     readyDurationMs: computeTasbeehReadyDurationMs(item.dhikr_ar),
+    target: Number(targets[item.id] ?? 0) || 0,
   }));
   await FloatingTasbeeh.setDhikrList({ items });
 }

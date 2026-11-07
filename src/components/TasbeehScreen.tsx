@@ -26,6 +26,7 @@ import { loadRecognitionSoundsEnabled, saveRecognitionSoundsEnabled } from "../l
 import { useBackDismiss } from "../lib/backOverlays";
 import { FloatingTasbeeh, isFloatingTasbeehAvailable } from "../lib/floatingTasbeehBridge";
 import {
+  pushFloatingDhikrList,
   pushFloatingSelectedDhikr,
   readFloatingSelectedDhikr,
   subscribeFloatingSelectedDhikr,
@@ -577,6 +578,9 @@ export function TasbeehScreen({ onNavigateHome, onNavigateToWritten, onNavigateT
       const nextTargets = { ...targetInputs, [selectedId]: value };
       setTargetInputs(nextTargets);
       saveTasbeehTargets(nextTargets);
+      // The floating counter shows the target too («33 من 100»): it follows at once.
+      // Display only — a failed push must never disturb the target input itself.
+      pushFloatingDhikrList().catch(() => {});
       // A changed target gets its own fresh chance to celebrate.
       setCelebratedFor((prev) => {
         if (!(selectedId in prev)) return prev;

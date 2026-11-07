@@ -55,6 +55,14 @@ export interface NativeFavoriteOp {
   commentText: string | null;
 }
 
+/** One encouragement as native shows it: the message, and its credit line when grounded in a source. */
+export interface NativeEncouragement {
+  id: string;
+  situations: string[];
+  text: string;
+  credit?: string;
+}
+
 export interface RemindersPlugin {
   setReminders(options: {
     enabled: boolean;
@@ -75,8 +83,17 @@ export interface RemindersPlugin {
     widgetTint?: string;
     pool?: NativeReminderItem[];
   }): Promise<{ widgets: number }>;
-  setSummary(options: { enabled: boolean; minutes: number; mode: string; snapshot?: unknown }): Promise<void>;
+  setSummary(options: {
+    enabled: boolean;
+    minutes: number;
+    mode: string;
+    snapshot?: unknown;
+    /** The encouragement library in the interface language (lib/dailySummary.ts nativeEncouragements); native picks one per summary. */
+    encouragements?: NativeEncouragement[];
+  }): Promise<void>;
   setCustomBackground(options: { jpegBase64?: string; clear?: boolean }): Promise<void>;
+  /** The time-based content notifications (lib/timedContent.ts): replaces every stored entry; keys already posted stay posted. */
+  setTimedContent(options: { language: "ar" | "en"; entries: { key: string; kind: string; at: number; title: string; item: NativeReminderItem }[] }): Promise<{ nextAt: number | null }>;
   getWidgetStatus(): Promise<{ count: number; pinSupported: boolean }>;
   requestPinWidget(): Promise<{ requested: boolean }>;
   /** The reminder the app was launched from (a notification or the widget), and the comment shown with it, once. */
@@ -89,7 +106,16 @@ export interface RemindersPlugin {
   getFavoriteOps(): Promise<{ ops: NativeFavoriteOp[] }>;
   /** The app's full list of favorite ids, after merging every op up to `ackThrough`. */
   setFavoriteKeys(options: { keys: string[]; ackThrough: number }): Promise<void>;
+  /**
+   * Home's «مختارات اليوم» preview (native WidgetPreview): exactly what the widget drew for the slot it shows, or —
+   * with no widget on the home screen — the item its rotation is due to show. `open` is what a tap on the widget
+   * opens; `nextChangeAt`, when the clock moves the widget on (reminders off; while on, each delivered reminder
+   * redraws it and sends "widgetChanged"). Missing in builds before it (the call rejects).
+   */
+  getWidgetPreview(): Promise<{ open: { id: string | null; commentId?: string | null; shown?: ShownReminder } | null; from: "widget" | "rotation" | null; nextChangeAt: number | null }>;
   addListener(eventName: "openReminder", listener: (event: { id: string; commentId?: string | null; shown?: ShownReminder }) => void): Promise<PluginListenerHandle>;
+  /** The widget redrew, or was asked to (settings, content, a delivered reminder, the clock, a widget added or removed). */
+  addListener(eventName: "widgetChanged", listener: () => void): Promise<PluginListenerHandle>;
 }
 
 export const RemindersNative = registerPlugin<RemindersPlugin>("DitharReminders");

@@ -219,7 +219,12 @@ export interface AudioAdhkarPlugin {
    * With `items` («تشغيل الكل» / Play All): those dhikr one after another,
    * as one manual session (`item` is then the first, for older builds).
    */
-  playNow(options: { collection: NativeSection; item: NativePlaylistItem; items?: NativePlaylistItem[] }): Promise<{ started: boolean }>;
+  /** [startIndex]/[startRepetition]: a «تشغيل الكل» run resumed from its saved point (lib/audioAdhkarResume.ts). */
+  playNow(options: { collection: NativeSection; item: NativePlaylistItem; items?: NativePlaylistItem[]; startIndex?: number; startRepetition?: number }): Promise<{ started: boolean }>;
+  /** Resume Adhkar: where the section's unfinished «تشغيل الكل» run continues, or null. */
+  getPlayAllProgress(options: { section: "morning" | "evening" }): Promise<{ progress: { ids: string[]; index: number; repetition: number; updatedAt: number } | null }>;
+  /** "Start from the beginning": clears that point. */
+  clearPlayAllProgress(options: { section: "morning" | "evening" }): Promise<void>;
   /** Stops a playNow session only — never a scheduled one or the adhan. */
   stopManual(): Promise<void>;
   /** Stops a scheduled session that is playing (never «استماع» or the adhan) and clears pending Audio Adhkar notices — the master switch turned off. */

@@ -58,6 +58,7 @@ import { AudioAdhkarNative, isAudioAdhkarNativeAvailable } from "./audioAdhkarNa
 import type { NativeAudioAdhkarState, NativePlaylistItem } from "./audioAdhkarNative";
 import { nativeVariousItem, nativeWrittenItem } from "./audioAdhkarNativeItems";
 import { getSpokenText } from "./morningEveningAudio";
+import { clearResumePoint, isResumableSection, nextPoint, saveWebResumePoint } from "./audioAdhkarResume";
 import type { AudioAdhkarCollection } from "./audioAdhkarPlayback";
 import { getUserRepeatCount } from "./audioUserRepeat";
 import { commitCompletedSessions, commitInAppCompletion, commitInAppListening } from "./audioAdhkarCounts";
@@ -249,6 +250,7 @@ function playOnce(source: AudioAdhkarSource) {
       // (an error or interruption takes the branches below instead).
       const heard = getNowPlaying();
       if (heard) commitInAppCompletion(heard.collection, heard.itemId, { sessionId: inAppSession?.id, title: inAppSession?.title, durationMs: info?.durationMs ?? null });
+      if (heard) saveWebRunPoint(heard.repetition, heard.total);
       const pauseMs = pauseBeforeNextRepetition(getNowPlaying());
       if (pauseMs > 0) {
         pauseThenPlay(source, pauseMs);
@@ -347,6 +349,24 @@ export type AudioAdhkarPlayAllEntry = { kind: "written"; item: WrittenAdhkarItem
 let playAll: AudioAdhkarPlayAll | null = null;
 /** The in-app (web) run's adhkar; null when native plays the run, or none runs. */
 let webPlayAll: { collection: AudioAdhkarCollection; entries: AudioAdhkarPlayAllEntry[] } | null = null;
+
+/** A dhikr's id in a Play All run (what a Resume Adhkar point lists). */
+export function playAllEntryId(entry: AudioAdhkarPlayAllEntry): string {
+  return entry.item.id;
+}
+
+/**
+ * Web: a Play All repetition of Morning/Evening was heard to its end — the run's Resume Adhkar point
+ * moves to the next unfinished repetition or dhikr, or is cleared when the run is complete
+ * (lib/audioAdhkarResume.ts). Never on a stop: a repetition cut off part-way plays again.
+ */
+function saveWebRunPoint(repetition: number, total: number | null) {
+  const run = webPlayAll;
+  if (!run || !playAll || !isResumableSection(run.collection)) return;
+  const next = nextPoint(playAll.index, run.entries.length, repetition, total ?? repetition);
+  if (next) saveWebResumePoint(run.collection, { ids: run.entries.map(playAllEntryId), ...next, updatedAt: Date.now() });
+  else void clearResumePoint(run.collection);
+}
 const playAllListeners = new Set<() => void>();
 
 function setPlayAll(next: AudioAdhkarPlayAll | null) {
@@ -397,6 +417,10 @@ export function skipAudioAdhkar(): boolean {
     return true;
   }
   const from = (playAll?.index ?? 0) + 1;
+  const run = webPlayAll;
+  if (run && isResumableSection(run.collection) && from < run.entries.length) {
+    saveWebResumePoint(run.collection, { ids: run.entries.map(playAllEntryId), index: from, repetition: 1, updatedAt: Date.now() });
+  }
   if (current) {
     settleStoppedEarly(); // the part heard: listening, never a repetition
     const { channel } = current.source;
@@ -425,13 +449,13 @@ function webPlayAllHasNext(): boolean {
   return webPlayAll !== null && playAll !== null && playAll.index + 1 < webPlayAll.entries.length;
 }
 
-/** Plays the web run's dhikr at [from] — or the first after it that can play; ends the run when none is left. */
-function playWebStepFrom(from: number): boolean {
+/** Plays the web run's dhikr at [from] — or the first after it that can play; ends the run when none is left. [repetition]: where [from] starts (a resumed run). */
+function playWebStepFrom(from: number, repetition = 1): boolean {
   const run = webPlayAll;
   for (let i = from; run && webPlayAll === run && i < run.entries.length; i++) {
     setPlayAll({ collection: run.collection, index: i, count: run.entries.length });
     const entry = run.entries[i];
-    if (entry.kind === "written" ? beginWritten(run.collection, entry.item) : beginVarious(entry.item)) {
+    if (entry.kind === "written" ? beginWritten(run.collection, entry.item, i === from ? repetition : 1) : beginVarious(entry.item)) {
       recordWebPractice(run.collection);
       return true;
     }
@@ -514,7 +538,7 @@ export function applyNativePlaybackState(state: NativeAudioAdhkarState | null): 
  * shows it playing at once; the service's own state follows. If Android
  * refuses (the adhan is playing), the state goes back to idle.
  */
-function startNative(collection: AudioAdhkarCollection, itemId: string, total: number, item: NativePlaylistItem, items?: NativePlaylistItem[]): boolean {
+function startNative(collection: AudioAdhkarCollection, itemId: string, total: number, item: NativePlaylistItem, items?: NativePlaylistItem[], start?: { index: number; repetition: number }): boolean {
   if (current) {
     settleStoppedEarly();
     const { channel } = current.source;
@@ -527,7 +551,7 @@ function startNative(collection: AudioAdhkarCollection, itemId: string, total: n
   nativeManual = true;
   setNativeHasNext((items?.length ?? 0) > 1);
   const request = ++nativeRequest;
-  audioAdhkarPlayback.startDhikr({ collection, itemId }, total, item.reciterName || undefined);
+  audioAdhkarPlayback.startDhikr({ collection, itemId }, total, item.reciterName || undefined, start?.repetition);
   const refused = () => {
     if (request !== nativeRequest || !nativeManual) return;
     nativeActive = false;
@@ -542,7 +566,7 @@ function startNative(collection: AudioAdhkarCollection, itemId: string, total: n
       ? `play all: native playNow ${collection} ×${items.length} (${items.map((i) => i.dhikrId).join(",")})`
       : `listen: native playNow ${collection}/${itemId} ×${total} (${item.assetPaths.length} file(s))`,
   );
-  AudioAdhkarNative.playNow(items ? { collection, item, items } : { collection, item }).then(
+  AudioAdhkarNative.playNow(items ? { collection, item, items, ...(start ? { startIndex: start.index, startRepetition: start.repetition } : {}) } : { collection, item }).then(
     ({ started }) => {
       if (!started) {
         trace(`listen: native refused ${collection}/${itemId}`);
@@ -567,7 +591,7 @@ export function startAudioAdhkar(collection: AudioAdhkarCollection, item: Writte
   return beginWritten(collection, item);
 }
 
-function beginWritten(collection: AudioAdhkarCollection, item: WrittenAdhkarItem): boolean {
+function beginWritten(collection: AudioAdhkarCollection, item: WrittenAdhkarItem, startRepetition = 1): boolean {
   if (!getAudioAdhkarSource(collection, item)) return false;
   rememberLastPlayed({ collection, itemId: item.id, titleAr: item.title_ar ?? getSpokenText(item.text_ar), titleEn: item.title_en ?? item.title_ar ?? getSpokenText(item.text_ar) });
   const total = audioRepetitionTotal(item);
@@ -589,7 +613,7 @@ function beginWritten(collection: AudioAdhkarCollection, item: WrittenAdhkarItem
     AudioAdhkarNative.stop().catch(ignore);
   }
   setFailure(null);
-  audioAdhkarPlayback.startDhikr({ collection, itemId: item.id }, total, reciter ? reciter.name[loadLanguagePreference()] : undefined);
+  audioAdhkarPlayback.startDhikr({ collection, itemId: item.id }, total, reciter ? reciter.name[loadLanguagePreference()] : undefined, startRepetition);
   beginInAppSession(item.title_ar ?? getSpokenText(item.text_ar));
   playOnce(source);
   armAdhanStop();
@@ -624,6 +648,20 @@ function beginVarious(item: AudioVariousItem): boolean {
   return true;
 }
 
+/**
+ * The ids of the adhkar a Play All run of [entries] plays, in order — on Android the ones the native
+ * player has bundled audio for (as startAudioAdhkarPlayAll hands it), in the web build every playable
+ * one. A Resume Adhkar point is only offered for a run of exactly these (lib/audioAdhkarResume.ts).
+ * Takes no reciter (peek only): nothing about the next playback changes.
+ */
+export function playAllRunIds(collection: AudioAdhkarCollection, entries: readonly AudioAdhkarPlayAllEntry[]): string[] {
+  const playable = playableAudioAdhkar(collection, entries);
+  if (!isAudioAdhkarNativeAvailable()) return playable.map(playAllEntryId);
+  return playable
+    .filter((e) => (e.kind === "various" ? nativeVariousItem(e.item) !== null : collection !== "misc" && nativeWrittenItem(collection, e.item, peekSectionReciter(collection), audioRepetitionTotal(e.item)) !== null))
+    .map(playAllEntryId);
+}
+
 /** The adhkar of [entries] that have a recording — what Play All plays, in list order. */
 export function playableAudioAdhkar(collection: AudioAdhkarCollection, entries: readonly AudioAdhkarPlayAllEntry[]): AudioAdhkarPlayAllEntry[] {
   return entries.filter((e) => (e.kind === "written" ? getAudioAdhkarSource(collection, e.item) !== null : getAudioVariousSource(e.item) !== null));
@@ -631,14 +669,18 @@ export function playableAudioAdhkar(collection: AudioAdhkarCollection, entries: 
 
 /**
  * «تشغيل الكل»: plays every recorded dhikr of [entries] (the section's
- * list, in order) one after another, from the first, replacing whatever
- * Audio Adhkar plays. False (nothing plays) when none has a recording.
+ * list, in order) one after another, from the first — or, resuming
+ * (Resume Adhkar, lib/audioAdhkarResume.ts), from [start]: that dhikr's
+ * index among the playable ones and its next unfinished repetition —
+ * replacing whatever Audio Adhkar plays. False (nothing plays) when none
+ * has a recording.
  */
-export function startAudioAdhkarPlayAll(collection: AudioAdhkarCollection, entries: readonly AudioAdhkarPlayAllEntry[]): boolean {
+export function startAudioAdhkarPlayAll(collection: AudioAdhkarCollection, entries: readonly AudioAdhkarPlayAllEntry[], start?: { index: number; repetition: number }): boolean {
   const playable = playableAudioAdhkar(collection, entries);
   if (playable.length === 0) return false;
   endPlayAll();
-  const first = playable[0];
+  const from = start && start.index >= 0 && start.index < playable.length ? start : undefined;
+  const first = playable[from?.index ?? 0];
   rememberLastPlayed(
     first.kind === "written"
       ? { collection, itemId: first.item.id, titleAr: first.item.title_ar ?? getSpokenText(first.item.text_ar), titleEn: first.item.title_en ?? first.item.title_ar ?? getSpokenText(first.item.text_ar) }
@@ -654,14 +696,17 @@ export function startAudioAdhkarPlayAll(collection: AudioAdhkarCollection, entri
     });
     const items = native.filter((i): i is NativePlaylistItem => i !== null);
     if (items.length < playable.length) trace(`play all: ${playable.length - items.length} dhikr without bundled audio in ${collection} — left out`);
+    // A resume point is an index in the run's own list (playAllRunIds — on Android, the adhkar with bundled audio).
+    const at = from && from.index < items.length ? from : undefined;
     if (items.length > 0) {
-      startNative(collection, items[0].dhikrId, items[0].repetitions, items[0], items);
-      setPlayAll({ collection, index: 0, count: items.length });
+      const head = items[at?.index ?? 0];
+      startNative(collection, head.dhikrId, head.repetitions, head, items, at);
+      setPlayAll({ collection, index: at?.index ?? 0, count: items.length });
       return true;
     }
   }
   webPlayAll = { collection, entries: playable };
-  return playWebStepFrom(0);
+  return playWebStepFrom(from?.index ?? 0, from?.repetition ?? 1);
 }
 
 /** Where the current repetition is, from whichever player plays it. */

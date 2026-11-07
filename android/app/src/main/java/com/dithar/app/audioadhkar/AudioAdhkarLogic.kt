@@ -1,5 +1,7 @@
 package com.dithar.app.audioadhkar
 
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.random.Random
@@ -1014,4 +1016,39 @@ object NowPlayingText {
     /** "المؤذن: …" when the recording reliably says who it is; otherwise the recording's own name (never a guessed muezzin). */
     fun adhanSubtitle(muezzin: String, recordingName: String, en: Boolean): String =
         if (muezzin.isNotBlank()) "${if (en) "Muezzin" else "المؤذن"}: $muezzin" else recordingName
+}
+
+/**
+ * Resume Adhkar for «تشغيل الكل» (Play All) of Morning/Evening: where the run would continue — the
+ * next dhikr and repetition that are NOT finished (PlaybackCursor.resumePoint: a repetition heard to
+ * its end is never replayed; one cut off part-way plays again from its start). [ids] is the run's
+ * whole list, so a changed list (another selection, an app update) is never resumed at the wrong
+ * dhikr. Saved after every finished repetition (and a skip); kept through a stop, an interruption,
+ * the app being closed or the phone restarting; cleared only when the run completes or the user
+ * restarts it. Each section keeps its own.
+ */
+data class PlayAllProgress(val ids: List<String>, val index: Int, val repetition: Int, val updatedAt: Long) {
+    fun toJson(): JSONObject = JSONObject().put("ids", JSONArray(ids)).put("index", index).put("repetition", repetition).put("updatedAt", updatedAt)
+
+    companion object {
+        /** The point a run of [ids] continues from, [offset] being where it started (a resumed run); null when nothing is left. */
+        fun from(point: PlaybackCursor.Point?, ids: List<String>, offset: Int, now: Long): PlayAllProgress? {
+            if (point == null || ids.isEmpty()) return null
+            val index = offset + point.index
+            return if (index in ids.indices) PlayAllProgress(ids, index, point.repetition.coerceAtLeast(1), now) else null
+        }
+
+        fun parse(raw: String?): PlayAllProgress? = try {
+            raw?.let {
+                val o = JSONObject(it)
+                val a = o.getJSONArray("ids")
+                val ids = (0 until a.length()).map { i -> a.getString(i) }
+                val index = o.getInt("index")
+                val repetition = o.getInt("repetition")
+                if (ids.isEmpty() || index !in ids.indices || repetition < 1) null else PlayAllProgress(ids, index, repetition, o.optLong("updatedAt", 0L))
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
 }

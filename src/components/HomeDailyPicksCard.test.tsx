@@ -6,6 +6,7 @@ import type { Root } from "react-dom/client";
 import { HomeDailyPicksCard } from "./HomeDailyPicksCard";
 import { LanguageProvider } from "../theme/LanguageContext";
 import { getDailyPicks } from "../lib/dailyPicks";
+import { MISC_DUAS } from "../data/misc-library";
 import { msUntilNextLocalDay, useLocalDateKey } from "../lib/useLocalDateKey";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -23,6 +24,7 @@ function firstPickOn(date: Date): string {
 }
 
 const shownId = () => container.querySelector("[data-home-daily-picks]")?.getAttribute("data-home-daily-picks") ?? "";
+const pickId = (id: string) => `dua:${id}`;
 
 /** Lets the card's lazy import and state update settle. */
 async function settle() {
@@ -44,16 +46,26 @@ afterEach(() => {
 });
 
 describe("Home «مختارات اليوم»: one pick per local day", () => {
-  it("keeps the dua's own text hidden until it is opened", async () => {
+  it("without a widget (the web app), previews today's dua: its kind, and its whole text exactly as stored", async () => {
     const day = new Date(2026, 9, 22, 9);
     vi.setSystemTime(day);
-    await act(async () => root.render(<LanguageProvider><HomeDailyPicksCard onOpen={() => {}} /></LanguageProvider>));
+    const opened: unknown[] = [];
+    await act(async () => root.render(<LanguageProvider><HomeDailyPicksCard onOpen={(r) => opened.push(r)} /></LanguageProvider>));
     await settle();
-    expect(shownId()).toBe(firstPickOn(day));
+    const id = firstPickOn(day);
+    expect(shownId()).toBe(`dua:${id}`);
     const card = container.querySelector("[data-home-daily-picks]")!;
-    expect(card.querySelector("[data-home-daily-pick]")).toBeNull();
+    expect(card.getAttribute("data-home-daily-picks-from")).toBe("daily-pick");
     expect(card.textContent).toContain("مختارات اليوم");
-    expect(card.textContent).toContain("دعاءٌ موثّق");
+    const dua = MISC_DUAS.find((d) => d.id === id)!;
+    // Its whole text when it is as short as a widget item; a longer dua shows the hint, never part of it.
+    const excerpt = card.querySelector("[data-home-daily-pick-excerpt]");
+    if (dua.text_ar.length <= 190) expect(excerpt!.textContent).toBe(dua.text_ar);
+    else expect(excerpt).toBeNull();
+    expect(card.querySelector(".dithar-daily-pick__kind")!.textContent).toBe("دعاء");
+    // A tap opens that very dua, in full, down the notification path.
+    await act(async () => void card.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+    expect(opened).toEqual([{ id: `dua:${id}`, commentId: null, shown: { category: "dua", title: "دعاء", text: dua.text_ar, meaning: "", detail: "", source: dua.source_ar ?? "", commentText: null } }]);
   });
 
   it("changes at local midnight while Home stays open, and stays the same all day", async () => {
@@ -65,24 +77,24 @@ describe("Home «مختارات اليوم»: one pick per local day", () => {
     vi.setSystemTime(evening);
     await act(async () => root.render(<LanguageProvider><HomeDailyPicksCard onOpen={() => {}} /></LanguageProvider>));
     await settle();
-    expect(shownId()).toBe(yesterday);
+    expect(shownId()).toBe(pickId(yesterday));
 
     // Still the same day: no change.
     await act(async () => { await vi.advanceTimersByTimeAsync(20_000); });
     await settle();
-    expect(shownId()).toBe(yesterday);
+    expect(shownId()).toBe(pickId(yesterday));
 
     // Past midnight (the hook fires a second after it): the new day's pick.
     await act(async () => { await vi.advanceTimersByTimeAsync(15_000); });
     await settle();
-    expect(shownId()).toBe(today);
+    expect(shownId()).toBe(pickId(today));
 
     // Through the day — and on coming back to the app — it stays put.
     await act(async () => { await vi.advanceTimersByTimeAsync(12 * 3_600_000); });
     document.dispatchEvent(new Event("pause"));
     document.dispatchEvent(new Event("resume"));
     await settle();
-    expect(shownId()).toBe(today);
+    expect(shownId()).toBe(pickId(today));
   });
 
   it("back in the app the next morning (no midnight timer ran in the background), it shows that day's pick", async () => {
@@ -90,14 +102,14 @@ describe("Home «مختارات اليوم»: one pick per local day", () => {
     const yesterday = firstPickOn(new Date(2026, 9, 21, 22, 0));
     await act(async () => root.render(<LanguageProvider><HomeDailyPicksCard onOpen={() => {}} /></LanguageProvider>));
     await settle();
-    expect(shownId()).toBe(yesterday);
+    expect(shownId()).toBe(pickId(yesterday));
 
     // The app goes to the background; the clock moves on without timers firing (Android may defer them).
     document.dispatchEvent(new Event("pause"));
     vi.setSystemTime(new Date(2026, 9, 22, 7, 30));
     document.dispatchEvent(new Event("resume"));
     await settle();
-    expect(shownId()).toBe(firstPickOn(new Date(2026, 9, 22, 7, 30)));
+    expect(shownId()).toBe(pickId(firstPickOn(new Date(2026, 9, 22, 7, 30))));
   });
 });
 

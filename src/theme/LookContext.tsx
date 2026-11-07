@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { CUSTOM_WALLPAPER_KEY, DEFAULT_LOOK_SETTINGS, LOOK_STORAGE_KEY, effectiveLook, loadCustomWallpaper, loadLookSettings, lookStylesheet, saveCustomWallpaper, saveLookSettings, shownWallpaper, veilAlpha } from "./looks";
+import { CUSTOM_WALLPAPER_KEY, DEFAULT_LOOK_SETTINGS, LOOK_STORAGE_KEY, effectiveLook, msUntilNextLookChange, loadCustomWallpaper, loadLookSettings, lookStylesheet, saveCustomWallpaper, saveLookSettings, shownWallpaper, veilAlpha } from "./looks";
 import type { CustomWallpaper, LookId, LookSettings } from "./looks";
 import { RemindersNative, isRemindersNativeAvailable } from "../lib/remindersNative";
+import { isPageVisible, subscribePageVisibility, usePageVisible } from "../lib/pageVisibility";
 
 // The active appearance theme ("look", theme/looks.ts) for the whole app:
 // sets html[data-look] (the look's tokens) and
@@ -73,11 +74,17 @@ export function LookProvider({ children }: { children: ReactNode }) {
     query.addEventListener?.("change", onChange);
     return () => query.removeEventListener?.("change", onChange);
   }, [settings.autoDark]);
+  // Automatic dark mode by time: one timer for the next switch (05:30 / 18:30) while the app is shown —
+  // not a re-render of the whole app every minute, nor any timer in the background. Shown again, it
+  // catches up at once (the effect re-runs with a fresh `now`).
+  const visible = usePageVisible();
+  useEffect(() => subscribePageVisibility(() => isPageVisible() && setNow(new Date())), []);
   useEffect(() => {
-    if (settings.autoDark !== "time") return;
-    const timer = window.setInterval(() => setNow(new Date()), 60_000);
-    return () => window.clearInterval(timer);
-  }, [settings.autoDark]);
+    if (settings.autoDark !== "time" || !visible) return;
+    // At the switch, `now` moves on — which re-arms this timer for the following one.
+    const timer = window.setTimeout(() => setNow(new Date()), msUntilNextLookChange(now) + 1_000);
+    return () => window.clearTimeout(timer);
+  }, [settings.autoDark, visible, now]);
 
   // Another tab (the web preview) changed it.
   useEffect(() => {

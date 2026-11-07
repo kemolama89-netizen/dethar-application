@@ -187,6 +187,25 @@ class AudioAdhkarPlugin : Plugin() {
      * section's items one after another. Resolves { started: false } when
      * refused (e.g. the adhan plays).
      */
+    /** Resume Adhkar: where the section's unfinished «تشغيل الكل» run continues — { progress: { ids, index, repetition, updatedAt } | null }. */
+    @PluginMethod
+    fun getPlayAllProgress(call: PluginCall) {
+        val section = Section.values().firstOrNull { it.key == call.getString("section") && it.isDaily }
+        val progress = section?.let { AudioAdhkarStore(context).section(it).playAllProgress }
+        call.resolve(JSObject().put("progress", progress?.toJson() ?: JSONObject.NULL))
+    }
+
+    /** "Start from the beginning": the section's saved «تشغيل الكل» point is cleared. */
+    @PluginMethod
+    fun clearPlayAllProgress(call: PluginCall) {
+        val section = Section.values().firstOrNull { it.key == call.getString("section") && it.isDaily }
+        if (section != null) {
+            AudioAdhkarStore(context).section(section).playAllProgress = null
+            AudioAdhkarStore(context).appendEvent("${section.key}: play all resume point cleared (restart)")
+        }
+        call.resolve()
+    }
+
     @PluginMethod
     fun playNow(call: PluginCall) {
         val item = call.getObject("item")
@@ -209,7 +228,7 @@ class AudioAdhkarPlugin : Plugin() {
             return
         }
         val started = if (all != null) {
-            AudioAdhkarPlaybackService.playAllNow(context, section, JSONArray(all))
+            AudioAdhkarPlaybackService.playAllNow(context, section, JSONArray(all), call.getInt("startIndex") ?: 0, call.getInt("startRepetition") ?: 1)
         } else {
             AudioAdhkarPlaybackService.playNow(context, section, item!!)
         }

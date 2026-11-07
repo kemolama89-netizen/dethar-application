@@ -1,5 +1,6 @@
 package com.dithar.app.audioadhkar
 
+import com.dithar.app.NotificationRoutes
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -99,7 +100,8 @@ class AudioAdhkarPauseReceiver : BroadcastReceiver() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, LABEL_CHANNEL, NotificationManager.IMPORTANCE_LOW))
             }
-            val openApp = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+            // A tap opens the Various adhkar it is about (NotificationRoutes).
+            val openApp = NotificationRoutes.openIntent(context, NotificationRoutes.audio(Section.MISC.key))
             @Suppress("DEPRECATION")
             val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(context, CHANNEL_ID) else Notification.Builder(context)
             builder

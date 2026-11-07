@@ -65,7 +65,8 @@ export type ReminderCategory = "dua" | "hadith" | "virtue" | "poetry" | "lataif"
 export const REMINDER_CATEGORIES: readonly ReminderCategory[] = ["dua", "hadith", "virtue", "poetry", "lataif"];
 
 /** Finer than the category: what the text IS, for its label (a Qur'anic dua is labelled as Qur'an). */
-export type ReminderKind = "quran-dua" | "dua" | "hadith" | "virtue" | "poetry" | "quran" | "lataif";
+/** "reminder": DITHAR's own plain reminder (a time-based notification) — no text from a source, no virtue, no attribution. */
+export type ReminderKind = "quran-dua" | "dua" | "hadith" | "virtue" | "poetry" | "quran" | "lataif" | "reminder";
 
 /**
  * A text shown beside the main one, and where it comes from. `kind` decides
@@ -103,6 +104,10 @@ export interface ReminderItem {
   reflection?: Record<Language, string>;
   /** Short DITHAR comments — one is shown at a time, in turn. */
   comments: EditorialComment[];
+  /** Only for the time-based notifications (lib/timedContent.ts): never in the widget's or the reminders' rotation. */
+  timedOnly?: boolean;
+  /** What the widget draws for a text longer than it fits: the text's own opening, ending «…» (data/widgetContent.ts). */
+  widgetPreviewAr?: string;
   theme: ReflectionTheme | "hadith" | "poetry" | "lataif";
 }
 
@@ -198,13 +203,36 @@ function enrichedHadithItems(): ReminderItem[] {
     kind: "hadith" as const,
     textAr: h.textAr,
     meaningEn: h.meaningEn,
-    sourceAr: `${h.sourceAr} (${h.referenceAr}) — ${h.gradeAr}`,
+    // A matn shown exactly as its source gives it carries no «عن فلان»: its narrator is named here.
+    sourceAr: `${h.matnOnly ? `الراوي: ${h.narratorAr} — ` : ""}${h.sourceAr} (${h.referenceAr}) — ${h.gradeAr}`,
     sourceEn: `${h.referenceEn} — ${h.gradeEn}`,
     gradeAr: `${h.gradeAr} (${h.gradingSourceAr})`,
     gradeEn: `${h.gradeEn} (${h.gradingSourceEn})`,
     comments: h.comments,
     theme: "hadith" as const,
+    ...(h.timedOnly ? { timedOnly: true } : {}),
+    ...(h.widgetPreviewAr ? { widgetPreviewAr: h.widgetPreviewAr } : {}),
   }));
+}
+
+/**
+ * Plain reminders shown only by the time-based notifications (lib/timedContent.ts): DITHAR's own
+ * words, labelled «تذكير», with no source, hadith, virtue or reward — so nothing is attributed.
+ */
+function timedReminderItems(): ReminderItem[] {
+  return [
+    {
+      id: "reminder:kahf-friday",
+      category: "lataif",
+      kind: "reminder",
+      textAr: "تذكير بقراءة سورة الكهف يوم الجمعة",
+      meaningEn: "A reminder to read Surah Al-Kahf on Friday",
+      sourceAr: "",
+      comments: [],
+      theme: "lataif",
+      timedOnly: true,
+    },
+  ];
 }
 
 function virtueItems(): ReminderItem[] {
@@ -309,6 +337,7 @@ export function reminderCandidates(): ReminderItem[] {
     ...verseItems(),
     ...wamdatItems(),
     ...saadiLataifItems(),
+    ...timedReminderItems(),
   ]);
 }
 
@@ -371,6 +400,11 @@ export function reminderPool(): ReminderItem[] {
     });
   published = { version, items };
   return items;
+}
+
+/** The published items the widget, reminders and "next" rotate through: the time-based ones only come with their notification. */
+export function reminderRotationPool(): ReminderItem[] {
+  return reminderPool().filter((item) => !item.timedOnly);
 }
 
 /** A published item by id. */

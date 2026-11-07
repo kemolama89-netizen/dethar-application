@@ -38,6 +38,8 @@ import { prayerNames } from "../data/content";
 import { ADHAN_DAY_PRAYERS, loadAdhanDayTimes, saveAdhanDayTimes } from "../lib/weeklySchedule";
 import type { AdhanDayPrayer } from "../lib/weeklySchedule";
 import { loadPrayerReminderSettings } from "../lib/prayerReminderSettings";
+import { FirstVisitHint } from "./FirstVisitHint";
+import { featureGuideLabels } from "../data/featureGuideLabels";
 
 // Settings > Adhan audio — pick the regular adhan (Dhuhr/Asr/Maghrib/Isha)
 // and the Fajr adhan independently: a voice and a playback mode for each,
@@ -283,6 +285,7 @@ export function AdhanAudioSettingsView({ onBack }: { onBack: () => void }) {
         <div className="h-9 w-9 shrink-0" aria-hidden="true" />
       </div>
 
+      <FirstVisitHint id="settings-adhan-audio" text={featureGuideLabels[language].hints.adhanAudio} />
       <div className="mt-4 flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pb-2">
         <p className="px-1 text-[11.5px] leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
           {t.note}

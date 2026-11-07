@@ -1,5 +1,6 @@
 package com.dithar.app.reminders
 
+import com.dithar.app.NotificationRoutes
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
@@ -55,6 +56,7 @@ object RemindersScheduler {
         armReminder(context, now)
         armSummary(context, now)
         armWidgetRefresh(context, now)
+        TimedContentScheduler.arm(context, now)
     }
 
     fun armReminder(context: Context, now: Long = System.currentTimeMillis()) {
@@ -212,7 +214,8 @@ object RemindersScheduler {
             // All-time counts: that day's snapshot, else the newest earlier one (nothing was recorded in the app since).
             val allTime = (snapshot ?: store.summarySnapshot?.takeIf { it.date < day })?.allTime
             val known = DailySummary.recordsKnown(snapshot, day, store.appOpenedOn, store.summarySnapshotUnreadable)
-            val message = DailySummary.compose(snapshot, day, floatingToday, store.summaryMode, store.language, pendingListening, pendingStoppedEarly, pendingSessions, ofYesterday = day != today, pendingVariousPlays = pendingVarious, allTimeSoFar = allTime, recordsKnown = known)
+            val message = DailySummary.compose(snapshot, day, floatingToday, store.summaryMode, store.language, pendingListening, pendingStoppedEarly, pendingSessions, ofYesterday = day != today, pendingVariousPlays = pendingVarious, allTimeSoFar = allTime, recordsKnown = known, encouragements = store.summaryEncouragements, recentEncouragements = store.summaryRecentEncouragements)
+            message.encouragementId?.let { store.summaryRecentEncouragements = DailySummaryEncouragement.remember(store.summaryRecentEncouragements, it) }
             val en = store.language == "en"
             channel(context, SUMMARY_CHANNEL, if (en) "End-of-day summary" else "ملخص نهاية اليوم", NotificationManager.IMPORTANCE_DEFAULT)
             @Suppress("DEPRECATION")
@@ -222,7 +225,8 @@ object RemindersScheduler {
                 .setContentTitle(message.title)
                 .setContentText(message.body.lineSequence().first())
                 .setStyle(Notification.BigTextStyle().bigText(message.body))
-                .setContentIntent(openIntent(context, null, REQ_SUMMARY))
+                // The summary is about the day's records: it opens Statistics (NotificationRoutes).
+                .setContentIntent(NotificationRoutes.openIntent(context, NotificationRoutes.STATISTICS))
                 .setAutoCancel(true)
             context.getSystemService(NotificationManager::class.java).notify(SUMMARY_NOTIFICATION_ID, builder.build())
         }
@@ -245,6 +249,7 @@ class RemindersReceiver : BroadcastReceiver() {
         when (intent.action) {
             RemindersScheduler.ACTION_REMINDER -> RemindersScheduler.deliverReminder(context)
             RemindersScheduler.ACTION_SUMMARY -> RemindersScheduler.deliverSummary(context)
+            TimedContentScheduler.ACTION_TIMED -> TimedContentScheduler.deliver(context)
             RemindersScheduler.ACTION_WIDGET_REFRESH -> {
                 WidgetRenderer.updateAll(context)
                 RemindersScheduler.armWidgetRefresh(context)

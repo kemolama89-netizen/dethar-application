@@ -104,7 +104,7 @@ describe("scheduled Android playback uses the same repetition pause", () => {
     expect(buildEveningAudioPlaylist().length).toBeGreaterThan(1);
     const service = kt("AudioAdhkarPlaybackService.kt");
     // Both "next repetition" and "next dhikr" go through the one silence …
-    expect(service).toMatch(/PlaybackCursor\.Step\.NEXT_REPETITION, PlaybackCursor\.Step\.NEXT_DHIKR -> startSilence\(\)/);
+    expect(service).toMatch(/PlaybackCursor\.Step\.NEXT_REPETITION, PlaybackCursor\.Step\.NEXT_DHIKR -> \{\s*savePlayAllProgress\(\)[^\n]*\n\s*startSilence\(\)/);
     // … which is SilenceGap's default length, 1.5 s (= REPETITION_PAUSE_MS) …
     expect(/private val gap = SilenceGap\(\)/.test(service)).toBe(true);
     expect(/handler\.postDelayed\(playNextAfterSilence, gap\.start\(/.test(service)).toBe(true);
@@ -123,7 +123,7 @@ describe("scheduled Android playback uses the same repetition pause", () => {
 
   it("pauses after a repetition that is followed by another, never after the final one", () => {
     const service = kt("AudioAdhkarPlaybackService.kt");
-    expect(service).toMatch(/Step\.NEXT_REPETITION, PlaybackCursor\.Step\.NEXT_DHIKR -> startSilence\(\)/);
+    expect(service).toMatch(/PlaybackCursor\.Step\.NEXT_REPETITION, PlaybackCursor\.Step\.NEXT_DHIKR -> \{\s*savePlayAllProgress\(\)[^\n]*\n\s*startSilence\(\)/);
     expect(service).toMatch(/Step\.FINISHED -> finishSession\(\)/);
     expect(kt("AudioAdhkarLogic.kt")).toMatch(/repetition < item\.repetitions -> Step\.NEXT_REPETITION/);
   });

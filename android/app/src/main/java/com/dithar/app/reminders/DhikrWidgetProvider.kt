@@ -55,6 +55,9 @@ class DhikrWidgetProvider : AppWidgetProvider() {
         // The last widget was removed: its refresh alarm (and a widget-only reminder rotation) stop.
         RemindersScheduler.armWidgetRefresh(context)
         RemindersScheduler.armReminder(context)
+        // Home's preview goes back to the rotation's due item.
+        ReminderStore(context).widgetDrawn = null
+        WidgetRenderer.onChange?.invoke()
     }
 }
 
@@ -62,10 +65,15 @@ object WidgetRenderer {
     /** Background bitmaps stay small: RemoteViews bitmaps cross processes (and memory) on every update. */
     private const val MAX_BACKGROUND_WIDTH = 540
 
+    /** Told after every redraw request, drawn or not (RemindersPlugin passes it on as "widgetChanged", for Home's preview). */
+    @Volatile
+    var onChange: (() -> Unit)? = null
+
     fun updateAll(context: Context) {
         val manager = AppWidgetManager.getInstance(context)
         val ids = manager.getAppWidgetIds(ComponentName(context, DhikrWidgetProvider::class.java))
-        if (ids.isNotEmpty()) update(context, manager, ids)
+        if (ids.isNotEmpty()) update(context, manager, ids) else ReminderStore(context).widgetDrawn = null
+        onChange?.invoke()
     }
 
     fun update(context: Context, manager: AppWidgetManager, ids: IntArray) {
@@ -101,7 +109,14 @@ object WidgetRenderer {
                 size to build(context, id, index, size, chosen, candidates.firstOrNull(), background, style, favorites)
             }
             manager.updateAppWidget(id, combine(views))
-            if (id == ids.first()) drawnComment = chosen?.second?.id
+            if (id == ids.first()) {
+                drawnComment = chosen?.second?.id
+                // What a tap on its first size opens — the comment only where that size had room for it.
+                store.widgetDrawn = chosen?.let { (item, comment) ->
+                    val shown = comment.takeIf { sizes.firstOrNull()?.let { size -> measure(context, size, item, comment, style.en)?.showComment } == true }
+                    WidgetPreview.Drawn(ReminderOpen.of(item, shown), slot)
+                }
+            }
         }
         val next = memory.after(slot, drawnComment)
         if (next != memory) store.widgetComments = next

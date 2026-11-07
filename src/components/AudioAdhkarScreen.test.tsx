@@ -11,7 +11,11 @@ import { LanguageProvider } from "../theme/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import { PaletteProvider } from "../theme/PaletteContext";
 import { writtenAdhkarItems } from "../data/written-adhkar";
-import { AUDIO_VARIOUS_ITEMS } from "../data/audio-adhkar";
+import { AUDIO_VARIOUS_ITEMS, audioAdhkarItems } from "../data/audio-adhkar";
+import type { WrittenAdhkarItem } from "../data/written-adhkar";
+import { audioRepetitionTotal, playAllRunIds } from "../lib/audioAdhkarPlayer";
+import type { AudioAdhkarPlayAllEntry } from "../lib/audioAdhkarPlayer";
+import { loadResumePoint, saveWebResumePoint } from "../lib/audioAdhkarResume";
 import { LANGUAGE_STORAGE_KEY } from "../lib/appearancePreferences";
 import { setUserRepeatCount } from "../lib/audioUserRepeat";
 import { commitAudioCompletions, resetAudioAdhkarCountsMemoryForTesting } from "../lib/audioAdhkarCounts";
@@ -381,6 +385,70 @@ describe("Play All («تشغيل الكل»)", () => {
     render(<AudioAdhkarScreen {...nav} onSelectCategory={noop} />);
     expect(getNowPlaying()).toBeNull();
     render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
+    expect(bar().getAttribute("data-play-all")).toBe("idle");
+  });
+});
+
+
+describe("Resume Adhkar on Play All", () => {
+  const click = (el: Element) => act(() => el.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+  const settle = () => act(async () => void (await new Promise((r) => setTimeout(r, 0))));
+  const bar = () => container.querySelector("[data-play-all]") as HTMLElement;
+  const entries = (section: "morning" | "evening"): AudioAdhkarPlayAllEntry[] => audioAdhkarItems[section].map((item) => ({ kind: "written" as const, item }));
+  /** A dhikr of the run that plays in the app's own audio element and has several repetitions. */
+  const multiAt = (section: "morning" | "evening") => {
+    const ids = playAllRunIds(section, entries(section));
+    const index = ids.findIndex((id) => {
+      const item = (audioAdhkarItems[section] as WrittenAdhkarItem[]).find((i) => i.id === id)!;
+      return !item.quranRef && audioRepetitionTotal(item) > 1;
+    });
+    return { ids, index };
+  };
+  beforeEach(() => setAudioElementFactory(() => ({ src: "", play() {}, pause() {}, removeAttribute() {}, load() {}, onended: null, onerror: null }) as unknown as AudioElementLike));
+  afterEach(() => stopAudio());
+
+  it("offers Resume (with where it stopped) and Restart for an unfinished run — not Play All", async () => {
+    const { ids, index } = multiAt("morning");
+    saveWebResumePoint("morning", { ids, index, repetition: 2, updatedAt: 1 });
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
+    await settle();
+    expect(bar().getAttribute("data-play-all")).toBe("resume");
+    expect(container.querySelector("[data-play-all-button]")).toBeNull();
+    expect(container.querySelector("[data-play-all-status]")!.textContent).toBe(`توقفت عند الذكر ${index + 1} من ${ids.length}، التكرار 2`);
+    click(container.querySelector("[data-play-all-resume]")!);
+    expect(getNowPlaying()).toMatchObject({ collection: "morning", itemId: ids[index], repetition: 2, status: "playing" });
+    expect(bar().getAttribute("data-play-all")).toBe("playing");
+    expect(container.querySelector("[data-play-all-status]")!.textContent).toBe(`الذكر ${index + 1} من ${ids.length}`);
+  });
+
+  it("Restart clears the point and plays from the first dhikr", async () => {
+    const { ids, index } = multiAt("morning");
+    saveWebResumePoint("morning", { ids, index, repetition: 2, updatedAt: 1 });
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
+    await settle();
+    click(container.querySelector("[data-play-all-restart]")!);
+    await settle();
+    expect(getNowPlaying()).toMatchObject({ itemId: ids[0], repetition: 1 });
+    expect(await loadResumePoint("morning")).toBeNull();
+  });
+
+  it("each section shows only its own point; a run of a changed list isn't offered", async () => {
+    const { ids, index } = multiAt("evening");
+    saveWebResumePoint("evening", { ids, index, repetition: 1, updatedAt: 1 });
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "morning" }} onBack={noop} />);
+    await settle();
+    expect(bar().getAttribute("data-play-all")).toBe("idle");
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "written", key: "evening" }} onBack={noop} />);
+    await settle();
+    expect(bar().getAttribute("data-play-all")).toBe("resume");
+    saveWebResumePoint("evening", { ids: [...ids].reverse(), index, repetition: 1, updatedAt: 2 });
+    await settle();
+    expect(bar().getAttribute("data-play-all")).toBe("idle");
+  });
+
+  it("is never offered for Various", async () => {
+    render(<AudioAdhkarListScreen {...nav} list={{ kind: "various" }} onBack={noop} />);
+    await settle();
     expect(bar().getAttribute("data-play-all")).toBe("idle");
   });
 });
