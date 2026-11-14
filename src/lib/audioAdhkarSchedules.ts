@@ -24,7 +24,7 @@ import type { WrittenAdhkarItem } from "../data/written-adhkar";
 import { AUDIO_VARIOUS_ITEMS } from "../data/audio-adhkar";
 import { getMorningEveningAudioSource, getSpokenText } from "./morningEveningAudio";
 import { bundledQuranAudio } from "./quranAudio";
-import { getAvailableQuranReciters } from "../data/quranReciters";
+import { getPlayableQuranReciters, onQuranAudioFilesChanged, quranAudioDownloadsReady } from "./quranAudioDownloads";
 import { applyNativePlaybackState, audioRepetitionTotal, getAudioAdhkarSource } from "./audioAdhkarPlayer";
 import { AudioAdhkarNative, isAudioAdhkarNativeAvailable } from "./audioAdhkarNative";
 import type { NativePlaylistItem, NativeRecitation, NativeScheduleResult, NativeSection } from "./audioAdhkarNative";
@@ -64,7 +64,8 @@ function playlistAudio(section: DailySection, item: WrittenAdhkarItem): (NativeR
   if (!files) return null;
   const source = getMorningEveningAudioSource(section, item);
   if (source?.kind !== "quran" || loadSectionReciterChoice(section) !== "random") return { ...files, rotation: [] };
-  const reciters = getAvailableQuranReciters();
+  // The reciters on this device only (lib/quranAudioDownloads.ts): native picks among files it can open.
+  const reciters = getPlayableQuranReciters();
   const rotation = reciters.map((r) => bundledQuranAudio(source.ref, r));
   if (rotation.some((a) => a === null)) return null;
   return { ...files, rotation: rotation.map((a, i) => nativeRecitation(a!, reciters[i])) };
@@ -124,6 +125,8 @@ export function syncAudioAdhkarSchedules(now: Date = new Date()): Promise<AudioA
 
 async function syncNow(now: Date): Promise<AudioAdhkarScheduleResult> {
   if (!isAudioAdhkarNativeAvailable()) return { available: false };
+  // Which downloaded reciters are on the device decides what the Qur'anic adhkar play: known first.
+  await quranAudioDownloadsReady();
   const adhanWindows = buildAdhanWindows(now);
   const location = currentPrayerLocation();
   // A section goes to native enabled when it is ready (loadSectionStatus — the same status the settings show).
@@ -253,6 +256,8 @@ export function startAudioAdhkarNativeSync(): () => void {
   ];
   const unsubscribeLocation = subscribeLocationChanges(resync);
   const unsubscribeWeekly = subscribeWeeklySchedule(resync);
+  // A reciter downloaded or deleted: the playlists then play other files.
+  const unsubscribeQuranFiles = onQuranAudioFilesChanged(resync);
   // The app's volume levels (Settings → إعدادات الصوت), once per launch — every change is pushed as it is made.
   void syncAudioVolumesToNative();
   resync();
@@ -262,6 +267,7 @@ export function startAudioAdhkarNativeSync(): () => void {
     adhan.stop();
     unsubscribeLocation();
     unsubscribeWeekly();
+    unsubscribeQuranFiles();
     for (const handle of handles) void handle.then((h) => h.remove());
   };
 }

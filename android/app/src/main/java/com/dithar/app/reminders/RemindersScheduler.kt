@@ -12,6 +12,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import com.dithar.app.MainActivity
 import com.dithar.app.audioadhkar.AdhanSuppression
 import com.dithar.app.audioadhkar.AudioAdhkarScheduler
@@ -214,6 +215,10 @@ object RemindersScheduler {
             // All-time counts: that day's snapshot, else the newest earlier one (nothing was recorded in the app since).
             val allTime = (snapshot ?: store.summarySnapshot?.takeIf { it.date < day })?.allTime
             val known = DailySummary.recordsKnown(snapshot, day, store.appOpenedOn, store.summarySnapshotUnreadable)
+            if (!known) {
+                val reason = DailySummary.unknownReason(snapshot, day, store.appOpenedOn, store.summarySnapshotUnreadable, store.summarySnapshot?.date)
+                Log.w(SUMMARY_LOG_TAG, "End-of-day summary for $day: records unknown — $reason")
+            }
             val message = DailySummary.compose(snapshot, day, floatingToday, store.summaryMode, store.language, pendingListening, pendingStoppedEarly, pendingSessions, ofYesterday = day != today, pendingVariousPlays = pendingVarious, allTimeSoFar = allTime, recordsKnown = known, encouragements = store.summaryEncouragements, recentEncouragements = store.summaryRecentEncouragements)
             message.encouragementId?.let { store.summaryRecentEncouragements = DailySummaryEncouragement.remember(store.summaryRecentEncouragements, it) }
             val en = store.language == "en"
@@ -237,6 +242,7 @@ object RemindersScheduler {
         context.getSystemService(NotificationManager::class.java).cancel(REMINDER_NOTIFICATION_ID)
     }
 
+    private const val SUMMARY_LOG_TAG = "DitharSummary"
     private const val REMINDER_CHANNEL = "dithar_reminders"
     private const val SUMMARY_CHANNEL = "dithar_daily_summary"
     private const val REMINDER_NOTIFICATION_ID = 7410

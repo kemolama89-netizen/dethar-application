@@ -18,7 +18,12 @@
 // Scheduled (background) Evening playback can't run this JS, so the
 // Android service applies the same rotation itself — see
 // audioAdhkarSchedules.ts and AudioAdhkarRotation (AudioAdhkarLogic.kt).
-import { getAvailableQuranReciters, getDefaultQuranReciter, getQuranReciterById } from "../data/quranReciters";
+//
+// Only a reciter who plays on this device is ever returned
+// (quranAudioDownloads.ts): in the Android app, a reciter not downloaded is
+// replaced by the built-in one (the selection itself is kept), and the
+// rotation goes through the reciters on the device.
+import { getDefaultQuranReciter, getQuranReciterById } from "../data/quranReciters";
 import type { QuranReciter } from "../data/quranReciters";
 import {
   loadQuranReciterMode,
@@ -26,14 +31,15 @@ import {
   loadSelectedQuranReciterId,
   saveQuranRotationIndex,
 } from "./quranAudioPreferences";
+import { getPlayableQuranReciters, playableQuranReciter } from "./quranAudioDownloads";
 
-/** The rotation's reciters, in order. */
+/** The rotation's reciters, in order: the available ones on this device. */
 export function getQuranRotationReciters(): QuranReciter[] {
-  return getAvailableQuranReciters();
+  return getPlayableQuranReciters();
 }
 
 function selectedReciter(): QuranReciter {
-  return getQuranReciterById(loadSelectedQuranReciterId()) ?? getDefaultQuranReciter();
+  return playableQuranReciter(getQuranReciterById(loadSelectedQuranReciterId()) ?? getDefaultQuranReciter());
 }
 
 function rotationSlot(): { reciters: QuranReciter[]; index: number } | null {

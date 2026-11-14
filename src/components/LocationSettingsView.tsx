@@ -8,6 +8,7 @@ import { resolveActiveLocationRecord, saveManualLocation } from "../lib/location
 import type { ActiveLocationRecord } from "../lib/locationSettings";
 import { detectMyLocation, openAppLocationSettings } from "../lib/deviceLocation";
 import { isLocationPermissionNativeAvailable } from "../lib/locationPermissionNative";
+import { scrollIntoScreen } from "../lib/screenScroll";
 
 type DetectStatus = "idle" | "detecting" | "success" | "denied" | "blocked" | "unavailable";
 
@@ -75,7 +76,7 @@ export function LocationSettingsView({ onBack }: { onBack: () => void }) {
 
   function handleChooseManual() {
     searchRef.current?.focus();
-    searchRef.current?.scrollIntoView?.({ block: "center", behavior: "smooth" });
+    scrollIntoScreen(searchRef.current, "center", true);
   }
 
   const detectMessage =

@@ -21,6 +21,14 @@
 // «الصلاة خير من النوم» is actually heard in it. Segments end up to 0.6 s
 // after their last phrase, never reaching into the following phrase.
 //
+// The full adhan's END (2026-11-13): the closing «لا إله إلا الله» is played to its natural end.
+// The pause-based end above stopped 18 recordings while the final «الله» — its held note, or the
+// recording's own reverb — was still sounding (by 0.2–2.7 s; Nasser Al-Qatami's at full voice).
+// Each full end is now where that sound has decayed to within 6 dB of the recording's own noise
+// floor and stays there for 0.3 s, plus 0.1 s — never past the file's end, and never into what
+// follows (Saad Al-Ghamdi's dua stays excluded). Measured from the files, 20 ms RMS; nothing is
+// added or edited. The takbeer and «الصلاة خير من النوم» segments are unchanged.
+//
 // Opening start (full and takbeer, always equal): measured per recording at
 // 10 ms resolution as the first sustained VOICED sound (periodic, 80–400 Hz,
 // above the file's own noise floor) — so leading silence, hum, tape hiss and
@@ -88,7 +96,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "fajr",
     path: "audio/adhan/optimized/Mishary Rashid Alafasy - Fajr - azan-hejaz-2014-al-fajer [ia].mp3",
     duration: 215.64,
-    segments: { full: { start: 0.32, end: 214.50 }, takbeer: { start: 0.32, end: 24.44 }, fajrPhrase: { start: 156.27, end: 182.62 } },
+    segments: { full: { start: 0.32, end: 215.36 }, takbeer: { start: 0.32, end: 24.44 }, fajrPhrase: { start: 156.27, end: 182.62 } },
   },
   {
     id: "alafasy-fajr-kurd",
@@ -96,7 +104,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "fajr",
     path: "audio/adhan/Mishary Rashid Alafasy - Fajr - azan-kurd-low-2010-alfajr [gh].mp3",
     duration: 162.12,
-    segments: { full: { start: 0.62, end: 161.58 }, takbeer: { start: 0.62, end: 19.32 }, fajrPhrase: { start: 116.35, end: 141.42 } },
+    segments: { full: { start: 0.62, end: 161.90 }, takbeer: { start: 0.62, end: 19.32 }, fajrPhrase: { start: 116.35, end: 141.42 } },
   },
   {
     id: "alafasy-fajr-nahawand",
@@ -104,7 +112,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "fajr",
     path: "audio/adhan/optimized/Mishary Rashid Alafasy - Fajr - azan-nahawand-2014-alfajr [ia].mp3",
     duration: 292.34,
-    segments: { full: { start: 0.41, end: 291.44 }, takbeer: { start: 0.41, end: 36.16 }, fajrPhrase: { start: 224.01, end: 255.10 } },
+    segments: { full: { start: 0.41, end: 292.34 }, takbeer: { start: 0.41, end: 36.16 }, fajrPhrase: { start: 224.01, end: 255.10 } },
   },
   {
     id: "alafasy-fajr-nawa-athar",
@@ -112,7 +120,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "fajr",
     path: "audio/adhan/optimized/Mishary Rashid Alafasy - Fajr - azan-nawa-athar-2014-al-fajr [ia].mp3",
     duration: 240.33,
-    segments: { full: { start: 0.40, end: 239.06 }, takbeer: { start: 0.40, end: 34.94 }, fajrPhrase: { start: 182.17, end: 210.08 } },
+    segments: { full: { start: 0.40, end: 239.94 }, takbeer: { start: 0.40, end: 34.94 }, fajrPhrase: { start: 182.17, end: 210.08 } },
   },
   {
     id: "alafasy-fajr-rast",
@@ -120,7 +128,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "fajr",
     path: "audio/adhan/optimized/Mishary Rashid Alafasy - Fajr - azan-rast-2014-al-fajr [ia].mp3",
     duration: 209.87,
-    segments: { full: { start: 0.49, end: 208.76 }, takbeer: { start: 0.49, end: 24.76 }, fajrPhrase: { start: 150.97, end: 180.84 } },
+    segments: { full: { start: 0.49, end: 209.64 }, takbeer: { start: 0.49, end: 24.76 }, fajrPhrase: { start: 150.97, end: 180.84 } },
   },
   {
     id: "alafasy-fajr-saba",
@@ -128,7 +136,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "fajr",
     path: "audio/adhan/optimized/Mishary Rashid Alafasy - Fajr - azan-saba-2014-al-fajr [ia].mp3",
     duration: 207.44,
-    segments: { full: { start: 0.33, end: 206.26 }, takbeer: { start: 0.33, end: 26.76 }, fajrPhrase: { start: 154.35, end: 178.08 } },
+    segments: { full: { start: 0.33, end: 207.08 }, takbeer: { start: 0.33, end: 26.76 }, fajrPhrase: { start: 154.35, end: 178.08 } },
   },
   {
     id: "alafasy-fajr-phrase-excerpt",
@@ -176,7 +184,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/optimized/Abdul Basit Abdul Samad - Abdulbasit_Abdusamad_1_-_Egypt_(عبد_الباسط_عبد_الصمد_-_مصر) [ia].mp3",
     duration: 248.53,
-    segments: { full: { start: 1.90, end: 242.12 }, takbeer: { start: 1.90, end: 31.38 }, fajrPhrase: null },
+    segments: { full: { start: 1.90, end: 242.88 }, takbeer: { start: 1.90, end: 31.38 }, fajrPhrase: null },
   },
   {
     id: "shuaisha",
@@ -193,7 +201,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/Ahmed Al-Nafees - Ahmad_Al_Nafees_(أحمد_النفيس) [gh].mp3",
     duration: 212.82,
-    segments: { full: { start: 0.47, end: 204.76 }, takbeer: { start: 0.47, end: 35.68 }, fajrPhrase: null },
+    segments: { full: { start: 0.47, end: 206.32 }, takbeer: { start: 0.47, end: 35.68 }, fajrPhrase: null },
   },
   {
     id: "nuaina",
@@ -209,7 +217,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/Ali Mahmoud - adhan [ia].mp3",
     duration: 149.32,
-    segments: { full: { start: 0.31, end: 148.92 }, takbeer: { start: 0.31, end: 20.37 }, fajrPhrase: null },
+    segments: { full: { start: 0.31, end: 149.14 }, takbeer: { start: 0.31, end: 20.37 }, fajrPhrase: null },
   },
   {
     id: "mulla-haram",
@@ -252,7 +260,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/optimized/Mahmoud Mohamed Ramadan - adhan 1397 AH [gh].mp3",
     duration: 234.32,
-    segments: { full: { start: 0.43, end: 232.44 }, takbeer: { start: 0.43, end: 36.02 }, fajrPhrase: null },
+    segments: { full: { start: 0.43, end: 233.50 }, takbeer: { start: 0.43, end: 36.02 }, fajrPhrase: null },
   },
   {
     id: "alafasy-saba-2",
@@ -260,7 +268,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/Mishary Rashid Alafasy -  azan-saba-2-2014-al-fajr [gh].mp3",
     duration: 246.39,
-    segments: { full: { start: 0.51, end: 245.84 }, takbeer: { start: 0.51, end: 33.90 }, fajrPhrase: null },
+    segments: { full: { start: 0.51, end: 246.39 }, takbeer: { start: 0.51, end: 33.90 }, fajrPhrase: null },
   },
   {
     id: "alafasy-classic",
@@ -268,7 +276,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/optimized/Mishary Rashid Alafasy - 009-mshare-rashed__up_by_muslem [ia].mp3",
     duration: 231.97,
-    segments: { full: { start: 0.26, end: 230.84 }, takbeer: { start: 0.26, end: 35.32 }, fajrPhrase: null },
+    segments: { full: { start: 0.26, end: 231.54 }, takbeer: { start: 0.26, end: 35.32 }, fajrPhrase: null },
   },
   {
     id: "alafasy-kuwait",
@@ -276,7 +284,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/Mishary Rashid Alafasy - Mishary_Rashid_Alafasy_2_-_Kuwait_(مشاري_راشد_العفاسي_-_الكويت) [ia].mp3",
     duration: 231.63,
-    segments: { full: { start: 0.35, end: 229.56 }, takbeer: { start: 0.35, end: 37.72 }, fajrPhrase: null },
+    segments: { full: { start: 0.35, end: 230.98 }, takbeer: { start: 0.35, end: 37.72 }, fajrPhrase: null },
   },
   {
     id: "tablawi",
@@ -292,7 +300,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/optimized/Mohamed Omran - Azan Mohamed Imran 256kbps [ia].mp3",
     duration: 185.41,
-    segments: { full: { start: 1.41, end: 182.82 }, takbeer: { start: 1.41, end: 24.36 }, fajrPhrase: null },
+    segments: { full: { start: 1.41, end: 183.62 }, takbeer: { start: 1.41, end: 24.36 }, fajrPhrase: null },
   },
   {
     id: "refaat",
@@ -308,7 +316,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/Mohamed Siddiq El-Minshawi - menshawi_rast [gh].mp3",
     duration: 188.97,
-    segments: { full: { start: 0.59, end: 188.66 }, takbeer: { start: 0.59, end: 29.52 }, fajrPhrase: null },
+    segments: { full: { start: 0.59, end: 188.94 }, takbeer: { start: 0.59, end: 29.52 }, fajrPhrase: null },
   },
   {
     id: "mustafa-ismail",
@@ -332,7 +340,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/Nasser Al-Qatami - Nasser_Al_Qatami_-_HQ_(ناصر_القطامي) [aladha].mp3",
     duration: 131.52,
-    segments: { full: { start: 0.00, end: 128.64 }, takbeer: { start: 0.00, end: 26.00 }, fajrPhrase: null },
+    segments: { full: { start: 0.00, end: 131.30 }, takbeer: { start: 0.00, end: 26.00 }, fajrPhrase: null },
   },
   {
     id: "saad-ghamdi",
@@ -340,7 +348,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/optimized/Saad Al-Ghamdi - SaadAlGhamidiAthan [ia].m4a",
     duration: 138.46,
-    segments: { full: { start: 1.35, end: 117.28 }, takbeer: { start: 1.35, end: 19.20 }, fajrPhrase: null },
+    segments: { full: { start: 1.35, end: 118.20 }, takbeer: { start: 1.35, end: 19.20 }, fajrPhrase: null },
   },
   {
     id: "naqshbandi",
@@ -372,7 +380,7 @@ export const adhanRecordings: readonly AdhanRecording[] = [
     kind: "regular",
     path: "audio/adhan/المسجد النبوي 3.mp3",
     duration: 221.98,
-    segments: { full: { start: 1.30, end: 220.52 }, takbeer: { start: 1.30, end: 32.18 }, fajrPhrase: null },
+    segments: { full: { start: 1.30, end: 221.16 }, takbeer: { start: 1.30, end: 32.18 }, fajrPhrase: null },
   },
 ];
 

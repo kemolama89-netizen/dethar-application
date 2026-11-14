@@ -19,11 +19,18 @@
 //     picked it fall back to the default until it returns, and their saved
 //     choice is kept rather than overwritten.
 //
-// AUDIO: every reciter's recitation is bundled with the app (offline, so
-// scheduled Evening playback never needs the network) — the original
-// EveryAyah.com ayah-by-ayah files, copied unchanged from that reciter's
-// `everyAyahFolder` into public/audio/quran/{id}/ (see quranAudioBundle.ts
-// for which ayahs are bundled).
+// AUDIO: every reciter's recitation is the original EveryAyah.com
+// ayah-by-ayah files, copied unchanged from that reciter's `everyAyahFolder`
+// into public/audio/quran/{id}/ (see quranAudioBundle.ts for which ayahs).
+// The web app has them all. The Android app carries only the built-in
+// reciter (src/data/quranAudioDownloads.json `bundled`, the default below);
+// the others are listened to online and downloaded on demand
+// (lib/quranAudioDownloads.ts), and until then the built-in reciter plays in
+// their place — so the Qur'anic adhkar always play, offline.
+//
+// Reciters added after an app version come from the hosted catalog
+// (lib/quranReciterCatalog.ts); getQuranReciterById and
+// getAvailableQuranReciters include them, after the ones below.
 //
 // BASMALA: every Quranic recitation (Ayat al-Kursi, al-Ikhlas, al-Falaq,
 // an-Nas) starts with the basmala, before EVERY repetition — never between
@@ -31,6 +38,10 @@
 // reciter's or a generated one. Each reciter's `basmala` says where his
 // comes from (see QuranBasmala); one with no voice-verified basmala plays
 // none rather than a borrowed one.
+
+import { BUNDLED_QURAN_AYAHS, quranAyahFileStem } from "./quranAudioBundle";
+import { catalogReciters } from "../lib/quranReciterCatalog";
+import type { QuranCatalogReciter } from "../lib/quranReciterCatalog";
 
 export type QuranReciterStyle = "murattal" | "mujawwad";
 
@@ -172,15 +183,25 @@ export const QURAN_RECITERS: readonly QuranReciter[] = [
   },
 ];
 
-export const DEFAULT_QURAN_RECITER_ID = "abdulbasit-murattal";
+/** The default, and the reciter built into the Android app (src/data/quranAudioDownloads.json `bundled`). */
+export const DEFAULT_QURAN_RECITER_ID = "husary-murattal";
 
-export function getQuranReciterById(id: string): QuranReciter | undefined {
-  return QURAN_RECITERS.find((r) => r.id === id);
+const KNOWN_IDS: ReadonlySet<string> = new Set(QURAN_RECITERS.map((r) => r.id));
+/** Every file a reciter needs for the Qur'anic adhkar (its basmala aside): one per bundled ayah. */
+const REQUIRED_FILES = (): string[] => BUNDLED_QURAN_AYAHS.map((a) => `${quranAyahFileStem(a.surah, a.ayah)}.mp3`);
+
+/** The hosted catalog's reciters (lib/quranReciterCatalog.ts), with their files' sizes and checksums. */
+export function getCatalogQuranReciters(): QuranCatalogReciter[] {
+  return catalogReciters(KNOWN_IDS, REQUIRED_FILES());
 }
 
-/** Reciters the user may pick right now (the picker's list). */
+export function getQuranReciterById(id: string): QuranReciter | undefined {
+  return QURAN_RECITERS.find((r) => r.id === id) ?? getCatalogQuranReciters().find((c) => c.reciter.id === id)?.reciter;
+}
+
+/** Reciters the user may pick right now (the picker's list): this version's, then the catalog's. */
 export function getAvailableQuranReciters(): QuranReciter[] {
-  return QURAN_RECITERS.filter((r) => r.available);
+  return [...QURAN_RECITERS.filter((r) => r.available), ...getCatalogQuranReciters().map((c) => c.reciter)];
 }
 
 /** Always returns a usable reciter: the default one. */

@@ -21,7 +21,7 @@
 //    exactly as they are (wrapQuranText). If that font can't be loaded no image
 //    is made, rather than one in a font that may drop a sign.
 import type { ShareableContent } from "./shareContent";
-import { layoutTafsirCard } from "./shareImageTafsir";
+import { layoutTafsirCard, layoutTafsirPages, tafsirNeedsPages } from "./shareImageTafsir";
 
 export const IMAGE_WIDTH = 1080;
 /** Taller than this and the card is drawn smaller rather than risk an unencodable canvas. */
@@ -437,3 +437,111 @@ export async function renderShareImage(content: ShareableContent, language: "ar"
 
   return canvas.toDataURL("image/png");
 }
+
+// ---- the card, continued (lib/shareImageTafsir.ts layoutTafsirPages) ------------------------
+
+/** The text a long Tafsir's pages carry besides the content's own. */
+export interface TafsirPageTexts {
+  /** The running head of pages 2…n («سورة … · الآية … · تتمة التفسير»). */
+  continued: string;
+  /** The running head of a page that opens with the rest of the verse («… · تتمة الآية»). */
+  verseContinued: string;
+  /** Under a page whose verse goes on: «تتمة الآية في الصفحة التالية». */
+  verseContinues: string;
+  /** «٢ من ٥». */
+  folio: (n: number, total: number) => string;
+  /** «سورة البقرة · الآية ٢٨٢»: named on a page whose verse goes on, before its own reference line is reached. */
+  reference: string;
+}
+
+/** A canvas-measured context for [content], its fonts loaded. */
+async function measuring(content: ShareableContent) {
+  await fontsReady(content.textAr);
+  if (content.quranVerse) await quranFontReady(`${content.textAr} ${verseEndSign(content.quranVerse.ayah)}`);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("canvas unavailable");
+  const measure = (font: string, s: string) => {
+    ctx.font = font;
+    return ctx.measureText(s).width;
+  };
+  return { canvas, ctx, measure };
+}
+
+/**
+ * How many pages a verse with its Tafsir is shared as: 0 for one card (short and medium), else
+ * the long Tafsir's page count.
+ */
+export async function tafsirSharePages(content: ShareableContent, language: "ar" | "en", palette = currentShareColors()): Promise<number> {
+  if (!content.tafsirCard || content.background) return 0;
+  const { measure } = await measuring(content);
+  return tafsirNeedsPages(content, language, palette, measure) ? layoutTafsirPages(content, language, palette, measure).pages.length : 0;
+}
+
+/** Pixels per design unit on a page: 1620×2880 — sharp on a phone, light enough for a many-page PDF. */
+const PAGE_RATIO = 1.5;
+
+/**
+ * Every page of a long Tafsir, in order, as JPEG data URLs (JPEG goes into the PDF as it is):
+ * the card's frame on each; page 1 with the card's header, the others with the running head;
+ * the page number above DITHAR's name.
+ */
+export async function renderTafsirPages(content: ShareableContent, language: "ar" | "en", texts: TafsirPageTexts, palette = currentShareColors()): Promise<{ images: string[]; width: number; height: number }> {
+  const colors = palette;
+  const { canvas, ctx, measure } = await measuring(content);
+  const layout = layoutTafsirPages(content, language, colors, measure);
+  const W = layout.width;
+  const H = layout.height;
+  canvas.width = Math.round(W * PAGE_RATIO);
+  canvas.height = Math.round(H * PAGE_RATIO);
+  const images: string[] = [];
+  const total = layout.pages.length;
+  layout.pages.forEach((page, n) => {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(PAGE_RATIO, PAGE_RATIO);
+    drawCardFrame(ctx, W, H, colors);
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.fillStyle = colors.gold;
+    ctx.fillRect(W / 2 - 30, 92, 60, 3);
+    ctx.direction = language === "en" ? "ltr" : "rtl";
+    if (page.head === "card") {
+      ctx.font = '700 32px "Tajawal", "Segoe UI", sans-serif';
+      if (content.kindLabel) ctx.fillText(content.kindLabel, W / 2, 140);
+    } else {
+      ctx.font = '600 28px "Tajawal", "Segoe UI", sans-serif';
+      ctx.fillStyle = colors.muted;
+      ctx.fillText(page.opensWithVerse ? texts.verseContinued : texts.continued, W / 2, 140);
+    }
+    if (page.rule) {
+      const { y, left, right, gapLeft, gapRight } = page.rule;
+      ctx.save();
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = colors.gold;
+      ctx.fillRect(left, y - 0.75, Math.max(0, gapLeft - left), 1.5);
+      ctx.fillRect(gapRight, y - 0.75, Math.max(0, right - gapRight), 1.5);
+      ctx.restore();
+    }
+    for (const line of page.lines) {
+      ctx.font = line.font;
+      ctx.fillStyle = line.color;
+      ctx.direction = line.dir;
+      ctx.textAlign = line.align;
+      ctx.fillText(line.text, line.x, line.y);
+    }
+    // The page number (and, when the verse goes on, that it does), above the footer.
+    ctx.textAlign = "center";
+    ctx.direction = language === "en" ? "ltr" : "rtl";
+    ctx.fillStyle = colors.muted;
+    ctx.font = '600 28px "Tajawal", "Segoe UI", sans-serif';
+    const folioY = H - FOOTER_H - 34;
+    // A page the verse fills names it (its reference comes only after the verse ends), so it stands on its own if forwarded alone.
+    const folio = page.verseContinues ? `${texts.reference} · ${texts.verseContinues} · ${texts.folio(n + 1, total)}` : texts.folio(n + 1, total);
+    for (let size = 28; size >= 20 && measure(`600 ${size}px "Tajawal"`, folio) > W - 2 * 96; size -= 2) ctx.font = `600 ${size - 2}px "Tajawal", "Segoe UI", sans-serif`;
+    ctx.fillText(folio, W / 2, folioY);
+    drawFooter(ctx, W, H, colors);
+    images.push(canvas.toDataURL("image/jpeg", 0.9));
+  });
+  return { images, width: canvas.width, height: canvas.height };
+}
+

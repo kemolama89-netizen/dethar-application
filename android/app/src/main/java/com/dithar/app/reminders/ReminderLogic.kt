@@ -463,6 +463,14 @@ object DailySummary {
         else -> appOpenedOn != day
     }
 
+    /** Why [recordsKnown] is false, for the log (null when the records are known). */
+    fun unknownReason(snapshot: Snapshot?, day: String, appOpenedOn: String?, storedUnreadable: Boolean, latestDate: String?): String? = when {
+        snapshot != null -> if (snapshot.recordsReadable) null else "the app pushed status \"unavailable\" for $day (its statistics couldn't be read)"
+        storedUnreadable -> "the stored snapshot couldn't be parsed"
+        appOpenedOn == day -> "the app was opened on $day but no snapshot of $day arrived (latest snapshot: ${latestDate ?: "none"})"
+        else -> null
+    }
+
     /** Queued Floating Tasbeeh taps ([epochMillis] to times) of [day] that the snapshot doesn't hold yet. */
     fun newPendingTaps(snapshot: Snapshot?, day: String, queued: List<Triple<String, Long, Int>>): Int {
         val through = snapshot?.takeIf { it.date == day }?.floatingThrough
@@ -686,10 +694,12 @@ object DailySummary {
         val dayAr = if (ofYesterday) "أمس" else "اليوم"
         val listening = listeningLine(withPendingListening(if (known && snapshot?.date == today) snapshot.audio else null, pendingListening, pendingStoppedEarlyMs), en)
         if (!known && !activity.any && listening == null) {
+            // The day's records couldn't be read (RemindersScheduler logs why): a neutral, gentle
+            // note — never a technical error, never "nothing recorded", never invented counts.
             val body = if (en) {
-                "DITHAR couldn't read ${dayEn}'s records, so this summary can't say what was recorded. Open the app to update it."
+                "Take a moment to remember Allah, even with a short dhikr 🌿\nOpen DITHAR to see what was recorded $dayEn."
             } else {
-                "تعذّرت على دِثار قراءة سجلّ $dayAr، فلا يمكن لهذا الملخص أن يذكر ما سُجّل. افتح التطبيق لتحديثه."
+                "خذ لحظة تذكر فيها الله، ولو بذكر يسير 🌿\nافتح دِثار لترى ما سُجّل $dayAr."
             }
             return Message(title, body)
         }
@@ -718,12 +728,23 @@ object DailySummary {
             val picked = if (mode == "stats") null else DailySummaryEncouragement.pick(encouragements, setOf(DailySummaryEncouragement.EMPTY), recentEncouragements, today)
             val fresh = picked?.let(DailySummaryEncouragement::text)
                 ?: if (en) "Tomorrow is a fresh page: begin with a single dhikr after Fajr, and let a little grow." else "غدًا صفحةٌ جديدة: ابدأ بذكرٍ واحد بعد الفجر، ودَع القليل يكبر."
-            val body = when {
-                mode == "stats" -> listOfNotNull(if (en) "No dhikr was recorded in DITHAR $dayEn." else "لم يُسجَّل أي ذكر في دِثار $dayAr.", allTimeText).joinToString("\n")
-                mode == "motivational" && en -> "No dhikr was recorded in DITHAR $dayEn — and that's okay.\n$fresh"
-                mode == "motivational" -> "لم يُسجَّل في دِثار ذكرٌ $dayAr، ولا بأس.\n$fresh"
-                en -> listOfNotNull("No dhikr was recorded in DITHAR $dayEn — and that's okay.", allTimeText, fresh).joinToString("\n")
-                else -> listOfNotNull("لم يُسجَّل في دِثار ذكرٌ $dayAr، ولا بأس.", allTimeText, fresh).joinToString("\n")
+            // While the day is still going: an invitation rather than a tally ("in DITHAR" — it never
+            // claims the user did nothing). The library's own message follows it when one fits.
+            val invitation = if (en) {
+                "You haven't started your wird in DITHAR today yet 🌿 Take a moment to remember Allah, even with a short dhikr."
+            } else {
+                "لم تبدأ وردك في دِثار اليوم بعد 🌿 خذ لحظة تذكر فيها الله، ولو بذكر يسير."
+            }
+            val lead = when {
+                !ofYesterday -> invitation
+                en -> "No dhikr was recorded in DITHAR $dayEn — and that's okay."
+                else -> "لم يُسجَّل في دِثار ذكرٌ $dayAr، ولا بأس."
+            }
+            val after = if (ofYesterday) fresh else picked?.let(DailySummaryEncouragement::text)
+            val body = when (mode) {
+                "stats" -> listOfNotNull(if (en) "No dhikr was recorded in DITHAR $dayEn." else "لم يُسجَّل أي ذكر في دِثار $dayAr.", allTimeText).joinToString("\n")
+                "motivational" -> listOfNotNull(lead, after).joinToString("\n")
+                else -> listOfNotNull(lead, allTimeText, after).joinToString("\n")
             }
             return Message(title, body, picked?.id)
         }

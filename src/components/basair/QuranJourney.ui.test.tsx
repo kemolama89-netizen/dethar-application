@@ -8,7 +8,7 @@ import { LanguageProvider } from "../../theme/LanguageContext";
 import { LANGUAGE_STORAGE_KEY } from "../../lib/appearancePreferences";
 import { getSaadiVerse } from "../../lib/saadiTafsir";
 import { loadJourney } from "../../lib/quranJourney";
-import { todayLocalDate } from "../../lib/stats";
+import { addDays, todayLocalDate } from "../../lib/stats";
 import { VerseTafsirView } from "./TafsirReadingView";
 import { QuranJourneyStatCard } from "../QuranJourneyStatCard";
 
@@ -165,6 +165,66 @@ describe("the day's page in Basa'ir", () => {
   });
 });
 
+describe("the Journey's previous days, from the day's leaf", () => {
+  /** Three pages explored on the three days before today; today's page (4) not yet read. */
+  const seedPast = () => {
+    const t = todayLocalDate();
+    const visits = [
+      { page: 1, insight: "1:2", localDate: addDays(t, -3), ts: 1 },
+      { page: 2, insight: "2:2", localDate: addDays(t, -2), ts: 2 },
+      { page: 3, insight: "2:6", localDate: addDays(t, -1), ts: 3 },
+    ];
+    localStorage.setItem(KEY, JSON.stringify({ v: 1, rounds: [{ n: 1, startedOn: addDays(t, -3), visits }] }));
+  };
+  const pastReady = () => q("[data-journey-history-view] [data-tafsir-passage]") !== null;
+
+  it("opens the newest earlier day from the day's leaf, and goes back through every earlier day — today's page is not among them", async () => {
+    seedPast();
+    await openBasair();
+    expect(today()).toMatchObject({ page: 4 });
+    await click(q("[data-journey-mark]"));
+    await until(() => q("[data-journey-past-days]") !== null);
+    expect(q("[data-journey-past-days]")!.textContent).toBe("الأيام السابقة");
+    await click(q("[data-journey-past-days]"));
+    await until(pastReady);
+    expect(q("[data-journey-history-entry]")!.getAttribute("data-journey-history-entry")).toBe("1:3");
+    expect(q("[data-journey-history-view] [data-journey-page='3']")).not.toBeNull();
+    expect((q("[data-journey-history-newer]") as HTMLButtonElement).disabled).toBe(true);
+    await click(q("[data-journey-history-older]"));
+    await until(() => q("[data-journey-history-entry]")?.getAttribute("data-journey-history-entry") === "1:2");
+    await click(q("[data-journey-history-older]"));
+    await until(() => q("[data-journey-history-entry]")?.getAttribute("data-journey-history-entry") === "1:1");
+    expect((q("[data-journey-history-older]") as HTMLButtonElement).disabled).toBe(true);
+    // Closing it returns to the day's leaf, still today's page.
+    await click(q("[data-journey-history-view] [data-journey-close]"));
+    expect(q("[data-journey-history-view]")).toBeNull();
+    expect(q("[data-journey-leaf]")!.getAttribute("data-journey-leaf")).toBe(today().insight);
+  });
+
+  it("counts nothing while an earlier day is open — not that day, not today's page under it", async () => {
+    seedPast();
+    await openBasair();
+    await click(q("[data-journey-mark]"));
+    await until(() => q("[data-journey-past-days]") !== null);
+    await click(q("[data-journey-past-days]"));
+    await until(pastReady);
+    const before = loadJourney()!.rounds;
+    await settle(400); // Well past DAILY_VIEW_MS (60 ms here).
+    expect(loadJourney()!.rounds).toEqual(before);
+    expect(explored()).toEqual([1, 2, 3]);
+    // Back on today's leaf, today's page counts as before — once, dated today.
+    await click(q("[data-journey-history-view] [data-journey-close]"));
+    await until(() => explored().length === 4);
+    expect(loadJourney()!.rounds[0].visits[3]).toMatchObject({ page: 4, localDate: todayLocalDate() });
+  });
+
+  it("isn't offered before there is an earlier day", async () => {
+    await openBasair();
+    await openLeaf();
+    expect(q("[data-journey-past-days]")).toBeNull();
+  });
+});
+
 describe("opened from the daily notification", () => {
   const setVisibility = (state: "visible" | "hidden") =>
     act(async () => {
@@ -228,5 +288,73 @@ describe("the Qur'an Journey in Statistics", () => {
     expect(q("[data-journey-history]")!.children).toHaveLength(10);
     await click(q("[data-journey-show-all]"));
     expect(q("[data-journey-history]")!.children).toHaveLength(616);
+  });
+
+  describe("a past day, opened from the page history", () => {
+    const seed = () => {
+      const visits = [
+        { page: 1, insight: "1:2", localDate: "2026-11-10", ts: 1 },
+        { page: 2, insight: "2:2", localDate: "2026-11-11", ts: 2 },
+        { page: 3, insight: "2:6", localDate: "2026-11-12", ts: 3 },
+      ];
+      localStorage.setItem(KEY, JSON.stringify({ v: 1, rounds: [{ n: 1, startedOn: "2026-11-10", visits }] }));
+      return localStorage.getItem(KEY);
+    };
+    const leafReady = () => q("[data-journey-history-view] [data-tafsir-passage]") !== null;
+
+    it("opens the entry's own leaf — its date, page, verse and al-Sa'di's comment with its source — and moves to newer and older entries", async () => {
+      seed();
+      await card();
+      const rows = container.querySelectorAll("[data-journey-history-row]");
+      expect([...rows].map((r) => r.getAttribute("data-journey-history-row"))).toEqual(["1:3", "1:2", "1:1"]);
+      await click(rows[0]);
+      await until(leafReady);
+      expect(q("[data-journey-history-entry]")!.getAttribute("data-journey-history-entry")).toBe("1:3");
+      expect(q("[data-journey-leaf]")!.getAttribute("data-journey-leaf")).toBe("2:6");
+      expect(q("[data-journey-leaf-title]")!.textContent).toContain("١٢ نوفمبر");
+      expect(q("[data-journey-page='3']")).not.toBeNull();
+      expect(q("[data-tafsir-source]")!.textContent).toContain("السعدي");
+      // A past entry is never shown as today's page or marked read.
+      expect(q("[data-journey-leaf-title]")!.textContent).not.toContain("صفحة اليوم");
+      expect(q("[data-journey-read]")).toBeNull();
+      // The newest entry: nothing newer; the older one is named by its day.
+      expect((q("[data-journey-history-newer]") as HTMLButtonElement).disabled).toBe(true);
+      expect(q("[data-journey-history-older]")!.textContent).toContain("١١ نوفمبر");
+      await click(q("[data-journey-history-older]"));
+      await until(() => q("[data-journey-leaf]")?.getAttribute("data-journey-leaf") === "2:2" && leafReady());
+      await click(q("[data-journey-history-older]"));
+      await until(() => q("[data-journey-leaf]")?.getAttribute("data-journey-leaf") === "1:2" && leafReady());
+      expect((q("[data-journey-history-older]") as HTMLButtonElement).disabled).toBe(true);
+      await click(q("[data-journey-history-newer]"));
+      await until(() => q("[data-journey-leaf]")?.getAttribute("data-journey-leaf") === "2:2");
+      await click(q("[data-journey-close]"));
+      expect(q("[data-journey-history-view]")).toBeNull();
+    });
+
+    it("counts nothing and changes nothing in the journey's record, however long it stays open", async () => {
+      const before = seed();
+      await card();
+      await click(container.querySelectorAll("[data-journey-history-row]")[1]);
+      await until(leafReady);
+      await settle(400); // Well past DAILY_VIEW_MS (60 ms here).
+      await click(q("[data-journey-history-older]"));
+      await until(leafReady);
+      await settle(400);
+      expect(localStorage.getItem(KEY)).toBe(before);
+    });
+
+    it("reads the verse in context in Basa'ir without counting today's page", async () => {
+      seed();
+      await card();
+      await click(container.querySelectorAll("[data-journey-history-row]")[2]);
+      await until(leafReady);
+      await click(q("[data-journey-history-view] [data-journey-context]"));
+      await until(() => q("[data-basair] [data-opening-verse='1:2']") !== null || q("[data-basair] [data-tafsir-passage='1:2']") !== null);
+      await settle(400);
+      expect(explored()).toEqual([1, 2, 3]);
+      // Back to the past day's leaf.
+      await click(q("[data-tafsir-back]"));
+      await until(() => q("[data-basair]") === null && q("[data-journey-history-view]") !== null);
+    });
   });
 });

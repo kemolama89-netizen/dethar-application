@@ -298,6 +298,23 @@ export function subscribeJourney(listener: () => void): () => void {
   return () => listeners.delete(listener);
 }
 
+// ---- the Journey's past days ----------------------------------------------------
+
+/** An explored page, with its round: one entry of the Journey's history. */
+export type JourneyEntry = PageVisit & { round: number };
+
+/**
+ * The Journey's earlier days, from the day's own leaf: every page explored on a local day other
+ * than [localDate] (today), across all rounds — newest day first. Today's page is kept apart: it
+ * is the day's own leaf. Pure: reading the history never changes it, and nothing here counts.
+ */
+export function pastDays(state: JourneyState, localDate: string): JourneyEntry[] {
+  return state.rounds
+    .flatMap((r) => r.visits.map((v) => ({ ...v, round: r.n })))
+    .filter((v) => v.localDate !== localDate)
+    .sort((a, b) => (a.localDate === b.localDate ? b.ts - a.ts : a.localDate < b.localDate ? 1 : -1));
+}
+
 // ---- what Statistics shows -------------------------------------------------------
 
 export interface JourneyStats {
@@ -312,7 +329,7 @@ export interface JourneyStats {
   /** Pages explored per calendar year, newest first. */
   years: { year: number; explored: number }[];
   /** Every page explored, newest first. */
-  history: (PageVisit & { round: number })[];
+  history: JourneyEntry[];
 }
 
 export function journeyStats(state: JourneyState, selection: StatSelection): JourneyStats {

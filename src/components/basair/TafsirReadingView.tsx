@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import { ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Share2, X } from "lucide-react";
 import { useLanguage } from "../../theme/LanguageContext";
 import { basairLabels } from "../../data/basairLabels";
@@ -10,11 +10,11 @@ import { getSaadiVerse, neighbourVerse } from "../../lib/saadiTafsir";
 import type { SaadiParagraph, SaadiVerse } from "../../lib/saadiTafsir";
 import { loadKfgqpcText, whenKfgqpcFontReady } from "../../lib/kfgqpcText";
 import { saadiTextForCard, saadiTextForSharing, tafsirShareContent } from "../../lib/tafsirShare";
-import type { ShareableContent } from "../../lib/shareContent";
+import type { ShareableContent, ShareOutcome } from "../../lib/shareContent";
 import { ShareMenu } from "../ShareMenu";
 import { quranJourneyLabels } from "../../data/quranJourneyLabels";
-import { DAILY_VIEW_MS, JOURNEY_PAGES, dailyAssignment, recordDailyInsightViewed } from "../../lib/quranJourney";
-import type { DailyAssignment } from "../../lib/quranJourney";
+import { DAILY_VIEW_MS, JOURNEY_PAGES, dailyAssignment, emptyJourney, loadJourney, pastDays, recordDailyInsightViewed } from "../../lib/quranJourney";
+import type { DailyAssignment, JourneyEntry } from "../../lib/quranJourney";
 import { todayLocalDate } from "../../lib/stats";
 import { LOOK_OFF_ATTRIBUTE, setLookSuspended } from "../../theme/looks";
 import "../quran/kfgqpc-font.css";
@@ -76,11 +76,11 @@ function useNeedsCompact<T extends HTMLElement>(content: string, reserve = 0) {
   return [ref, compact, compact && withoutReserve] as const;
 }
 
-type VerseLine = { ayah: number; words: string; mark?: string };
+export type VerseLine = { ayah: number; words: string; mark?: string };
 type SurahText = { surah: number; verses: VerseLine[]; basmala: string | null; kfgqpc: boolean };
 
 /** A surah in the Complex's own text and font, or Tanzil's text if that font can't draw. */
-function useSurahText(surah: number): SurahText | null {
+export function useSurahText(surah: number): SurahText | null {
   const [text, setText] = useState<SurahText | null>(null);
   useEffect(() => {
     let live = true;
@@ -103,7 +103,7 @@ function useSurahText(surah: number): SurahText | null {
   return text?.surah === surah ? text : null;
 }
 
-function VerseWords({ verse }: { verse: VerseLine }) {
+export function VerseWords({ verse }: { verse: VerseLine }) {
   return (
     <>
       {verse.words}
@@ -142,7 +142,7 @@ function SurahRun({ surah, verses, kfgqpc, onOpen }: { surah: number; verses: Ve
 }
 
 /** An editor's note, with any Qur'an it quotes set as Qur'an. Layout only: its characters are the source's. */
-function NoteText({ note }: { note: string }) {
+export function NoteText({ note }: { note: string }) {
   return (
     <>
       {note.split(/(\{[^{}]*\})/).map((piece, i) =>
@@ -321,31 +321,53 @@ const insightVerse = (insight: string) => {
 };
 
 /**
- * The day's leaf: the page, small, then the verse in the Complex's text and font, then
+ * A Journey leaf: the page, small, then the verse in the Complex's text and font, then
  * al-Sa'di's whole comment on it, exactly as Basa'ir shows it, scrolling in full. One way
- * out (×, or Back), one action: the verse in its surah, with the same Tafsir beneath.
+ * out (×, or Back) and the footer's actions. The day's leaf (DailyLeaf) and a past day's
+ * (JourneyHistoryView) are the same leaf: only the title, the read mark and the footer differ.
  */
-function DailyLeaf({ daily, onClose, onLoaded, onContext }: { daily: Daily; onClose: () => void; onLoaded: () => void; onContext: () => void }) {
+function JourneyLeaf({
+  page,
+  round,
+  insight,
+  title,
+  read = false,
+  onClose,
+  onLoaded,
+  footer,
+  dataAttrs,
+}: {
+  page: number;
+  round: number;
+  insight: string;
+  title: string;
+  read?: boolean;
+  onClose: () => void;
+  onLoaded?: () => void;
+  footer: ReactNode;
+  dataAttrs?: Record<string, string>;
+}) {
   const { language, dir } = useLanguage();
   const t = basairLabels[language];
   const jt = quranJourneyLabels[language];
   const digits = (n: number) => (language === "ar" ? arabicDigits(n) : String(n));
-  const { surah, ayah } = insightVerse(daily.assignment.insight);
+  const { surah, ayah } = insightVerse(insight);
   const text = useSurahText(surah);
   const verse = text?.verses.find((v) => v.ayah === ayah);
   const meta = surahMeta(surah);
   const name = language === "en" ? (meta?.nameTranslit ?? "") : (meta?.nameAr ?? "");
-  const { page, round } = daily.assignment;
   return (
-    <div className="dithar-journey-leaf" dir={dir} role="dialog" aria-modal="true" aria-label={jt.todayPage} data-journey-leaf={daily.assignment.insight}>
+    <div className="dithar-journey-leaf" dir={dir} role="dialog" aria-modal="true" aria-label={title} data-journey-leaf={insight} {...dataAttrs}>
       <header className="dithar-journey-leaf-top">
         <button type="button" onClick={onClose} className="dithar-opening-back" aria-label={jt.close} data-journey-close="">
           <X size={20} aria-hidden="true" />
         </button>
-        <h2 className="dithar-journey-leaf-title">{jt.todayPage}</h2>
+        <h2 className="dithar-journey-leaf-title" data-journey-leaf-title="">
+          {title}
+        </h2>
         <span className="dithar-journey-leaf-spacer" aria-hidden="true" />
       </header>
-      <div className="dithar-tafsir-scroll">
+      <div className="dithar-tafsir-scroll" key={insight}>
         <div className="dithar-opening-flow">
           <div className="dithar-journey-leaf-page" data-journey-page={page}>
             <span className="dithar-journey-medallion" aria-hidden="true">
@@ -354,7 +376,7 @@ function DailyLeaf({ daily, onClose, onLoaded, onContext }: { daily: Daily; onCl
             <span className="dithar-journey-leaf-meta">
               {jt.pageMeta(digits(page), digits(JOURNEY_PAGES), digits(round))}
             </span>
-            {daily.explored && (
+            {read && (
               <span className="dithar-journey-leaf-read" role="status" data-journey-read="">
                 <Check size={14} strokeWidth={2.5} aria-hidden="true" />
                 {jt.read}
@@ -363,22 +385,127 @@ function DailyLeaf({ daily, onClose, onLoaded, onContext }: { daily: Daily; onCl
           </div>
           <section className="dithar-opening dithar-journey-leaf-passage" aria-label={`${t.surah(name)} · ${t.ayah(digits(ayah))}`}>
             {verse && text ? (
-              <p dir="rtl" lang="ar" data-tafsir-verse="" data-journey-verse={daily.assignment.insight} className={`dithar-opening-run${text.kfgqpc ? " dithar-kfgqpc" : ""}`}>
+              <p dir="rtl" lang="ar" data-tafsir-verse="" data-journey-verse={insight} className={`dithar-opening-run${text.kfgqpc ? " dithar-kfgqpc" : ""}`}>
                 <VerseWords verse={verse} />
               </p>
             ) : (
               <p className="dithar-tafsir-status">{t.loading}</p>
             )}
             <p className="dithar-journey-leaf-ref">{`${t.surah(name)} · ${t.ayah(digits(ayah))}`}</p>
-            <SaadiPassage surah={surah} ayah={ayah} onLoaded={onLoaded} />
+            <SaadiPassage surah={surah} ayah={ayah} onLoaded={onLoaded ?? noop} />
           </section>
         </div>
       </div>
-      <footer className="dithar-tafsir-footer">
-        <button type="button" className="dithar-journey-context" onClick={onContext} data-journey-context="">
-          {jt.readInContext}
-        </button>
-      </footer>
+      <footer className="dithar-tafsir-footer">{footer}</footer>
+    </div>
+  );
+}
+
+const noop = () => {};
+
+/**
+ * The day's leaf, from today's assignment: its page is counted by VerseTafsirView once it has stayed
+ * on screen. With [onPastDays], the Journey's earlier days are a tap away (on the older side, as in a
+ * past day's own leaf).
+ */
+function DailyLeaf({ daily, onClose, onLoaded, onContext, onPastDays }: { daily: Daily; onClose: () => void; onLoaded: () => void; onContext: () => void; onPastDays?: () => void }) {
+  const { language, dir } = useLanguage();
+  const jt = quranJourneyLabels[language];
+  const OlderIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
+  return (
+    <JourneyLeaf
+      page={daily.assignment.page}
+      round={daily.assignment.round}
+      insight={daily.assignment.insight}
+      title={jt.todayPage}
+      read={daily.explored}
+      onClose={onClose}
+      onLoaded={onLoaded}
+      footer={
+        <>
+          {onPastDays && (
+            <nav className="dithar-journey-history-nav" aria-label={jt.history}>
+              <span aria-hidden="true" />
+              <button type="button" onClick={onPastDays} data-journey-past-days="">
+                <span>{jt.pastDays}</span>
+                <OlderIcon size={17} aria-hidden="true" />
+              </button>
+            </nav>
+          )}
+          <button type="button" className="dithar-journey-context" onClick={onContext} data-journey-context="">
+            {jt.readInContext}
+          </button>
+        </>
+      }
+    />
+  );
+}
+
+/** A past Journey entry, as Statistics lists it (lib/quranJourney.ts journeyStats history) and the day's leaf (pastDays). */
+export type JourneyHistoryEntry = Pick<JourneyEntry, "page" | "round" | "insight" | "localDate">;
+
+/** "YYYY-MM-DD" read as that local day (noon, so no time zone can move it to a neighbour). */
+const localDay = (date: string) => new Date(Number(date.slice(0, 4)), Number(date.slice(5, 7)) - 1, Number(date.slice(8, 10)), 12);
+
+/** The day an entry was read, as the leaf's title: «الخميس ١٢ نوفمبر» (with the year when it isn't this year's). */
+function journeyDayTitle(date: string, language: "ar" | "en", now: Date = new Date()): string {
+  const day = localDay(date);
+  const withYear = day.getFullYear() !== now.getFullYear();
+  return new Intl.DateTimeFormat(language === "ar" ? "ar-u-nu-arab" : "en-GB", { weekday: "long", day: "numeric", month: "long", ...(withYear ? { year: "numeric" } : {}) }).format(day).replace("،", "");
+}
+
+/** A neighbouring entry's day, short, for the footer: «١١ نوفمبر». */
+function journeyShortDay(date: string, language: "ar" | "en"): string {
+  return new Intl.DateTimeFormat(language === "ar" ? "ar-u-nu-arab" : "en-GB", { day: "numeric", month: "long" }).format(localDay(date));
+}
+
+/**
+ * A past day's leaf, opened from Statistics → «سجل الصفحات» or the day's leaf → «الأيام السابقة»: the same leaf as the day's own,
+ * titled with the day it was read, with the newer and older entries a tap away. Reading it
+ * counts nothing — it never calls recordDailyInsightViewed, so today's page is untouched.
+ * «اقرأها في سياقها» opens the verse in Basa'ir over it, exactly as from today's leaf.
+ */
+export function JourneyHistoryView({ entries, index: initialIndex, onClose }: { entries: readonly JourneyHistoryEntry[]; index: number; onClose: () => void }) {
+  const { language, dir } = useLanguage();
+  const jt = quranJourneyLabels[language];
+  const [index, setIndex] = useState(() => Math.min(Math.max(0, initialIndex), Math.max(0, entries.length - 1)));
+  const [context, setContext] = useState<{ surah: number; ayah: number } | null>(null);
+  useBackDismiss(!context, onClose);
+  const entry = entries[index];
+  if (!entry) return null;
+  const newer = index > 0 ? entries[index - 1] : null;
+  const older = index < entries.length - 1 ? entries[index + 1] : null;
+  // Newest first: the newer entry is the "previous" side, the older the "next" (as the list reads).
+  const NewerIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
+  const OlderIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
+  return (
+    <div className="dithar-tafsir-page dithar-journey-history" dir={dir} data-journey-history-view="">
+      <JourneyLeaf
+        page={entry.page}
+        round={entry.round}
+        insight={entry.insight}
+        title={journeyDayTitle(entry.localDate, language)}
+        onClose={onClose}
+        dataAttrs={{ "data-journey-history-entry": `${entry.round}:${entry.page}` }}
+        footer={
+          <>
+            <nav className="dithar-journey-history-nav" aria-label={jt.history}>
+              <button type="button" disabled={!newer} onClick={() => setIndex((i) => i - 1)} aria-label={newer ? `${jt.historyNewer}: ${journeyDayTitle(newer.localDate, language)}` : jt.historyNewer} data-journey-history-newer="">
+                <NewerIcon size={17} aria-hidden="true" />
+                <span>{newer ? journeyShortDay(newer.localDate, language) : jt.historyNewer}</span>
+              </button>
+              <button type="button" disabled={!older} onClick={() => setIndex((i) => i + 1)} aria-label={older ? `${jt.historyOlder}: ${journeyDayTitle(older.localDate, language)}` : jt.historyOlder} data-journey-history-older="">
+                <span>{older ? journeyShortDay(older.localDate, language) : jt.historyOlder}</span>
+                <OlderIcon size={17} aria-hidden="true" />
+              </button>
+            </nav>
+            <button type="button" className="dithar-journey-context" onClick={() => setContext(insightVerse(entry.insight))} data-journey-context="">
+              {jt.readInContext}
+            </button>
+          </>
+        }
+      />
+      {context && <VerseTafsirView surah={context.surah} ayah={context.ayah} onClose={() => setContext(null)} />}
     </div>
   );
 }
@@ -418,6 +545,8 @@ export function VerseTafsirView({
   const jt = quranJourneyLabels[language];
   const [leafOpen, setLeafOpen] = useState(false);
   const [leafLoaded, setLeafLoaded] = useState(false);
+  /** A past day open over the day's leaf (from «الأيام السابقة»). */
+  const [pastOpen, setPastOpen] = useState(false);
   const [contextFromDaily, setContextFromDaily] = useState(false);
   // Like the share button, the day's mark only shortens the header's labels; it never turns the screen compact.
   const [header, headerCompact, headerCompactWithoutShare] = useNeedsCompact<HTMLElement>(`${at.surah}:${at.ayah}:${language}:${daily ? "j" : ""}`, daily ? 100 : 50);
@@ -439,7 +568,8 @@ export function VerseTafsirView({
   const verseLine = useRef<HTMLParagraphElement>(null);
   const moved = useRef(false);
   // Sharing the open verse with its Tafsir (lib/tafsirShare.ts), through the app's share sheet.
-  const [share, setShare] = useState<{ key: string; content: ShareableContent } | null>(null);
+  // [pages]: 0 = one card (short, medium); else a long Tafsir, shared as that many pages (PDF or images).
+  const [share, setShare] = useState<{ key: string; content: ShareableContent; pages: number } | null>(null);
   const sharing = useRef(false);
   const shareTitle = `${t.surah(surahName)} · ${t.ayah(digits(at.ayah))}`;
   const onShare = async () => {
@@ -451,17 +581,49 @@ export function VerseTafsirView({
       const [{ markedVerseForSharing }, tafsir] = await Promise.all([import("../../lib/quranShareText"), getSaadiVerse(target.surah, target.ayah)]);
       const verse = markedVerseForSharing(target.surah, target.ayah);
       if (!verse || tafsir.status !== "found") return;
-      setShare({
-        key: `${target.surah}:${target.ayah}`,
-        content: tafsirShareContent(
-          { ...target, text: verse },
-          saadiTextForSharing(tafsir.parsed),
-          { kind: t.shareKind, reference: shareTitle, tafsirLabel: t.tafsirLabel, source: `${t.saadiBook} — ${t.saadiAuthor}` },
-          saadiTextForCard(tafsir.parsed, target.ayah),
-        ),
-      });
+      const content = tafsirShareContent(
+        { ...target, text: verse },
+        saadiTextForSharing(tafsir.parsed),
+        { kind: t.shareKind, reference: shareTitle, tafsirLabel: t.tafsirLabel, source: `${t.saadiBook} — ${t.saadiAuthor}` },
+        saadiTextForCard(tafsir.parsed, target.ayah),
+      );
+      // Long or not, decided by the card's own layout at its normal size (lib/shareImageTafsir.ts).
+      const pages = await import("../../lib/shareImage").then((m) => m.tafsirSharePages(withColophon(content), language)).catch(() => 0);
+      setShare({ key: `${target.surah}:${target.ayah}`, content, pages });
     } finally {
       sharing.current = false;
+    }
+  };
+
+  /** A long Tafsir's pages end with the full colophon: the book and author, then the edition, publisher and licence. */
+  const withColophon = (content: ShareableContent): ShareableContent => ({
+    ...content,
+    sections: content.sections?.map((section) => ({ ...section, note: `${t.saadiEdition}. ${t.saadiPublisher}. ${t.saadiLicense}` })),
+  });
+
+  /** A long Tafsir's pages (the card, continued), shared as one PDF or as the images, in order. */
+  const shareLongTafsir = async (content: ShareableContent, as: "pdf" | "images"): Promise<ShareOutcome> => {
+    try {
+      const [images, pdf, sharing] = await Promise.all([import("../../lib/shareImage"), import("../../lib/pdfFromJpegs"), import("../../lib/shareContent")]);
+      const drawn = await images.renderTafsirPages(withColophon(content), language, {
+        continued: t.shareContinued(shareTitle),
+        verseContinued: `${shareTitle} · ${t.bookletVerseContinued}`,
+        reference: shareTitle,
+        verseContinues: t.bookletContinues,
+        folio: (n, total) => t.bookletPageOf(digits(n), digits(total)),
+      });
+      const count = drawn.images.length;
+      const caption = t.bookletCaption(shareTitle, t.bookletPages(count, digits(count)));
+      const title = `${t.tafsirLabel} · ${shareTitle}`;
+      const base = `dithar-tafsir-${at.surah}-${at.ayah}`;
+      if (as === "images") return await sharing.shareImageSet(drawn.images, title, base, caption);
+      const file = pdf.pdfFromJpegs(
+        drawn.images.map((d) => ({ jpeg: pdf.dataUrlBytes(d), width: drawn.width, height: drawn.height })),
+        { title, author: t.saadiAuthor },
+      );
+      return await sharing.shareDocument(pdf.pdfDataUrl(file), `${base}.pdf`, title, caption);
+    } catch {
+      return "failed";
     }
   };
 
@@ -475,10 +637,14 @@ export function VerseTafsirView({
 
   const openLeaf = () => {
     setLeafLoaded(false);
+    setPastOpen(false);
     setLeafOpen(true);
   };
   const closeLeaf = useCallback(() => setLeafOpen(false), []);
   useBackDismiss(leafOpen, closeLeaf);
+  // The Journey's earlier days, read when the day's leaf opens (newest first; today's page stays apart),
+  // and the one open over the leaf. Reading them counts nothing.
+  const pastEntries = useMemo(() => (leafOpen && daily ? pastDays(loadJourney() ?? emptyJourney(), daily.assignment.localDate) : []), [leafOpen, daily]);
   const onLeafLoaded = useCallback(() => setLeafLoaded(true), []);
   const openDailyInContext = () => {
     if (!daily) return;
@@ -490,7 +656,8 @@ export function VerseTafsirView({
   // in its context reached from the leaf. Assigned, or read freely, it never counts.
   const atKey = `${at.surah}:${at.ayah}`;
   // Only while the app is on screen: the 3 s start again when it comes back.
-  const viewingDaily = pageVisible && !!daily && !daily.explored && ((leafOpen && leafLoaded) || (!leafOpen && contextFromDaily && open && atKey === daily.assignment.insight));
+  // A past day open over the leaf hides it: today's insight isn't on screen then.
+  const viewingDaily = pageVisible && !!daily && !daily.explored && ((leafOpen && leafLoaded && !pastOpen) || (!leafOpen && contextFromDaily && open && atKey === daily.assignment.insight));
   useEffect(() => {
     if (!viewingDaily || !daily) return;
     const timer = setTimeout(() => {
@@ -640,8 +807,22 @@ export function VerseTafsirView({
           </div>
         </div>
       </div>
-      {share && <ShareMenu content={share.content} subtitle={shareTitle} open={share.key === key} onClose={() => setShare(null)} />}
-      {daily && leafOpen && <DailyLeaf daily={daily} onClose={closeLeaf} onLoaded={onLeafLoaded} onContext={openDailyInContext} />}
+      {share && (
+        <ShareMenu
+          content={share.content}
+          subtitle={shareTitle}
+          open={share.key === key}
+          onClose={() => setShare(null)}
+          {...(share.pages > 0
+            ? {
+                document: { label: t.sharePdf(t.bookletPages(share.pages, digits(share.pages))), preparing: t.sharePreparingPdf, run: () => shareLongTafsir(share.content, "pdf") },
+                imageSet: { label: t.sharePageImages, preparing: t.bookletSharing, run: () => shareLongTafsir(share.content, "images") },
+              }
+            : {})}
+        />
+      )}
+      {daily && leafOpen && <DailyLeaf daily={daily} onClose={closeLeaf} onLoaded={onLeafLoaded} onContext={openDailyInContext} onPastDays={pastEntries.length > 0 ? () => setPastOpen(true) : undefined} />}
+      {leafOpen && pastOpen && pastEntries.length > 0 && <JourneyHistoryView entries={pastEntries} index={0} onClose={() => setPastOpen(false)} />}
       <footer className="dithar-tafsir-footer">
         {open ? (
           <nav ref={nav} className="dithar-saadi-nav" aria-label={t.chooseVerse} data-saadi-nav="">

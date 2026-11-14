@@ -64,7 +64,10 @@ export function BottomNav({
       // Items top-aligned (not centered): every icon sits on one line and
       // every label starts on one line, whether a label wraps to two lines
       // ("الأذكار المسموعة") or not. Spacing scales with the screen width.
-      className={`dithar-glass sticky bottom-0 z-10 flex w-full min-w-0 max-w-full items-start justify-between gap-[clamp(1px,0.6vw,4px)] rounded-full border px-[clamp(5px,1.8vw,10px)] pt-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] ${className}`}
+      // Its bottom padding is a fixed 0.5rem: the phone's system-bar inset is already kept clear by
+      // .device-backdrop (index.css), which every screen with this navigation sits in — adding it
+      // here too left an empty band, the size of Android's navigation bar, under the labels.
+      className={`dithar-glass sticky bottom-0 z-10 flex w-full min-w-0 max-w-full items-start justify-between gap-[clamp(1px,0.6vw,4px)] rounded-full border px-[clamp(5px,1.8vw,10px)] pt-2.5 pb-2 ${className}`}
       style={{
         background: "var(--color-surface)",
         borderColor: "var(--color-gold-soft)",

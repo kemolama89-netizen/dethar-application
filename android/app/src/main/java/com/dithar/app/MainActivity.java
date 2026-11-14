@@ -9,6 +9,7 @@ import com.dithar.app.location.LocationPermissionPlugin;
 import com.dithar.app.orientation.OrientationPlugin;
 import com.dithar.app.prayernotifications.AdhanDownloadsPlugin;
 import com.dithar.app.prayernotifications.PrayerNotificationsPlugin;
+import com.dithar.app.quranaudio.QuranAudioDownloadsPlugin;
 import com.dithar.app.reminders.RemindersPlugin;
 import com.dithar.app.screen.ScreenAwakePlugin;
 import com.dithar.app.share.SharePlugin;
@@ -24,6 +25,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(LocationPermissionPlugin.class);
         registerPlugin(PrayerNotificationsPlugin.class);
         registerPlugin(AdhanDownloadsPlugin.class);
+        registerPlugin(QuranAudioDownloadsPlugin.class);
         registerPlugin(RemindersPlugin.class);
         registerPlugin(SharePlugin.class);
         registerPlugin(OrientationPlugin.class);

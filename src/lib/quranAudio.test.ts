@@ -60,19 +60,19 @@ describe("resolveQuranAudio", () => {
 
   it("resolves a bundled reciter to its local files — his own basmala, then one file per ayah in order — never a network URL", () => {
     const reciter = getDefaultQuranReciter();
-    const ayahs = [1, 2, 3, 4, 5].map((a) => `/audio/quran/abdulbasit-murattal/11300${a}.mp3`);
+    const ayahs = [1, 2, 3, 4, 5].map((a) => `/audio/quran/husary-murattal/11300${a}.mp3`);
     expect(resolveQuranAudio({ surah: 113, fromAyah: 1, toAyah: 5 }, reciter)).toEqual({
       status: "ready",
-      reciterId: "abdulbasit-murattal",
+      reciterId: "husary-murattal",
       ref: { surah: 113, fromAyah: 1, toAyah: 5 },
-      urls: ["/audio/quran/abdulbasit-murattal/basmala.mp3", ...ayahs], // the same for every repetition
+      urls: ["/audio/quran/husary-murattal/basmala.mp3", ...ayahs], // the same for every repetition
     });
     // Ayat al-Kursi starts with his basmala too.
     expect(resolveQuranAudio({ surah: 2, fromAyah: 255, toAyah: 255 }, reciter)).toEqual({
       status: "ready",
-      reciterId: "abdulbasit-murattal",
+      reciterId: "husary-murattal",
       ref: { surah: 2, fromAyah: 255, toAyah: 255 },
-      urls: ["/audio/quran/abdulbasit-murattal/basmala.mp3", "/audio/quran/abdulbasit-murattal/002255.mp3"],
+      urls: ["/audio/quran/husary-murattal/basmala.mp3", "/audio/quran/husary-murattal/002255.mp3"],
     });
   });
 

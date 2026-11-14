@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Copy, Image as ImageIcon, Share2, Type, X } from "lucide-react";
+import { Copy, FileText, Image as ImageIcon, Images, Share2, Type, X } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { useBackDismiss } from "../lib/backOverlays";
 import { copyShareText, shareAsImage, shareAsText } from "../lib/shareContent";
@@ -38,8 +38,34 @@ const shareMenuLabels = {
   },
 } as const;
 
+/**
+ * In place of the single image, a set of images (a Tafsir booklet's pages — components/basair/
+ * TafsirBooklet.tsx): its own label, and what it does. A single card could leave part of a long
+ * text out; the set never does.
+ */
+export interface ShareImageSetOption {
+  label: string;
+  preparing: string;
+  run: () => Promise<ShareOutcome>;
+}
+
 /** [subtitle] names what is being shared (e.g. «سورة البقرة · الآية ٢») under the sheet's title. */
-export function ShareMenu({ content, open, onClose, subtitle }: { content: ShareableContent; open: boolean; onClose: () => void; subtitle?: string }) {
+export function ShareMenu({
+  content,
+  open,
+  onClose,
+  subtitle,
+  imageSet,
+  document: doc,
+}: {
+  content: ShareableContent;
+  open: boolean;
+  onClose: () => void;
+  subtitle?: string;
+  imageSet?: ShareImageSetOption;
+  /** A long text as one document (a PDF of its pages), offered first. */
+  document?: ShareImageSetOption;
+}) {
   const { language, dir } = useLanguage();
   const t = shareMenuLabels[language];
   const [busy, setBusy] = useState(false);
@@ -115,8 +141,10 @@ export function ShareMenu({ content, open, onClose, subtitle }: { content: Share
           </button>
         </div>
         <div className="flex flex-col gap-2">
+          {doc && option(<FileText size={17} />, doc.label, () => void run(doc.run, doc.preparing), "pdf")}
+          {imageSet && option(<Images size={17} />, imageSet.label, () => void run(imageSet.run, imageSet.preparing), "image-set")}
           {option(<Type size={17} />, t.asText, () => void run(() => shareAsText(content, language)), "text")}
-          {option(<ImageIcon size={17} />, t.asImage, () => void run(() => shareAsImage(content, language), t.preparing), "image")}
+          {!imageSet && option(<ImageIcon size={17} />, t.asImage, () => void run(() => shareAsImage(content, language), t.preparing), "image")}
           {option(<Copy size={17} />, t.copy, () => void run(() => copyShareText(content, language)), "copy")}
         </div>
         <p className="mt-2 min-h-[1.25rem] text-center text-[12.5px]" style={{ color: "var(--color-text-muted)" }} role="status" aria-live="polite" data-share-status="">

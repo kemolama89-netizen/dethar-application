@@ -133,8 +133,10 @@ export async function syncSummary(): Promise<void> {
   let snapshot;
   try {
     snapshot = buildSummarySnapshot();
-  } catch {
+    if (snapshot.status !== "ok") console.warn("[DITHAR] End-of-day summary: today's statistics couldn't be read; pushed as unavailable.");
+  } catch (error) {
     // Pushed as unknown rather than not at all: a stale snapshot would read as "nothing recorded today".
+    console.warn("[DITHAR] End-of-day summary: building today's snapshot failed; pushed as unavailable.", error);
     snapshot = unavailableSummarySnapshot();
   }
   await trackNativeSync(
@@ -154,7 +156,7 @@ export function startRemindersSync(): () => void {
   if (!isRemindersNativeAvailable()) return () => {};
   const reminders = (withPool = false) => void syncReminders({ withPool }).catch(() => {});
   const background = () => void syncCustomBackground().catch(() => {});
-  const summary = () => void syncSummary().catch(() => {});
+  const summary = () => void syncSummary().catch((error) => console.warn("[DITHAR] End-of-day summary: pushing the snapshot to Android failed.", error));
   const timed = () => void syncTimedNotifications().catch(() => {});
   let statsTimer: number | undefined;
   const summarySoon = () => {

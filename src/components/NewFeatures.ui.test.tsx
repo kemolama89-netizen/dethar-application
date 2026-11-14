@@ -167,7 +167,7 @@ describe("Settings → Weekly schedule", () => {
 describe("Settings → End-of-day summary", () => {
   it("enables, sets the time and content, and shows today's recorded activity", async () => {
     mount(<DailySummarySettingsView onBack={() => {}} />);
-    expect(container.querySelector("[data-summary-today]")!.textContent).toContain("لم يُسجَّل شيء اليوم بعد");
+    expect(container.querySelector("[data-summary-today]")!.textContent).toContain("لم تبدأ وردك في دِثار اليوم بعد");
     await click(container.querySelector("[data-summary-switch]")!);
     await setInput("#summary-time", "22:00");
     expect(loadSummarySettings()).toMatchObject({ enabled: true, time: "22:00" });
@@ -180,7 +180,7 @@ describe("Settings → End-of-day summary", () => {
     ]);
     mount(<DailySummarySettingsView onBack={() => {}} />);
     const today = container.querySelector("[data-summary-today]")!.textContent!;
-    expect(today).not.toContain("لم يُسجَّل شيء اليوم بعد");
+    expect(today).not.toContain("لم تبدأ وردك في دِثار اليوم بعد");
     expect(today).toContain("لم تُسجَّل بعدُ قراءةٌ في الأذكار المكتوبة ولا تسبيح");
     // Its listening time, kept apart from repetitions.
     expect(container.querySelector("[data-summary-listening]")!.textContent).toContain("دقيقتان");
@@ -196,7 +196,7 @@ describe("Settings → End-of-day summary", () => {
     expect(status.getAttribute("data-summary-status")).toBe("recorded");
     expect(status.textContent).toContain("أذكار الصباح ✓");
     expect(status.textContent).toContain("التسبيح 33");
-    expect(container.querySelector("[data-summary-today]")!.textContent).not.toContain("لم يُسجَّل شيء اليوم بعد");
+    expect(container.querySelector("[data-summary-today]")!.textContent).not.toContain("لم تبدأ وردك في دِثار اليوم بعد");
     clearAllStats();
   });
 
@@ -208,8 +208,8 @@ describe("Settings → End-of-day summary", () => {
     mount(<DailySummarySettingsView onBack={() => {}} />);
     const today = container.querySelector("[data-summary-today]")!.textContent!;
     expect(container.querySelector("[data-summary-status]")!.getAttribute("data-summary-status")).toBe("unavailable");
-    expect(today).toContain("تعذّرت قراءة سجلّ اليوم");
-    expect(today).not.toContain("لم يُسجَّل شيء اليوم بعد");
+    expect(today).toContain("ملخص اليوم غير متاح الآن");
+    expect(today).not.toContain("لم تبدأ وردك في دِثار اليوم بعد");
     expect(today).not.toContain("لم يُستمع اليوم إلى أي تسجيل بعد");
     clearAllStats();
   });

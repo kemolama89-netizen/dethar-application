@@ -948,4 +948,20 @@ describe("Qur'an reader — immersive full-screen reading", () => {
     expect(Math.abs(w / h - PAGE_ASPECT)).toBeLessThan(0.01);
     expect(container.querySelector("[data-quran-area]")!.hasAttribute("data-scrollable")).toBe(false);
   });
+
+  it("a tall phone (portrait): the spare height above and below is never used to enlarge or stretch the page — its 15 lines stay the print's", async () => {
+    // Every line of the printed page already spans the full width: drawing it taller would need it
+    // wider than the screen (cutting each line), re-flowed, or stretched — so it stays width-bound,
+    // at its own proportions, framed by the same box, with the room left as it is.
+    size = { w: 390, h: 1000 };
+    await open(3, 53);
+    const { w, h } = sheet();
+    expect(w).toBe(390 - 2 * PAGE_EDGES);
+    expect(Math.abs(w / h - PAGE_ASPECT)).toBeLessThan(0.01);
+    expect(1000 - h).toBeGreaterThan(300);
+    expect(container.querySelector("[data-quran-art]")!.getAttribute("viewBox")).toBe(MUSHAF_SHOWN_BOX);
+    const image = container.querySelector("[data-quran-page-image]")!;
+    expect([image.getAttribute("width"), image.getAttribute("height")]).toEqual(["345", "550"]);
+    expect(container.querySelector("[data-quran-area]")!.hasAttribute("data-scrollable")).toBe(false);
+  });
 });

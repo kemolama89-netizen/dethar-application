@@ -1,0 +1,722 @@
+{
+ "baseUrl": "https://kemolama89-netizen.github.io/dethar-application/",
+ "bundled": "husary-murattal",
+ "reciters": {
+  "abdulbasit-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 1308550,
+     "sha256": "a03e480d79a54cece1d88afc99b2f7a8274623a71e399eebfbd7d55323cca138"
+    },
+    "112001.mp3": {
+     "bytes": 75987,
+     "sha256": "e7bf577c45467b886955f5f6b4cdf39b0288b0276724878325debd0a38e14aa5"
+    },
+    "112002.mp3": {
+     "bytes": 68464,
+     "sha256": "20bd69931e0a36c13e3ea4e4c8649b2de613d4c0e1deb2a197563773a3f47f12"
+    },
+    "112003.mp3": {
+     "bytes": 82884,
+     "sha256": "dacf6e922c3c645ae598623e3bd47f9d8cd98e14871bb969d23553b6dc31fc88"
+    },
+    "112004.mp3": {
+     "bytes": 102319,
+     "sha256": "f7b71c4d9374a85407ee021bcce85fde4119586b3e19221e4c2c706d0205aa67"
+    },
+    "113001.mp3": {
+     "bytes": 101065,
+     "sha256": "01c882b6673cfff3dc3feadf3e00c74ed0bb375e3dd7d64ed342206e06258197"
+    },
+    "113002.mp3": {
+     "bytes": 89153,
+     "sha256": "17fa61584208a1b325f88d22a701872b94901311869a02df99e51fecd3e6918e"
+    },
+    "113003.mp3": {
+     "bytes": 126143,
+     "sha256": "87e09b49408ed466bab292dc5ce82e10b7837737c25cef94128dd5a9c1c4deb7"
+    },
+    "113004.mp3": {
+     "bytes": 148085,
+     "sha256": "b80f1e222d33890fc4e8375e33b8f38271d563dbda22ee6b64722743010098ca"
+    },
+    "113005.mp3": {
+     "bytes": 123635,
+     "sha256": "b49c4ee11857bd6d877104b26528ea2a90066230f4d2715f814a9fd2a925d92c"
+    },
+    "114001.mp3": {
+     "bytes": 121755,
+     "sha256": "85703ebd243613ac19149d76c9d83ecd57fb6683356ce09361b5498754ce9a05"
+    },
+    "114002.mp3": {
+     "bytes": 82883,
+     "sha256": "5927a988eac92b1716ea85a0e8b1047b73d3a3ce5fedf6139a37ce5c7f876a8c"
+    },
+    "114003.mp3": {
+     "bytes": 85392,
+     "sha256": "fc60aa23195c3568a08379dee497bdf858fd40276c5b1e8db1551f277829046b"
+    },
+    "114004.mp3": {
+     "bytes": 148713,
+     "sha256": "0220f662d96acd0d07f79d6fef4fa57414a515b6452762450767c7820a64a914"
+    },
+    "114005.mp3": {
+     "bytes": 155608,
+     "sha256": "b7461651ce00966672d871edb0adfd39aa5c7fc218813ee3319e9ad9eccc8cd5"
+    },
+    "114006.mp3": {
+     "bytes": 123635,
+     "sha256": "ca02a987ea833aa5dd3378031a192d27eeaec2ea0e98fd5e848b43112cbfc880"
+    },
+    "basmala.mp3": {
+     "bytes": 104827,
+     "sha256": "7788e7495d9fa6e7ab0ec0d9a9e0b7796b09044c7b918cd0c78bfc9edd3c1cda"
+    }
+   }
+  },
+  "minshawi-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 1086404,
+     "sha256": "97b30e67f038cd5320a5abf436b14bfd6d153c6a93f14ac5afa288ec56413484"
+    },
+    "112001.mp3": {
+     "bytes": 51537,
+     "sha256": "c250515d4e51dde18a53ec208847e819d26388c349f3e52a9c0168237564081e"
+    },
+    "112002.mp3": {
+     "bytes": 42759,
+     "sha256": "4cbe11d08e1f887a9f20a7f34248a3cab28821ffeb308fbf18fb553ddb011deb"
+    },
+    "112003.mp3": {
+     "bytes": 54045,
+     "sha256": "5f05f7988cca0112096d390989726e55c9bd1e1a80f7bc7b3bd5cf42f6c90666"
+    },
+    "112004.mp3": {
+     "bytes": 75779,
+     "sha256": "0d38e61d572eb148bc9dd63c275a3489da0e8c524986328ecb9f776894dfd7c2"
+    },
+    "113001.mp3": {
+     "bytes": 66583,
+     "sha256": "18e799d015f57cdc3ae4fea8b3d088f1a56723338134298c48aec32f9e283a07"
+    },
+    "113002.mp3": {
+     "bytes": 58643,
+     "sha256": "c705d06a819a3cf8f2dde16f7cffc80752325f99a45f225786b34c4d77022015"
+    },
+    "113003.mp3": {
+     "bytes": 87481,
+     "sha256": "d909bcd42d8128bff91010407ac052e9557b1dbc11711a0731409074515e2e8c"
+    },
+    "113004.mp3": {
+     "bytes": 105454,
+     "sha256": "9679e6535119f1730fb18d2d32de4ec290d932f1aeddadaa98981b520484c071"
+    },
+    "113005.mp3": {
+     "bytes": 84556,
+     "sha256": "65fdc53c9cc666ed2dd66128041cbbd8eee4a4ace1552e0e2278984ead081cfb"
+    },
+    "114001.mp3": {
+     "bytes": 73688,
+     "sha256": "88c5dac373ac4357ceea915126978d3ded5512f1ed43eadfaf78a02a4ddfb593"
+    },
+    "114002.mp3": {
+     "bytes": 46522,
+     "sha256": "2ba4ac32080f708dd14597fea8e2c12aa61d5d334b99d26eb60c9aebdb6e8ab2"
+    },
+    "114003.mp3": {
+     "bytes": 46521,
+     "sha256": "1316cff774da3351841adb413de79a2e21607460a0f354ff08282921f80fab99"
+    },
+    "114004.mp3": {
+     "bytes": 92497,
+     "sha256": "1f2a7464989ecb0592a66b2a9eb7a18177313e263482e639f604f642ec770930"
+    },
+    "114005.mp3": {
+     "bytes": 100439,
+     "sha256": "ad96bcc86379adf2b4d9e0e4d7e7d2bef03f8477b9f83ce6c70fa8d3f2187619"
+    },
+    "114006.mp3": {
+     "bytes": 81212,
+     "sha256": "6ba490bc4858d89f0ef763f3f1f9788808ca63d6dc1af8529880021df84a03b6"
+    },
+    "basmala.mp3": {
+     "bytes": 79540,
+     "sha256": "d682a98d3a9912a945b454dd583afdceb965d594dc98c7cffda37335027805ba"
+    }
+   }
+  },
+  "husary-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 971883,
+     "sha256": "2127d81954f99dac8dd5ec4dbb1a4f6c1cfa39e0975e597d779c64771783d77e"
+    },
+    "112001.mp3": {
+     "bytes": 97428,
+     "sha256": "bb8ed6ccb26360926ff82046aa8d92fd06d76f49b7f3954f5e9c2a3050b5cd31"
+    },
+    "112002.mp3": {
+     "bytes": 84891,
+     "sha256": "0b117b005794ad6ac371949bc7ba37dfc0bce28897510b79e9ade583777829a3"
+    },
+    "112003.mp3": {
+     "bytes": 99100,
+     "sha256": "623c821118210a0731114f7d86a81a25f92b90b4fc17a46ff2553fa2ad431c1e"
+    },
+    "112004.mp3": {
+     "bytes": 134210,
+     "sha256": "0c791d9b40f9744a118ac364e59f4e95f0e70a8d3619bc2f9d9d31d3d9cef092"
+    },
+    "113001.mp3": {
+     "bytes": 104952,
+     "sha256": "6da4d35159a58276071f23442cd2435afa469a56f37c0758aaa1430ca5e4f008"
+    },
+    "113002.mp3": {
+     "bytes": 91577,
+     "sha256": "0f94290195c88d06006c4aafb8f6964666fc345f25822ae1a9302426161399d1"
+    },
+    "113003.mp3": {
+     "bytes": 127104,
+     "sha256": "ec260a03d2079bd4c4aa757c1b19d7849b9697836096b033f2ff776055c48958"
+    },
+    "113004.mp3": {
+     "bytes": 151764,
+     "sha256": "48187626300bfb62a93297ca2b369dbab15c0bb54cd6170b13549cefe1b1d3af"
+    },
+    "113005.mp3": {
+     "bytes": 128358,
+     "sha256": "5022a47b35bd871b595985b792e8f2fa281667652d81bb4d711e229388335eef"
+    },
+    "114001.mp3": {
+     "bytes": 130866,
+     "sha256": "a88bd24423f37b2695ba1a299612c52e02fc2cf545869517ae0ab38e29a9e253"
+    },
+    "114002.mp3": {
+     "bytes": 79456,
+     "sha256": "d8ea32af92008a2ff7986eba33f19fc4fd1a53bc3de832c9193a01149ac392dd"
+    },
+    "114003.mp3": {
+     "bytes": 83636,
+     "sha256": "c4dca72f91e4bb439cb7a4368f3f0576702e16272067494ce5a6e1e93d3b8a2c"
+    },
+    "114004.mp3": {
+     "bytes": 155108,
+     "sha256": "5b1d449cbcdfd51ad13b5900654a9f1dffa7ce8d80b7d3684b4fa1ecb4fa258b"
+    },
+    "114005.mp3": {
+     "bytes": 171825,
+     "sha256": "f04c3e4d266ae708149705d15ba4eef08941e053d7b473d6388474b38682451c"
+    },
+    "114006.mp3": {
+     "bytes": 140061,
+     "sha256": "5d613a767f089cf4400b4884c86a6bb870928706083952a75452571690bd801e"
+    },
+    "basmala.mp3": {
+     "bytes": 82164,
+     "sha256": "3b1fc25d1c723d19122c3fb4b745077044a7c82a6023aae0457d81fa36f1fe68"
+    }
+   }
+  },
+  "alafasy-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 831865,
+     "sha256": "00e62c8d72dcdb5f62dd87bb85e14abf3fc93d01c8171374baccbc913bb55833"
+    },
+    "112001.mp3": {
+     "bytes": 48192,
+     "sha256": "8166d4ae6fbdae1748e215d5b31dbbf246530da0e849f1488ac35316488f1caf"
+    },
+    "112002.mp3": {
+     "bytes": 41087,
+     "sha256": "52fd57829c924926152df2175343d115aecbf3b83632f853cb94356697421eee"
+    },
+    "112003.mp3": {
+     "bytes": 48192,
+     "sha256": "b50ce19c51314817e9a4885de55ad332a19585e0e221dbec86b98405a08400c4"
+    },
+    "112004.mp3": {
+     "bytes": 78285,
+     "sha256": "67a565d4951ff5956a8299eb84cf57b5e0d44374dba8e24c9f0175cb4309b68e"
+    },
+    "113001.mp3": {
+     "bytes": 56133,
+     "sha256": "36b36414695bfc69cf038c2060bcd73c4845cd6cce1fb8179de3ce43718b58d0"
+    },
+    "113002.mp3": {
+     "bytes": 58641,
+     "sha256": "4ca15d21ebe9888142d29c3580bf62a9062513c04f4c7f222a89a00676252943"
+    },
+    "113003.mp3": {
+     "bytes": 81211,
+     "sha256": "e0ee7929798463fdf1c41c93204bb1917f1304819d76cd6911c6d3df773de1a4"
+    },
+    "113004.mp3": {
+     "bytes": 96675,
+     "sha256": "aa34657feaf7ea666ec62f253d2458b98c3cb01835f8c915da0b58ef4c87ed2c"
+    },
+    "113005.mp3": {
+     "bytes": 91242,
+     "sha256": "c83d3988ef8809ea0bfd107f62732d1e9b8697bb26ee8004ea514b9301389fe8"
+    },
+    "114001.mp3": {
+     "bytes": 98347,
+     "sha256": "85f84b7f45d8249a94265f5453997a3e55fc027763114b8df91b15fa39c0e484"
+    },
+    "114002.mp3": {
+     "bytes": 84972,
+     "sha256": "522638668af16887a5a514d92903c1172d8afa28622eeb90f7d8550b56c6eae2"
+    },
+    "114003.mp3": {
+     "bytes": 86226,
+     "sha256": "b07db0b577e3f14304b7279cea34c9b261fe55d6a31c58e33657279d19ec1309"
+    },
+    "114004.mp3": {
+     "bytes": 128440,
+     "sha256": "3a3ae4ed53b7cf5123c5bf01842be316657c509e4306ae3f7270e8fb612fb8e9"
+    },
+    "114005.mp3": {
+     "bytes": 127186,
+     "sha256": "bbc6d4bdabc7350738bba1309eaed60389de12c9e8284de316878318b8f32ec1"
+    },
+    "114006.mp3": {
+     "bytes": 132620,
+     "sha256": "99047f038edf3db4ce4914f0d935d46693f8b95ca00316ecf2457002e457c2f9"
+    },
+    "basmala.mp3": {
+     "bytes": 146830,
+     "sha256": "128d4c7b6df6cf1981db989414dedd51b7775a8edcbe6bb152bc260f041b3e16"
+    }
+   }
+  },
+  "sudais-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 909322,
+     "sha256": "e38e70d831379a558c6c15d650fb08b281802d7fa4a3d8f4438e7b0239eb9de8"
+    },
+    "112001.mp3": {
+     "bytes": 71690,
+     "sha256": "7d377fad0c412c3865dff542303ac3bcc098f34fa29526c519732fe4199fad17"
+    },
+    "112002.mp3": {
+     "bytes": 63498,
+     "sha256": "8d4bfb3b18d083dcc93ffb8cdc1d0add47e518b738401812b3f9803135f107b1"
+    },
+    "112003.mp3": {
+     "bytes": 67594,
+     "sha256": "7946932feb0cbce10917816a27c010d0c5f71528500754a27a7b820a1328e427"
+    },
+    "112004.mp3": {
+     "bytes": 110602,
+     "sha256": "cb36f9f2d8bc825320a4fb99347c081769f72ab99fe53143ced15c848251192d"
+    },
+    "113001.mp3": {
+     "bytes": 77834,
+     "sha256": "8ae87ce6f9050f163763ee7f4c26886432bd6a62be9b01ca0891d45b5f263648"
+    },
+    "113002.mp3": {
+     "bytes": 69642,
+     "sha256": "d23204a9cbf140e9452d25e9b516b9055c4519ced3847cc0275fc48d4fdfad97"
+    },
+    "113003.mp3": {
+     "bytes": 106506,
+     "sha256": "849bc2b67518e0a15c2a1b4dc1eb4c4e44529db0562a19929c68da2dac9b0f02"
+    },
+    "113004.mp3": {
+     "bytes": 124938,
+     "sha256": "3b0248a65874a69f7892e5e2a6ed22aa4f5d502f8562aa331e57a0ac6e6c3e99"
+    },
+    "113005.mp3": {
+     "bytes": 141322,
+     "sha256": "5a6bddff4e69492540a59a6435ac9f0f0a3acf611b55548f39a40f6c8044bb61"
+    },
+    "114001.mp3": {
+     "bytes": 83978,
+     "sha256": "984fc29a178037e142d8c3e823cfd344954af2a49764a7102f5a100cc0acf4ff"
+    },
+    "114002.mp3": {
+     "bytes": 51210,
+     "sha256": "4b6bb62f9b7dd98ef7fd0055ed324b6c11bc355b168ea74c2cffff4a97f81148"
+    },
+    "114003.mp3": {
+     "bytes": 81930,
+     "sha256": "d12e7045d526293488bc7f552e4596d51a87938b12989e346bdf80c0b35e56b2"
+    },
+    "114004.mp3": {
+     "bytes": 147466,
+     "sha256": "c6dd5915ab6ee983576c0bb8fbb026e9d11e886e009456212618707ca451ac9d"
+    },
+    "114005.mp3": {
+     "bytes": 126986,
+     "sha256": "1db99c44c46cf6203f9585d30fcaf5fd732e43b9978827b4f04b09b1e6c2d072"
+    },
+    "114006.mp3": {
+     "bytes": 145418,
+     "sha256": "94f35d0f94799e4050e21e4c0573f7cbfea258ff16272a34e5dde19bbc26f97d"
+    }
+   }
+  },
+  "muaiqly-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 669989,
+     "sha256": "f0c15474567993108a6bbf606d79688fe0a144f824b0fb6b4b766ba280d0fbc6"
+    },
+    "112001.mp3": {
+     "bytes": 30511,
+     "sha256": "28da75cbc9a22037359b2dbbf80004bd290a785ca96f08b32d44f0196f1b4044"
+    },
+    "112002.mp3": {
+     "bytes": 25078,
+     "sha256": "38d3b7b97e9a9290ce62950110f4cf466e45174399a124bab143c30152dcea42"
+    },
+    "112003.mp3": {
+     "bytes": 33437,
+     "sha256": "027eea556a2c61a7755e8143b7a50fde0739d3c8c04211dd7ea82718cf14b867"
+    },
+    "112004.mp3": {
+     "bytes": 46393,
+     "sha256": "c37ba278f3f706603f14e26bae1ab85f34e6d161508f87f5924902c69bde6f30"
+    },
+    "113001.mp3": {
+     "bytes": 39706,
+     "sha256": "6d39e427075dea7dda41ed62e180bd50eb10950ae2107dcd05fb46efb524c742"
+    },
+    "113002.mp3": {
+     "bytes": 38870,
+     "sha256": "596d990b8023c1e9af4e9bcdafaadfce261a463d3cce03787ec09c6cb51f62fd"
+    },
+    "113003.mp3": {
+     "bytes": 53499,
+     "sha256": "a21646862c83ec46faf2fc3f009428a5f48acd2734cd0577cd6d0b4e431777d6"
+    },
+    "113004.mp3": {
+     "bytes": 61440,
+     "sha256": "685e057a20764383c894747ef4a0ac620f97324e7681e82746e0f4c0699b8841"
+    },
+    "113005.mp3": {
+     "bytes": 60186,
+     "sha256": "2f500ef98fd228e816521810e0f08f1cd464203b3c42cd526d9805ec8998a4bf"
+    },
+    "114001.mp3": {
+     "bytes": 56842,
+     "sha256": "36b7ae9e5ed0347cad15c3e76fc4135e726390dc445cf610d323f96c3c63afca"
+    },
+    "114002.mp3": {
+     "bytes": 40124,
+     "sha256": "fac3ebf3f318c21ca39bef7f79301c0174325551d04ef8018310ee4b0622226a"
+    },
+    "114003.mp3": {
+     "bytes": 35527,
+     "sha256": "f43fc44665e1e6d19d316d6985f02fecbc67702eff66e7e0b7d627c96ebcf2de"
+    },
+    "114004.mp3": {
+     "bytes": 68963,
+     "sha256": "7513d208f9050b3fff1b5d55ff436528d7d6d1fab188a95d98cb62800ed55d86"
+    },
+    "114005.mp3": {
+     "bytes": 64784,
+     "sha256": "2be2beb780208932630ba742a0e32a02fb66e8a3b8023405138073921db8e69e"
+    },
+    "114006.mp3": {
+     "bytes": 63948,
+     "sha256": "0f6325675f8013b5e2c365d45e10d745fabfc517d3eefcfd2d0f86fe02e11cf4"
+    },
+    "basmala.mp3": {
+     "bytes": 51872,
+     "sha256": "75980f11c5007208cb0cd93693b825d5700de4212fbf7f0d06617554b4d423d1"
+    }
+   }
+  },
+  "dosari-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 874496,
+     "sha256": "91fed30a5512c4f8e47911ba19871e2a13da830d9fecc3f19e90b73456178891"
+    },
+    "112001.mp3": {
+     "bytes": 38912,
+     "sha256": "b57020122f3db9a42d6e4adf912637d27d9865b89844c49ad57d327c429abef9"
+    },
+    "112002.mp3": {
+     "bytes": 34816,
+     "sha256": "af81ecfa1cc2d745715a6178dfcf505c330c456773c842077d617b2c912df17a"
+    },
+    "112003.mp3": {
+     "bytes": 45056,
+     "sha256": "71b02c6a960c618de36aca20078cd0d410b3eb25e539f9e9d094a94f200ab3db"
+    },
+    "112004.mp3": {
+     "bytes": 57344,
+     "sha256": "a676c99cf4090edce89e0cb13130a8a35b5b1cda32b0301c2ae8536ca5fd4b03"
+    },
+    "113001.mp3": {
+     "bytes": 45056,
+     "sha256": "31f086bafcdf1c10874f17dbe46067e0194ef299d84f95fbaaef03604dbcea24"
+    },
+    "113002.mp3": {
+     "bytes": 45056,
+     "sha256": "2e152b25cedcbb1f219c7a22624cb5e53a009bca7fdb49513d15b5ff1526e0da"
+    },
+    "113003.mp3": {
+     "bytes": 69632,
+     "sha256": "47b4fcd0bf2757ff8aa9dceb3795bacc64ce6b16bfc9504fb5f140e03e43c770"
+    },
+    "113004.mp3": {
+     "bytes": 75776,
+     "sha256": "87e5a35cbc382bedbe80a6f881752ff18dd35de483bba13757b0d3a2da7fada9"
+    },
+    "113005.mp3": {
+     "bytes": 92160,
+     "sha256": "8fe3173b3274692056140f18071e4c63e2edb28ee8d528923772344dbd333988"
+    },
+    "114001.mp3": {
+     "bytes": 100352,
+     "sha256": "311b53daf694ebcee82284a20ed2caa5d09059961eb97152d9936f2a48a7f772"
+    },
+    "114002.mp3": {
+     "bytes": 79872,
+     "sha256": "313f8819eada924cf7ceee701323e2ff745e6135fa20e821af8dc24dab1a095c"
+    },
+    "114003.mp3": {
+     "bytes": 63488,
+     "sha256": "0bb68c70de4bc25f846b4744944b9467488f2b8cf0a1aa6f23b859f60196ee08"
+    },
+    "114004.mp3": {
+     "bytes": 120832,
+     "sha256": "4206b0555044298a926606a6e2fcc216843d3a2160187b85236e5c81d1264839"
+    },
+    "114005.mp3": {
+     "bytes": 106496,
+     "sha256": "8e801d94c2ae81db0b4dc68e2f2481284953ca642c3169e9ed327d6a253815cc"
+    },
+    "114006.mp3": {
+     "bytes": 102400,
+     "sha256": "259bb667f01edb94ebef671ea70541fc68c9d291e1df8a816abe2469cc30b311"
+    },
+    "basmala.mp3": {
+     "bytes": 61067,
+     "sha256": "4c38db3cc1fab22a9dedfb8351530189f21ea7a5242c8ab72e1b13121b45fa40"
+    }
+   }
+  },
+  "qatami-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 589824,
+     "sha256": "b1ca92b91768d8ac3cbca33289dbb3095a41c2ac650d7ff7fbcd7372a6db07b1"
+    },
+    "112001.mp3": {
+     "bytes": 34816,
+     "sha256": "190546ba719fbb610ee4c1989596e5cdfb01041c3906fec5508cdbeb100b6ff4"
+    },
+    "112002.mp3": {
+     "bytes": 34816,
+     "sha256": "4e5b9ffdfab9460d64025e4fcf83c00aa34702b60c5369223728d5118b7e0df4"
+    },
+    "112003.mp3": {
+     "bytes": 40960,
+     "sha256": "2a491ab95b93845a124c1e3870429a1f6bb8a6a40ffae752a45737d3aed464d5"
+    },
+    "112004.mp3": {
+     "bytes": 61440,
+     "sha256": "62f9c708f735dce11648fa4e995d4de9af63df7dc24371c870a29f30ac0ed220"
+    },
+    "113001.mp3": {
+     "bytes": 40960,
+     "sha256": "cbfa9a6b30c7d9daa33d8466c559f3adc436128ae0f5afcd69a3157c1adc2a2f"
+    },
+    "113002.mp3": {
+     "bytes": 43008,
+     "sha256": "307781cff8732216455a9b04c2ba2d186d66d9fbd397696089d82dcdee9c0e3b"
+    },
+    "113003.mp3": {
+     "bytes": 61440,
+     "sha256": "eee7fb2297f19a6a1626d3a67216f5800218c7b604050bb9e3e58e39cc0e19b7"
+    },
+    "113004.mp3": {
+     "bytes": 81920,
+     "sha256": "7ef9d59c6a319e1e67edeb05525b58b3bbb3ca5e38e55e53019db356caf3e44b"
+    },
+    "113005.mp3": {
+     "bytes": 77824,
+     "sha256": "8d8df31eacf6e56a6855232dd8b9ea4186582e97f38a519cac4236890ee06e2e"
+    },
+    "114001.mp3": {
+     "bytes": 96256,
+     "sha256": "af0690eac55480cf8897a4674174547beb29b269b7760f66e86a3df44d162663"
+    },
+    "114002.mp3": {
+     "bytes": 77824,
+     "sha256": "88d815a5b602d64dad07a087faef2d55caffc3f328b46fe6bf35944c6993ba9a"
+    },
+    "114003.mp3": {
+     "bytes": 92160,
+     "sha256": "699ad7a8e58f34b1c09788c5c8c96f638cfc9d210318e19bfc4d1d6d81e3824b"
+    },
+    "114004.mp3": {
+     "bytes": 112640,
+     "sha256": "a58c486d1bbb40178a58033fe1968209c1a556479ba0b7f74b7dcf60f2636664"
+    },
+    "114005.mp3": {
+     "bytes": 120832,
+     "sha256": "50e21ba39b9bee3e5c222c17fbc8439546f6d22bf931f059a8f804946f2c0bfc"
+    },
+    "114006.mp3": {
+     "bytes": 141312,
+     "sha256": "3a5112cc0926e487454885cc3a977711b198c375e8b57fcc128c482f2572ff98"
+    },
+    "basmala.mp3": {
+     "bytes": 45185,
+     "sha256": "876bccfcceb354a7408e1745206d7462c414ff4c024ddc5caf6bda8ff31834b6"
+    }
+   }
+  },
+  "banna-murattal": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 223562,
+     "sha256": "401b4186ee7bf203146ceb8ee80ddeccf3aaca4a297c944fbe6884ccc07e65e0"
+    },
+    "112001.mp3": {
+     "bytes": 37054,
+     "sha256": "9ec43fb509a1ae9cfda6cabea0c2580c181ee997d463096c56f3ab20f9a06a0a"
+    },
+    "112002.mp3": {
+     "bytes": 15110,
+     "sha256": "9bb4cea3c43b8a89b116cb11a2b1d229def3184a07f33de9482c41ca49b269b2"
+    },
+    "112003.mp3": {
+     "bytes": 18350,
+     "sha256": "70a0c2d0ae91af5292e5b5153e09fcc9ae3608cdcef7c1ab380558b4b1e68f28"
+    },
+    "112004.mp3": {
+     "bytes": 24724,
+     "sha256": "de571e7764ecbbfa62b5c7ef0bacfd4d6250c810d66300f3059964035f549f68"
+    },
+    "113001.mp3": {
+     "bytes": 39035,
+     "sha256": "e5a4b0473ef68e098758ceae883bb347735d47cd90623783e95dd6ab573abcf8"
+    },
+    "113002.mp3": {
+     "bytes": 18346,
+     "sha256": "8ec938c97dda6a21eeb542065eefff09cd35772186db8a6fd6885f6b4506409f"
+    },
+    "113003.mp3": {
+     "bytes": 23361,
+     "sha256": "84658dfb8d9dd682990e2f3abe9b57d0db5fa0e934326fcbe8003fbe0eff569e"
+    },
+    "113004.mp3": {
+     "bytes": 29108,
+     "sha256": "06ebfda9970ea18ed89105796ddbc73ee09c4914c60e3f6c58e44ab90facf6e4"
+    },
+    "113005.mp3": {
+     "bytes": 26183,
+     "sha256": "8ef919c8507ada1b9e2133458dde3c9af974b7b9b097069165b9e38ba40ee274"
+    },
+    "114001.mp3": {
+     "bytes": 42371,
+     "sha256": "f3063573d539178085551b6cfddda1a3558f7399ecdd7d6dc1a40f6e79e78d1d"
+    },
+    "114002.mp3": {
+     "bytes": 15832,
+     "sha256": "2f9041aa4a9ed772914073474526cfe08287993ff59c90b0d73ec639dab8bbd2"
+    },
+    "114003.mp3": {
+     "bytes": 16040,
+     "sha256": "96342b3d435ff3afdc4c17dfe14770926c0c9d625d0851e8d745f7565784bef0"
+    },
+    "114004.mp3": {
+     "bytes": 26593,
+     "sha256": "bab7067596b2236b6c113f3fef21a96286a6c02f88fdfb92b262f83b66f4b4c7"
+    },
+    "114005.mp3": {
+     "bytes": 27325,
+     "sha256": "0c92811620be7a13389bc36073f486cc87392163c12c570515f9cc0bed768030"
+    },
+    "114006.mp3": {
+     "bytes": 49059,
+     "sha256": "f6cb7b0fbdf41888e518e46d0b5dc96c120ced54d3297a888134146face2e6b4"
+    },
+    "basmala.mp3": {
+     "bytes": 20212,
+     "sha256": "1b6998142d3394d36ed09f7f898903c8476842ee3a2a91bd3c8d8071ec248864"
+    }
+   }
+  },
+  "mustafaismail-mujawwad": {
+   "files": {
+    "002255.mp3": {
+     "bytes": 381978,
+     "sha256": "1095bf0871446843d1c813584e082865cf88c3b454453802e6e03b00b8e0fd0a"
+    },
+    "112001.mp3": {
+     "bytes": 62552,
+     "sha256": "0fe14ec6f2fabc939e17401100ad3dba674bd8f4f491abf189650069f9c5a28e"
+    },
+    "112002.mp3": {
+     "bytes": 24779,
+     "sha256": "0794ed37843d245caecde2c84025955a78c76d53fa15f316f97a71e99486f3f5"
+    },
+    "112003.mp3": {
+     "bytes": 31676,
+     "sha256": "2e95d5aff622f644116875a2c29167572c6577c42b90f1a31586a0b504825d48"
+    },
+    "112004.mp3": {
+     "bytes": 33400,
+     "sha256": "7388289cdca263aed49ceb5596ca7f9ccfe2ca7529dcd98af74ca8ac7b4289e4"
+    },
+    "113001.mp3": {
+     "bytes": 73366,
+     "sha256": "d0f60e2171f026cbbb153b56c648c70d9ee8d53799b72784ccc2e5218ef759d8"
+    },
+    "113002.mp3": {
+     "bytes": 31204,
+     "sha256": "7385265426d8af5526f14c189ba2f05df423d59234ede440c849940c487205cf"
+    },
+    "113003.mp3": {
+     "bytes": 40295,
+     "sha256": "f5ba1143ecfed6aeab52fb97db90a7b0f31f55f6428e4dfd8f56e6af244898d9"
+    },
+    "113004.mp3": {
+     "bytes": 49386,
+     "sha256": "fbb712e9c9212f3b32e0db8f1a9ab0908fd0840323e702a353b2cbc2cdf19bf5"
+    },
+    "113005.mp3": {
+     "bytes": 47348,
+     "sha256": "de7b2effba29d462058e1d3a94ef85ab02feafb9fda29b5ecb2d90433718da6e"
+    },
+    "114001.mp3": {
+     "bytes": 75558,
+     "sha256": "cb6b2063cf3bfc1a4a63ed73ccb21776b60e18fe4b28085e39d6365eba1f4e23"
+    },
+    "114002.mp3": {
+     "bytes": 29478,
+     "sha256": "c0f81169d119d6a981d205ad810e6882fcf1eb419b0b822b026ffb3dd1463578"
+    },
+    "114003.mp3": {
+     "bytes": 29009,
+     "sha256": "fe0301dcff7192045873060a3b4e6ea097802f490f5f02bf19f0d989ad9b2e71"
+    },
+    "114004.mp3": {
+     "bytes": 47659,
+     "sha256": "55d3e3f3e45819f64994d636b804ca324293fdefc1c4c2926796d7fa4555a774"
+    },
+    "114005.mp3": {
+     "bytes": 52675,
+     "sha256": "a82387e40d73a982f0631a6c67ea5764063188114776de8b29a60667e38e4794"
+    },
+    "114006.mp3": {
+     "bytes": 37472,
+     "sha256": "bb72e230e9fdc6e0d45335a901a337642b685b2050a309a58a5f9c0092d661ae"
+    },
+    "basmala.mp3": {
+     "bytes": 39542,
+     "sha256": "1f2f30e72701e2f4b9b33ff27e36606c7fd1097f61c760b3311a630083789f78"
+    }
+   }
+  }
+ }
+}

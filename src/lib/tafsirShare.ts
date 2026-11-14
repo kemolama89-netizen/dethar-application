@@ -42,6 +42,17 @@ const headingVerses = (p: SaadiParsed["paragraphs"][number]) =>
  * gives, it stays too.
  */
 export function saadiTextForCard(parsed: SaadiParsed, ayah: number): string {
+  const text = shownText(paragraphsUnderVerse(parsed, ayah));
+  return text.trim() ? text : saadiTextForSharing(parsed);
+}
+
+/**
+ * al-Sa'di's paragraphs as shown under the verse itself (the share card, the Tafsir booklet over the
+ * Mushaf): every paragraph whole and in order, except the book's heading that is only a quotation of
+ * this very verse — the verse is already there, in the Mushaf's text. When that heading is all the
+ * book gives, it stays.
+ */
+export function paragraphsUnderVerse(parsed: SaadiParsed, ayah: number): SaadiParsed["paragraphs"] {
   const rest = parsed.paragraphs.filter((p) => {
     if (!p.heading) return true;
     const verses = headingVerses(p);
@@ -50,8 +61,7 @@ export function saadiTextForCard(parsed: SaadiParsed, ayah: number): string {
     const quotationOnly = p.runs.every((r) => r.kind === "quote" || r.kind === "note" || r.kind === "stray" || /^[\s.[\]]*$/.test(r.text));
     return !(quotationOnly && verses.length === 1 && verses[0] === ayah);
   });
-  const text = shownText(rest);
-  return text.trim() ? text : saadiTextForSharing(parsed);
+  return shownText(rest).trim() ? rest : parsed.paragraphs;
 }
 
 export interface TafsirShareLabels {

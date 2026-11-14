@@ -192,8 +192,8 @@ describe("resolution", () => {
     expect(m).toEqual({
       status: "ready",
       kind: "quran",
-      key: "quran:abdulbasit-murattal:2:255",
-      urls: ["/audio/quran/abdulbasit-murattal/basmala.mp3", "/audio/quran/abdulbasit-murattal/002255.mp3"],
+      key: "quran:husary-murattal:2:255",
+      urls: ["/audio/quran/husary-murattal/basmala.mp3", "/audio/quran/husary-murattal/002255.mp3"],
     });
     expect(e).toEqual(m);
   });

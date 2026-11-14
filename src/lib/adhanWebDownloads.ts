@@ -19,21 +19,20 @@ export interface AdhanFileStore {
   remove(id: string): Promise<void>;
 }
 
-const DB_NAME = "dithar-adhan-downloads";
 const STORE = "files";
 
-function openDb(): Promise<IDBDatabase> {
+function openDb(name: string): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (typeof indexedDB === "undefined") return reject(new Error("no storage"));
-    const request = indexedDB.open(DB_NAME, 1);
+    const request = indexedDB.open(name, 1);
     request.onupgradeneeded = () => request.result.createObjectStore(STORE, { keyPath: "id" });
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error ?? new Error("no storage"));
   });
 }
 
-async function run<T>(mode: IDBTransactionMode, act: (store: IDBObjectStore) => IDBRequest<T>): Promise<T> {
-  const db = await openDb();
+async function run<T>(name: string, mode: IDBTransactionMode, act: (store: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+  const db = await openDb(name);
   try {
     return await new Promise<T>((resolve, reject) => {
       const tx = db.transaction(STORE, mode);
@@ -47,11 +46,16 @@ async function run<T>(mode: IDBTransactionMode, act: (store: IDBObjectStore) => 
   }
 }
 
-export const indexedDbAdhanFiles: AdhanFileStore = {
-  all: () => run("readonly", (s) => s.getAll() as IDBRequest<AdhanStoredFile[]>),
-  put: async (file) => void (await run("readwrite", (s) => s.put(file))),
-  remove: async (id) => void (await run("readwrite", (s) => s.delete(id))),
-};
+/** A browser file store in its own IndexedDB database — the Adhan's, or the Qur'an reciters' (lib/quranAudioDownloads.ts). */
+export function indexedDbFiles(name: string): AdhanFileStore {
+  return {
+    all: () => run(name, "readonly", (s) => s.getAll() as IDBRequest<AdhanStoredFile[]>),
+    put: async (file) => void (await run(name, "readwrite", (s) => s.put(file))),
+    remove: async (id) => void (await run(name, "readwrite", (s) => s.delete(id))),
+  };
+}
+
+export const indexedDbAdhanFiles: AdhanFileStore = indexedDbFiles("dithar-adhan-downloads");
 
 type Progress = (e: { id: string; received: number; total: number }) => void;
 

@@ -170,7 +170,7 @@ describe("Specific Reciter mode", () => {
 
   it("plays on the quran channel, so changing the reciter stops it", () => {
     startAudioAdhkar("evening", item("evening", "morning_001"));
-    expect(getActiveAudio()).toEqual({ channel: "quran", key: "quran:abdulbasit-murattal:2:255" });
+    expect(getActiveAudio()).toEqual({ channel: "quran", key: "quran:husary-murattal:2:255" });
     stopAudio("quran"); // what QuranReciterProvider does on a change
     expect(getNowPlaying()).toBeNull();
   });
@@ -250,10 +250,10 @@ describe("Random rotation (a section's reciter set to random)", () => {
 
 describe("multi-ayah ordering", () => {
   it.each(QURANIC.slice(1))("$id plays the reciter's basmala then its ayahs strictly in order, each from the original file", (q) => {
-    const stems = stemsFor("abdulbasit-murattal", q);
+    const stems = stemsFor("husary-murattal", q);
     startAudioAdhkar("evening", item("evening", q.id));
     endRepetition(stems.length);
-    expect(fake.played.slice(0, stems.length)).toEqual(stems.map((s) => url("abdulbasit-murattal", s)));
+    expect(fake.played.slice(0, stems.length)).toEqual(stems.map((s) => url("husary-murattal", s)));
   });
 });
 

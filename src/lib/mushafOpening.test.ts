@@ -93,3 +93,55 @@ describe("Mushaf opening pages", () => {
     for (const page of [3, 4, 300, 604]) expect(openingArtwork(page)).toBeNull();
   });
 });
+
+// The opening pages' source PNGs (public/mushaf/hafs-kfqc-opening/png) are left out of the APK
+// (scripts/mushaf/exclude-opening-png-from-apk.mjs): nothing in the app loads them — the composed pages
+// carry the same artwork. They stay in public/, byte for byte.
+describe("the opening pages' source PNGs", () => {
+  const cwd = () => (globalThis as unknown as { process: { cwd(): string } }).process.cwd();
+
+  it("are never loaded: the opening data uses the composed pages, and no app source names the PNGs", async () => {
+    expect(Object.values(opening.pages).map((p) => p.image)).toEqual(["composed/001.svg", "composed/002.svg"]);
+    expect(openingArtwork(1)!.path).toBe("mushaf/hafs-kfqc-opening/composed/001.svg");
+    const fs = await nodeModule("fs");
+    const { join } = await nodeModule("path");
+    const walk = (dir: string): string[] => (fs.readdirSync(dir, { withFileTypes: true }) as { name: string; isDirectory(): boolean }[]).flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]));
+    const sources = [...walk(join(cwd(), "src")).filter((f) => /\.(tsx?|css|json)$/.test(f) && !f.endsWith("mushafOpening.test.ts")), join(cwd(), "index.html")];
+    expect(sources.length).toBeGreaterThan(100);
+    expect(sources.filter((f) => /hafs-kfqc-opening\/png|opening\/png\//.test(fs.readFileSync(f, "utf8")))).toEqual([]);
+    // Still in public/, unchanged.
+    expect(fs.existsSync(publicUrl("mushaf/hafs-kfqc-opening/png/001.png"))).toBe(true);
+  });
+
+  it("the build step removes only them from the bundle — and refuses, removing nothing, if the bundle names them", async () => {
+    const fs = await nodeModule("fs");
+    const { join } = await nodeModule("path");
+    const { tmpdir } = await nodeModule("os");
+    const { spawnSync } = await nodeModule("child_process");
+    const script = join(cwd(), "scripts/mushaf/exclude-opening-png-from-apk.mjs");
+    const bundle = (references: boolean): string => {
+      const dist: string = fs.mkdtempSync(join(tmpdir(), "dithar-opening-"));
+      fs.mkdirSync(join(dist, "mushaf/hafs-kfqc-opening/png"), { recursive: true });
+      fs.mkdirSync(join(dist, "mushaf/hafs-kfqc-opening/composed"), { recursive: true });
+      fs.mkdirSync(join(dist, "assets"));
+      for (const n of ["001", "002"]) {
+        fs.writeFileSync(join(dist, `mushaf/hafs-kfqc-opening/png/${n}.png`), "png");
+        fs.writeFileSync(join(dist, `mushaf/hafs-kfqc-opening/composed/${n}.svg`), "<svg/>");
+      }
+      fs.writeFileSync(join(dist, "assets/index.js"), references ? 'load("mushaf/hafs-kfqc-opening/png/001.png")' : 'load("mushaf/hafs-kfqc-opening/composed/001.svg")');
+      return dist;
+    };
+    const clean = bundle(false);
+    const ok = spawnSync("node", [script, clean], { encoding: "utf8" });
+    expect(ok.status).toBe(0);
+    expect(fs.existsSync(join(clean, "mushaf/hafs-kfqc-opening/png"))).toBe(false);
+    expect(fs.readdirSync(join(clean, "mushaf/hafs-kfqc-opening/composed"))).toEqual(["001.svg", "002.svg"]);
+    const named = bundle(true);
+    const refused = spawnSync("node", [script, named], { encoding: "utf8" });
+    expect(refused.status).toBe(1);
+    expect(refused.stderr).toContain("nothing changed");
+    expect(fs.readdirSync(join(named, "mushaf/hafs-kfqc-opening/png"))).toEqual(["001.png", "002.png"]);
+    fs.rmSync(clean, { recursive: true });
+    fs.rmSync(named, { recursive: true });
+  });
+});

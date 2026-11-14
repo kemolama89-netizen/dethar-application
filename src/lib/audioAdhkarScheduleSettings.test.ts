@@ -22,7 +22,7 @@ import {
 } from "./audioAdhkarScheduleSettings";
 import { loadEveningAudioSettings, saveEveningAudioSettings } from "./eveningAudioSettings";
 import { saveQuranReciterMode, saveSelectedQuranReciterId } from "./quranAudioPreferences";
-import { getAvailableQuranReciters } from "../data/quranReciters";
+import { DEFAULT_QURAN_RECITER_ID, getAvailableQuranReciters } from "../data/quranReciters";
 
 beforeEach(() => {
   localStorage.clear();
@@ -65,8 +65,8 @@ describe("Audio Adhkar schedule settings", () => {
   });
 
   it("defaults each section's reciter from the old app-wide setting: its reciter, or random for its rotation", () => {
-    saveSelectedQuranReciterId("husary-murattal");
-    expect(loadSectionReciterChoice("morning")).toBe("husary-murattal");
+    saveSelectedQuranReciterId("minshawi-murattal");
+    expect(loadSectionReciterChoice("morning")).toBe("minshawi-murattal");
     saveQuranReciterMode("rotation");
     expect(loadSectionReciterChoice("evening")).toBe("random");
   });
@@ -77,7 +77,8 @@ describe("Audio Adhkar schedule settings", () => {
     expect(loadSectionReciterChoice("morning")).toBe("random");
     expect(loadSectionReciterChoice("evening")).toBe("minshawi-murattal");
     saveSectionReciterChoice("evening", "no-such-reciter");
-    expect(loadSectionReciterChoice("evening")).toBe(getAvailableQuranReciters()[0].id);
+    // An unknown id falls back to the app-wide reciter — by default the built-in al-Husary.
+    expect(loadSectionReciterChoice("evening")).toBe(DEFAULT_QURAN_RECITER_ID);
   });
 
   it("a specific reciter is used for every Quranic dhikr", () => {

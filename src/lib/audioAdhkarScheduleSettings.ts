@@ -14,6 +14,7 @@ import { getAvailableQuranReciters, getDefaultQuranReciter, getQuranReciterById 
 import type { QuranReciter } from "../data/quranReciters";
 import { isValidStartTime, loadEveningAudioSettings, saveEveningAudioSettings, startTimeToMinutes } from "./eveningAudioSettings";
 import { loadQuranReciterMode, loadSelectedQuranReciterId } from "./quranAudioPreferences";
+import { getPlayableQuranReciters, playableQuranReciter, quranAudioFilesKnown } from "./quranAudioDownloads";
 
 export { isValidStartTime, startTimeToMinutes };
 
@@ -216,13 +217,16 @@ function saveRandomState(section: DailySection, state: RandomState): void {
  */
 export function peekSectionReciter(section: DailySection): QuranReciter {
   const choice = loadSectionReciterChoice(section);
-  if (choice !== "random") return getQuranReciterById(choice) ?? getDefaultQuranReciter();
-  const pool = getAvailableQuranReciters();
+  // Only a reciter on this device plays (lib/quranAudioDownloads.ts): one not downloaded gives way to the built-in one;
+  // the saved choice itself is kept, so he plays again once downloaded.
+  if (choice !== "random") return playableQuranReciter(getQuranReciterById(choice) ?? getDefaultQuranReciter());
+  const pool = getPlayableQuranReciters();
   const state = loadRandomState(section);
   const drawn = pool.find((r) => r.id === state.next && (pool.length < 2 || r.id !== state.last));
   if (drawn) return drawn;
   const next = drawReciter(pool, state.last);
-  saveRandomState(section, { ...state, next: next.id });
+  // Not while the device's downloads are still being read: the drawn reciter saved earlier may be one of them.
+  if (quranAudioFilesKnown()) saveRandomState(section, { ...state, next: next.id });
   return next;
 }
 
@@ -230,7 +234,7 @@ export function peekSectionReciter(section: DailySection): QuranReciter {
 export function takeSectionReciter(section: DailySection): QuranReciter {
   const reciter = peekSectionReciter(section);
   if (loadSectionReciterChoice(section) === "random") {
-    saveRandomState(section, { last: reciter.id, next: drawReciter(getAvailableQuranReciters(), reciter.id).id });
+    saveRandomState(section, { last: reciter.id, next: drawReciter(getPlayableQuranReciters(), reciter.id).id });
   }
   return reciter;
 }

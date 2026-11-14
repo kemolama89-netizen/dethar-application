@@ -144,10 +144,14 @@ class ReminderLogicTest {
     @Test
     fun aDayWithNothingRecordedGetsAGentleMessageNeverAClaim() {
         val ar = DailySummary.compose(snapshot(), today, 0, "combined", "ar")
-        assertTrue(ar.body.contains("لم يُسجَّل"))
+        // "in DITHAR": an invitation about the app's records, never a claim about the user.
+        assertTrue(ar.body.startsWith("لم تبدأ وردك في دِثار اليوم بعد 🌿"))
         val en = DailySummary.compose(null, today, 0, "combined", "en")
-        assertTrue(en.body.startsWith("No dhikr was recorded"))
+        assertTrue(en.body.startsWith("You haven't started your wird in DITHAR today yet"))
         assertFalse(en.body.contains("You didn't"))
+        // A late summary of the day before keeps the factual wording.
+        val yesterday = DailySummary.compose(null, today, 0, "combined", "en", ofYesterday = true)
+        assertTrue(yesterday.body.startsWith("No dhikr was recorded in DITHAR yesterday"))
     }
 
     @Test

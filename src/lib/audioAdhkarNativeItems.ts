@@ -1,5 +1,6 @@
 // What a dhikr plays on Android, as the native player's playlist items
-// (APK asset paths — always bundled files, never a network URL). Shared by
+// (APK asset paths, or a downloaded recitation's file on the device — never
+// a network URL). Shared by
 // the scheduled sessions (audioAdhkarSchedules.ts) and the in-app «استماع»
 // playback, which on Android is played by the same native foreground
 // service (audioAdhkarPlayer.ts) so it keeps playing with the screen off.
@@ -13,11 +14,13 @@ import type { DailySection } from "./audioAdhkarScheduleSettings";
 import type { NativePlaylistItem, NativeRecitation } from "./audioAdhkarNative";
 import { loadLanguagePreference } from "./appearancePreferences";
 import { playableAudioPath } from "./audioAssets";
+import { downloadedQuranAudioPath } from "./quranAudioDownloads";
 
 /** Where Capacitor packages the built web app (dist/ → assets/public/) inside the APK. */
 const APK_WEB_ASSETS_DIR = "public/";
 
-const inApk = (paths: readonly string[]) => paths.map((p) => `${APK_WEB_ASSETS_DIR}${playableAudioPath(p)}`);
+/** Each file as native opens it: a downloaded recitation's absolute path (lib/quranAudioDownloads.ts), else its APK asset path. */
+const inApk = (paths: readonly string[]) => paths.map((p) => downloadedQuranAudioPath(p) ?? `${APK_WEB_ASSETS_DIR}${playableAudioPath(p)}`);
 
 /** A bundled recitation as native plays it, naming `reciter` (in the app's language) so the player can show who is heard. */
 export function nativeRecitation(audio: BundledQuranAudio, reciter?: QuranReciter): NativeRecitation {

@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { featureGuideLabels, GUIDE_ORDER } from "../data/featureGuideLabels";
 import type { GuideSectionId, GuideTarget } from "../data/featureGuideLabels";
+import { scrollIntoScreen } from "../lib/screenScroll";
 
 /**
  * Settings → «دليل الميزات»: a short, always-available explanation of each feature and where it is set,
@@ -48,7 +49,7 @@ export function FeatureGuideView({
   const listRef = useRef<HTMLDivElement>(null);
   const initialSection = useRef(openSection);
   useEffect(() => {
-    if (initialSection.current) listRef.current?.querySelector(`[data-guide-section='${initialSection.current}']`)?.scrollIntoView?.({ block: "start" });
+    if (initialSection.current) scrollIntoScreen(listRef.current?.querySelector(`[data-guide-section='${initialSection.current}']`), "start");
   }, []);
 
   return (

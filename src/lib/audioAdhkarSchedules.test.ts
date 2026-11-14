@@ -154,10 +154,10 @@ describe("Evening playlist", () => {
 
   it("is exactly the Evening dhikr with audio, in Evening order, from the existing mapping", () => {
     const playlist = buildEveningAudioPlaylist();
-    const quran = (n: string) => `public/audio/quran/abdulbasit-murattal/${n}.mp3`;
+    const quran = (n: string) => `public/audio/quran/husary-murattal/${n}.mp3`;
     expect(playlist.map((p) => p.dhikrId)).toEqual(["morning_001", "morning_002", "morning_002b", "morning_002c", "morning_003", "morning_004", "morning_005", "morning_006", "morning_007", "morning_008", "morning_009", "morning_010", "morning_011", "morning_012", "morning_013", "morning_014", "morning_015", "morning_016", "morning_017", "morning_018", "morning_023", "evening_001"]);
     expect(playlist.map((p) => p.assetPaths)).toEqual([
-      // Every Quranic recitation starts with Abdul Basit's own basmala — Ayat al-Kursi too.
+      // Every Quranic recitation starts with al-Husary’s own basmala (the default reciter) — Ayat al-Kursi too.
       ["basmala", "002255"].map(quran),
       ["basmala", "112001", "112002", "112003", "112004"].map(quran),
       ["basmala", "113001", "113002", "113003", "113004", "113005"].map(quran),

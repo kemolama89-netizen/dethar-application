@@ -28,6 +28,11 @@ export interface ShareableContent {
   /** Its verified source/reference, in the interface language, when there is one. */
   reference?: string;
   /**
+   * True when [reference] names the verse itself (a Tafsir's «سورة … · الآية …»): it is then
+   * written as it is, not as «المصدر: …» — the Tafsir's own source keeps that label.
+   */
+  referenceIsVerse?: boolean;
+  /**
    * Everything shown beneath the main text, in order and under its own
    * label — the verse's tafsir or Lataif insight, the supporting Qur'an /
    * Sunnah evidence, DITHAR's reflection (with its "not a narrated text"
@@ -75,6 +80,8 @@ export interface ShareSection {
 interface SharePluginApi {
   shareText(options: { text: string; title?: string }): Promise<{ shared: boolean }>;
   shareImage(options: { base64: string; fileName: string; title?: string }): Promise<{ shared: boolean; bytes: number }>;
+  shareFile(options: { base64: string; fileName: string; title?: string; text?: string }): Promise<{ shared: boolean; bytes: number }>;
+  shareImages(options: { images: { base64: string; fileName: string }[]; title?: string; text?: string }): Promise<{ shared: boolean; count: number }>;
 }
 
 const DitharShare = registerPlugin<SharePluginApi>("DitharShare");
@@ -92,7 +99,7 @@ export function composeShareText(content: ShareableContent, language: "ar" | "en
   const sourceLabel = language === "en" ? "Source" : "المصدر";
   const parts = [content.textAr.trim()];
   if (language === "en" && content.meaningEn?.trim()) parts.push(content.meaningEn.trim());
-  if (content.reference?.trim()) parts.push(`${sourceLabel}: ${content.reference.trim()}`);
+  if (content.reference?.trim()) parts.push(content.referenceIsVerse ? content.reference.trim() : `${sourceLabel}: ${content.reference.trim()}`);
   for (const section of content.sections ?? []) {
     if (!section.text.trim()) continue;
     const lines = [`${section.label}:`, section.text.trim()];
@@ -143,7 +150,8 @@ function dataUrlToFile(dataUrl: string, name: string): File {
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return new File([bytes], name, { type: "image/png" });
+  const type = /^data:([^;,]+)/.exec(dataUrl)?.[1] ?? "image/png";
+  return new File([bytes], name, { type });
 }
 
 function download(dataUrl: string, name: string) {
@@ -184,3 +192,64 @@ export async function shareAsImage(content: ShareableContent, language: "ar" | "
   download(dataUrl, fileName);
   return "downloaded";
 }
+
+/**
+ * Several images already drawn (the pages of a Tafsir booklet), shared together in their
+ * order — one share, every page. Android: the native ACTION_SEND_MULTIPLE; elsewhere the
+ * Web Share API with all the files, else each one downloaded, in order.
+ */
+export async function shareImageSet(dataUrls: readonly string[], title: string, baseName: string, caption?: string): Promise<ShareOutcome> {
+  if (dataUrls.length === 0) return "failed";
+  const stamp = Date.now();
+  const names = dataUrls.map((d, i) => `${baseName}-${stamp}-${String(i + 1).padStart(2, "0")}.${d.startsWith("data:image/jpeg") ? "jpg" : "png"}`);
+  if (isAndroidApp()) {
+    try {
+      await DitharShare.shareImages({ images: dataUrls.map((base64, i) => ({ base64, fileName: names[i] })), title, ...(caption ? { text: caption } : {}) });
+      return "shared";
+    } catch {
+      return "failed";
+    }
+  }
+  const files = dataUrls.map((d, i) => dataUrlToFile(d, names[i]));
+  if (typeof navigator !== "undefined" && typeof navigator.canShare === "function" && navigator.canShare({ files })) {
+    try {
+      await navigator.share({ files, title, ...(caption ? { text: caption } : {}) });
+      return "shared";
+    } catch (e) {
+      if (isAbort(e)) return "cancelled";
+    }
+  }
+  // One at a time: browsers hold back a burst of downloads.
+  for (const [i, d] of dataUrls.entries()) {
+    download(d, names[i]);
+    if (i < dataUrls.length - 1) await new Promise((r) => setTimeout(r, 250));
+  }
+  return "downloaded";
+}
+
+/**
+ * One document (a long Tafsir's pages as a PDF), through the share sheet: Android natively;
+ * elsewhere the Web Share API with the file, else it is downloaded.
+ */
+export async function shareDocument(dataUrl: string, fileName: string, title: string, caption?: string): Promise<ShareOutcome> {
+  if (isAndroidApp()) {
+    try {
+      await DitharShare.shareFile({ base64: dataUrl, fileName, title, ...(caption ? { text: caption } : {}) });
+      return "shared";
+    } catch {
+      return "failed";
+    }
+  }
+  const file = dataUrlToFile(dataUrl, fileName);
+  if (typeof navigator !== "undefined" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title, ...(caption ? { text: caption } : {}) });
+      return "shared";
+    } catch (e) {
+      if (isAbort(e)) return "cancelled";
+    }
+  }
+  download(dataUrl, fileName);
+  return "downloaded";
+}
+

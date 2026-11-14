@@ -116,7 +116,7 @@ describe("Evening recordings map to the right dhikr", () => {
     for (const item of writtenAdhkarItems.evening.filter((i) => i.quranRef)) {
       const source = getAudioAdhkarSource("evening", item)!;
       expect(source.channel, item.id).toBe("quran");
-      for (const url of source.urls) expect(url).toMatch(/^\/audio\/quran\/abdulbasit-murattal\/(\d{6}|basmala)\.mp3$/);
+      for (const url of source.urls) expect(url).toMatch(/^\/audio\/quran\/husary-murattal\/(\d{6}|basmala)\.mp3$/);
     }
   });
 
@@ -509,9 +509,9 @@ describe("pause rules (1.5 s between playbacks, none inside one Quranic recitati
   });
 
   it("Quran basmala → ayah 1 → ayah 2 → … plays straight through — no 1.5 s pause inside one repetition", () => {
-    startAudioAdhkar("morning", morning("morning_002")); // al-Ikhlas: Abdul Basit's own basmala + 4 ayah files
+    startAudioAdhkar("morning", morning("morning_002")); // al-Ikhlas: al-Husary's own basmala (the default) + 4 ayah files
     const timersAtStart = vi.getTimerCount();
-    expect(fake.played[0]).toMatch(/\/abdulbasit-murattal\/basmala\.mp3$/);
+    expect(fake.played[0]).toMatch(/\/husary-murattal\/basmala\.mp3$/);
     for (let ayah = 1; ayah <= 4; ayah++) {
       fake.end(); // the previous file ends …
       expect(fake.played, `ayah ${ayah}`).toHaveLength(ayah + 1); // … the next starts at once, no timer
@@ -521,7 +521,7 @@ describe("pause rules (1.5 s between playbacks, none inside one Quranic recitati
     fake.end(); // the recitation's last ayah: NOW the 1.5 s repetition pause
     expect(vi.getTimerCount()).toBe(timersAtStart + 1);
     vi.advanceTimersByTime(REPETITION_PAUSE_MS);
-    expect(fake.played[5]).toMatch(/\/abdulbasit-murattal\/basmala\.mp3$/); // repetition 2 starts with his basmala again
+    expect(fake.played[5]).toMatch(/\/husary-murattal\/basmala\.mp3$/); // repetition 2 starts with his basmala again
   });
 
   it("no pause after the final repetition — the session simply finishes", () => {

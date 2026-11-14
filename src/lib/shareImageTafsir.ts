@@ -290,3 +290,141 @@ export function layoutTafsirCard(content: ShareableContent, language: "ar" | "en
   const ratio = Math.max(1, Math.min(MAX_RATIO, LONG_SIDE / height, Math.sqrt(TAFSIR_CARD_MAX_PIXELS / (W * height))));
   return { width: W, height, scale: z, verseScale: zv, ratio, lines, rule };
 }
+
+// ---- the card, continued: a long Tafsir as pages (Task 5) ---------------------------------
+//
+// When the Tafsir would only fit one card by setting it smaller than its normal size, it is
+// shared as a run of the same card instead: page 1 opens as the card does (its header, the verse,
+// its reference, the Tafsir's label), the Tafsir runs on at its normal size page after page, and
+// the last page ends with the source and DITHAR's name. Every page is the same phone-shaped size
+// (TAFSIR_PAGE_HEIGHT) and numbered. Nothing is set smaller than on the short card, and no line
+// is changed: pages break between the card's own lines.
+//  - The verse is never split between pages unless it alone is taller than a page (at its
+//    smallest size); then it continues between two of its lines, and the page says so.
+//  - The Tafsir's label never ends a page: it comes with at least three lines of the Tafsir.
+//  - A paragraph's first line never ends a page alone.
+//  - The source never stands alone on the last page: three lines of the Tafsir go with it.
+
+/** A page of the long Tafsir: 1080×1920, a phone's screen. */
+export const TAFSIR_PAGE_HEIGHT = 1920;
+/** Room above the footer for the page number. */
+export const TAFSIR_PAGE_FOLIO_H = 64;
+const PAGE_BODY = TAFSIR_PAGE_HEIGHT - TAFSIR_CARD_BODY_TOP - BODY_BOTTOM_GAP - TAFSIR_CARD_FOOTER_H - TAFSIR_PAGE_FOLIO_H;
+/** Lines of the Tafsir that always go with its label, and with the source on the last page. */
+const KEEP_LINES = 3;
+
+export interface TafsirPage {
+  lines: TafsirCardLine[];
+  rule: TafsirCardLayout["rule"];
+  /** Page 1 has the card's own header; the others a running head. */
+  head: "card" | "continued";
+  /** The verse goes on past this page (only a verse taller than a page). */
+  verseContinues: boolean;
+  /** This page opens with the rest of the verse. */
+  opensWithVerse: boolean;
+}
+
+export interface TafsirPagesLayout {
+  width: number;
+  height: number;
+  pages: TafsirPage[];
+  verseScale: number;
+}
+
+/** The verse's scale and the card's rows at the normal Tafsir size. */
+function normalRows(content: ShareableContent, language: "ar" | "en", colors: ShareImageColors, measure: Measure) {
+  const zv = verseScale(content, colors, measure);
+  return { zv, list: rows(content, language, colors, measure, 1, zv) };
+}
+
+/**
+ * Whether [content] is a long Tafsir: one that the single card could only hold by setting it
+ * smaller than its normal size (or a card taller than a phone's screen). Short and medium
+ * Tafsir — a 4:5 card, or a taller one up to a screen, at the normal size — stay one card.
+ */
+export function tafsirNeedsPages(content: ShareableContent, language: "ar" | "en", colors: ShareImageColors, measure: Measure): boolean {
+  const { list } = normalRows(content, language, colors, measure);
+  return stackHeight(list) > screenBody;
+}
+
+/** The long Tafsir as pages of the card, at the normal size (see above). */
+export function layoutTafsirPages(content: ShareableContent, language: "ar" | "en", colors: ShareImageColors, measure: Measure): TafsirPagesLayout {
+  const { zv, list } = normalRows(content, language, colors, measure);
+  type Placed = { row: Row; index: number };
+  const pages: { rows: Placed[]; verseContinues: boolean }[] = [{ rows: [], verseContinues: false }];
+  const current = () => pages[pages.length - 1];
+  const used = (p: Placed[]) => p.reduce((h, x, i) => h + x.row.height + (i ? x.row.gap : 0), 0);
+  const fits = (extra: Row[]) => used(current().rows) + extra.reduce((h, r, i) => h + r.height + (i || current().rows.length ? r.gap : 0), 0) <= PAGE_BODY;
+  const newPage = () => pages.push({ rows: [], verseContinues: false });
+  const put = (row: Row, index: number) => current().rows.push({ row, index });
+
+  const isParagraphStart = (i: number) => list[i].role === "tafsir" && (i === 0 || list[i - 1].role !== "tafsir" || list[i].gap > 0);
+  list.forEach((row, i) => {
+    if (row.role === "verse") {
+      // Only a verse taller than a whole page continues, between two of its lines.
+      if (!fits([row])) {
+        current().verseContinues = true;
+        newPage();
+      }
+      put(row, i);
+      return;
+    }
+    if (row.role === "reference") {
+      if (!fits([row])) newPage();
+      put(row, i);
+      return;
+    }
+    if (row.role === "label") {
+      // The label comes with at least KEEP_LINES lines of the Tafsir.
+      const following = list.slice(i + 1, i + 1 + KEEP_LINES).filter((r) => r.role === "tafsir");
+      if (!fits([row, ...following])) newPage();
+      put(row, i);
+      return;
+    }
+    if (row.role === "tafsir") {
+      if (!fits([row])) {
+        // A paragraph's first line doesn't end a page alone: it goes over with its paragraph.
+        const page = current().rows;
+        const last = page[page.length - 1];
+        const carried = last && last.row.role === "tafsir" && isParagraphStart(last.index) && page.length > 1 ? page.pop()! : null;
+        newPage();
+        if (carried) current().rows.push(carried);
+      }
+      put(row, i);
+      return;
+    }
+    // The source (and any note under it): together, and never alone on the last page.
+    const tail = list.slice(i).filter((r) => r.role === "source");
+    if (current().rows.length && list[i - 1]?.role !== "source" && !fits(tail)) {
+      const page = current().rows;
+      const take: Placed[] = [];
+      while (take.length < KEEP_LINES && page.length > 1 && page[page.length - 1].row.role === "tafsir") take.unshift(page.pop()!);
+      newPage();
+      current().rows.push(...take);
+    }
+    put(row, i);
+  });
+
+  const W = TAFSIR_CARD_WIDTH;
+  const laid: TafsirPage[] = pages
+    .filter((p) => p.rows.length)
+    .map((p, n) => {
+      let y = TAFSIR_CARD_BODY_TOP;
+      const lines: TafsirCardLine[] = [];
+      let rule: TafsirCardLayout["rule"] = null;
+      p.rows.forEach(({ row }, k) => {
+        if (k) y += row.gap;
+        const align = row.align === "center" ? "center" : row.dir === "rtl" ? "right" : "left";
+        const x = align === "center" ? W / 2 : align === "right" ? W - PAD_X : PAD_X;
+        const mid = y + row.height / 2;
+        lines.push({ text: row.text, role: row.role, font: row.font, color: row.color, dir: row.dir, align, x, y: mid });
+        if (row.role === "label" && !rule) {
+          const half = measure(row.font, row.text) / 2 + 28;
+          rule = { y: mid, left: PAD_X, right: W - PAD_X, gapLeft: W / 2 - half, gapRight: W / 2 + half };
+        }
+        y += row.height;
+      });
+      return { lines, rule, head: n === 0 ? "card" : "continued", verseContinues: p.verseContinues, opensWithVerse: p.rows[0]?.row.role === "verse" };
+    });
+  return { width: W, height: TAFSIR_PAGE_HEIGHT, pages: laid, verseScale: zv };
+}

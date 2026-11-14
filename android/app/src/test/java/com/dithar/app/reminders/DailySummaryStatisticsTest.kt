@@ -45,7 +45,8 @@ class DailySummaryStatisticsTest {
     fun noActivityTodayButEarlierActivitySaysBothClearly() {
         for (mode in listOf("stats", "combined")) {
             val b = body(snapshot(), mode = mode)
-            assertTrue("$mode: $b", b.startsWith("No dhikr was recorded in DITHAR today"))
+            val lead = if (mode == "stats") "No dhikr was recorded in DITHAR today" else "You haven't started your wird in DITHAR today yet 🌿"
+            assertTrue("$mode: $b", b.startsWith(lead))
             assertTrue("$mode: $b", b.contains("Since the beginning: "))
             assertFalse("$mode: $b", b.contains("Recorded today"))
         }
@@ -61,8 +62,12 @@ class DailySummaryStatisticsTest {
             assertEquals("No dhikr was recorded in DITHAR today.", b)
         }
         assertEquals(
-            "No dhikr was recorded in DITHAR today — and that's okay. Tomorrow is a fresh page: begin with a single dhikr after Fajr, and let a little grow.",
-            body(snapshot(allTime = DailySummary.AllTime()), mode = "combined").replace("\n", " "),
+            "You haven't started your wird in DITHAR today yet 🌿 Take a moment to remember Allah, even with a short dhikr.",
+            body(snapshot(allTime = DailySummary.AllTime()), mode = "combined"),
+        )
+        assertEquals(
+            "لم تبدأ وردك في دِثار اليوم بعد 🌿 خذ لحظة تذكر فيها الله، ولو بذكر يسير.",
+            body(snapshot(allTime = DailySummary.AllTime()), mode = "motivational", language = "ar"),
         )
     }
 
@@ -128,6 +133,15 @@ class DailySummaryStatisticsTest {
     }
 
     @Test
+    fun unknownRecordsAreLoggedWithTheirReason() {
+        assertNull(DailySummary.unknownReason(null, today, appOpenedOn = null, storedUnreadable = false, latestDate = null))
+        assertNull(DailySummary.unknownReason(snapshot(), today, appOpenedOn = today, storedUnreadable = false, latestDate = today))
+        assertTrue(DailySummary.unknownReason(snapshot().copy(recordsReadable = false), today, today, false, today)!!.contains("unavailable"))
+        assertTrue(DailySummary.unknownReason(null, today, null, true, null)!!.contains("couldn't be parsed"))
+        assertTrue(DailySummary.unknownReason(null, today, today, false, "2026-10-18")!!.contains("latest snapshot: 2026-10-18"))
+    }
+
+    @Test
     fun unknownRecordsAreNeverReportedAsNothingNorShownBesideOtherDaysCounts() {
         for (mode in listOf("stats", "combined", "motivational")) {
             for (language in listOf("en", "ar")) {
@@ -135,7 +149,9 @@ class DailySummaryStatisticsTest {
                 val b = DailySummary.compose(null, today, 0, mode, language, allTimeSoFar = since, recordsKnown = false).body
                 assertFalse("$mode/$language: $b", b.contains("No dhikr was recorded") || b.contains("لم يُسجَّل"))
                 assertFalse("$mode/$language: $b", b.contains("Since the beginning") || b.contains("منذ البداية"))
-                assertTrue("$mode/$language: $b", b.contains("couldn't read") || b.contains("تعذّرت"))
+                // Neutral and gentle: no technical error, no counts.
+                assertFalse("$mode/$language: $b", b.contains("couldn't read") || b.contains("تعذّر"))
+                assertTrue("$mode/$language: $b", b.contains("Take a moment to remember Allah") || b.contains("خذ لحظة تذكر فيها الله"))
             }
         }
     }
@@ -144,7 +160,7 @@ class DailySummaryStatisticsTest {
     fun aSnapshotMarkedUnavailableIsUnknownNotZero() {
         val unreadable = snapshot().copy(recordsReadable = false)
         val b = body(unreadable, mode = "stats")
-        assertEquals("DITHAR couldn't read today's records, so this summary can't say what was recorded. Open the app to update it.", b)
+        assertEquals("Take a moment to remember Allah, even with a short dhikr 🌿\nOpen DITHAR to see what was recorded today.", b)
         val parsed = ReminderStore.parseSnapshot("""{"date":"2026-10-21","status":"unavailable","today":{"tasbeehRepetitions":0},"trackedSince":null}""")
         assertFalse(parsed.recordsReadable)
         assertTrue(ReminderStore.parseSnapshot("""{"date":"2026-10-21","status":"ok","today":{}}""").recordsReadable)

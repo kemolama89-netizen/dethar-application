@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../theme/LanguageContext";
 import { quranJourneyLabels } from "../data/quranJourneyLabels";
 import { surahMeta } from "../lib/quranMeta";
@@ -7,6 +7,9 @@ import { JOURNEY_PAGES, emptyJourney, journeyStats, loadJourney, subscribeJourne
 import type { StatSelection } from "../lib/stats";
 
 const HISTORY_SHOWN = 10;
+
+// A past day's leaf (Basa'ir's own, components/basair/TafsirReadingView.tsx): loaded only when one is opened.
+const JourneyHistoryView = lazy(() => import("./basair/TafsirReadingView").then((m) => ({ default: m.JourneyHistoryView })));
 
 /** "YYYY-MM-DD" as day/month/year, in the Statistics screen's Latin digits. */
 const shortDate = (d: string) => `${Number(d.slice(8, 10))}/${Number(d.slice(5, 7))}/${d.slice(0, 4)}`;
@@ -38,8 +41,11 @@ function Heading({ children }: { children: string }) {
  * Its headline is the round in progress; the insights read follow the selected period.
  */
 export function QuranJourneyStatCard({ selection, expanded, onToggle }: { selection: StatSelection; expanded: boolean; onToggle: () => void }) {
-  const { language } = useLanguage();
+  const { language, dir } = useLanguage();
   const t = quranJourneyLabels[language];
+  const RowCue = dir === "rtl" ? ChevronLeft : ChevronRight;
+  // The history entry open in its leaf (an index into stats.history, newest first), or null.
+  const [opened, setOpened] = useState<number | null>(null);
   const [version, setVersion] = useState(0);
   useEffect(() => subscribeJourney(() => setVersion((v) => v + 1)), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,20 +130,29 @@ export function QuranJourneyStatCard({ selection, expanded, onToggle }: { select
               </ul>
 
               <Heading>{t.history}</Heading>
-              <ul className="flex flex-col gap-2" data-journey-history="">
-                {history.map((h) => {
+              <ul className="flex flex-col" data-journey-history="">
+                {history.map((h, i) => {
                   const [s, a] = h.insight.split(":").map(Number);
                   return (
-                    <li key={`${h.round}:${h.page}`} className="flex items-center justify-between gap-3 text-[12.5px]">
-                      <span className="min-w-0 truncate" style={{ color: "var(--color-text-primary)" }}>
-                        <span className="font-semibold" style={{ color: "var(--color-gold)" }}>
-                          {t.historyPage(h.page)}
+                    <li key={`${h.round}:${h.page}`}>
+                      <button
+                        type="button"
+                        onClick={() => setOpened(i)}
+                        aria-label={t.historyOpen(h.page, shortDate(h.localDate))}
+                        className="flex min-h-11 w-full items-center justify-between gap-3 rounded-lg text-start text-[12.5px]"
+                        data-journey-history-row={`${h.round}:${h.page}`}
+                      >
+                        <span className="min-w-0 truncate" style={{ color: "var(--color-text-primary)" }}>
+                          <span className="font-semibold" style={{ color: "var(--color-gold)" }}>
+                            {t.historyPage(h.page)}
+                          </span>
+                          {` · ${surahName(s)} ${a}`}
                         </span>
-                        {` · ${surahName(s)} ${a}`}
-                      </span>
-                      <span className="shrink-0" style={{ color: "var(--color-text-muted)" }}>
-                        {shortDate(h.localDate)}
-                      </span>
+                        <span className="flex shrink-0 items-center gap-1" style={{ color: "var(--color-text-muted)" }}>
+                          {shortDate(h.localDate)}
+                          <RowCue size={15} strokeWidth={2} aria-hidden="true" style={{ color: "var(--color-gold)" }} />
+                        </span>
+                      </button>
                     </li>
                   );
                 })}
@@ -150,6 +165,12 @@ export function QuranJourneyStatCard({ selection, expanded, onToggle }: { select
             </>
           )}
         </div>
+      )}
+
+      {opened !== null && stats.history[opened] && (
+        <Suspense fallback={<div className="fixed inset-0 z-[86]" style={{ background: "var(--color-bg)" }} aria-hidden="true" data-journey-loading="" />}>
+          <JourneyHistoryView entries={stats.history} index={opened} onClose={() => setOpened(null)} />
+        </Suspense>
       )}
     </div>
   );

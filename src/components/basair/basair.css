@@ -607,3 +607,284 @@ html[data-look="night"] .dithar-saadi-noteref {
   /* On Night the deep colour is close to the page: the gold edge keeps the action plainly a button. */
   box-shadow: inset 0 0 0 1px var(--look-accent-on-card, var(--basair-gold));
 }
+
+/* A past day's leaf (JourneyHistoryView): the newer and older entries, quiet, above the one
+   filled action — which keeps the leaf's full width. Each side is a 44px target, greyed at the ends. */
+.dithar-journey-history-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.dithar-journey-history-nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  min-width: 44px;
+  padding-inline: 8px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.dithar-journey-history-nav button svg {
+  color: var(--look-accent-on-card, var(--basair-gold));
+}
+.dithar-journey-history-nav button:disabled {
+  opacity: 0.35;
+}
+.dithar-journey-history-nav button:focus-visible {
+  outline: 2px solid var(--look-accent-on-card, var(--basair-gold));
+  outline-offset: 2px;
+}
+
+/* ---- the Tafsir booklet over the Mushaf (TafsirBooklet.tsx) ----
+   A small book page of the Mushaf's own paper — fixed colours, like the Mushaf, in every look —
+   with a double gold rule and its leaves at the outer edge. Its text flows as columns, one per
+   page (column-fill: auto): lines break between words only, never inside one. */
+.dithar-booklet-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+}
+.dithar-booklet-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 33, 63, 0.08);
+}
+.dithar-booklet {
+  --booklet-paper: #fdf9ef;
+  --booklet-ink: #2a2418;
+  --booklet-quote: #6b5427;
+  --booklet-rule: #e3d3ad;
+  --booklet-muted: #7d6e52;
+  --booklet-gold: #b08a45;
+  --booklet-navy: #12213f;
+  /* Its place and size are set from the Mushaf page (TafsirBooklet): its pages are that page's size. */
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  color: var(--booklet-ink);
+  background: var(--booklet-paper);
+  border: 1px solid #d9c9a3;
+  border-radius: 8px;
+  box-shadow:
+    -3px 0 0 -1px #f5efe0,
+    -4px 0 0 -1px rgba(122, 96, 52, 0.3),
+    -6px 0 0 -2px #ede5d1,
+    -7px 0 0 -2px rgba(122, 96, 52, 0.3),
+    0 10px 28px rgba(18, 33, 63, 0.22),
+    0 2px 6px rgba(18, 33, 63, 0.12);
+  animation: dithar-booklet-in 0.22s ease-out backwards;
+}
+@keyframes dithar-booklet-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dithar-booklet {
+    animation: none;
+  }
+}
+.dithar-booklet-frame {
+  position: absolute;
+  inset: 7px;
+  border: 1px solid var(--booklet-rule);
+  border-radius: 4px;
+  pointer-events: none;
+}
+.dithar-booklet-frame::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 0.5px solid var(--booklet-rule);
+  border-radius: 3px;
+}
+/* The top: the controls, then the running head — and the handle it is dragged sideways by. */
+.dithar-booklet-head {
+  position: relative;
+  flex-shrink: 0;
+  padding: 6px 10px 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.dithar-booklet-head:active {
+  cursor: grabbing;
+}
+.dithar-booklet-running {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 10px 4px;
+  border-bottom: 1px solid var(--booklet-rule);
+  font: 600 11.5px/1.2 var(--font-body);
+  color: var(--booklet-muted);
+}
+.dithar-booklet-running b {
+  font: 700 13px/1.2 var(--font-display);
+  color: var(--booklet-gold);
+}
+.dithar-booklet-window {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 10px 22px 14px;
+  overflow: hidden;
+  /* A first line's marks may rise a little above the page's top: they show (the next page is 40px away). */
+  overflow: clip;
+  overflow-clip-margin: 6px;
+  touch-action: pan-y;
+}
+/* Pages break only where a page is full — between lines, never inside a word — so nothing here
+   holds a block together (that would end a page early and could add one). The closing ornament sits
+   inside the source, and widows keep the source's last lines from standing alone. */
+
+.dithar-booklet-flow {
+  column-fill: auto;
+  transition: transform 0.28s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dithar-booklet-flow {
+    transition: none;
+  }
+}
+/* A paragraph may begin on a page's last line (no gap after a line like «ثم قال تعالى:»);
+   its last line never stands alone at the top of the next page. */
+.dithar-booklet-flow > * {
+  orphans: 1;
+  widows: 2;
+}
+.dithar-booklet-verse {
+  margin: 0 0 10px;
+  padding: 6px 4px 10px;
+  border-block: 1px solid var(--booklet-rule);
+  font-family: "KFGQPC Hafs", var(--font-display);
+  font-size: 21px;
+  line-height: 2;
+  color: var(--booklet-navy);
+  text-align: center;
+}
+.dithar-booklet-excerpt {
+  margin: -4px 0 10px;
+  font: 600 11.5px/1.6 var(--font-body);
+  color: var(--booklet-muted);
+  text-align: center;
+}
+.dithar-booklet-notice {
+  margin: 0 0 8px;
+  font: 500 12px/1.7 var(--font-body);
+  color: var(--booklet-muted);
+}
+.dithar-booklet-text {
+  margin: 0 0 6px;
+  font-family: "Amiri", "Scheherazade New", serif;
+  font-size: 17px;
+  line-height: 1.9;
+  text-align: start;
+}
+.dithar-booklet-text .dithar-tafsir-quran {
+  color: var(--booklet-quote);
+}
+.dithar-booklet-noteref {
+  font: 700 12px/1 var(--font-body);
+  color: var(--booklet-gold);
+  padding-inline: 2px;
+}
+.dithar-booklet-notes {
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--booklet-rule);
+  font: 13.5px/1.8 "Amiri", serif;
+}
+.dithar-booklet-notes p {
+  margin: 0 0 4px;
+}
+.dithar-booklet-notes-title {
+  font: 700 12px/1.6 var(--font-body);
+  color: var(--booklet-muted);
+}
+.dithar-booklet-source {
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--booklet-rule);
+  font: 12.5px/1.75 var(--font-body);
+  color: #4f4535;
+}
+.dithar-booklet-source p {
+  margin: 0 0 2px;
+  widows: 2;
+  orphans: 2;
+}
+.dithar-booklet-ornament {
+  margin: 10px 0 0;
+  text-align: center;
+  font: 15px/1 var(--font-display);
+  letter-spacing: 6px;
+  color: var(--booklet-gold);
+}
+.dithar-booklet-status {
+  padding: 24px 8px;
+  text-align: center;
+  font: 500 13px/1.7 var(--font-body);
+  color: var(--booklet-muted);
+}
+.dithar-booklet-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 46px;
+}
+.dithar-booklet-bar button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--booklet-navy);
+}
+.dithar-booklet-bar button:disabled {
+  opacity: 0.3;
+}
+.dithar-booklet-bar button:focus-visible {
+  outline: 2px solid var(--booklet-gold);
+  outline-offset: 1px;
+}
+.dithar-booklet-pager {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.dithar-booklet-folio {
+  min-width: 84px;
+  text-align: center;
+  font: 700 16px/1 var(--font-display);
+  color: var(--booklet-navy);
+}
+/* While the shared pages are laid out (taller, with the whole verse), the booklet is covered and its pages don't slide. */
+[data-booklet-exporting] .dithar-booklet-flow {
+  transition: none;
+}
+.dithar-booklet-exporting {
+  position: absolute;
+  inset: 92px 14px 12px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  background: var(--booklet-paper);
+  font: 600 13px var(--font-body);
+  color: var(--booklet-muted);
+}
+.dithar-booklet-error {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 10px;
+  text-align: center;
+  font: 600 12px var(--font-body);
+  color: #9b2c2c;
+}

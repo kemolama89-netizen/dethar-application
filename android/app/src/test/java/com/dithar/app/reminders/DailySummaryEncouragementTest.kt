@@ -130,7 +130,7 @@ class DailySummaryEncouragementTest {
     @Test
     fun anEmptyDayAndAListeningDayGetTheirOwnGentleMessages() {
         val empty = compose(DailySummary.Activity(), "combined", "en")
-        assertTrue(empty.body, empty.body.startsWith("No dhikr was recorded in DITHAR today — and that's okay."))
+        assertTrue(empty.body, empty.body.startsWith("You haven't started your wird in DITHAR today yet 🌿"))
         assertTrue(empty.encouragementId!!.startsWith("emp"))
         val listening = DailySummary.compose(
             DailySummary.Snapshot(day, DailySummary.Activity(), emptyList(), "2026-01-01", audio = DailySummary.Listening(plays = 2, listenedMs = 120_000)),

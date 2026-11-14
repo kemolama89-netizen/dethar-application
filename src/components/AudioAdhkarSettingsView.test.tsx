@@ -64,6 +64,12 @@ const choose = async (selector: string, value: string) => {
     select.dispatchEvent(new Event("change", { bubbles: true }));
   });
 };
+/** The section's reciter: its row opens the reciter page (QuranReciterPicker); a reciter is chosen there, then Back. */
+const chooseReciter = async (section: "morning" | "evening", value: string) => {
+  await click(container.querySelector(`[data-section-reciter='${section}']`)!);
+  await click(container.querySelector(`[data-quran-reciter-picker] [data-quran-reciter-option='${value}'] > button`)!);
+  await click(container.querySelector("[data-quran-reciter-picker] .dithar-sticky-header button")!);
+};
 
 describe("Settings → إعدادات الأذكار الصوتية", () => {
   it("has three separate sections: Morning, Evening and Miscellaneous", () => {
@@ -78,11 +84,11 @@ describe("Settings → إعدادات الأذكار الصوتية", () => {
     await click(row("evening"));
     await click(button("تفعيل"));
     await setInput("#evening-audio-start-time", "22:12");
-    await choose("#evening-audio-reciter", "husary-murattal");
+    await chooseReciter("evening", "minshawi-murattal");
     expect(loadEveningAudioSettings()).toEqual({ eveningAudioEnabled: true, eveningAudioStartTime: "22:12" });
-    expect(loadSectionReciterChoice("evening")).toBe("husary-murattal");
+    expect(loadSectionReciterChoice("evening")).toBe("minshawi-murattal");
     expect(loadDailySchedule("morning")).toEqual({ enabled: false, startTime: "" });
-    expect(loadSectionReciterChoice("morning")).not.toBe("husary-murattal");
+    expect(loadSectionReciterChoice("morning")).not.toBe("minshawi-murattal");
   });
 
   it("Morning has its own switch, time and reciter", async () => {
@@ -90,17 +96,19 @@ describe("Settings → إعدادات الأذكار الصوتية", () => {
     expect(container.querySelector("[data-audio-schedule-section='morning']")).not.toBeNull();
     await click(button("تفعيل"));
     await setInput("#morning-audio-start-time", "05:15");
-    await choose("#morning-audio-reciter", "minshawi-murattal");
+    await chooseReciter("morning", "minshawi-murattal");
     expect(loadDailySchedule("morning")).toEqual({ enabled: true, startTime: "05:15" });
     expect(loadSectionReciterChoice("morning")).toBe("minshawi-murattal");
     expect(loadDailySchedule("evening")).toEqual({ enabled: false, startTime: "" });
-    // The reciter list: random rotation first, then every available reciter — no "follow the main setting".
-    const options = [...container.querySelectorAll<HTMLOptionElement>("#morning-audio-reciter option")];
-    expect(options[0].value).toBe("random");
-    expect(options[0].textContent).toBe("تناوب عشوائي بين القرّاء");
-    expect(options.some((o) => o.value === "")).toBe(false);
+    // The section's row names its reciter; its page lists random rotation first, then every available reciter — no "follow the main setting".
+    expect(container.querySelector("[data-section-reciter='morning'] [data-section-reciter-value]")!.textContent).toBe("محمد صديق المنشاوي");
+    await click(container.querySelector("[data-section-reciter='morning']")!);
+    const options = [...container.querySelectorAll("[data-quran-reciter-picker] [data-quran-reciter-option]")].map((o) => o.getAttribute("data-quran-reciter-option"));
+    expect(options[0]).toBe("random");
+    expect(container.querySelector("[data-quran-reciter-option='random']")!.textContent).toBe("تناوب عشوائي بين القرّاء");
     expect(options).toHaveLength(11);
-    await choose("#morning-audio-reciter", "random");
+    await click(container.querySelector("[data-quran-reciter-picker] .dithar-sticky-header button")!);
+    await chooseReciter("morning", "random");
     expect(loadSectionReciterChoice("morning")).toBe("random");
     expect(loadSectionReciterChoice("evening")).not.toBe("random");
   });

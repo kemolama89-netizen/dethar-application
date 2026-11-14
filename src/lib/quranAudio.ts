@@ -15,7 +15,11 @@
 //
 // A "bundled" reciter plays the app's own offline copies of the EveryAyah
 // files (quranAudioBundle.ts); a ref reaching outside the bundle is
-// "ayah-not-bundled" — never a guessed path or a network fallback.
+// "ayah-not-bundled" — never a guessed path or a network fallback. In the
+// Android app a reciter's copies are an APK asset (the built-in reciter) or a
+// complete download (quranAudioDownloads.ts); a reciter with neither is
+// "reciter-unavailable" here — the reciter selection never hands one to the
+// player (it plays the built-in reciter in his place), so this is a safeguard.
 //
 // Basmala: every recitation starts with the reciter's OWN basmala, and
 // every repetition plays the same files, so each repetition starts with it
@@ -27,6 +31,7 @@ import { formatQuranRefKey, isValidQuranRef } from "./quranRef";
 import { playUrlQueue } from "./audioEngine";
 import type { PlayUrlQueueOptions } from "./audioEngine";
 import { playableAudioPath } from "./audioAssets";
+import { downloadedQuranAudioPath, downloadedQuranAudioUrl, isQuranReciterOnDevice } from "./quranAudioDownloads";
 
 /** How repetitions after the first play: these files, the first one from `startAt` seconds. */
 export interface QuranRepeatPlayback {
@@ -63,9 +68,14 @@ export function resolveQuranAudio(ref: QuranRef | null | undefined, reciter: Qur
       return { status: "ready", reciterId: reciter.id, ref, urls };
     }
     case "bundled": {
+      // Not on this device (an on-demand reciter not downloaded, or only partly).
+      if (!isQuranReciterOnDevice(reciter.id)) return { status: "unavailable", reciterId: reciter.id, ref, reason: "reciter-unavailable" };
       const audio = bundledQuranAudio(ref, reciter);
       if (!audio) return { status: "unavailable", reciterId: reciter.id, ref, reason: "ayah-not-bundled" };
-      const url = (p: string) => `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(p))}`;
+      const url = (p: string) => {
+        const downloaded = downloadedQuranAudioPath(p);
+        return downloaded ? downloadedQuranAudioUrl(downloaded) : `${import.meta.env.BASE_URL}${encodeURI(playableAudioPath(p))}`;
+      };
       const urls = audio.paths.map(url);
       if (!audio.repeat) return { status: "ready", reciterId: reciter.id, ref, urls };
       return { status: "ready", reciterId: reciter.id, ref, urls, repeat: { urls: audio.repeat.paths.map(url), startAt: audio.repeat.startAt } };
@@ -83,7 +93,8 @@ export interface BundledQuranAudio {
  * The bundled files for `ref` with a "bundled" reciter (relative to the
  * app's base URL = under "public/" in the APK) — the reciter's own basmala
  * first, then the ayahs; played the same on every repetition — or null when
- * the reciter isn't bundled or an ayah of the ref isn't in the bundle.
+ * the reciter isn't bundled, isn't on this device (quranAudioDownloads.ts),
+ * or an ayah of the ref isn't in the bundle.
  */
 export function bundledQuranAudio(ref: QuranRef | null | undefined, reciter: QuranReciter): BundledQuranAudio | null {
   const ayahs = bundledQuranAudioPaths(ref, reciter);
@@ -109,7 +120,7 @@ export function bundledQuranAudio(ref: QuranRef | null | undefined, reciter: Qur
  * isn't in the bundle.
  */
 export function bundledQuranAudioPaths(ref: QuranRef | null | undefined, reciter: QuranReciter): string[] | null {
-  if (!isValidQuranRef(ref) || reciter.audio.kind !== "bundled") return null;
+  if (!isValidQuranRef(ref) || reciter.audio.kind !== "bundled" || !isQuranReciterOnDevice(reciter.id)) return null;
   const paths: string[] = [];
   for (let ayah = ref.fromAyah; ayah <= ref.toAyah; ayah += 1) {
     if (!isQuranAyahBundled(ref.surah, ayah)) return null;

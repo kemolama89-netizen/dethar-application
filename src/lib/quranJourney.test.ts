@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { pageOf, pageVerses } from "./quranMeta";
 import {
   JOURNEY_PAGES,
@@ -13,8 +13,10 @@ import {
   loadJourney,
   nextPage,
   orderInsights,
+  pastDays,
   recordDailyInsightViewed,
 } from "./quranJourney";
+import { todayLocalDate } from "./stats";
 import type { DailyAssignment, InsightId, JourneyState } from "./quranJourney";
 
 const KEY = "dithar:quran-journey:v1";
@@ -226,4 +228,69 @@ describe("insights from al-Sa'di's own text", () => {
     }
     expect(total).toBe(5759);
   }, 60_000);
+});
+
+describe("the Journey's past days (its permanent history)", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("keeps every earlier day's page, its verse and its date, across days and restarts — a new day overwrites none", async () => {
+    const explored = [];
+    for (let n = 0; n < 5; n++) explored.push(await exploreDay(n));
+    // A restart: everything is read back from storage alone.
+    const raw = localStorage.getItem(KEY)!;
+    localStorage.clear();
+    localStorage.setItem(KEY, raw);
+    // A new day starts: only the day's assignment changes.
+    expect(await dailyAssignment(day(5), fake)).toMatchObject({ assignment: { page: 6 }, explored: false });
+    const visits = loadJourney()!.rounds[0].visits;
+    expect(visits.map((v) => [v.page, v.insight, v.localDate])).toEqual(explored.map((a, n) => [a.page, a.insight, day(n)]));
+  });
+
+  it("lists the days before today, newest first, across rounds — today's page is kept apart", async () => {
+    const state: JourneyState = {
+      v: 1,
+      rounds: [
+        { n: 1, startedOn: "2025-01-01", completedOn: "2025-12-30", visits: [{ page: 604, insight: "114:1", localDate: "2025-12-30", ts: 10 }] },
+        {
+          n: 2,
+          startedOn: "2026-01-01",
+          visits: [
+            { page: 1, insight: "1:2", localDate: "2026-01-01", ts: 20 },
+            { page: 2, insight: "2:2", localDate: "2026-01-03", ts: 30 },
+            { page: 3, insight: "2:6", localDate: "2026-01-04", ts: 40 },
+          ],
+        },
+      ],
+      today: { localDate: "2026-01-04", round: 2, page: 3, insight: "2:6" },
+    };
+    const past = pastDays(state, "2026-01-04");
+    expect(past.map((e) => [e.round, e.page, e.localDate])).toEqual([
+      [2, 2, "2026-01-03"],
+      [2, 1, "2026-01-01"],
+      [1, 604, "2025-12-30"],
+    ]);
+    // With today's page not yet read, every explored day is a past day.
+    expect(pastDays(state, "2026-01-05")).toHaveLength(4);
+  });
+
+  it("reading the past changes nothing: no page counted, today's progress untouched", async () => {
+    await exploreDay(0);
+    await exploreDay(1);
+    const status = await dailyAssignment(day(2), fake);
+    const before = localStorage.getItem(KEY);
+    const past = pastDays(loadJourney()!, day(2));
+    expect(past.map((e) => e.page)).toEqual([2, 1]);
+    // Recording a past day's page as if it were today's is refused.
+    expect(recordDailyInsightViewed({ localDate: past[0].localDate, round: past[0].round, page: past[0].page, insight: past[0].insight }, at(2))).toBe(false);
+    expect(localStorage.getItem(KEY)).toBe(before);
+    expect(status).toMatchObject({ assignment: { page: 3 }, explored: false });
+  });
+
+  it("starts a new day at local midnight, in the device's own time zone", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 10, 14, 23, 59, 59));
+    expect(todayLocalDate()).toBe("2026-11-14");
+    vi.setSystemTime(new Date(2026, 10, 15, 0, 0, 1));
+    expect(todayLocalDate()).toBe("2026-11-15");
+  });
 });

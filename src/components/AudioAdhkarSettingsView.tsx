@@ -24,7 +24,10 @@ import { buildDailyAudioPlaylist, buildMiscAudioPlaylist, syncAudioAdhkarSchedul
 import type { AudioAdhkarScheduleResult } from "../lib/audioAdhkarSchedules";
 import { AudioAdhkarNative, isAudioAdhkarNativeAvailable } from "../lib/audioAdhkarNative";
 import type { AudioAdhkarDiagnostics, NativeSection } from "../lib/audioAdhkarNative";
-import { getAvailableQuranReciters } from "../data/quranReciters";
+import { getQuranReciterById } from "../data/quranReciters";
+import { QuranReciterPicker } from "./QuranReciterPicker";
+import { quranAudioLabels } from "../data/quranAudioLabels";
+import { isQuranReciterOnDevice } from "../lib/quranAudioDownloads";
 import { audioAdhkarSettingsLabels } from "../data/audioAdhkarSettingsLabels";
 import { audioAdhkarOptionLabel } from "../data/audioAdhkarOptionLabels";
 import { dailyDayTimesLabels, miscDayTimesLabels, occasionLabels, weeklyScheduleLabels } from "../data/scheduleLabels";
@@ -585,9 +588,17 @@ function DailyView({ section, onBack }: { section: DailySection; onBack: () => v
     saveSectionReciterChoice(section, choice);
     apply();
   }
+  const [pickingReciter, setPickingReciter] = useState(false);
+  const { dir } = useLanguage();
+  const ForwardIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
+  const chosen = reciter === "random" ? null : getQuranReciterById(reciter);
+  // Not downloaded (Android): the built-in reciter plays in his place until he is (lib/quranAudioDownloads.ts).
+  const reciterLabel = !chosen ? t.reciterRandom : isQuranReciterOnDevice(chosen.id) ? chosen.name[language] : `${chosen.name[language]} · ${quranAudioLabels[language].notDownloaded}`;
 
   const timeId = `${section}-audio-start-time`;
   const reciterSelectId = `${section}-audio-reciter`;
+
+  if (pickingReciter) return <QuranReciterPicker title={t.reciter} choice={reciter} onChoose={chooseReciter} onBack={() => setPickingReciter(false)} />;
 
   return (
     <div className="flex flex-1 flex-col" data-audio-schedule-section={section}>
@@ -608,16 +619,22 @@ function DailyView({ section, onBack }: { section: DailySection; onBack: () => v
         <p className="text-[11.5px] leading-[1.6]" style={muted} data-daily-window={section}>
           {t.dailyWindow[section]}
         </p>
-        <Row label={t.reciter} htmlFor={reciterSelectId}>
-          <select id={reciterSelectId} value={reciter} onChange={(e) => chooseReciter(e.target.value)} className={`${INPUT_CLASS} max-w-[55%]`} style={INPUT_STYLE}>
-            <option value="random">{t.reciterRandom}</option>
-            {getAvailableQuranReciters().map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name[language]}
-              </option>
-            ))}
-          </select>
-        </Row>
+        {/* The reciter: opens the reciter page (QuranReciterPicker) — every reciter, a sample of each, and Download. */}
+        <button
+          type="button"
+          id={reciterSelectId}
+          onClick={() => setPickingReciter(true)}
+          className="flex min-h-[44px] items-center justify-between gap-3 text-start"
+          data-section-reciter={section}
+        >
+          <span className="text-[13px]" style={primaryText}>
+            {t.reciter}
+          </span>
+          <span className="flex min-w-0 items-center gap-1 text-[13px] font-semibold" style={{ color: "var(--color-primary)" }} data-section-reciter-value={reciter}>
+            <span className="truncate">{reciterLabel}</span>
+            <ForwardIcon size={16} strokeWidth={1.8} className="shrink-0" style={{ color: "var(--color-gold)" }} aria-hidden="true" />
+          </span>
+        </button>
         <StatusBlock section={section} enabled={settings.enabled && selected > 0} schedule={schedule} diagnostics={diagnostics} t={t} />
       </div>
 

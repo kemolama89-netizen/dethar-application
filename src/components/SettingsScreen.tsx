@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { scrollIntoScreen } from "../lib/screenScroll";
 import { BarChart3, Bell, BellRing, CalendarClock, CalendarDays, Circle, ChevronDown, ChevronLeft, ChevronRight, ListChecks, BookOpen, Clapperboard, Compass, LifeBuoy, Map, MapPin, Megaphone, Palette, SlidersHorizontal, Trash2, Volume2, Heart } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { isFloatingTasbeehAvailable } from "../lib/floatingTasbeehSync";
@@ -826,7 +827,9 @@ export function SettingsScreen({ onNavigateHome, onNavigateToTasbeeh, onNavigate
       firstView.current = false;
       return;
     }
-    topRef.current?.scrollIntoView?.({ block: "start" });
+    // Only the screen's own scroll area (lib/screenScroll.ts): scrollIntoView also scrolled the frame's
+    // backdrop by the system bar's inset, sliding the page under the status bar.
+    scrollIntoScreen(topRef.current, "start");
   }, [view]);
   const ForwardIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
 

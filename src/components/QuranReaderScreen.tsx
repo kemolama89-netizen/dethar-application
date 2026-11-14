@@ -1,6 +1,6 @@
 import { Suspense, lazy, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode, Ref } from "react";
-import { Bookmark, BookmarkCheck, BookOpenText, Share2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ExternalLink, Home, List, Maximize2, Minus, Plus, RectangleHorizontal, RectangleVertical, Search, Settings2, Trash2, Volume2, VolumeX, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Bookmark, BookmarkCheck, BookOpen, BookOpenText, Share2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ExternalLink, Home, List, Maximize2, Minus, Plus, RectangleHorizontal, RectangleVertical, Search, Settings2, Trash2, Volume2, VolumeX, X, ZoomIn, ZoomOut } from "lucide-react";
 import "./quranReader.css";
 import { DeviceFrame } from "./DeviceFrame";
 import { BottomNav } from "./BottomNav";
@@ -40,6 +40,7 @@ import { loadBasairPosition } from "../lib/basairPosition";
 
 // Basa'ir, the verse and its Tafsir, loads only when opened: the reading experience never pays for it.
 const VerseTafsirView = lazy(() => import("./basair/TafsirReadingView").then((m) => ({ default: m.VerseTafsirView })));
+const TafsirBooklet = lazy(() => import("./basair/TafsirBooklet").then((m) => ({ default: m.TafsirBooklet })));
 /** Stands in, opaque, for the moment the code takes to arrive. */
 const overlayLoading = <div className="fixed inset-0 z-[85]" style={{ background: "var(--color-bg)" }} aria-hidden="true" />;
 
@@ -794,8 +795,10 @@ function MushafReader({
   const [sharing, setSharing] = useState(false);
   // Basa'ir lies over the reader, which stays mounted beneath: the page, zoom, scroll and selection don't move.
   const [tafsirVerse, setTafsirVerse] = useState<QuranTarget | null>(null);
+  // The selected verse's Tafsir as a booklet over the page (components/basair/TafsirBooklet.tsx), and where the verse is on screen.
+  const [booklet, setBooklet] = useState<(QuranTarget & { top: number; bottom: number; page: { left: number; top: number; width: number; height: number } | null }) | null>(null);
   const overlayOpen = useRef(false);
-  overlayOpen.current = tafsirVerse !== null;
+  overlayOpen.current = tafsirVerse !== null || booklet !== null;
   // The marked text a shared verse carries, fetched when a verse is first selected (its own ~1.4 MB chunk).
   const [shareTexts, setShareTexts] = useState<typeof import("../lib/quranShareText") | null>(null);
   // A selected verse is one tap from its Tafsir: have it ready.
@@ -1376,7 +1379,7 @@ function MushafReader({
           </span>
         </p>
       )}
-      {!controls && !found && (
+      {!controls && !found && !booklet && (
         <p className="dithar-quran-hint" aria-hidden="true" data-quran-tap-hint="">
           {t.tapHint}
         </p>
@@ -1395,7 +1398,7 @@ function MushafReader({
         </button>
         {/* The surah name opens "Go to" (page, surah, verse). */}
         <button type="button" onClick={() => setPanel("goto")} className="flex min-w-0 flex-1 flex-col items-center leading-tight" aria-label={t.goTo} data-quran-open-goto="">
-          <span className="flex max-w-full items-center gap-0.5 truncate text-[16px] font-bold" style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-display)" }} data-quran-title="">
+          <span className="flex max-w-full items-center gap-0.5 text-[16px] font-bold" style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-display)" }} data-quran-title="">
             {t.surah(surahName(position.surah, language))}
             <ChevronDown size={14} className="shrink-0 opacity-60" />
           </span>
@@ -1403,39 +1406,42 @@ function MushafReader({
             {t.ayah(digits(position.ayah))}
           </span>
         </button>
-        <button
-          type="button"
-          onClick={() => toggleMark(mark)}
-          aria-pressed={marked}
-          aria-label={`${marked ? t.removeBookmark : t.addBookmark} · ${t.ayah(digits(mark.ayah))}`}
-          className={iconButton}
-          style={marked ? { color: "var(--color-gold)" } : plain}
-          data-quran-bookmark-toggle={markKey}
-        >
-          {marked ? <BookmarkCheck size={18} fill="currentColor" fillOpacity={0.2} /> : <Bookmark size={18} />}
-        </button>
-        <button type="button" onClick={() => changeZoom(-1)} disabled={zoom <= QURAN_ZOOMS[0]} aria-label={t.smaller} className={iconButton} style={plain} data-quran-quick-zoom="out">
-          <ZoomOut size={18} />
-        </button>
-        <button type="button" onClick={() => changeZoom(1)} disabled={zoom >= QURAN_ZOOMS[QURAN_ZOOMS.length - 1]} aria-label={t.larger} className={iconButton} style={plain} data-quran-quick-zoom="in">
-          <ZoomIn size={18} />
-        </button>
-        <button type="button" onClick={() => setPanel("search")} aria-label={t.search} className={iconButton} style={plain} data-quran-open-search="">
-          <Search size={18} />
-        </button>
-        {/* Turns the screen itself (the page stays upright): landscape reads the page at full width. */}
-        <button type="button" onClick={onToggleLandscape} aria-pressed={landscape} aria-label={landscape ? t.portraitMode : t.landscapeMode} className={iconButton} style={landscape ? { color: "var(--color-gold)" } : plain} data-quran-quick-orientation={landscape ? "landscape" : "portrait"}>
-          {landscape ? <RectangleVertical size={18} /> : <RectangleHorizontal size={18} />}
-        </button>
-        <BasairEntryButton
-          onOpen={() => {
-            setSharing(false);
-            setTafsirVerse({ surah: position.surah, ayah: position.ayah });
-          }}
-        />
         <button type="button" onClick={() => setPanel("settings")} aria-label={t.settings} className={iconButton} style={plain} data-quran-open-settings="">
           <Settings2 size={18} />
         </button>
+        {/* The reading tools on their own row, so the surah's name above them is never cut short. */}
+        <div className="flex basis-full items-center justify-center gap-1" data-quran-tools="">
+          <button
+            type="button"
+            onClick={() => toggleMark(mark)}
+            aria-pressed={marked}
+            aria-label={`${marked ? t.removeBookmark : t.addBookmark} · ${t.ayah(digits(mark.ayah))}`}
+            className={iconButton}
+            style={marked ? { color: "var(--color-gold)" } : plain}
+            data-quran-bookmark-toggle={markKey}
+          >
+            {marked ? <BookmarkCheck size={18} fill="currentColor" fillOpacity={0.2} /> : <Bookmark size={18} />}
+          </button>
+          <button type="button" onClick={() => changeZoom(-1)} disabled={zoom <= QURAN_ZOOMS[0]} aria-label={t.smaller} className={iconButton} style={plain} data-quran-quick-zoom="out">
+            <ZoomOut size={18} />
+          </button>
+          <button type="button" onClick={() => changeZoom(1)} disabled={zoom >= QURAN_ZOOMS[QURAN_ZOOMS.length - 1]} aria-label={t.larger} className={iconButton} style={plain} data-quran-quick-zoom="in">
+            <ZoomIn size={18} />
+          </button>
+          <button type="button" onClick={() => setPanel("search")} aria-label={t.search} className={iconButton} style={plain} data-quran-open-search="">
+            <Search size={18} />
+          </button>
+          {/* Turns the screen itself (the page stays upright): landscape reads the page at full width. */}
+          <button type="button" onClick={onToggleLandscape} aria-pressed={landscape} aria-label={landscape ? t.portraitMode : t.landscapeMode} className={iconButton} style={landscape ? { color: "var(--color-gold)" } : plain} data-quran-quick-orientation={landscape ? "landscape" : "portrait"}>
+            {landscape ? <RectangleVertical size={18} /> : <RectangleHorizontal size={18} />}
+          </button>
+          <BasairEntryButton
+            onOpen={() => {
+              setSharing(false);
+              setTafsirVerse({ surah: position.surah, ayah: position.ayah });
+            }}
+          />
+        </div>
         {/* The Mushaf's own divisions for this page: where it is in the Juz and Hizb, its number, and
             any quarter-hizb (۞) that begins on it. */}
         <p
@@ -1470,10 +1476,35 @@ function MushafReader({
                 }}
                 className="flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold"
                 style={{ background: "var(--color-gold)", color: "var(--color-primary)" }}
+                title={basairLabels[language].viewTafsirHint}
+                aria-description={basairLabels[language].viewTafsirHint}
                 data-quran-select-tafsir=""
               >
                 <BookOpenText size={14} />
                 {basairLabels[language].viewTafsir}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  // Where the verse is on the page now: the booklet opens beside it, never over it.
+                  const shapes = [...document.querySelectorAll(`[data-quran-hits] [data-verse="${verseKey(mark.surah, mark.ayah)}"]`)].map((el) => el.getBoundingClientRect());
+                  const top = shapes.length ? Math.min(...shapes.map((r) => r.top)) : window.innerHeight / 2;
+                  const bottom = shapes.length ? Math.max(...shapes.map((r) => r.bottom)) : window.innerHeight / 2;
+                  setSharing(false);
+                  setControls(false);
+                  // And the Mushaf page itself: the booklet's pages are that size.
+                  const sheet = document.querySelector("[data-quran-sheet]")?.getBoundingClientRect();
+                  const pageBox = sheet && sheet.width > 0 ? { left: sheet.left, top: sheet.top, width: sheet.width, height: sheet.height } : null;
+                  setBooklet({ surah: mark.surah, ayah: mark.ayah, top, bottom, page: pageBox });
+                }}
+                className="flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold"
+                style={{ boxShadow: "inset 0 0 0 1px var(--color-gold)", color: "var(--color-text-primary)" }}
+                title={basairLabels[language].bookletOpenHint}
+                aria-description={basairLabels[language].bookletOpenHint}
+                data-quran-select-booklet=""
+              >
+                <BookOpen size={14} />
+                {basairLabels[language].bookletOpen}
               </button>
               <button type="button" onClick={() => toggleMark(mark)} className="flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold" style={{ background: "var(--color-primary)", color: "var(--color-primary-contrast)" }} data-quran-select-bookmark="">
                 {marked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
@@ -1644,6 +1675,23 @@ function MushafReader({
         </div>
       )}
       {shareContent && <ShareMenu content={shareContent} open={sharing && selected !== null} onClose={() => setSharing(false)} />}
+      {booklet && (
+        <Suspense fallback={null}>
+          <TafsirBooklet
+            key={`${booklet.surah}:${booklet.ayah}`}
+            surah={booklet.surah}
+            ayah={booklet.ayah}
+            verseTop={booklet.top}
+            verseBottom={booklet.bottom}
+            page={booklet.page}
+            onClose={() => {
+              // Back on the page as it was: the verse still selected, the controls shown.
+              setBooklet(null);
+              setControls(true);
+            }}
+          />
+        </Suspense>
+      )}
       {tafsirVerse && (
         <Suspense fallback={overlayLoading}>
           <VerseTafsirView
