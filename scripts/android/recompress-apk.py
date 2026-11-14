@@ -48,6 +48,21 @@ def build_tools(explicit):
     return os.path.join(sdk, "build-tools", versions[-1])
 
 
+def name_bytes(info):
+    """The entry's name exactly as stored in the archive. Gradle writes UTF-8 names (e.g. the Arabic
+    adhkar recordings) WITHOUT the ZIP UTF-8 flag, so zipfile decodes them as CP437: undo that decoding
+    to get the original bytes back. Android looks assets up by these bytes."""
+    return info.filename.encode("utf-8" if info.flag_bits & 0x800 else "cp437")
+
+
+def true_name(info):
+    """The entry's real name (its stored bytes as UTF-8, which is how Android reads them)."""
+    try:
+        return name_bytes(info).decode("utf-8")
+    except UnicodeDecodeError:
+        raise SystemExit(f"recompress-apk: an entry name isn't UTF-8: {name_bytes(info)!r}")
+
+
 def repack(src, dst):
     """Every entry, in order, same name/time/attributes/method; deflated ones at level 9."""
     with zipfile.ZipFile(src) as zin, zipfile.ZipFile(dst, "w") as zout:
@@ -55,7 +70,8 @@ def repack(src, dst):
             if V1_SIGNATURE.match(info.filename):
                 continue
             data = zin.read(info)
-            out = zipfile.ZipInfo(info.filename, date_time=info.date_time)
+            # The real name, so it is written back as the very same bytes (zipfile marks a non-ASCII name UTF-8).
+            out = zipfile.ZipInfo(true_name(info), date_time=info.date_time)
             out.compress_type = info.compress_type
             out.external_attr = info.external_attr
             out.create_system = info.create_system
@@ -74,8 +90,9 @@ def verify_same_content(src, dst):
     with zipfile.ZipFile(src) as a, zipfile.ZipFile(dst) as b:
         ia = [i for i in a.infolist() if not V1_SIGNATURE.match(i.filename)]
         ib = [i for i in b.infolist() if not V1_SIGNATURE.match(i.filename)]
-        if [i.filename for i in ia] != [i.filename for i in ib]:
-            return "the entries differ in name or order"
+        # Compared as the stored name bytes (what Android looks assets up by), not as decoded strings.
+        if [name_bytes(i) for i in ia] != [name_bytes(i) for i in ib]:
+            return "the entries differ in name (stored bytes) or order"
         # Signature files only as the input had them (no files added beyond its own).
         if any(V1_SIGNATURE.match(n) for n in b.namelist()) != any(V1_SIGNATURE.match(n) for n in a.namelist()):
             return "the v1 signature files differ from the input's"
